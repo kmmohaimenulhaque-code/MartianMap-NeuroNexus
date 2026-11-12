@@ -3772,6 +3772,7 @@ export default function App() {
         open={map3dOpen}
         onClose={() => setMap3dOpen(false)}
         selectedLocation={selectedLocation}
+        selectedFeature={namedFeature}
         displayName={displayName}
         environment={environment}
         features={places}
@@ -3789,6 +3790,8 @@ export default function App() {
         onOpenDesigner={() => setDesignerOpen(true)}
         onOpenSnapshot={handleOpenSnapshot}
         snapshotAvailable={routePoints.length >= 2 || Boolean(selectedCandidateId)}
+        onOpenCompare={handleOpenComparison}
+        compareAvailable={savedRoutes.length >= 2 || compareRouteIds.length >= 2}
       />
 
       <AiRouteDesigner
