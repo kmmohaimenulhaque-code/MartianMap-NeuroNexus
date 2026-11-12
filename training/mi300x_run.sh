@@ -26,11 +26,12 @@ if [ -d "$NN_WORK/martian-map/.git" ]; then git -C "$NN_WORK/martian-map" pull -
   git clone -q --depth 1 -b "$BRANCH" "$REPO" "$NN_WORK/martian-map"; fi
 SCRIPT="$NN_WORK/martian-map/training/qwen3_14b_mi300x.py"
 
-# Find the Python that has ROCm PyTorch (the Unsloth image may keep it in a venv or conda env).
+# Find the python3 that has ROCm PyTorch (the Unsloth image may keep it in a venv or conda env).
 PY="${PYTHON:-}"
 if [ -z "$PY" ]; then
-  for c in $(which -a python3 python 2>/dev/null) /opt/conda/bin/python /opt/venv/bin/python \
-           $(ls -d /opt/*/bin/python /root/*/bin/python "$HOME"/*/bin/python "$HOME"/.*/bin/python 2>/dev/null); do
+  CANDIDATES="$(which -a python3 2>/dev/null || true)
+$(find /opt /root /home /usr/local /workspace -maxdepth 7 -type f -regex '.*/bin/python3\(\.[0-9]+\)?$' 2>/dev/null || true)"
+  for c in $CANDIDATES; do
     if [ -x "$c" ] && "$c" -c "import torch,sys; sys.exit(0 if torch.version.hip and torch.cuda.is_available() else 1)" 2>/dev/null; then
       PY="$c"; break; fi
   done
@@ -41,12 +42,12 @@ if [ -n "$PY" ]; then
   "$PY" -c "import unsloth" >/dev/null 2>&1 && echo "   Unsloth found: the script uses it as shipped" || echo "   no Unsloth: the script uses PEFT"
   nohup setsid "$PY" -u "$SCRIPT" > "$NN_WORK/run.log" 2>&1 &
 else
-  echo "== no ROCm PyTorch found (set PYTHON=/path/to/python to choose one): running in the rocm/pytorch container"
+  echo "== no ROCm PyTorch found (set PYTHON=/path/to/python3 to choose one): running in the rocm/pytorch container"
   docker run -d --name nn-qwen14b --rm --device=/dev/kfd --device=/dev/dri --group-add video \
     --ipc=host --shm-size 64G --security-opt seccomp=unconfined \
     -e HF_TOKEN -e HF_USER -e GEMINI_API_KEY -e NN_WORK=/workspace/nn \
     -v "$NN_WORK":/workspace/nn rocm/pytorch:latest \
-    bash -c "python -u /workspace/nn/martian-map/training/qwen3_14b_mi300x.py > /workspace/nn/run.log 2>&1"
+    bash -c "python3 -u /workspace/nn/martian-map/training/qwen3_14b_mi300x.py > /workspace/nn/run.log 2>&1"
 fi
 
 sleep 5
