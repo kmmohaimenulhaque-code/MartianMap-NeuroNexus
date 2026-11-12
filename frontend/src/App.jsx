@@ -8,9 +8,13 @@ function MarsTerrain() {
   return (
     <primitive
       object={scene}
-      scale={0.001}
+      scale={0.000001}
     />
   );
+}
+
+function Loading() {
+  return null;
 }
 
 function App() {
@@ -18,10 +22,10 @@ function App() {
     <div style={{ width: "100vw", height: "100vh" }}>
       <Canvas
         camera={{
-          position: [0, 2, 7],
+          position: [0, 0, 7],
           fov: 45,
-          near: 0.001,
-          far: 1000,
+          near: 0.01,
+          far: 100,
         }}
       >
         <color attach="background" args={["#050505"]} />
@@ -33,14 +37,14 @@ function App() {
           intensity={3}
         />
 
-        <Suspense fallback={null}>
+        <Suspense fallback={<Loading />}>
           <MarsTerrain />
         </Suspense>
 
         <OrbitControls
           enableDamping
           dampingFactor={0.08}
-          minDistance={1}
+          minDistance={3.6}
           maxDistance={20}
         />
       </Canvas>
