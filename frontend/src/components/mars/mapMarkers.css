@@ -1,0 +1,75 @@
+/*
+ * Active selection marker on the colored 2D map (MarsMap). A Leaflet divIcon in the marker pane, so it sits
+ * above the canvas feature dots and route lines. It never takes a click: taps and clicks reach the map below.
+ * Cyan ring (13 px radius, 2 px stroke), filled center dot, soft glow; a thin dark keyline keeps it readable
+ * over the bright and the cyan parts of the MOLA color basemap.
+ */
+.leaflet-marker-icon.nn-select-marker {
+  pointer-events: none !important;
+  background: none;
+  border: 0;
+  outline: 0;
+}
+
+.nn-select-marker__body {
+  position: relative;
+  display: block;
+  width: 28px;
+  height: 28px;
+  pointer-events: none;
+}
+
+.nn-select-marker__ring,
+.nn-select-marker__pulse,
+.nn-select-marker__dot {
+  position: absolute;
+  box-sizing: border-box;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.nn-select-marker__ring {
+  inset: 0;
+  border: 2px solid var(--nn-cyan, #01ffff);
+  background: rgba(1, 255, 255, 0.08);
+  box-shadow:
+    0 0 0 1px rgba(4, 8, 11, 0.85),
+    inset 0 0 0 1px rgba(4, 8, 11, 0.55),
+    0 0 10px 2px rgba(1, 255, 255, 0.55);
+}
+
+.nn-select-marker__dot {
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  background: var(--nn-cyan, #01ffff);
+  box-shadow:
+    0 0 0 1px rgba(4, 8, 11, 0.85),
+    0 0 6px rgba(1, 255, 255, 0.9);
+}
+
+.nn-select-marker__pulse {
+  inset: 0;
+  border: 1px solid rgba(1, 255, 255, 0.7);
+  animation: nn-select-pulse 2.2s ease-out infinite;
+}
+
+@keyframes nn-select-pulse {
+  0% {
+    opacity: 0.75;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.9);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nn-select-marker__pulse {
+    display: none;
+    animation: none;
+  }
+}

@@ -28,7 +28,8 @@ function DetailOverlays({ frame, mode, overlays }) {
     moveend() {
       const b = map.getBounds();
       const half = Math.max(b.getEast() - b.getWest(), b.getNorth() - b.getSouth()) / 2;
-      if (mode === "mola" || half > 700) return setWin(null);
+      // A hidden (0 x 0) map reports zero-size bounds: never request a 0 m detail window.
+      if (mode === "mola" || !(half > 0) || half > 700) return setWin(null);
       const c = b.getCenter();
       const h = Math.ceil(Math.min(700, half * 1.15) / 50) * 50;
       const x = Math.round(c.lng / 25) * 25;
@@ -116,13 +117,32 @@ function CachedOverlay({ url, bounds, opacity, className }) {
   return src ? <ImageOverlay url={src} bounds={bounds} opacity={opacity} className={className} /> : null;
 }
 
+/*
+ * Fits the frame and keeps Leaflet's view size in step with the panel (phone sheets, rotation, layout changes).
+ * A map with no size (hidden view) is not fitted: fitBounds on a 0 x 0 view picks the maximum zoom. The fit
+ * waits until the map is shown, then frames the full extent.
+ */
 function FitFrame({ extent }) {
   const map = useMap();
   useEffect(() => {
-    map.fitBounds([[-extent, -extent], [extent, extent]], { animate: false });
+    const el = map.getContainer();
+    let fitPending = true;
+    const relayout = () => {
+      map.invalidateSize({ animate: false });
+      if (!fitPending || !el.clientWidth || !el.clientHeight) return;
+      fitPending = false;
+      map.fitBounds([[-extent, -extent], [extent, extent]], { animate: false });
+    };
+    relayout();
+    const observer = new ResizeObserver(relayout);
+    observer.observe(el);
+    return () => observer.disconnect();
   }, [map, extent]);
   return null;
 }
+
+/* Smooth wheel / trackpad zoom: quarter-level snap, half a level per standard wheel notch, pinch unchanged. */
+const SMOOTH_ZOOM = { zoomSnap: 0.25, zoomDelta: 0.5, wheelPxPerZoomLevel: 140, wheelDebounceTime: 40 };
 
 export default function SiteMap({ frame, mode, overlays, plan, estimate, editPts, onMapClick, onDragPoint, hoverIndex, rovers, grids, groundTruth, roverSolLimit = null }) {
   const [cursor, setCursor] = useState(null);
@@ -179,7 +199,7 @@ export default function SiteMap({ frame, mode, overlays, plan, estimate, editPts
 
   return (
     <div className="mw-sitemap">
-      <MapContainer crs={CRS.Simple} minZoom={-4} maxZoom={3} zoomSnap={0.25} preferCanvas attributionControl={false} className="mw-leaflet" bounds={bounds}>
+      <MapContainer crs={CRS.Simple} minZoom={-4} maxZoom={3} {...SMOOTH_ZOOM} preferCanvas attributionControl={false} className="mw-leaflet" bounds={bounds}>
         <FitFrame extent={extent} />
         {overlays.hillshade && <CachedOverlay url={layerUrl("hillshade")} bounds={bounds} opacity={1} />}
         {overlays.ortho && <CachedOverlay url={layerUrl("ortho")} bounds={bounds} opacity={0.92} />}

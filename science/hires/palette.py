@@ -11,7 +11,7 @@ TOKENS = {
     "--nn-amber": "#ffc46b",
     "--nn-red": "#ff647c",
     "--nn-text-dim": "#71848c",
-    "--nn-src-hirise": "#75e6ff",
+    "--nn-src-hirise": "#01ffff",
     "--nn-src-ctx": "#4ea8de",
     "--nn-src-mola": "#6f858d",
 }

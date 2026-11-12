@@ -1,11 +1,12 @@
 import { featureColor } from "../layers/sharedLayerData";
 import { useEffect, useMemo, useState } from "react";
 
-import { CircleMarker, ImageOverlay, MapContainer, Polyline, Popup, Tooltip, useMap, useMapEvents } from "react-leaflet";
+import { CircleMarker, ImageOverlay, MapContainer, Marker, Polyline, Popup, Tooltip, useMap, useMapEvents } from "react-leaflet";
 
-import { CRS, Transformation } from "leaflet";
+import { CRS, divIcon, Transformation } from "leaflet";
 
 import "leaflet/dist/leaflet.css";
+import "./mapMarkers.css";
 
 import { perfStore } from "../../perf/perfStore";
 
@@ -60,6 +61,55 @@ const FLYING = new WeakSet();
 const OWN_PICK = new WeakMap();
 const pickKey = (lat, lon) => `${Number(lat).toFixed(4)},${(((Number(lon) % 360) + 360) % 360).toFixed(4)}`;
 
+/*
+ * Zoom used when a selection made elsewhere is centered. With Leaflet's default integer zoomSnap the old 1.6
+ * request snapped to 2; the maps now zoom in quarter steps, so ask for 2 to keep the same framing (at 2 the
+ * whole planet is 720 px tall, which fills a phone map without letterboxing).
+ */
+const FOCUS_ZOOM = 2;
+
+/* Smooth wheel / trackpad zoom: quarter-level snap, half a level per standard wheel notch, pinch unchanged. */
+const SMOOTH_ZOOM = { zoomSnap: 0.25, zoomDelta: 0.5, wheelPxPerZoomLevel: 140, wheelDebounceTime: 40 };
+
+/*
+ * A map whose container has no layout box: the 2D map behind the phone USGS / 3D view, a collapsed panel.
+ * Leaflet's animated moves divide by the view size there and throw "Invalid LatLng (NaN, NaN)", and fitBounds
+ * picks the maximum zoom. Camera moves asked for while hidden are kept here and applied by MapResizeHandler
+ * once the map has a size again, so a selection made on another view is centered when the 2D map comes back.
+ */
+const PENDING_VIEW = new WeakMap();
+
+function isHidden(map) {
+  const el = map.getContainer();
+  return !el || !el.clientWidth || !el.clientHeight;
+}
+
+// Leaflet caches the view size; a show / hide in the same frame can leave it stale for an animated move.
+function refreshSize(map) {
+  const el = map.getContainer();
+  const size = map.getSize();
+  if (size.x !== el.clientWidth || size.y !== el.clientHeight) map.invalidateSize({ animate: false });
+}
+
+/* Runs a camera move now when the map is visible, or once it is shown again. Returns true when it ran now. */
+function whenVisible(map, apply) {
+  if (isHidden(map)) {
+    PENDING_VIEW.set(map, apply);
+    return false;
+  }
+  PENDING_VIEW.delete(map);
+  refreshSize(map);
+  apply();
+  return true;
+}
+
+function applyPendingView(map) {
+  const pending = PENDING_VIEW.get(map);
+  if (!pending || isHidden(map)) return;
+  PENDING_VIEW.delete(map);
+  pending();
+}
+
 function MapResizeHandler() {
   const map = useMap();
 
@@ -69,27 +119,28 @@ function MapResizeHandler() {
     // A resize during a fly-to would fire moveend, and the max-bounds check would pan and cancel the flight
     // halfway (the map then stayed zoomed out). While flying, apply the resize once the flight ends.
     let pending = false;
+    // Re-lay out, then apply a camera move that waited for the map to be shown (PENDING_VIEW).
+    const relayout = () => {
+      map.invalidateSize({ animate: false });
+      applyPendingView(map);
+    };
     const resizeObserver = new ResizeObserver(() => {
       if (FLYING.has(map)) {
         if (!pending) {
           pending = true;
           map.once("zoomend", () => {
             pending = false;
-            map.invalidateSize({ animate: false });
+            relayout();
           });
         }
         return;
       }
-      map.invalidateSize({
-        animate: false,
-      });
+      relayout();
     });
 
     resizeObserver.observe(container);
 
-    map.invalidateSize({
-      animate: false,
-    });
+    relayout();
 
     return () => {
       resizeObserver.disconnect();
@@ -103,7 +154,8 @@ function MapFocus({ selectedFeature, selectedLocation }) {
   const map = useMap();
 
   useEffect(() => {
-    const source = selectedFeature ?? selectedLocation;
+    // The App's selectedLocation is the one selection every map follows; the feature is only a fallback.
+    const source = selectedLocation ?? selectedFeature;
 
     if (!source) {
       return;
@@ -117,32 +169,35 @@ function MapFocus({ selectedFeature, selectedLocation }) {
 
     // A point picked on this map keeps this map's camera; a point picked elsewhere (ArcGIS, 3D, search) is
     // centered. Never zoom out to show it.
-    const at = selectedLocation ? pointPosition(selectedLocation) : null;
-    if (at && OWN_PICK.get(map) === pickKey(at[0], at[1])) return;
-    const zoom = Math.max(map.getZoom(), 1.6);
+    if (OWN_PICK.get(map) === pickKey(position[0], position[1])) return;
+    const zoomFor = () => Math.max(map.getZoom(), FOCUS_ZOOM);
+    const jump = () => map.setView(position, zoomFor(), { animate: false });
     // A hidden map (phone USGS / 3D view, collapsed panel) has zero size: an animated fly-to divides by zero
-    // and throws "Invalid LatLng (NaN, NaN)". Jump without animation; the resize handler re-lays it out
-    // when the map is shown again.
-    const size = map.getSize();
-    if (!size.x || !size.y) {
-      map.setView(position, zoom, { animate: false });
+    // and throws "Invalid LatLng (NaN, NaN)". Jump without animation now, and center again once it is shown.
+    if (isHidden(map)) {
+      jump();
+      PENDING_VIEW.set(map, jump);
       return;
     }
+    PENDING_VIEW.delete(map);
+    refreshSize(map);
     FLYING.add(map);
     map.once("zoomend", () => FLYING.delete(map));
     try {
-      map.flyTo(position, zoom, { duration: 0.8 });
+      map.flyTo(position, zoomFor(), { duration: 0.8 });
     } catch {
       FLYING.delete(map);
-      map.setView(position, zoom, { animate: false });
+      jump();
     }
   }, [selectedFeature, selectedLocation, map]);
 
-  // Current center for the device tests: "lat,lon" in degrees, east 0-360.
+  // Current center ("lat,lon" in degrees, east 0-360) and zoom for the device tests.
   useEffect(() => {
     const mark = () => {
       const c = map.getCenter();
-      map.getContainer().dataset.center = `${c.lat.toFixed(4)},${(((c.lng % 360) + 360) % 360).toFixed(4)}`;
+      const el = map.getContainer();
+      el.dataset.center = `${c.lat.toFixed(4)},${(((c.lng % 360) + 360) % 360).toFixed(4)}`;
+      el.dataset.zoom = String(map.getZoom());
     };
     mark();
     map.on("moveend", mark);
@@ -472,9 +527,9 @@ function FitComparisonRoutes({ routes }) {
   useEffect(() => {
     const points = (routes ?? []).flatMap((route) => routeCoordinates(route));
     if (points.length < 2) return undefined;
+    // whenVisible re-lays out first, and waits for a size when the comparison map is hidden (zero size).
     const timer = window.setTimeout(() => {
-      map.invalidateSize();
-      map.fitBounds(points, { padding: [40, 40], maxZoom: 9 });
+      whenVisible(map, () => map.fitBounds(points, { padding: [40, 40], maxZoom: 9 }));
     }, 80);
     return () => window.clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -734,6 +789,36 @@ function CandidateRoutesLayer({ candidates = [], selectedId = null, onSelect }) 
   );
 }
 
+/*
+ * Active selection marker: a cyan ring with a center dot and a soft glow at the App's selectedLocation (named
+ * feature or bare coordinate). A divIcon in the marker pane, so it is drawn above the canvas feature dots and
+ * routes at every zoom; non-interactive, so clicks and taps reach the map and the features below it.
+ */
+const SELECTION_ICON = divIcon({
+  className: "nn-select-marker",
+  html:
+    '<span class="nn-select-marker__body" data-testid="map-selection-marker" aria-hidden="true">' +
+    '<span class="nn-select-marker__pulse"></span><span class="nn-select-marker__ring"></span><span class="nn-select-marker__dot"></span>' +
+    "</span>",
+  iconSize: [28, 28],
+  iconAnchor: [14, 14],
+});
+
+function SelectionMarker({ selectedLocation, selectedFeature }) {
+  const source = selectedLocation ?? selectedFeature;
+  const position = source ? pointPosition(source) : null;
+  const ok = validPosition(position);
+  const lat = ok ? position[0] : null;
+  const lon = ok ? position[1] : null;
+  const at = useMemo(() => [lat, lon], [lat, lon]);
+
+  if (!ok) {
+    return null;
+  }
+
+  return <Marker position={at} icon={SELECTION_ICON} interactive={false} keyboard={false} zIndexOffset={1000} />;
+}
+
 /* Reports the visible bounds so canvas markers outside the view are not drawn (Browser Optimization). */
 function ViewportTracker({ onBounds }) {
   const map = useMap();
@@ -875,6 +960,10 @@ export default function MarsMap({
         crs={MARS_CRS}
         maxBounds={MARS_BOUNDS}
         maxBoundsViscosity={1}
+        zoomSnap={SMOOTH_ZOOM.zoomSnap}
+        zoomDelta={SMOOTH_ZOOM.zoomDelta}
+        wheelPxPerZoomLevel={SMOOTH_ZOOM.wheelPxPerZoomLevel}
+        wheelDebounceTime={SMOOTH_ZOOM.wheelDebounceTime}
         scrollWheelZoom={effectiveInteractive}
         zoomControl={effectiveInteractive}
         doubleClickZoom={effectiveInteractive}
@@ -1021,6 +1110,8 @@ export default function MarsMap({
             </CircleMarker>
           );
         })}
+
+        {!comparisonMode && <SelectionMarker selectedLocation={selectedLocation} selectedFeature={selectedFeature} />}
 
         {!comparisonMode && effectiveInteractive && !routeMode && (
           <CoordinateCreator

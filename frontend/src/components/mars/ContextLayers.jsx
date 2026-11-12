@@ -2,6 +2,11 @@
  * Context layers drawn inside the global 2D map (MarsMap, canvas renderer): rover traverses, waypoints
  * sized by IMU tilt (culled to the viewport), HiRISE DTM footprint boxes, landing sites and the
  * modeled MY34 dust optical depth. Colors come from tokens.css.
+ *
+ * Rover labels: CURIOSITY @ SOL n is Curiosity at the MY34 scenario sol; PERSEVERANCE @ SOL n is Perseverance at
+ * its latest NASA MMGIS localization (it landed in MY36, so it has no MY34 position). Rover and landing-site
+ * name labels are decluttered in screen space after every move or zoom: a label that would collide is left off
+ * and its marker keeps a hover tooltip.
  */
 
 import { useLayers } from "../layers/layerStore";
@@ -10,6 +15,11 @@ import { useMemo, useState } from "react";
 import { CircleMarker, ImageOverlay, Polyline, Popup, Rectangle, Tooltip, useMap, useMapEvents } from "react-leaflet";
 
 import { cssVar } from "../../marswalk/walkabilityRamp";
+import { declutterLabels, landingSiteDetail, landingSiteLabel, roverLabelRecords } from "./useContextLayerData";
+
+/* Tooltip offsets per side (px) so a label clears its marker; the declutter gap matches (offset + 6 px arrow). */
+const TIP_OFFSET = { right: [8, 0], left: [-8, 0], top: [0, -8], bottom: [0, 8] };
+const LABEL_GAP = 14;
 
 const lon360 = (lon) => ((Number(lon) % 360) + 360) % 360;
 
@@ -28,8 +38,26 @@ function splitAtSeam(coords) {
 function useViewport() {
   const map = useMap();
   const [bounds, setBounds] = useState(() => map.getBounds());
-  useMapEvents({ moveend: () => setBounds(map.getBounds()), zoomend: () => setBounds(map.getBounds()) });
-  return bounds;
+  const update = () => setBounds(map.getBounds());
+  useMapEvents({ moveend: update, zoomend: update, resize: update });
+  return { map, bounds };
+}
+
+/* Which side each rover / landing-site label goes on at the current view (null: hover tooltip only). */
+function placeMapLabels(map, roverMarkers, landingSites) {
+  try {
+    const size = map.getSize();
+    const items = [
+      ...roverMarkers.map((r) => ({ id: `rover-${r.rover}`, lat: r.lat, lon: r.lon, text: r.label, priority: 0 })),
+      ...landingSites.map((s) => ({ id: `site-${s.site_id}`, lat: s.latitude_deg, lon: lon360(s.longitude_deg), text: landingSiteLabel(s), priority: 1 })),
+    ].map((it) => {
+      const p = map.latLngToContainerPoint([it.lat, it.lon]);
+      return { ...it, x: p.x, y: p.y, size: 12 };
+    });
+    return declutterLabels(items, { width: size.x, height: size.y, gap: LABEL_GAP, markerRadius: 7 });
+  } catch {
+    return new Map(); // map not ready (hidden or not yet centered): hover tooltips only
+  }
 }
 
 export default function ContextLayers({ visibility, data, thermalObs = [] }) {
@@ -45,7 +73,7 @@ export default function ContextLayers({ visibility, data, thermalObs = [] }) {
     }),
     [],
   );
-  const bounds = useViewport();
+  const { map, bounds } = useViewport();
   const dustUrl = useMemo(() => (visibility.dust ? dustImage(data.dust, colors.dust) : null), [visibility.dust, data.dust, colors.dust]);
   const gridImages = useMemo(
     () => Object.fromEntries(["slope", "roughness", "walkability"].map((id) => [id, visibility[id] ? gridImage(data.grid, id) : null])),
@@ -62,6 +90,14 @@ export default function ContextLayers({ visibility, data, thermalObs = [] }) {
     }
     return out;
   }, [visibility.waypoints, data.waypoints, bounds]);
+
+  const roverMarkers = useMemo(
+    () => roverLabelRecords(data.rovers).filter((r) => visibility[r.rover === "msl" ? "mslTraverse" : "m2020Traverse"]),
+    [data.rovers, visibility.mslTraverse, visibility.m2020Traverse], // eslint-disable-line react-hooks/exhaustive-deps
+  );
+  const landingSites = useMemo(() => (visibility.landingSites ? (data.landingSites ?? []).filter((s) => s.latitude_deg != null && s.longitude_deg != null) : []), [visibility.landingSites, data.landingSites]);
+  // Screen-space label placement, recomputed after every move, zoom or resize (bounds changes on each).
+  const placement = useMemo(() => placeMapLabels(map, roverMarkers, landingSites), [map, bounds, roverMarkers, landingSites]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>
@@ -89,19 +125,31 @@ export default function ContextLayers({ visibility, data, thermalObs = [] }) {
             ))
           : null,
       )}
-      {visibility.mslTraverse && data.roverAtSol?.msl && (
-        <CircleMarker
-          center={[data.roverAtSol.msl.lat, lon360(data.roverAtSol.msl.lon)]}
-          radius={7}
-          pathOptions={{ color: colors.strong, weight: 2, fillColor: colors.msl, fillOpacity: 0.9 }}
-          className="nn-rover-at-sol"
-        >
-          <Tooltip permanent direction="right" className="nn-rover-label">{`CURIOSITY @ SOL ${data.roverAtSol.msl.my34Sol}`}</Tooltip>
-          <Popup>{`Curiosity at MY34 sol ${data.roverAtSol.msl.my34Sol} ≈ mission sol ${data.roverAtSol.msl.missionSol}; last localized waypoint: sol ${data.roverAtSol.msl.sol} (NASA MMGIS). Calendar conversion is approximate to about one sol.`}</Popup>
-        </CircleMarker>
-      )}
+      {roverMarkers.map((r) => {
+        const dir = placement.get(`rover-${r.rover}`);
+        return (
+          <CircleMarker
+            key={`rover-${r.rover}`}
+            center={[r.lat, r.lon]}
+            radius={7}
+            pathOptions={{ color: colors.strong, weight: 2, fillColor: colors[r.rover], fillOpacity: 0.9 }}
+            className="nn-rover-at-sol"
+          >
+            {dir ? (
+              <Tooltip key={`perm-${dir}`} permanent direction={dir} offset={TIP_OFFSET[dir]} className="nn-rover-label">
+                {r.label}
+              </Tooltip>
+            ) : (
+              <Tooltip key="hover" className="nn-rover-label">
+                {r.label}
+              </Tooltip>
+            )}
+            <Popup>{r.detail}</Popup>
+          </CircleMarker>
+        );
+      })}
       {visibleWaypoints.map(({ rover, w, pos }) => (
-        <CircleMarker key={`${rover}-${w.RMC}`} center={pos} radius={1.5 + (w.tilt ?? 0) / 6} pathOptions={{ color: colors[rover], weight: 1, fillOpacity: rover === "msl" && data.roverAtSol?.msl && w.sol > data.roverAtSol.msl.missionSol ? 0.12 : 0.5, opacity: rover === "msl" && data.roverAtSol?.msl && w.sol > data.roverAtSol.msl.missionSol ? 0.25 : 1 }}>
+        <CircleMarker key={`${rover}-${w.RMC}`} center={pos} radius={1.5 + (w.tilt ?? 0) / 6} pathOptions={{ color: colors[rover], weight: 1, fillOpacity: rover === "msl" && data.rovers?.msl && w.sol > data.rovers.msl.missionSol ? 0.12 : 0.5, opacity: rover === "msl" && data.rovers?.msl && w.sol > data.rovers.msl.missionSol ? 0.25 : 1 }}>
           <Tooltip>{`${rover === "msl" ? "Curiosity" : "Perseverance"} sol ${w.sol} · tilt ${w.tilt?.toFixed(1) ?? "n/a"}° (IMU)`}</Tooltip>
         </CircleMarker>
       ))}
@@ -115,12 +163,22 @@ export default function ContextLayers({ visibility, data, thermalObs = [] }) {
             </Rectangle>
           );
         })}
-      {visibility.landingSites &&
-        (data.landingSites ?? []).map((s) => (
-          <CircleMarker key={s.site_id} center={[s.latitude_deg, lon360(s.longitude_deg)]} radius={6} pathOptions={{ color: colors.strong, weight: 2, fill: false }}>
-            <Tooltip>{`${s.mission} · ${s.landing_date} · ${s.region}`}</Tooltip>
+      {landingSites.map((site) => {
+        const id = `site-${site.site_id}`;
+        const dir = placement.get(id);
+        return (
+          <CircleMarker key={id} center={[site.latitude_deg, lon360(site.longitude_deg)]} radius={6} pathOptions={{ color: colors.strong, weight: 2, fill: false }}>
+            {dir ? (
+              <Tooltip key={`perm-${dir}`} permanent direction={dir} offset={TIP_OFFSET[dir]} className="nn-site-label">
+                {landingSiteLabel(site)}
+              </Tooltip>
+            ) : (
+              <Tooltip key="hover">{`${landingSiteLabel(site)} · ${landingSiteDetail(site)}`}</Tooltip>
+            )}
+            <Popup>{`${landingSiteDetail(site)}. ${site.coordinate_provenance ?? ""}`.trim()}</Popup>
           </CircleMarker>
-        ))}
+        );
+      })}
     </>
   );
 }

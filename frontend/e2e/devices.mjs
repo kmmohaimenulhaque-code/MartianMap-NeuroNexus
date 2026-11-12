@@ -73,6 +73,25 @@ const clippedButtons = (page) =>
       .filter(({ r }) => r.width > 0 && r.bottom > 0 && r.top < innerHeight && (r.left < -1 || r.right > innerWidth + 1))
       .map(({ t }) => t),
   );
+// The 2D map's active selection marker: box, map center, cyan ring, and whether clicks pass through it.
+const selectionMarker = (page) =>
+  page.evaluate(() => {
+    const map = document.querySelector(".map-panel-body .leaflet-container");
+    const el = map?.querySelector("[data-testid=map-selection-marker]");
+    if (!el) return null;
+    const r = el.getBoundingClientRect();
+    const m = map.getBoundingClientRect();
+    const cs = getComputedStyle(el);
+    return {
+      visible: r.width > 0 && cs.visibility !== "hidden" && cs.display !== "none" && Number(cs.opacity) > 0,
+      size: Math.round(r.width),
+      dx: r.left + r.width / 2 - (m.left + m.width / 2),
+      dy: r.top + r.height / 2 - (m.top + m.height / 2),
+      inside: r.left >= m.left && r.right <= m.right && r.top >= m.top && r.bottom <= m.bottom,
+      passThrough: getComputedStyle(el.closest(".leaflet-marker-icon")).pointerEvents === "none",
+      ring: getComputedStyle(el.querySelector(".nn-select-marker__ring")).borderTopColor,
+    };
+  });
 const shot = async (page, name) => {
   await page.screenshot({ path: join(OUT, name) });
   console.log(`shot ${name}`);
@@ -127,6 +146,20 @@ const cockpit = async (page, w, label) => {
   await page.click('[data-testid=layers-menu-2d] [data-layer="slope"] input[type=checkbox]');
   await page.mouse.click(720, 60);
 
+  // Smooth wheel zoom: one standard wheel notch zooms the 2D map by about half a level (it used to jump 2).
+  {
+    const wb = await page.locator(".map-panel-body .leaflet-container").boundingBox();
+    const zoomOf = () => page.evaluate(() => Number(document.querySelector(".map-panel-body .leaflet-container").dataset.zoom));
+    await page.mouse.move(wb.x + wb.width / 2, wb.y + wb.height / 2);
+    const z0 = await zoomOf();
+    await page.mouse.wheel(0, -100);
+    await page.waitForTimeout(900);
+    const step = (await zoomOf()) - z0;
+    await page.mouse.wheel(0, 100);
+    await page.waitForTimeout(900);
+    check(step > 0 && step <= 0.75, `desktop 1440: one wheel notch zooms the 2D map by ${step} level (smooth, quarter-level snap)`);
+  }
+
   // Map sync: a pick on the 2D map recenters the ArcGIS map; a pick on the ArcGIS map recenters the 2D map.
   const centerOf = (s) => page.evaluate((s) => document.querySelector(s)?.dataset.center?.split(",").map(Number), s);
   const near = (a, b) => a && b && Math.abs(a[0] - b[0]) < 0.05 && Math.abs(((a[1] - b[1] + 540) % 360) - 180) < 0.05;
@@ -140,6 +173,18 @@ const cockpit = async (page, w, label) => {
   await page.waitForTimeout(3000);
   const d2 = await centerOf(".map-panel-body .leaflet-container");
   check(d2 && !near(d2, pick2d), `desktop 1440: an ArcGIS pick recenters the 2D map (${d2})`);
+
+  // Active selection marker on the 2D map: cyan ring at the selection, above the feature dots, clicks pass through.
+  const sel = await selectionMarker(page);
+  check(sel?.visible && sel.inside && sel.passThrough && sel.ring === "rgb(1, 255, 255)" && sel.size >= 24,
+    `desktop 1440: cyan selection marker visible on the 2D map (${sel?.size} px ring, clicks pass through)`);
+  check(Math.abs(sel.dx) <= 3 && Math.abs(sel.dy) <= 3, `desktop 1440: the ArcGIS pick sits under the 2D selection marker at the map center (${Math.round(sel.dx)}, ${Math.round(sel.dy)} px off)`);
+  await page.click(".map-panel-body .leaflet-control-zoom-in");
+  await page.waitForTimeout(500);
+  await page.click(".map-panel-body .leaflet-control-zoom-in");
+  await page.waitForTimeout(900);
+  const zoomedSel = await selectionMarker(page);
+  check(zoomedSel?.visible && zoomedSel.inside && zoomedSel.size === sel.size, "desktop 1440: the selection marker stays visible, same size, when zoomed in");
 
   // Search: Enter picks the first suggestion and closes the list.
   await page.fill(".search-box input", "Jezero");
@@ -277,6 +322,34 @@ for (const [w, h, name, file] of [[768, 1024, "iPad mini 768", null], [820, 1180
   check(wheel.left >= 12 && wheel.right <= 393 - 12, `iPhone 393: wheel + ${wheel.label} sub-wheel inside the screen (${Math.round(wheel.left)} to ${Math.round(wheel.right)} px)`);
   await shot(page, "mobile-radial-wheel.png");
   await page.keyboard.press("Escape");
+
+  // USGS view: a tap on the LAYERED (ArcGIS) map selects there while the 2D map is hidden (0 x 0). The hidden 2D
+  // map's fly-to used to throw "Invalid LatLng (NaN, NaN)" and stop the console. Back on 2D, the selection is centered.
+  {
+    const before = errors.length;
+    const center2d = () => page.evaluate(() => document.querySelector(".map-panel-body .leaflet-container")?.dataset.center);
+    const c0 = await center2d();
+    await page.click('.nn-mapview-toggle button:has-text("USGS")');
+    await page.waitForSelector("[data-testid=arcgis-layered] canvas", { timeout: 90000 });
+    await page.waitForFunction(() => document.querySelector(".nn-arcgis-view")?.dataset.center, null, { timeout: 90000 });
+    await page.waitForTimeout(1500);
+    const ab = await page.locator("[data-testid=arcgis-layered]").boundingBox();
+    let c1 = c0;
+    for (let i = 0; i < 3 && c1 === c0; i += 1) {
+      await page.touchscreen.tap(Math.round(ab.x + ab.width * (0.62 + 0.04 * i)), Math.round(ab.y + ab.height * 0.6));
+      await page.waitForTimeout(2500);
+      c1 = await center2d();
+    }
+    const stopped = await page.evaluate(() => [...document.querySelectorAll(".nn-error-card")].map((e) => e.innerText).filter((t) => /STOPPED/.test(t)));
+    check(!stopped.length && errors.length === before, `iPhone 393: a tap on the USGS LAYERED map raises no error and no CONSOLE STOPPED card${stopped.length ? ` (${stopped[0]})` : ""}`);
+    check(c1 !== c0, `iPhone 393: the USGS tap moves the hidden 2D map to the new selection (${c0} -> ${c1})`);
+    await shot(page, "mobile-usgs-layered-tap.png");
+    await page.click('.nn-mapview-toggle button:has-text("2D")');
+    await page.waitForTimeout(1500);
+    const sel = await selectionMarker(page);
+    // Horizontal only: at the focus zoom the planet just fills the phone map, so the max-bounds clamp may shift it vertically.
+    check(sel?.visible && sel.inside && Math.abs(sel.dx) <= 3, `iPhone 393: back on 2D, the USGS pick is centered under the selection marker (${Math.round(sel?.dx ?? NaN)} px off)`);
+  }
 
   // 3D globe from the [2D | USGS | 3D] switch: one-row bar, no banners, 2x canvas.
   await page.click('.nn-mapview-toggle button:has-text("3D")');

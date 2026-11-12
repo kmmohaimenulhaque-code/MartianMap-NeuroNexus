@@ -22,6 +22,7 @@ import {
 } from "./mapStyle";
 import { fetchMars3dContext, fetchMars3dExplorationZones, fetchMars3dTerrainGrid, fetchMars3dTraverses } from "../../services/marsEnvironmentApi";
 import Icon from "../../ui/Icon";
+import { landingSiteDetail, landingSiteLabel, landingSiteStatus, roverLabelRecords, useRoverPositions } from "../mars/useContextLayerData";
 
 /*
  * INTERACTIVE 3D MARS (ArcGIS Maps SDK SceneView, Mars 2000 sphere, wkid 104971)
@@ -271,6 +272,8 @@ export default function Mars3DView({
   const labelSetsRef = useRef({});
   const visibleRef = useRef({});
   const refreshLabelsRef = useRef(() => {});
+  const landingInfoRef = useRef([]);
+  const roverInfoRef = useRef([]);
 
   const [ready, setReady] = useState(false);
   const [loadError, setLoadError] = useState("");
@@ -316,6 +319,9 @@ export default function Mars3DView({
   const [context, setContext] = useState(null);
   const [grid, setGrid] = useState({ key: null, data: null, error: "" });
   const [zones, setZones] = useState({ key: null, data: null, error: "", loading: false });
+  const [landingSites, setLandingSites] = useState(null);
+  // CURIOSITY @ SOL n (MY34 scenario sol) and PERSEVERANCE @ SOL n (latest localization): same records as the 2D map.
+  const roverPositions = useRoverPositions(sol, { msl: open && visible.rovers, m2020: open && visible.rovers });
 
   useEffect(() => {
     propsRef.current = { features, routeMode, onSelectCoordinate, onSelectFeature, onRoutePointAdd, onSelectCandidate };
@@ -444,28 +450,7 @@ export default function Mars3DView({
         });
         overlayRef.current = labelContainerRef.current ? createLabelOverlay(view, labelContainerRef.current) : null;
 
-        // Landing sites are multipoint features, which the 3D FeatureLayer cannot draw:
-        // they are queried from the same USGS FeatureServer and drawn as labelled points.
-        fetch(`${SERVICES.geology}/0/query?where=1%3D1&outFields=*&outSR=104971&f=json`)
-          .then((response) => response.json())
-          .then((data) => {
-            if (destroyed) return;
-            const records = [];
-            (data.features ?? []).forEach((f) =>
-              (f.geometry?.points ?? (f.geometry?.x != null ? [[f.geometry.x, f.geometry.y]] : [])).forEach(([x, y]) =>
-                records.push({
-                  lat: y,
-                  lon: x,
-                  kind: "landing",
-                  name: String(f.attributes?.FULL_NAME ?? f.attributes?.NAME ?? "Landing site").replace(/ Landing Site$/i, ""),
-                }),
-              ),
-            );
-            setEntities(L.landing, Graphic, records);
-            labelSetsRef.current.landing = records;
-            refreshLabelsRef.current();
-          })
-          .catch(() => {});
+        // Landing sites come from /api/landing-sites (the same manifest as the 2D and ArcGIS maps), see below.
 
         view.on("click", async (event) => {
           const p = propsRef.current;
@@ -493,8 +478,18 @@ export default function Mars3DView({
           const entity = hits.find((h) => h.graphic?.attributes?.kind && h.graphic.layer !== L.features);
           if (entity && !p.routeMode && entity.graphic.geometry) {
             const g = entity.graphic;
-            if (g.layer === L.landing || g.layer === L.rovers)
-              setInfo({ title: g.layer === L.rovers ? "Rover location" : "USGS landing site", attributes: { name: g.attributes.name } });
+            if (g.layer === L.landing) {
+              const site = landingInfoRef.current[g.attributes.idx];
+              setInfo({
+                title: "Landing site",
+                attributes: site
+                  ? { name: landingSiteLabel(site), mission: site.mission, spacecraft: site.spacecraft, agency: site.agency, landed: site.landing_date, region: site.region, status: landingSiteStatus(site), position: site.coordinate_provenance }
+                  : { name: g.attributes.name },
+              });
+            } else if (g.layer === L.rovers) {
+              const rover = roverInfoRef.current[g.attributes.idx];
+              setInfo({ title: "Rover location", attributes: { name: g.attributes.name, note: rover?.detail ?? null } });
+            }
             const point = { latitude_deg: Number(g.geometry.y.toFixed(6)), longitude_deg: Number(lon360(g.geometry.x).toFixed(6)) };
             ownSelectionRef.current = `${point.latitude_deg.toFixed(4)},${point.longitude_deg.toFixed(4)}`;
             p.onSelectCoordinate?.(point);
@@ -588,6 +583,16 @@ export default function Mars3DView({
   }, [open, traverses, visible.traverses, visible.rovers]);
 
   useEffect(() => {
+    if (!open || landingSites || !visible.landing) return undefined;
+    const controller = new AbortController();
+    fetch("/api/landing-sites", { signal: controller.signal })
+      .then((response) => (response.ok ? response.json() : Promise.reject(new Error(`HTTP ${response.status}`))))
+      .then((body) => setLandingSites({ status: "ok", sites: body.sites ?? [] }))
+      .catch((error) => error.name !== "AbortError" && setLandingSites({ status: "unavailable", error: error.message, sites: [] }));
+    return () => controller.abort();
+  }, [open, landingSites, visible.landing]);
+
+  useEffect(() => {
     if (!open || context || !(visible.iceRegions || visible.ancient || showScience)) return;
     fetchMars3dContext()
       .then(setContext)
@@ -658,7 +663,7 @@ export default function Mars3DView({
             lat: r.lat,
             lon: r.lon,
             text: r.name,
-            colour: ENTITY_STYLES[r.kind]?.colour ?? "#e6f6fb",
+            colour: r.colour ?? ENTITY_STYLES[r.kind]?.colour ?? "#e6f6fb",
             kind: r.kind,
             priority: rule.priority,
             minScale: rule.minScale ?? 0,
@@ -827,16 +832,34 @@ export default function Mars3DView({
         }),
       ),
     );
+    // Rover labels match the 2D and ArcGIS maps; the latest traverse vertex is the fallback while they load.
+    const cyan = cssVar("--nn-cyan") || "#01ffff";
+    const labelled = roverLabelRecords(roverPositions.rovers);
+    const records = ["msl", "m2020"]
+      .map((id) => {
+        const at = labelled.find((r) => r.rover === id);
+        const kind = id === "msl" ? "curiosity" : "perseverance";
+        if (at) return { lat: at.lat, lon: at.lon, kind, name: at.label, colour: cyan, detail: at.detail };
+        const r = rovers.find((x) => (id === "msl" ? x.id.startsWith("msl") : !x.id.startsWith("msl")));
+        if (!r?.end) return null;
+        const name = r.rover.split(" ")[0].toUpperCase();
+        return { lat: r.end[1], lon: r.end[0], kind, name: `${name} · LATEST SOL ${r.latest_sol ?? "n/a"}`, colour: cyan, detail: `Latest traverse vertex, NASA MMGIS (mission sol ${r.latest_sol ?? "n/a"}).` };
+      })
+      .filter(Boolean)
+      .map((r, idx) => ({ ...r, idx }));
+    roverInfoRef.current = records;
+    entities("rovers", records);
+  }, [ready, traverses, roverPositions.rovers]);
+
+  useEffect(() => {
+    if (!ready) return;
+    const sites = (landingSites?.sites ?? []).filter((s) => s.latitude_deg != null && s.longitude_deg != null);
+    landingInfoRef.current = sites;
     entities(
-      "rovers",
-      rovers.map((r) => ({
-        lat: r.end[1],
-        lon: r.end[0],
-        kind: key(r),
-        name: `${r.rover.split(" ")[0]}${r.latest_sol ? ` · sol ${r.latest_sol}` : ""}`,
-      })),
+      "landing",
+      sites.map((s, idx) => ({ lat: s.latitude_deg, lon: s.longitude_deg, kind: "landing", name: landingSiteLabel(s), idx, detail: landingSiteDetail(s) })),
     );
-  }, [ready, traverses]);
+  }, [ready, landingSites]);
 
   useEffect(() => {
     if (!ready) return;
