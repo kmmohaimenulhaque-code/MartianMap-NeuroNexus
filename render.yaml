@@ -2,11 +2,12 @@
 # Render Blueprint for the sharded split API: 2 cores, 2 USGS services, 6 shards x 3 parts (free, 512 MB).
 services:
   - type: web
-    name: neuronexus-v4-core-a
+    name: core1
+    repo: https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus
     runtime: python
     plan: free
     region: ohio
-    branch: feature/mission-console-v4
+    branch: main
     autoDeployTrigger: "off"
     buildCommand: "pip install -r deploy/requirements-api.txt && (git lfs pull || true)"
     startCommand: "python -m uvicorn science.serve:app --host 0.0.0.0 --port $PORT"
@@ -14,11 +15,12 @@ services:
       - key: MALLOC_ARENA_MAX
         value: "2"
   - type: web
-    name: neuronexus-v4-core-b
+    name: core2
+    repo: https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus
     runtime: python
     plan: free
     region: ohio
-    branch: feature/mission-console-v4
+    branch: main
     autoDeployTrigger: "off"
     buildCommand: "pip install -r deploy/requirements-api.txt && (git lfs pull || true)"
     startCommand: "python -m uvicorn science.serve:app --host 0.0.0.0 --port $PORT"
@@ -26,11 +28,12 @@ services:
       - key: MALLOC_ARENA_MAX
         value: "2"
   - type: web
-    name: neuronexus-v4-usgs-a
+    name: usgs1
+    repo: https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus
     runtime: python
     plan: free
     region: ohio
-    branch: feature/mission-console-v4
+    branch: main
     autoDeployTrigger: "off"
     buildCommand: "pip install -r deploy/requirements-api.txt"
     startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"
@@ -40,11 +43,12 @@ services:
       - key: NN_HEAVY_CONCURRENCY
         value: "2"
   - type: web
-    name: neuronexus-v4-usgs-b
+    name: usgs2
+    repo: https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus
     runtime: python
     plan: free
     region: ohio
-    branch: feature/mission-console-v4
+    branch: main
     autoDeployTrigger: "off"
     buildCommand: "pip install -r deploy/requirements-api.txt"
     startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"
@@ -54,11 +58,12 @@ services:
       - key: NN_HEAVY_CONCURRENCY
         value: "2"
   - type: web
-    name: neuronexus-v4-s1-window
+    name: terrain1
+    repo: https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus
     runtime: python
     plan: free
     region: ohio
-    branch: feature/mission-console-v4
+    branch: main
     autoDeployTrigger: "off"
     buildCommand: "pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero"
     startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"
@@ -66,11 +71,77 @@ services:
       - key: NN_PART
         value: terrain-window
   - type: web
-    name: neuronexus-v4-s1-image
+    name: terrain2
+    repo: https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus
     runtime: python
     plan: free
     region: ohio
-    branch: feature/mission-console-v4
+    branch: main
+    autoDeployTrigger: "off"
+    buildCommand: "pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero"
+    startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: NN_PART
+        value: terrain-window
+  - type: web
+    name: terrain3
+    repo: https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus
+    runtime: python
+    plan: free
+    region: ohio
+    branch: main
+    autoDeployTrigger: "off"
+    buildCommand: "pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero"
+    startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: NN_PART
+        value: terrain-window
+  - type: web
+    name: terrain4
+    repo: https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus
+    runtime: python
+    plan: free
+    region: ohio
+    branch: main
+    autoDeployTrigger: "off"
+    buildCommand: "pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero"
+    startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: NN_PART
+        value: terrain-window
+  - type: web
+    name: terrain5
+    repo: https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus
+    runtime: python
+    plan: free
+    region: ohio
+    branch: main
+    autoDeployTrigger: "off"
+    buildCommand: "pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero"
+    startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: NN_PART
+        value: terrain-window
+  - type: web
+    name: terrain6
+    repo: https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus
+    runtime: python
+    plan: free
+    region: ohio
+    branch: main
+    autoDeployTrigger: "off"
+    buildCommand: "pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero"
+    startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: NN_PART
+        value: terrain-window
+  - type: web
+    name: image1
+    repo: https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus
+    runtime: python
+    plan: free
+    region: ohio
+    branch: main
     autoDeployTrigger: "off"
     buildCommand: "pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero"
     startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"
@@ -78,11 +149,77 @@ services:
       - key: NN_PART
         value: terrain-image
   - type: web
-    name: neuronexus-v4-s1-marswalk
+    name: image2
+    repo: https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus
     runtime: python
     plan: free
     region: ohio
-    branch: feature/mission-console-v4
+    branch: main
+    autoDeployTrigger: "off"
+    buildCommand: "pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero"
+    startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: NN_PART
+        value: terrain-image
+  - type: web
+    name: image3
+    repo: https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus
+    runtime: python
+    plan: free
+    region: ohio
+    branch: main
+    autoDeployTrigger: "off"
+    buildCommand: "pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero"
+    startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: NN_PART
+        value: terrain-image
+  - type: web
+    name: image4
+    repo: https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus
+    runtime: python
+    plan: free
+    region: ohio
+    branch: main
+    autoDeployTrigger: "off"
+    buildCommand: "pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero"
+    startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: NN_PART
+        value: terrain-image
+  - type: web
+    name: image5
+    repo: https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus
+    runtime: python
+    plan: free
+    region: ohio
+    branch: main
+    autoDeployTrigger: "off"
+    buildCommand: "pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero"
+    startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: NN_PART
+        value: terrain-image
+  - type: web
+    name: image6
+    repo: https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus
+    runtime: python
+    plan: free
+    region: ohio
+    branch: main
+    autoDeployTrigger: "off"
+    buildCommand: "pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero"
+    startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: NN_PART
+        value: terrain-image
+  - type: web
+    name: marswalk1
+    repo: https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus
+    runtime: python
+    plan: free
+    region: ohio
+    branch: main
     autoDeployTrigger: "off"
     buildCommand: "pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero"
     startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"
@@ -90,35 +227,12 @@ services:
       - key: NN_PART
         value: marswalk
   - type: web
-    name: neuronexus-v4-s2-window
+    name: marswalk2
+    repo: https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus
     runtime: python
     plan: free
     region: ohio
-    branch: feature/mission-console-v4
-    autoDeployTrigger: "off"
-    buildCommand: "pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero"
-    startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"
-    envVars:
-      - key: NN_PART
-        value: terrain-window
-  - type: web
-    name: neuronexus-v4-s2-image
-    runtime: python
-    plan: free
-    region: ohio
-    branch: feature/mission-console-v4
-    autoDeployTrigger: "off"
-    buildCommand: "pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero"
-    startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"
-    envVars:
-      - key: NN_PART
-        value: terrain-image
-  - type: web
-    name: neuronexus-v4-s2-marswalk
-    runtime: python
-    plan: free
-    region: ohio
-    branch: feature/mission-console-v4
+    branch: main
     autoDeployTrigger: "off"
     buildCommand: "pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero"
     startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"
@@ -126,35 +240,12 @@ services:
       - key: NN_PART
         value: marswalk
   - type: web
-    name: neuronexus-v4-s3-window
+    name: marswalk3
+    repo: https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus
     runtime: python
     plan: free
     region: ohio
-    branch: feature/mission-console-v4
-    autoDeployTrigger: "off"
-    buildCommand: "pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero"
-    startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"
-    envVars:
-      - key: NN_PART
-        value: terrain-window
-  - type: web
-    name: neuronexus-v4-s3-image
-    runtime: python
-    plan: free
-    region: ohio
-    branch: feature/mission-console-v4
-    autoDeployTrigger: "off"
-    buildCommand: "pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero"
-    startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"
-    envVars:
-      - key: NN_PART
-        value: terrain-image
-  - type: web
-    name: neuronexus-v4-s3-marswalk
-    runtime: python
-    plan: free
-    region: ohio
-    branch: feature/mission-console-v4
+    branch: main
     autoDeployTrigger: "off"
     buildCommand: "pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero"
     startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"
@@ -162,35 +253,12 @@ services:
       - key: NN_PART
         value: marswalk
   - type: web
-    name: neuronexus-v4-s4-window
+    name: marswalk4
+    repo: https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus
     runtime: python
     plan: free
     region: ohio
-    branch: feature/mission-console-v4
-    autoDeployTrigger: "off"
-    buildCommand: "pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero"
-    startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"
-    envVars:
-      - key: NN_PART
-        value: terrain-window
-  - type: web
-    name: neuronexus-v4-s4-image
-    runtime: python
-    plan: free
-    region: ohio
-    branch: feature/mission-console-v4
-    autoDeployTrigger: "off"
-    buildCommand: "pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero"
-    startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"
-    envVars:
-      - key: NN_PART
-        value: terrain-image
-  - type: web
-    name: neuronexus-v4-s4-marswalk
-    runtime: python
-    plan: free
-    region: ohio
-    branch: feature/mission-console-v4
+    branch: main
     autoDeployTrigger: "off"
     buildCommand: "pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero"
     startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"
@@ -198,35 +266,12 @@ services:
       - key: NN_PART
         value: marswalk
   - type: web
-    name: neuronexus-v4-s5-window
+    name: marswalk5
+    repo: https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus
     runtime: python
     plan: free
     region: ohio
-    branch: feature/mission-console-v4
-    autoDeployTrigger: "off"
-    buildCommand: "pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero"
-    startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"
-    envVars:
-      - key: NN_PART
-        value: terrain-window
-  - type: web
-    name: neuronexus-v4-s5-image
-    runtime: python
-    plan: free
-    region: ohio
-    branch: feature/mission-console-v4
-    autoDeployTrigger: "off"
-    buildCommand: "pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero"
-    startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"
-    envVars:
-      - key: NN_PART
-        value: terrain-image
-  - type: web
-    name: neuronexus-v4-s5-marswalk
-    runtime: python
-    plan: free
-    region: ohio
-    branch: feature/mission-console-v4
+    branch: main
     autoDeployTrigger: "off"
     buildCommand: "pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero"
     startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"
@@ -234,35 +279,12 @@ services:
       - key: NN_PART
         value: marswalk
   - type: web
-    name: neuronexus-v4-s6-window
+    name: marswalk6
+    repo: https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus
     runtime: python
     plan: free
     region: ohio
-    branch: feature/mission-console-v4
-    autoDeployTrigger: "off"
-    buildCommand: "pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero"
-    startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"
-    envVars:
-      - key: NN_PART
-        value: terrain-window
-  - type: web
-    name: neuronexus-v4-s6-image
-    runtime: python
-    plan: free
-    region: ohio
-    branch: feature/mission-console-v4
-    autoDeployTrigger: "off"
-    buildCommand: "pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero"
-    startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"
-    envVars:
-      - key: NN_PART
-        value: terrain-image
-  - type: web
-    name: neuronexus-v4-s6-marswalk
-    runtime: python
-    plan: free
-    region: ohio
-    branch: feature/mission-console-v4
+    branch: main
     autoDeployTrigger: "off"
     buildCommand: "pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero"
     startCommand: "python -m uvicorn science.serve_part:app --host 0.0.0.0 --port $PORT"

@@ -17,7 +17,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from gen_vercel_rewrites import host, service_names  # noqa: E402
+from gen_vercel_rewrites import health_url, host, service_names  # noqa: E402
 
 LINK = "https://martian-map-git-feature-mission-c-51d8a5-kmmohaimenulhaque-code.vercel.app"
 TIMEOUT_S = 180  # a cold start plus the first request stays well under this
@@ -36,7 +36,7 @@ def get(url: str) -> tuple[str, int | str, float]:
 
 def main(argv: list[str] | None = None) -> int:
     link = ((argv or sys.argv[1:]) or [LINK])[0].rstrip("/")
-    urls = [link + "/"] + [host(name) + ("/api/health" if name.startswith("core") else "/health") for name in service_names()]
+    urls = [link + "/"] + [health_url(name) for name in service_names()]
     with ThreadPoolExecutor(max_workers=len(urls)) as pool:
         results = list(pool.map(get, urls))
     # Waking 18+ services at once can take Render more than 180 s; a wake keeps going server-side, so one retry
@@ -47,7 +47,7 @@ def main(argv: list[str] | None = None) -> int:
             retried = {r[0]: r for r in pool.map(get, late)}
         results = [retried.get(r[0], r) for r in results]
     # Second pass after every service is up: precompute the cores' rover display lines.
-    warm = [host(core) + f"/api/rovers/{rover}/traverse?max_vertices=3000" for core in ("core-a", "core-b") for rover in ("msl", "m2020")]
+    warm = [host(core) + f"/api/rovers/{rover}/traverse?max_vertices=3000" for core in ("core1", "core2") for rover in ("msl", "m2020")]
     with ThreadPoolExecutor(max_workers=len(warm)) as pool:
         results += list(pool.map(get, warm))
     failed = [r for r in results if r[1] != 200]

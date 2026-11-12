@@ -1,3 +1,4 @@
+import wake from "../data/wake.json";
 /* Full-screen menu: staggered links, focus trap, Esc to close, focus returns to the menu button.
    It also wakes the science servers once per visit, so the console is warm by the time a judge enters it. */
 
@@ -89,7 +90,12 @@ export function initStatus() {
       clearTimeout(timer);
     }
   };
-  const start = () => probe(0);
+  const start = () => {
+    // Wake every backend service now, so it is up (about a minute) by the time a visitor opens the console.
+    // The static demo has no backend to wake.
+    if (!import.meta.env.VITE_DEMO_PACK) for (const url of wake.urls) fetch(url, { mode: "no-cors", cache: "no-store" }).catch(() => {});
+    probe(0);
+  };
   if ("requestIdleCallback" in window) requestIdleCallback(start, { timeout: 2500 });
   else setTimeout(start, 1200);
 }

@@ -1,9 +1,9 @@
-"""Write frontend/vercel.json and render.yaml for the sharded split API (20 free 512 MB Render services).
+"""Write frontend/vercel.json and render.yaml for the sharded split API (20 free 512 MB Render services: core1-2, usgs1-2, terrain1-6, image1-6, marswalk1-6).
 
 Layout: 2 core services (the full app), 2 USGS snapshot services and SHARDS shards of 3 parts each
 (science/serve_part.py).
 The console sets a sticky nn_shard cookie (frontend/src/shard.js); each rewrite matches it, so one
-browser always reaches the same shard. Shards 1-3 use core-a and usgs-a, shards 4-6 core-b and usgs-b. Requests without a
+browser always reaches the same shard. Shards 1-3 use core1 and usgs1, shards 4-6 core2 and usgs2. Requests without a
 valid cookie fall through to shard 1.
 
   python tools/gen_vercel_rewrites.py          # writes frontend/vercel.json and render.yaml
@@ -21,17 +21,20 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "frontend" / "vercel.json"
 BLUEPRINT = ROOT / "render.yaml"
-BRANCH = "feature/mission-console-v4"
+BRANCH = "main"
+REPO = "https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus"
+# Render URLs per service name; Render adds a suffix when a name is taken, so the real URL is recorded here.
+HOSTS_FILE = ROOT / "tools" / "render_hosts.json"
+WAKE = ROOT / "frontend" / "landing" / "data" / "wake.json"
 CORE_BUILD = "pip install -r deploy/requirements-api.txt && (git lfs pull || true)"
 PART_BUILD = "pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero"
-PART_ENV = {"window": "terrain-window", "image": "terrain-image", "marswalk": "marswalk", "usgs": "usgs"}
+PART_ENV = {"terrain": "terrain-window", "image": "terrain-image", "marswalk": "marswalk"}
 USGS_BUILD = "pip install -r deploy/requirements-api.txt"
-PREFIX = "neuronexus-v4"
 SHARDS = 6
-CORES = ("a", "b")
+CORES = (1, 2)
 PART_PATHS = (
-    ("window", "/api/terrain/hires/window"),
-    ("window", "/api/terrain/sources"),
+    ("terrain", "/api/terrain/hires/window"),
+    ("terrain", "/api/terrain/sources"),
     ("image", "/api/terrain/hires/image"),
     ("marswalk", "/api/marswalk/:path*"),
 )
@@ -39,7 +42,12 @@ CORE_PATHS = ("/api", "/api/:path*", "/terrain/:path*")
 
 
 def host(name: str) -> str:
-    return f"https://{PREFIX}-{name}.onrender.com"
+    hosts = json.loads(HOSTS_FILE.read_text(encoding="utf-8")) if HOSTS_FILE.exists() else {}
+    return hosts.get(name, f"https://{name}.onrender.com")
+
+
+def health_url(name: str) -> str:
+    return host(name) + ("/api/health" if name.startswith("core") else "/health")
 
 
 def core_for(shard: int) -> str:
@@ -47,17 +55,17 @@ def core_for(shard: int) -> str:
 
 
 def service_names() -> list[str]:
-    names = [f"core-{c}" for c in CORES] + [f"usgs-{c}" for c in CORES]
-    for k in range(1, SHARDS + 1):
-        names += [f"s{k}-window", f"s{k}-image", f"s{k}-marswalk"]
+    names = [f"core{c}" for c in CORES] + [f"usgs{c}" for c in CORES]
+    for part in ("terrain", "image", "marswalk"):
+        names += [f"{part}{k}" for k in range(1, SHARDS + 1)]
     return names
 
 
 def _rules(shard: int, has: list | None) -> list[dict]:
     extra = {"has": has} if has else {}
-    rules = [{"source": src, "destination": host(f"s{shard}-{part}") + src, **extra} for part, src in PART_PATHS]
-    rules.append({"source": "/api/usgs/:path*", "destination": host(f"usgs-{core_for(shard)}") + "/api/usgs/:path*", **extra})
-    rules += [{"source": src, "destination": host(f"core-{core_for(shard)}") + src, **extra} for src in CORE_PATHS]
+    rules = [{"source": src, "destination": host(f"{part}{shard}") + src, **extra} for part, src in PART_PATHS]
+    rules.append({"source": "/api/usgs/:path*", "destination": host(f"usgs{core_for(shard)}") + "/api/usgs/:path*", **extra})
+    rules += [{"source": src, "destination": host(f"core{core_for(shard)}") + src, **extra} for src in CORE_PATHS]
     return rules
 
 
@@ -82,8 +90,8 @@ def render_blueprint() -> str:
              f"# Render Blueprint for the sharded split API: 2 cores, 2 USGS services, {SHARDS} shards x 3 parts (free, 512 MB).",
              "services:"]
     for name in service_names():
-        core, usgs = name.startswith("core-"), name.startswith("usgs-")
-        lines += ["  - type: web", f"    name: {PREFIX}-{name}", "    runtime: python", "    plan: free",
+        core, usgs = name.startswith("core"), name.startswith("usgs")
+        lines += ["  - type: web", f"    name: {name}", f"    repo: {REPO}", "    runtime: python", "    plan: free",
                   "    region: ohio", f"    branch: {BRANCH}", "    autoDeployTrigger: \"off\"",
                   f"    buildCommand: {json.dumps(CORE_BUILD if core else USGS_BUILD if usgs else PART_BUILD)}",
                   "    startCommand: " + json.dumps(
@@ -94,8 +102,13 @@ def render_blueprint() -> str:
         elif usgs:  # snapshots mostly wait on USGS servers, so two may run at once
             lines += ["      - key: NN_PART", "        value: usgs", "      - key: NN_HEAVY_CONCURRENCY", "        value: \"2\""]
         else:
-            lines += ["      - key: NN_PART", f"        value: {PART_ENV[name.split('-', 1)[1]]}"]
+            lines += ["      - key: NN_PART", f"        value: {PART_ENV[name.rstrip('0123456789')]}"]
     return "\n".join(lines) + "\n"
+
+
+def render_wake() -> str:
+    """Health URLs the landing page pings so the services wake while a visitor reads it."""
+    return json.dumps({"note": "Generated by tools/gen_vercel_rewrites.py", "urls": [health_url(n) for n in service_names()]}, indent=2) + "\n"
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -103,7 +116,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args(argv)
     if args.check:
-        stale = [p.relative_to(ROOT) for p, text in ((OUT, render()), (BLUEPRINT, render_blueprint()))
+        stale = [p.relative_to(ROOT) for p, text in ((OUT, render()), (BLUEPRINT, render_blueprint()), (WAKE, render_wake()))
                  if not p.exists() or p.read_text(encoding="utf-8") != text]
         if stale:
             print(f"stale: {stale}; run python tools/gen_vercel_rewrites.py", file=sys.stderr)
@@ -111,6 +124,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     OUT.write_text(render(), encoding="utf-8")
     BLUEPRINT.write_text(render_blueprint(), encoding="utf-8")
+    WAKE.write_text(render_wake(), encoding="utf-8")
     print(f"wrote {OUT.relative_to(ROOT)}: {len(build()['rewrites'])} rewrites; "
           f"{BLUEPRINT.relative_to(ROOT)}: {len(service_names())} services")
     return 0
