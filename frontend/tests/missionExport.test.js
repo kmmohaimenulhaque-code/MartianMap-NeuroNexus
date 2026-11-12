@@ -47,13 +47,28 @@ test("every CSV row has exactly the declared number of columns", () => {
     for (let i = 0; i < text.length; i += 1) {
       const c = text[i];
       if (quoted) {
-        if (c === '"' && text[i + 1] === '"') { field += '"'; i += 1; }
-        else if (c === '"') { quoted = false; }
-        else { field += c; }
-      } else if (c === '"') { quoted = true; }
-      else if (c === ",") { row.push(field); field = ""; }
-      else if (c === "\r" && text[i + 1] === "\n") { row.push(field); out.push(row); row = []; field = ""; i += 1; }
-      else { field += c; }
+        if (c === '"' && text[i + 1] === '"') {
+          field += '"';
+          i += 1;
+        } else if (c === '"') {
+          quoted = false;
+        } else {
+          field += c;
+        }
+      } else if (c === '"') {
+        quoted = true;
+      } else if (c === ",") {
+        row.push(field);
+        field = "";
+      } else if (c === "\r" && text[i + 1] === "\n") {
+        row.push(field);
+        out.push(row);
+        row = [];
+        field = "";
+        i += 1;
+      } else {
+        field += c;
+      }
     }
     row.push(field);
     out.push(row);
@@ -71,8 +86,22 @@ test("every CSV row has exactly the declared number of columns", () => {
 
 test("export is NOT limited to route waypoint analysis", () => {
   const types = new Set(rows.map((r) => r.record_type));
-  for (const expected of ["SELECTION", "ENVIRONMENT", "ROUTE", "ROUTE_CANDIDATES", "ORBITAL_TRACKING", "MISSION_CONSOLE", "PROVENANCE", "SAFE_HAVENS", "CUSTOM_PLACES", "MEDIA"]) {
-    assert.ok([...types].some((t) => t.startsWith(expected)), `missing record type ${expected}`);
+  for (const expected of [
+    "SELECTION",
+    "ENVIRONMENT",
+    "ROUTE",
+    "ROUTE_CANDIDATES",
+    "ORBITAL_TRACKING",
+    "MISSION_CONSOLE",
+    "PROVENANCE",
+    "SAFE_HAVENS",
+    "CUSTOM_PLACES",
+    "MEDIA",
+  ]) {
+    assert.ok(
+      [...types].some((t) => t.startsWith(expected)),
+      `missing record type ${expected}`,
+    );
   }
 });
 
@@ -81,10 +110,28 @@ test("EVERY thermal observation is exported, not only the nearest", () => {
   const ids = new Set(thermalRows.map((r) => r.record_id));
   assert.ok(ids.has("i99827002pbt"));
   assert.ok(ids.has("i12345002pbt"), "the second THEMIS observation must not be dropped");
-  for (const field of ["brightness_temperature_k", "brightness_temperature_c", "latitude_deg", "longitude_deg", "spatial_distance_km", "observation_start", "solar_longitude_deg", "local_solar_time_hours", "resolution_m", "status", "product_id"]) {
-    assert.ok(thermalRows.some((r) => r.field === field), `thermal field ${field} missing`);
+  for (const field of [
+    "brightness_temperature_k",
+    "brightness_temperature_c",
+    "latitude_deg",
+    "longitude_deg",
+    "spatial_distance_km",
+    "observation_start",
+    "solar_longitude_deg",
+    "local_solar_time_hours",
+    "resolution_m",
+    "status",
+    "product_id",
+  ]) {
+    assert.ok(
+      thermalRows.some((r) => r.field === field),
+      `thermal field ${field} missing`,
+    );
   }
-  assert.ok(thermalRows.some((r) => r.field === "evidence.score" && r.value === 18.5), "nested evidence object must be flattened");
+  assert.ok(
+    thermalRows.some((r) => r.field === "evidence.score" && r.value === 18.5),
+    "nested evidence object must be flattened",
+  );
 });
 
 test("atmospheric gases, percentages, status and provenance are exported", () => {
@@ -96,8 +143,18 @@ test("atmospheric gases, percentages, status and provenance are exported", () =>
 });
 
 test("site science, soil, minerals, water, bioavailability and vegetation are exported", () => {
-  for (const field of ["site_science.soil.value", "site_science.minerals.value", "site_science.water.value", "site_science.bioavailability.value", "site_science.vegetation.value", "site_science.notes"]) {
-    assert.ok(rows.some((r) => r.field === field), `${field} missing`);
+  for (const field of [
+    "site_science.soil.value",
+    "site_science.minerals.value",
+    "site_science.water.value",
+    "site_science.bioavailability.value",
+    "site_science.vegetation.value",
+    "site_science.notes",
+  ]) {
+    assert.ok(
+      rows.some((r) => r.field === field),
+      `${field} missing`,
+    );
   }
   assert.equal(findValue("site_science.minerals.value"), "NOT INGESTED");
 });
@@ -134,16 +191,40 @@ test("AI candidates export metrics, weights, method, uncertainties and provenanc
   const candidateRows = rows.filter((r) => r.record_type.includes("candidates"));
   const ids = new Set(candidateRows.map((r) => r.record_id));
   assert.ok(ids.has("cand-balanced") && ids.has("cand-low-eva"));
-  for (const field of ["objective_weights.eva", "generation_method", "algorithm_version", "pareto_label", "metrics.distance_km", "metrics.route_generation_time_ms", "ai_explanation", "provenance.terrain"]) {
-    assert.ok(candidateRows.some((r) => r.field === field), `candidate field ${field} missing`);
+  for (const field of [
+    "objective_weights.eva",
+    "generation_method",
+    "algorithm_version",
+    "pareto_label",
+    "metrics.distance_km",
+    "metrics.route_generation_time_ms",
+    "ai_explanation",
+    "provenance.terrain",
+  ]) {
+    assert.ok(
+      candidateRows.some((r) => r.field === field),
+      `candidate field ${field} missing`,
+    );
   }
   assert.ok(candidateRows.some((r) => r.field.startsWith("uncertainties[")));
 });
 
 test("orbital tracking records are exported with distances and uncertainty", () => {
   const trackingRows = rows.filter((r) => r.record_type.startsWith("ORBITAL_TRACKING"));
-  for (const field of ["distance_au", "distance_km", "distance_min_au", "distance_max_au", "relative_velocity_km_s", "time_sigma_raw", "tracking_status", "close_approach_tdb"]) {
-    assert.ok(trackingRows.some((r) => r.field === field), `tracking field ${field} missing`);
+  for (const field of [
+    "distance_au",
+    "distance_km",
+    "distance_min_au",
+    "distance_max_au",
+    "relative_velocity_km_s",
+    "time_sigma_raw",
+    "tracking_status",
+    "close_approach_tdb",
+  ]) {
+    assert.ok(
+      trackingRows.some((r) => r.field === field),
+      `tracking field ${field} missing`,
+    );
   }
 });
 
@@ -201,4 +282,41 @@ test("human-readable route CSV still works alongside the complete export", () =>
 
 test("filenames are stable and extension-correct", () => {
   assert.match(exportFilename("mission", "csv"), /^neuronexus-mission-\d{4}-\d{2}-\d{2}T[\d-]+\.csv$/);
+});
+
+test("route CSV includes segment and cumulative Haversine distances", () => {
+  const csv = routeToCsv({
+    id: "r",
+    name: "Equator hop",
+    coordinates: [
+      { latitude_deg: 0, longitude_deg: 0 },
+      { latitude_deg: 0, longitude_deg: 1 },
+      { latitude_deg: 0, longitude_deg: 2 },
+    ],
+  });
+  const lines = csv.slice(1).split("\r\n");
+  assert.ok(lines[0].includes("segment_km,cumulative_km"));
+  const oneDegree = (3396.0 * Math.PI) / 180;
+  const last = lines[3].split(",");
+  assert.ok(Math.abs(Number(last[7]) - 2 * oneDegree) < 1e-3);
+  assert.equal(last[3], "DESTINATION");
+  assert.equal(last[8], "NOT ANALYSED");
+});
+
+test("route CSV uses an AI candidate's full terrain-aware path when present", () => {
+  const csv = routeToCsv({
+    id: "cand-low-risk",
+    name: "Low risk",
+    coordinates: [
+      { latitude_deg: 0, longitude_deg: 0 },
+      { latitude_deg: 0, longitude_deg: 3 },
+    ],
+    path_coordinates: [
+      { latitude_deg: 0, longitude_deg: 0 },
+      { latitude_deg: 0.5, longitude_deg: 1 },
+      { latitude_deg: 0.2, longitude_deg: 2 },
+      { latitude_deg: 0, longitude_deg: 3 },
+    ],
+  });
+  assert.equal(csv.slice(1).split("\r\n").length, 5);
 });
