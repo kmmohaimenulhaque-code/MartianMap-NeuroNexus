@@ -17,6 +17,7 @@ import { initLens } from "./js/lens.js";
 import { renderCards } from "./js/features.js";
 import { createPlayer } from "./js/player.js";
 import { initFinale } from "./js/finale.js";
+import { initGlass, initIntro } from "./js/hero.js";
 
 const doc = document;
 doc.documentElement.classList.remove("no-js");
@@ -35,6 +36,7 @@ const player = createPlayer(doc.querySelector("[data-player]"), spec, { sizes, t
 renderCards(doc.querySelector("[data-cards]"), spec, { sizes, tokens, consolePath: site.consolePath, openPlayer: player.open });
 doc.querySelector("[data-play-reel]")?.addEventListener("click", (e) => player.openReel(e.currentTarget));
 
+initIntro();
 splitWords(doc);
 observeReveals(doc);
 initBrushes(doc);
@@ -46,3 +48,4 @@ initStatus();
 initTerms(doc, glossary);
 initLens(headline.hero);
 initFinale();
+initGlass();

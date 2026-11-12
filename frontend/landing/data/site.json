@@ -2,7 +2,6 @@
   "schema": 1,
   "note": "Links and names shown on the landing page. Confirm the challenge title against the official 2026 Space Apps challenge list before submission. blob/HEAD links follow the repository default branch: make the submission branch the default.",
   "consolePath": "/console/",
-  "tourPath": "/console/?tour=judge",
   "tutorialsPath": "/tutorials/",
   "challengeTitle": "Interplanetary Survival Guide: Martian Map",
   "challengeStatement": [

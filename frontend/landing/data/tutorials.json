@@ -2,172 +2,755 @@
   "schema": 1,
   "note": "Animated tutorials built from real console screenshots in assets/screenshots. Each step frames a region (focus: x, y, w, h as fractions of the image), optionally moves a cursor to a point and taps it, and shows a caption. {TOKENS} are filled from headline.json at runtime. Regenerate media with: python tools/build_landing_media.py",
   "media": {
-    "marswalk": { "src": "assets/screenshots/v3/05_marswalk_mode.png", "w": 1600 },
-    "storm": { "src": "assets/screenshots/v3/06_marswalk_storm_sol.png", "w": 1600 },
-    "thermal": { "src": "assets/screenshots/v3/03_thermal_sol_synced.png", "w": 1600 },
-    "wheel": { "src": "assets/screenshots/v3/02_radial_wheel_subwheel.png", "w": 1600 },
-    "layers": { "src": "assets/screenshots/v3/04_layers_and_legend.png", "w": 1600 },
-    "exports": { "src": "assets/screenshots/v3/08_command_index_exports.png", "w": 1600 },
-    "validation": { "src": "validation/reports/gale/20261020-4c5fb3e5/figures/v3_p90_ratio.png", "w": 832 },
-    "designer": { "src": "assets/screenshots/tour/15-ai-route-designer.png", "w": 1600 },
-    "compare": { "src": "assets/screenshots/v2/10-comparison-table-and-profile.png", "w": 1600 },
-    "projection": { "src": "assets/screenshots/v2/12-route-projection-3d.png", "w": 1600 },
-    "snapshot": { "src": "assets/screenshots/v2/08-multi-route-usgs-snapshot.png", "w": 1600 },
-    "intel": { "src": "assets/screenshots/v2/06-mars-intelligence-answer.png", "w": 1600 },
-    "phone": { "src": "assets/screenshots/v3/mobile-console-ios.png", "w": 780 },
-    "phonesol": { "src": "assets/screenshots/v3/mobile-sol-card.png", "w": 780 },
-    "phonedecision": { "src": "assets/screenshots/v3/mobile-marswalk-decision.png", "w": 780 },
-    "tablet": { "src": "assets/screenshots/v3/tablet-cockpit-ipad-air.png", "w": 1100 }
+    "marswalk": {
+      "src": "assets/screenshots/v3/05_marswalk_mode.png",
+      "w": 1600
+    },
+    "storm": {
+      "src": "assets/screenshots/v3/06_marswalk_storm_sol.png",
+      "w": 1600
+    },
+    "thermal": {
+      "src": "assets/screenshots/v3/03_thermal_sol_synced.png",
+      "w": 1600
+    },
+    "wheel": {
+      "src": "assets/screenshots/v3/02_radial_wheel_subwheel.png",
+      "w": 1600
+    },
+    "layers": {
+      "src": "assets/screenshots/v3/04_layers_and_legend.png",
+      "w": 1600
+    },
+    "exports": {
+      "src": "assets/screenshots/v3/08_command_index_exports.png",
+      "w": 1600
+    },
+    "validation": {
+      "src": "validation/reports/gale/20261020-4c5fb3e5/figures/v3_p90_ratio.png",
+      "w": 832
+    },
+    "designer": {
+      "src": "assets/screenshots/tour/15-ai-route-designer.png",
+      "w": 1600
+    },
+    "compare": {
+      "src": "assets/screenshots/v2/10-comparison-table-and-profile.png",
+      "w": 1600
+    },
+    "projection": {
+      "src": "assets/screenshots/v2/12-route-projection-3d.png",
+      "w": 1600
+    },
+    "snapshot": {
+      "src": "assets/screenshots/v3/usgs-route-snapshot.png",
+      "w": 1600
+    },
+    "intel": {
+      "src": "assets/screenshots/v2/06-mars-intelligence-answer.png",
+      "w": 1600
+    },
+    "phone": {
+      "src": "assets/screenshots/v3/mobile-console-ios.png",
+      "w": 780
+    },
+    "phonesol": {
+      "src": "assets/screenshots/v3/mobile-sol-card.png",
+      "w": 780
+    },
+    "phonedecision": {
+      "src": "assets/screenshots/v3/mobile-marswalk-decision.png",
+      "w": 780
+    },
+    "tablet": {
+      "src": "assets/screenshots/v3/tablet-cockpit-ipad-air.png",
+      "w": 1100
+    }
   },
   "tutorials": [
     {
       "id": "terrain-ladder",
       "title": "Terrain Resolution Ladder",
-      "tags": ["HiRISE", "CTX", "MOLA"],
+      "tags": [
+        "HiRISE",
+        "CTX",
+        "MOLA"
+      ],
       "summary": "The sharpest NASA terrain at every spot, and a switch that shows what the global map alone would miss.",
-      "glossary": ["ladder", "hirise", "mola"],
+      "glossary": [
+        "ladder",
+        "hirise",
+        "mola"
+      ],
       "steps": [
-        { "media": "marswalk", "focus": [0.005, 0.34, 0.165, 0.13], "caption": "The ladder picks the sharpest NASA terrain at each spot: HiRISE 1 m, CTX 20 m, then MOLA 463 m." },
-        { "media": "marswalk", "focus": [0.005, 0.455, 0.165, 0.045], "cursor": [0.138, 0.476], "caption": "Tap MOLA ONLY to see what the global map alone would show." },
-        { "media": "marswalk", "focus": [0.33, 0.13, 0.33, 0.58], "caption": "At 1 m the short, steep pitches along the walk become visible. At 463 m they average away." }
+        {
+          "media": "marswalk",
+          "focus": [
+            0.005,
+            0.34,
+            0.165,
+            0.13
+          ],
+          "caption": "The ladder picks the sharpest NASA terrain at each spot: HiRISE 1 m, CTX 20 m, then MOLA 463 m."
+        },
+        {
+          "media": "marswalk",
+          "focus": [
+            0.005,
+            0.455,
+            0.165,
+            0.045
+          ],
+          "cursor": [
+            0.138,
+            0.476
+          ],
+          "caption": "Tap MOLA ONLY to see what the global map alone would show."
+        },
+        {
+          "media": "marswalk",
+          "focus": [
+            0.33,
+            0.13,
+            0.33,
+            0.58
+          ],
+          "caption": "At 1 m the short, steep pitches along the walk become visible. At 463 m they average away."
+        }
       ]
     },
     {
       "id": "marswalk",
       "title": "MARSWALK EVA Planner",
-      "tags": ["EVA", "Turnaround", "Profile"],
+      "tags": [
+        "EVA",
+        "Turnaround",
+        "Profile"
+      ],
       "summary": "Plan an astronaut's walk from Curiosity's position, with a turnaround point and a walk-back margin.",
-      "glossary": ["eva", "pnr", "walk-back-margin"],
+      "glossary": [
+        "eva",
+        "pnr",
+        "walk-back-margin"
+      ],
       "steps": [
-        { "media": "marswalk", "focus": [0.005, 0.28, 0.07, 0.05], "cursor": [0.021, 0.321], "caption": "Choose a 4-hour EVA that starts from Curiosity's latest position, the stand-in habitat." },
-        { "media": "marswalk", "focus": [0.33, 0.13, 0.33, 0.58], "cursor": [0.495, 0.42], "caption": "Tap a target. The corridor planner draws the walk over 1 m terrain." },
-        { "media": "marswalk", "focus": [0.82, 0.69, 0.175, 0.15], "caption": "The decision card shows the walk-back margin and the turnaround point within your time budget." },
-        { "media": "marswalk", "focus": [0.175, 0.765, 0.64, 0.18], "caption": "The profile tracks elevation, slope and cumulative EVA time along the route." }
+        {
+          "media": "marswalk",
+          "focus": [
+            0.005,
+            0.28,
+            0.07,
+            0.05
+          ],
+          "cursor": [
+            0.021,
+            0.321
+          ],
+          "caption": "Choose a 4-hour EVA that starts from Curiosity's latest position, the stand-in habitat."
+        },
+        {
+          "media": "marswalk",
+          "focus": [
+            0.33,
+            0.13,
+            0.33,
+            0.58
+          ],
+          "cursor": [
+            0.495,
+            0.42
+          ],
+          "caption": "Tap a target. The corridor planner draws the walk over 1 m terrain."
+        },
+        {
+          "media": "marswalk",
+          "focus": [
+            0.82,
+            0.69,
+            0.175,
+            0.15
+          ],
+          "caption": "The decision card shows the walk-back margin and the turnaround point within your time budget."
+        },
+        {
+          "media": "marswalk",
+          "focus": [
+            0.175,
+            0.765,
+            0.64,
+            0.18
+          ],
+          "caption": "The profile tracks elevation, slope and cumulative EVA time along the route."
+        }
       ]
     },
     {
       "id": "active-sol",
       "title": "Active Sol and the Dust Storm",
-      "tags": ["Sol", "Dust", "Decision"],
+      "tags": [
+        "Sol",
+        "Dust",
+        "Decision"
+      ],
       "summary": "One slider moves time. The same walk changes its decision inside the 2018 global dust storm.",
-      "glossary": ["sol", "tau", "storm-2018"],
+      "glossary": [
+        "sol",
+        "tau",
+        "storm-2018"
+      ],
       "steps": [
-        { "media": "marswalk", "focus": [0.36, 0.035, 0.21, 0.05], "cursor": [0.437, 0.055], "caption": "The active sol sets the season. At sol 100 the modeled dust is light." },
-        { "media": "marswalk", "focus": [0.82, 0.19, 0.175, 0.08], "caption": "Dust opacity of 0.31 stays within the planning limit." },
-        { "media": "storm", "focus": [0.36, 0.035, 0.21, 0.05], "cursor": [0.46, 0.055], "caption": "Slide to sol 400, inside the 2018 global dust storm." },
-        { "media": "storm", "focus": [0.82, 0.19, 0.175, 0.09], "caption": "Opacity 4.62 now exceeds its planning limit. Same walk, different sol, different decision." }
+        {
+          "media": "marswalk",
+          "focus": [
+            0.36,
+            0.035,
+            0.21,
+            0.05
+          ],
+          "cursor": [
+            0.437,
+            0.055
+          ],
+          "caption": "The active sol sets the season. At sol 100 the modeled dust is light."
+        },
+        {
+          "media": "marswalk",
+          "focus": [
+            0.82,
+            0.19,
+            0.175,
+            0.08
+          ],
+          "caption": "Dust opacity of 0.31 stays within the planning limit."
+        },
+        {
+          "media": "storm",
+          "focus": [
+            0.36,
+            0.035,
+            0.21,
+            0.05
+          ],
+          "cursor": [
+            0.46,
+            0.055
+          ],
+          "caption": "Slide to sol 400, inside the 2018 global dust storm."
+        },
+        {
+          "media": "storm",
+          "focus": [
+            0.82,
+            0.19,
+            0.175,
+            0.09
+          ],
+          "caption": "Opacity 4.62 now exceeds its planning limit. Same walk, different sol, different decision."
+        }
       ]
     },
     {
       "id": "validation",
       "title": "Rover Ground-Truth Validation",
-      "tags": ["Curiosity", "Perseverance", "Proof"],
+      "tags": [
+        "Curiosity",
+        "Perseverance",
+        "Proof"
+      ],
       "summary": "The map is checked against the tilt that NASA's rovers actually recorded on Mars.",
-      "glossary": ["ground-truth", "p90-ratio", "imu-tilt"],
+      "glossary": [
+        "ground-truth",
+        "p90-ratio",
+        "imu-tilt"
+      ],
       "steps": [
-        { "media": "validation", "focus": [0.86, 0.06, 0.13, 0.24], "caption": "With MOLA at 463 m, Curiosity's steepest tilts were {GALE_MOLA} times steeper than the map showed." },
-        { "media": "validation", "focus": [0.08, 0.6, 0.34, 0.2], "caption": "With HiRISE at 3 m the ratio is {GALE_HIRISE}. The map now matches the steep ground the rover felt." },
-        { "media": "validation", "focus": [0.06, 0.06, 0.9, 0.82], "caption": "Same code at Jezero, no retuning: {JEZERO_MOLA} with MOLA, {JEZERO_HIRISE} with HiRISE." }
+        {
+          "media": "validation",
+          "focus": [
+            0.86,
+            0.06,
+            0.13,
+            0.24
+          ],
+          "caption": "With MOLA at 463 m, Curiosity's steepest tilts were {GALE_MOLA} times steeper than the map showed."
+        },
+        {
+          "media": "validation",
+          "focus": [
+            0.08,
+            0.6,
+            0.34,
+            0.2
+          ],
+          "caption": "With HiRISE at 3 m the ratio is {GALE_HIRISE}. The map now matches the steep ground the rover felt."
+        },
+        {
+          "media": "validation",
+          "focus": [
+            0.06,
+            0.06,
+            0.9,
+            0.82
+          ],
+          "caption": "Same code at Jezero, no retuning: {JEZERO_MOLA} with MOLA, {JEZERO_HIRISE} with HiRISE."
+        }
       ]
     },
     {
       "id": "route-design",
       "title": "Route Design and Comparison",
-      "tags": ["Optimizer", "Compare", "Export"],
+      "tags": [
+        "Optimizer",
+        "Compare",
+        "Export"
+      ],
       "summary": "A deterministic multi-objective optimizer proposes routes. Save them, compare them, verify them.",
-      "glossary": ["candidate", "pareto"],
+      "glossary": [
+        "candidate",
+        "pareto"
+      ],
       "steps": [
-        { "media": "designer", "focus": [0.085, 0.43, 0.17, 0.14], "cursor": [0.2, 0.48], "caption": "Weight your goals: EVA time, terrain, science and operations." },
-        { "media": "designer", "focus": [0.27, 0.28, 0.65, 0.6], "cursor": [0.445, 0.556], "caption": "Six deterministic route candidates appear. Save any of them as a named, reproducible route." },
-        { "media": "compare", "focus": [0.075, 0.15, 0.6, 0.47], "caption": "Compare up to four routes with statistics sampled along the whole path." },
-        { "media": "compare", "focus": [0.075, 0.68, 0.85, 0.28], "caption": "Each route also gets its own USGS geology snapshot." }
+        {
+          "media": "designer",
+          "focus": [
+            0.085,
+            0.43,
+            0.17,
+            0.14
+          ],
+          "cursor": [
+            0.2,
+            0.48
+          ],
+          "caption": "Weight your goals: EVA time, terrain, science and operations."
+        },
+        {
+          "media": "designer",
+          "focus": [
+            0.27,
+            0.28,
+            0.65,
+            0.6
+          ],
+          "cursor": [
+            0.445,
+            0.556
+          ],
+          "caption": "Six deterministic route candidates appear. Save any of them as a named, reproducible route."
+        },
+        {
+          "media": "compare",
+          "focus": [
+            0.075,
+            0.15,
+            0.6,
+            0.47
+          ],
+          "caption": "Compare up to four routes with statistics sampled along the whole path."
+        },
+        {
+          "media": "compare",
+          "focus": [
+            0.075,
+            0.68,
+            0.85,
+            0.28
+          ],
+          "caption": "Each route also gets its own USGS geology snapshot."
+        }
       ]
     },
     {
       "id": "globe-3d",
       "title": "3D Mars and Route Projection",
-      "tags": ["3D", "ArcGIS", "Routes"],
+      "tags": [
+        "3D",
+        "ArcGIS",
+        "Routes"
+      ],
       "summary": "Fly over real Mars terrain and project your saved routes onto it.",
-      "glossary": ["mars-2000"],
+      "glossary": [
+        "mars-2000"
+      ],
       "steps": [
-        { "media": "projection", "focus": [0.0, 0.53, 0.77, 0.46], "caption": "Fly over Gale crater on an interactive 3D globe in Mars 2000 coordinates." },
-        { "media": "projection", "focus": [0.66, 0.48, 0.13, 0.035], "cursor": [0.72, 0.497], "caption": "Turn on Route Projection." },
-        { "media": "projection", "focus": [0.775, 0.53, 0.22, 0.3], "cursor": [0.79, 0.632], "caption": "Tick saved routes. They are drawn bold with their names, and the camera reframes." }
+        {
+          "media": "projection",
+          "focus": [
+            0.0,
+            0.53,
+            0.77,
+            0.46
+          ],
+          "caption": "Fly over Gale crater on an interactive 3D globe in Mars 2000 coordinates."
+        },
+        {
+          "media": "projection",
+          "focus": [
+            0.66,
+            0.48,
+            0.13,
+            0.035
+          ],
+          "cursor": [
+            0.72,
+            0.497
+          ],
+          "caption": "Turn on Route Projection."
+        },
+        {
+          "media": "projection",
+          "focus": [
+            0.775,
+            0.53,
+            0.22,
+            0.3
+          ],
+          "cursor": [
+            0.79,
+            0.632
+          ],
+          "caption": "Tick saved routes. They are drawn bold with their names, and the camera reframes."
+        }
       ]
     },
     {
       "id": "usgs-geology",
       "title": "USGS Geology and Route Snapshots",
-      "tags": ["SIM 3292", "Geology"],
-      "summary": "Every compared route on the USGS Geologic Map of Mars, with full provenance.",
-      "glossary": ["sim-3292"],
+      "tags": [
+        "SIM 3292",
+        "Geology"
+      ],
+      "summary": "Every compared route on the USGS Geologic Map of Mars, with the units it crosses and full provenance.",
+      "glossary": [
+        "sim-3292"
+      ],
       "steps": [
-        { "media": "snapshot", "focus": [0.085, 0.14, 0.635, 0.83], "caption": "Compared routes drawn together on the USGS Geologic Map of Mars, SIM 3292." },
-        { "media": "snapshot", "focus": [0.735, 0.32, 0.18, 0.13], "caption": "Each route keeps its own color in every view." },
-        { "media": "snapshot", "focus": [0.735, 0.46, 0.18, 0.24], "caption": "Provenance lists the map, projection and resolution behind the snapshot." }
+        {
+          "media": "snapshot",
+          "focus": [
+            0.137,
+            0.11,
+            0.55,
+            0.855
+          ],
+          "caption": "Compared routes drawn together on the USGS Geologic Map of Mars, SIM 3292."
+        },
+        {
+          "media": "snapshot",
+          "focus": [
+            0.705,
+            0.37,
+            0.157,
+            0.2
+          ],
+          "caption": "Each route lists the geologic units it crosses, by share of its length."
+        },
+        {
+          "media": "snapshot",
+          "focus": [
+            0.705,
+            0.12,
+            0.157,
+            0.225
+          ],
+          "caption": "Values this view does not compute read UNAVAILABLE instead of being guessed."
+        },
+        {
+          "media": "snapshot",
+          "focus": [
+            0.705,
+            0.585,
+            0.157,
+            0.31
+          ],
+          "cursor": [
+            0.733,
+            0.877
+          ],
+          "caption": "Provenance lists the map, projection and tile resolution behind the snapshot."
+        }
       ]
     },
     {
       "id": "thermal",
       "title": "THEMIS Thermal Evidence",
-      "tags": ["Mars Odyssey", "Season"],
+      "tags": [
+        "Mars Odyssey",
+        "Season"
+      ],
       "summary": "Historical surface temperatures by season and time of day, synced to the active sol.",
-      "glossary": ["themis", "brightness-temp", "ls"],
+      "glossary": [
+        "themis",
+        "brightness-temp",
+        "ls"
+      ],
       "steps": [
-        { "media": "thermal", "focus": [0.005, 0.37, 0.155, 0.37], "caption": "THEMIS on Mars Odyssey: historical surface brightness temperatures by season and local time." },
-        { "media": "thermal", "focus": [0.015, 0.465, 0.15, 0.06], "caption": "With no samples for this season, the card says so instead of filling the gap." },
-        { "media": "thermal", "focus": [0.835, 0.24, 0.16, 0.5], "caption": "The same active sol drives the modeled dust panel beside it." }
+        {
+          "media": "thermal",
+          "focus": [
+            0.005,
+            0.37,
+            0.155,
+            0.37
+          ],
+          "caption": "THEMIS on Mars Odyssey: historical surface brightness temperatures by season and local time."
+        },
+        {
+          "media": "thermal",
+          "focus": [
+            0.015,
+            0.465,
+            0.15,
+            0.06
+          ],
+          "caption": "With no samples for this season, the card says so instead of filling the gap."
+        },
+        {
+          "media": "thermal",
+          "focus": [
+            0.835,
+            0.24,
+            0.16,
+            0.5
+          ],
+          "caption": "The same active sol drives the modeled dust panel beside it."
+        }
       ]
     },
     {
       "id": "mars-intelligence",
       "title": "Mars Intelligence",
-      "tags": ["Assistant", "Sources"],
+      "tags": [
+        "Assistant",
+        "Sources"
+      ],
       "summary": "An assistant that answers from project data through tool calls, and labels every answer.",
-      "glossary": ["mars-intelligence", "tool-call"],
+      "glossary": [
+        "mars-intelligence",
+        "tool-call"
+      ],
       "steps": [
-        { "media": "intel", "focus": [0.28, 0.15, 0.44, 0.05], "caption": "Ask about this mission, Mars history or how to use the console." },
-        { "media": "intel", "focus": [0.28, 0.24, 0.44, 0.46], "caption": "Answers come from tool calls into project data, not guesses." },
-        { "media": "intel", "focus": [0.28, 0.7, 0.44, 0.18], "caption": "Every answer lists its sources and is labeled AI interpretation." }
+        {
+          "media": "intel",
+          "focus": [
+            0.28,
+            0.15,
+            0.44,
+            0.05
+          ],
+          "caption": "Ask about this mission, Mars history or how to use the console."
+        },
+        {
+          "media": "intel",
+          "focus": [
+            0.28,
+            0.24,
+            0.44,
+            0.46
+          ],
+          "caption": "Answers come from tool calls into project data, not guesses."
+        },
+        {
+          "media": "intel",
+          "focus": [
+            0.28,
+            0.7,
+            0.44,
+            0.18
+          ],
+          "caption": "Every answer lists its sources and is labeled AI interpretation."
+        }
       ]
     },
     {
       "id": "sources-exports",
       "title": "Sources, Layers and Exports",
-      "tags": ["Ledger", "GeoJSON", "CSV"],
+      "tags": [
+        "Ledger",
+        "GeoJSON",
+        "CSV"
+      ],
       "summary": "Every layer names its source, and every result exports with its provenance.",
-      "glossary": ["source-tag"],
+      "glossary": [
+        "source-tag"
+      ],
       "steps": [
-        { "media": "layers", "focus": [0.3, 0.22, 0.2, 0.39], "cursor": [0.315, 0.268], "caption": "Layers are grouped by topic, and every layer names its source." },
-        { "media": "layers", "focus": [0.165, 0.44, 0.14, 0.3], "caption": "The legend shows keys only for the layers you turned on." },
-        { "media": "exports", "focus": [0.715, 0.1, 0.27, 0.05], "cursor": [0.8, 0.125], "caption": "Search the Command Index for export." },
-        { "media": "exports", "focus": [0.715, 0.48, 0.27, 0.35], "cursor": [0.79, 0.572], "caption": "Export the EVA brief, the GeoJSON route, the CSV profile or the validation report." }
+        {
+          "media": "layers",
+          "focus": [
+            0.3,
+            0.22,
+            0.2,
+            0.39
+          ],
+          "cursor": [
+            0.315,
+            0.268
+          ],
+          "caption": "Layers are grouped by topic, and every layer names its source."
+        },
+        {
+          "media": "layers",
+          "focus": [
+            0.165,
+            0.44,
+            0.14,
+            0.3
+          ],
+          "caption": "The legend shows keys only for the layers you turned on."
+        },
+        {
+          "media": "exports",
+          "focus": [
+            0.715,
+            0.1,
+            0.27,
+            0.05
+          ],
+          "cursor": [
+            0.8,
+            0.125
+          ],
+          "caption": "Search the Command Index for export."
+        },
+        {
+          "media": "exports",
+          "focus": [
+            0.715,
+            0.48,
+            0.27,
+            0.35
+          ],
+          "cursor": [
+            0.79,
+            0.572
+          ],
+          "caption": "Export the EVA brief, the GeoJSON route, the CSV profile or the validation report."
+        }
       ]
     },
     {
       "id": "field-mode",
       "title": "Field Mode on Phones and Tablets",
-      "tags": ["iPhone", "Android", "iPad"],
+      "tags": [
+        "iPhone",
+        "Android",
+        "iPad"
+      ],
       "summary": "The same console, rebuilt for one thumb on a phone and a full cockpit on a tablet.",
       "glossary": [],
       "steps": [
-        { "media": "phone", "focus": [0, 0, 1, 0.09], "caption": "On phones a compact two-row header keeps the map on most of the screen." },
-        { "media": "phone", "focus": [0, 0.94, 1, 0.06], "cursor": [0.3, 0.975], "caption": "The dock opens each panel as a bottom sheet." },
-        { "media": "phonesol", "focus": [0, 0.12, 1, 0.2], "cursor": [0.28, 0.205], "caption": "The SOL card scrubs the active sol with one thumb." },
-        { "media": "phonedecision", "focus": [0.02, 0.28, 0.96, 0.2], "caption": "The EVA decision stays readable on a phone." },
-        { "media": "tablet", "focus": [0, 0, 1, 1], "caption": "Tablets get the full three-column cockpit." }
+        {
+          "media": "phone",
+          "focus": [
+            0,
+            0,
+            1,
+            0.09
+          ],
+          "caption": "On phones a compact two-row header keeps the map on most of the screen."
+        },
+        {
+          "media": "phone",
+          "focus": [
+            0,
+            0.94,
+            1,
+            0.06
+          ],
+          "cursor": [
+            0.3,
+            0.975
+          ],
+          "caption": "The dock opens each panel as a bottom sheet."
+        },
+        {
+          "media": "phonesol",
+          "focus": [
+            0,
+            0.12,
+            1,
+            0.2
+          ],
+          "cursor": [
+            0.28,
+            0.205
+          ],
+          "caption": "The SOL card scrubs the active sol with one thumb."
+        },
+        {
+          "media": "phonedecision",
+          "focus": [
+            0.02,
+            0.28,
+            0.96,
+            0.2
+          ],
+          "caption": "The EVA decision stays readable on a phone."
+        },
+        {
+          "media": "tablet",
+          "focus": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "caption": "Tablets get the full three-column cockpit."
+        }
       ]
     },
     {
       "id": "command-wheel",
       "title": "Command Index and Radial Wheel",
-      "tags": ["Search", "Shortcuts"],
+      "tags": [
+        "Search",
+        "Shortcuts"
+      ],
       "summary": "Every console action, one search or one gesture away.",
-      "glossary": ["command-index", "radial-wheel"],
+      "glossary": [
+        "command-index",
+        "radial-wheel"
+      ],
       "steps": [
-        { "media": "wheel", "focus": [0.37, 0.33, 0.24, 0.43], "cursor": [0.5, 0.51], "caption": "Double right-click, press W or long-press to open the Radial Feature Wheel." },
-        { "media": "wheel", "focus": [0.43, 0.6, 0.18, 0.17], "cursor": [0.535, 0.72], "caption": "Hover a sector to expand its features, then pick one." },
-        { "media": "exports", "focus": [0.71, 0.0, 0.29, 0.85], "caption": "Ctrl or Cmd plus K opens the Command Index: every console action, searchable." }
+        {
+          "media": "wheel",
+          "focus": [
+            0.37,
+            0.33,
+            0.24,
+            0.43
+          ],
+          "cursor": [
+            0.5,
+            0.51
+          ],
+          "caption": "Double right-click, press W or long-press to open the Radial Feature Wheel."
+        },
+        {
+          "media": "wheel",
+          "focus": [
+            0.43,
+            0.6,
+            0.18,
+            0.17
+          ],
+          "cursor": [
+            0.535,
+            0.72
+          ],
+          "caption": "Hover a sector to expand its features, then pick one."
+        },
+        {
+          "media": "exports",
+          "focus": [
+            0.71,
+            0.0,
+            0.29,
+            0.85
+          ],
+          "caption": "Ctrl or Cmd plus K opens the Command Index: every console action, searchable."
+        }
       ]
     }
   ]

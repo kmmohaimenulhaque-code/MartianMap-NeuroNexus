@@ -51,7 +51,6 @@
         </div>
         <nav class="lp-menu__primary" aria-label="Console">
           <a href="/console/" data-console-link><span>Enter the Mission Console</span><svg class="lp-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" /></svg></a>
-          <a href="/console/?tour=judge"><span>Take the 90-Second Tour</span><svg class="lp-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" /></svg></a>
           <a href="/tutorials/"><span>All Tutorials</span><svg class="lp-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" /></svg></a>
           <a href="#features" data-menu-close-link><span>Core Features</span><svg class="lp-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" /></svg></a>
         </nav>
@@ -74,7 +73,9 @@
     <main id="main">
       <!-- 1. Hero -->
       <section class="lp-hero" id="top" aria-labelledby="hero-title">
-        <h1 class="lp-hero__intro" id="hero-title" data-reveal>
+        <div class="lp-hero__backdrop" aria-hidden="true"></div>
+        <span class="lp-glass" aria-hidden="true" data-glass></span>
+        <h1 class="lp-hero__intro" id="hero-title" data-intro>
           NeuroNexus turns NASA's sharpest Mars terrain into walking plans for future astronauts, and shows how sure every number is.
         </h1>
         <figure class="lp-lens" data-lens>
@@ -212,7 +213,7 @@
         <p class="lp-eyebrow" data-reveal><span class="lp-dot" aria-hidden="true"></span>Team</p>
         <h2 class="lp-display lp-display--md" id="tm-title" data-split>Team NeuroNexus</h2>
         <ul class="lp-team__list" data-team></ul>
-        <p class="lp-body" data-reveal>Six members, one console. <a data-link="teamPageUrl" href="#" rel="noopener">Meet the team on Space Apps</a></p>
+        <p class="lp-body" data-reveal><a data-link="teamPageUrl" href="#" rel="noopener">Meet the team on Space Apps</a></p>
       </section>
 
       <!-- 11. Finale -->
@@ -225,7 +226,7 @@
           <h2 class="lp-display lp-display--dark" id="fn-title" data-split>Step Onto Mars.</h2>
           <div class="lp-finale__cta">
             <a class="lp-pill lp-pill--cyan lp-magnetic" href="/console/" data-console-link><span class="lp-dot" aria-hidden="true"></span>Enter the Mission Console</a>
-            <a class="lp-pill lp-pill--ghost lp-magnetic" href="/console/?tour=judge"><span class="lp-dot" aria-hidden="true"></span>Take the 90-Second Tour</a>
+            <a class="lp-pill lp-pill--ghost lp-magnetic" href="/tutorials/"><span class="lp-dot" aria-hidden="true"></span>Watch the Tutorials</a>
           </div>
         </div>
         <div class="lp-ticker lp-ticker--dark" aria-hidden="true"><div class="lp-ticker__track" data-continue></div></div>
