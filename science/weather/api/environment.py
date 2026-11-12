@@ -3,6 +3,7 @@ from __future__ import annotations
 from fastapi import FastAPI, Query
 
 from science.weather.models.mars_environment import MarsEnvironmentEngine
+from science.weather.models.environment_assessment import assess_environment
 
 
 app = FastAPI(
@@ -20,9 +21,13 @@ def environment(
     sol: int = Query(..., ge=1),
     solar_longitude: float | None = Query(None, ge=0, le=360),
 ):
-    return engine.get_environment(
+    state = engine.get_environment(
         latitude=latitude,
         longitude=longitude,
         sol=sol,
         solar_longitude=solar_longitude,
     )
+
+    state["assessment"] = assess_environment(state)
+
+    return state
