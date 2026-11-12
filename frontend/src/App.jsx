@@ -3004,7 +3004,7 @@ export default function App() {
         atmosphere: {
           source: "NASA Ames Mars GCM MY34 dust scenario",
           status: "MODELED",
-          url: "https://www.nasa.gov/ames/mars-climate-modeling-center/",
+          url: "https://www.nasa.gov/space-science-and-astrobiology-at-ames/division-overview/planetary-systems-branch-overview-stt/mars-climate-modeling-center-mcmc/",
         },
         rover_media: { source: "NASA Image and Video Library", status: "NASA OBSERVED", url: "https://images.nasa.gov/" },
         orbital: { source: "NASA/JPL SSD Close-Approach Data API", status: "NASA OBSERVED", url: "https://ssd-api.jpl.nasa.gov/doc/cad.html" },
