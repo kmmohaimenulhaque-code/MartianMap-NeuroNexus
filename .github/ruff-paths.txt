@@ -5,3 +5,13 @@ tests/test_mola_store.py
 science/serve.py
 tests/test_serve.py
 tools/deploy_space.py
+science/settings.py
+science/hires
+science/marswalk
+tests/test_hires_palette.py
+science/ops
+tests/hires_fixtures.py
+tests/test_hires_grid.py
+tests/test_derivatives_multi.py
+tests/test_hires_datum.py
+tests/test_hires_selector.py

@@ -21,6 +21,33 @@
   --nn-series-3: #8cf0b1;
   --nn-series-4: #c99bff;
   --nn-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Marswalk: walkability classes (EXCEED is also hatched, never color alone). */
+  --nn-walk-within: var(--nn-green);
+  --nn-walk-review: var(--nn-amber);
+  --nn-walk-exceed: var(--nn-red);
+  --nn-walk-unavail: var(--nn-text-dim);
+  /* Continuous walkability ramp: cyan -> amber -> red with falling luminance (reads in grayscale). */
+  --nn-walk-ramp-hi: #75e6ff;
+  --nn-walk-ramp-mid: #d99a3d;
+  --nn-walk-ramp-lo: #b8324a;
+  --nn-walk-hatch: #2a0710;
+  /* Terrain ladder rungs. */
+  --nn-src-hirise: var(--nn-series-4);
+  --nn-src-ctx: var(--nn-series-2);
+  --nn-src-mola: #6f858d;
+  /* Rover traverses. */
+  --nn-rover-msl: #ffd166;
+  --nn-rover-m2020: #ff8fa3;
+  /* Source tags: one color per evidence class (the class is always written as text too). */
+  --nn-tag-observed: #8cf0b1;
+  --nn-tag-reference: #75e6ff;
+  --nn-tag-modeled: #ffc46b;
+  --nn-tag-derived: #c99bff;
+  --nn-tag-simulated: #ff9f68;
+  --nn-tag-ai: #9fb7ff;
+  --nn-tag-unavailable: #71848c;
+  --nn-tag-unregistered: #ff647c;
 }
 
 @keyframes nn-pulse {

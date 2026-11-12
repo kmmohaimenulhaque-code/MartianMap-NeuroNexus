@@ -612,3 +612,11 @@ app.include_router(orbital_router)
 app.include_router(ai_router)
 app.include_router(mars3d_router)
 app.include_router(dust_router)
+
+
+# Marswalk subsystems (meter-scale terrain ladder and planning). Errors use {error, reason, hint}.
+from science.hires.api import router as hires_router  # noqa: E402
+from science.ops.errors import install as install_error_handlers  # noqa: E402
+
+install_error_handlers(app)
+app.include_router(hires_router)
