@@ -6,7 +6,7 @@ import NeonLineChart from "../ui/NeonLineChart";
 import { ProvenanceTag } from "../ui/StatTriplet";
 import { fmt } from "../ui/format";
 import { snapshotMarkScale } from "../utils/snapshotScale";
-import { COMPARISON_METRICS, comparisonToCsv, rankMetric, readSnapshot, routeColour, routeStats, writeSnapshot } from "../utils/savedRoutes";
+import { COMPARISON_METRICS, comparisonToCsv, rankMetric, readSnapshot, routeColour, routeStats, snapshotCacheKey, writeSnapshot } from "../utils/savedRoutes";
 import Icon from "../ui/Icon";
 import { provenance, provenanceCsvHeader } from "../exports/exporters";
 import { useSol } from "../state/solStore";
@@ -72,7 +72,7 @@ function useRouteSnapshots(routes) {
     (async () => {
       for (const route of routes) {
         if (cancelled) return;
-        const cacheKey = `route:${route.geometryHash}`;
+        const cacheKey = snapshotCacheKey("route", route.geometryHash);
         setState((s) => (s[route.id]?.snapshot ? s : { ...s, [route.id]: { loading: true } }));
         let snapshot = await readSnapshot(cacheKey);
         let error = "";
@@ -116,7 +116,7 @@ export default function RouteComparisonWorkspace({ routes, compareRouteIds, onTo
     const key = combinedKey;
     setCombined({ key, loading: true, snapshot: null, error: "" });
     try {
-      const cacheKey = `combined:${selected.map((r) => r.geometryHash).join("+")}`;
+      const cacheKey = snapshotCacheKey("combined", selected.map((r) => r.geometryHash).join("+"));
       let snapshot = await readSnapshot(cacheKey);
       if (!snapshot) {
         snapshot = await fetchUsgsMultiRouteSnapshot(selected);
