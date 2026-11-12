@@ -30,6 +30,46 @@ What it does
 * USGS route snapshot + exports: route visualisation against USGS SIM 3292 geology plus JSON/CSV exports.
 * Mars Intelligence: Google Gemini interprets structured NeuroNexus results and explains trade-offs; Gemini does not generate route geometry or alter deterministic numerical results.
 
+## Screenshots — the mission console in action
+
+The screenshots below show the Master-Ai interface, including Gale site context, historical thermal evidence, route comparison, and the interactive 3D workspace. Displayed values belong to the captured selection and configuration; historical observations, modelled scenarios, and derived planning aids are not live measurements or safety guarantees.
+
+### Site selection and synchronized maps
+
+![NeuroNexus mission console showing Gale site details, the coloured 2D Mars map, the synchronized USGS scientific map, and the 3D Mars view](assets/screenshots/mission-console.png)
+
+The main console brings USGS/IAU site identity and coordinates, applicable rover imagery, NASA Ames dust-model context, and NASA MOLA terrain metrics alongside the 2D, USGS geology, and 3D views. Gale and the Curiosity marker are visible in this example.
+
+### Historical THEMIS thermal evidence
+
+![Gale thermal panel showing nearest historical brightness temperature, minimum, maximum, mean, sample counts, search radius, observation years, and seasonal coverage](assets/screenshots/historical-thermal-context.png)
+
+The THEMIS panel keeps the nearest historical brightness temperature separate from the minimum, maximum, and mean shown directly beneath it in Kelvin and Celsius. Historical sample counts, the 50 km search radius, observation years, seasonal coverage, and evidence strength make the scope of the archive data explicit. These observations are not current Martian weather or exact-coordinate measurements.
+
+### Saved-route comparison
+
+![Saved Marswalk routes plotted together with comparison cards for distance, waypoints, slope, roughness, MOLA coverage, and elevation range](assets/screenshots/route-comparison.png)
+
+Colour-coded saved routes remain visible together while comparison cards show distance, waypoint counts, slope, roughness, MOLA coverage, elevation range, and review notes. The displayed routes illustrate comparison tools, not validated or recommended EVA plans.
+
+### Interactive 3D layers
+
+![Interactive 3D Mars globe with terrain, imagery, colourised MOLA elevation, USGS named features, rover markers, and layer controls](assets/screenshots/mars-3d-layers.png)
+
+The 3D layer panel groups terrain, imagery, colourised elevation, USGS/IAU named features, geology, and landing-site overlays. Observed and derived labels distinguish source data from NeuroNexus calculations, while rover markers and persistent feature labels help orient the view.
+
+### Map legend and rover context
+
+![3D Mars legend identifying named-feature colours, USGS geology and landing-site symbols, and Curiosity and Perseverance traverse layers](assets/screenshots/mars-3d-legend.png)
+
+The legend explains named-feature colours, geologic symbols, landing sites, and rover-traverse layers. It keeps the map symbology and provenance labels visible beside the interactive scene.
+
+### Potential exploration zones
+
+![Potential exploration-zone panel and 3D markers for documented study regions including Arcadia Planitia and Utopia Planitia](assets/screenshots/potential-exploration-zones.png)
+
+The exploration-zone view connects derived candidate areas to documented study-region context and terrain summaries, with controls to fly to a region. These zones are NeuroNexus planning aids—not official NASA zones, certified-safe locations, or confirmations of accessible resources or habitability.
+
 Scientific data and external sources
 
 NASA
