@@ -95,7 +95,7 @@ export default function MarsBriefingPanel() {
 
       const response =
         await fetch(
-          '/api/briefing/mars?limit=6',
+          '/api/briefing/mars?limit=8&days=30',
           {
             cache: 'no-store',
           },
@@ -302,7 +302,8 @@ export default function MarsBriefingPanel() {
                   >
                     <div className="briefing-card-meta">
                       <span>
-                        NASA MARS
+                        {(item.organisation ||
+                          'NASA').toUpperCase()}
                       </span>
 
                       <time>
@@ -312,19 +313,16 @@ export default function MarsBriefingPanel() {
                       </time>
                     </div>
 
-                    <button
-                      type="button"
+                    <a
                       className="briefing-card-title"
-                      onClick={() =>
-                        openUrl(
-                          item.url,
-                        )
-                      }
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
                     >
                       {
                         item.title
                       }
-                    </button>
+                    </a>
 
                     <p>
                       {
@@ -332,17 +330,15 @@ export default function MarsBriefingPanel() {
                       }
                     </p>
 
-                    <button
-                      type="button"
+                    <a
                       className="briefing-card-link"
-                      onClick={() =>
-                        openUrl(
-                          item.url,
-                        )
-                      }
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
                     >
-                      READ NASA ARTICLE ↗
-                    </button>
+                      READ ON {(item.source ||
+                        'NASA').toUpperCase()} ↗
+                    </a>
                   </article>
                 ),
               )}
@@ -353,9 +349,29 @@ export default function MarsBriefingPanel() {
             !error &&
             feed && (
             <p className="briefing-note">
-              Source: NASA Science
-              Mars Photojournal RSS.
-              Web reference feed only;
+              Latest Mars articles from NASA and
+              partner organisations, newest first,
+              published in the last{' '}
+              {feed.window_days ?? 30} days
+              {feed.window_widened
+                ? ' (window widened: fewer recent items)'
+                : ''}
+              . Sources:{' '}
+              {(feed.sources ?? [])
+                .filter((source) => source.status === 'ok')
+                .map((source, index, list) => (
+                  <span key={source.feed_url}>
+                    <a
+                      href={source.feed_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {source.name}
+                    </a>
+                    {index < list.length - 1 ? ', ' : ''}
+                  </span>
+                ))}
+              . Web reference feeds only;
               not spacecraft telemetry.
             </p>
           )}
