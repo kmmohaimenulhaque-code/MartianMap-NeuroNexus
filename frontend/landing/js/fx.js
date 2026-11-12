@@ -466,21 +466,10 @@ function stars(canvas) {
   });
 }
 
-/* AI disclosure: pointing at a model highlights every role it played. */
-function aiPanel(panel) {
-  if (!panel) return;
-  const set = (id) => panel.querySelectorAll("[data-ai]").forEach((b) => b.classList.toggle("is-lit", b.dataset.ai === id));
-  panel.addEventListener("pointerover", (e) => set(e.target.closest("[data-ai]")?.dataset.ai));
-  panel.addEventListener("focusin", (e) => set(e.target.closest("[data-ai]")?.dataset.ai));
-  panel.addEventListener("pointerleave", () => set(null));
-  panel.addEventListener("click", (e) => set(e.target.closest("[data-ai]")?.dataset.ai));
-}
-
 const FX = { streams, terrain: (c) => terrain(c), "terrain-sparks": (c) => terrain(c, { rings: false, sparks: 70 }), wave, network, stars };
 
 export function initFx(doc = document) {
   doc.querySelectorAll("canvas[data-fx]").forEach((c) => FX[c.dataset.fx]?.(c));
   tiltCards(doc.querySelector("[data-cards]"));
   dustStorm(doc);
-  aiPanel(doc.querySelector("[data-ai-panel]"));
 }
