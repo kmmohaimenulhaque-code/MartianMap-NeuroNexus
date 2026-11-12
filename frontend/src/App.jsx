@@ -7,7 +7,7 @@ import MarsBriefingPanel from './components/mars/MarsBriefingPanel'
 import RoverPhotosPanel from './components/mars/RoverPhotosPanel'
 import SiteSciencePanel from './components/mars/SiteSciencePanel'
 import MissionOpsPanel from './components/mission/MissionOpsPanel'
-import MissionOpsPanel from './components/mission/MissionOpsPanel'
+
 
 import {
   fetchEnvironmentByPlace,
