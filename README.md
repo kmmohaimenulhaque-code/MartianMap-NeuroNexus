@@ -46,11 +46,23 @@ The main console brings USGS/IAU site identity and coordinates, applicable rover
 
 The THEMIS panel keeps the nearest historical brightness temperature separate from the minimum, maximum, and mean shown directly beneath it in Kelvin and Celsius. Historical sample counts, the 50 km search radius, observation years, seasonal coverage, and evidence strength make the scope of the archive data explicit. These observations are not current Martian weather or exact-coordinate measurements.
 
+### AI Route Designer — deterministic candidates
+
+![AI Route Designer showing start and destination coordinates, mission-objective weights, EVA settings, and multiple terrain-aware route candidates](assets/screenshots/ai-route-design.png)
+
+The route-design workspace lets users set start and destination coordinates, adjust mission-objective weights, and configure EVA pace and ascent allowance. Candidate cards compare distance, estimated EVA duration, terrain burden, slope, risk proxies, data support, and uncertainties, with highlight and apply controls. Route geometry comes from the deterministic NASA MOLA-based engine, not the language model; unavailable science evidence remains explicitly labelled.
+
 ### Saved-route comparison
 
 ![Saved Marswalk routes plotted together with comparison cards for distance, waypoints, slope, roughness, MOLA coverage, and elevation range](assets/screenshots/route-comparison.png)
 
 Colour-coded saved routes remain visible together while comparison cards show distance, waypoint counts, slope, roughness, MOLA coverage, elevation range, and review notes. The displayed routes illustrate comparison tools, not validated or recommended EVA plans.
+
+### Mars Intelligence — tool-grounded interpretation
+
+![Mars Intelligence assistant discussing saved-route trade-offs while explicitly marking unavailable deterministic metrics and distinguishing project data from AI interpretation](assets/screenshots/mars-intelligence.png)
+
+Mars Intelligence uses structured mission context and application tools to explain evidence and route trade-offs. This captured response lists saved routes but marks their quantitative comparison metrics as unavailable, then outlines an evaluation framework rather than inventing measurements or rankings. AI interpretation is kept distinct from NASA observations and deterministic calculations.
 
 ### Interactive 3D layers
 
@@ -69,6 +81,12 @@ The legend explains named-feature colours, geologic symbols, landing sites, and 
 ![Potential exploration-zone panel and 3D markers for documented study regions including Arcadia Planitia and Utopia Planitia](assets/screenshots/potential-exploration-zones.png)
 
 The exploration-zone view connects derived candidate areas to documented study-region context and terrain summaries, with controls to fly to a region. These zones are NeuroNexus planning aids—not official NASA zones, certified-safe locations, or confirmations of accessible resources or habitability.
+
+### Field notes and mission checklist
+
+![Field Notes and Checklist workspace with a mission-objective text area, tickable mission actions, local-save information, and JSON, CSV, and print or PDF export controls](assets/screenshots/field-notes-checklist.png)
+
+The mission workspace keeps field notes and tickable checklist actions alongside the planning workflow. The captured empty state shows the 150-word note limit, checklist capacity, local persistence, and JSON, CSV, and print/PDF export controls. User-entered notes and actions are planning records, not scientific observations.
 
 Scientific data and external sources
 
