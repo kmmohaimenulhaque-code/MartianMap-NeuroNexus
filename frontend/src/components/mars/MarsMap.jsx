@@ -120,11 +120,22 @@ function MapFocus({ selectedFeature, selectedLocation }) {
     const at = selectedLocation ? pointPosition(selectedLocation) : null;
     if (at && OWN_PICK.get(map) === pickKey(at[0], at[1])) return;
     const zoom = Math.max(map.getZoom(), 1.6);
+    // A hidden map (phone USGS / 3D view, collapsed panel) has zero size: an animated fly-to divides by zero
+    // and throws "Invalid LatLng (NaN, NaN)". Jump without animation; the resize handler re-lays it out
+    // when the map is shown again.
+    const size = map.getSize();
+    if (!size.x || !size.y) {
+      map.setView(position, zoom, { animate: false });
+      return;
+    }
     FLYING.add(map);
     map.once("zoomend", () => FLYING.delete(map));
-    map.flyTo(position, zoom, {
-      duration: 0.8,
-    });
+    try {
+      map.flyTo(position, zoom, { duration: 0.8 });
+    } catch {
+      FLYING.delete(map);
+      map.setView(position, zoom, { animate: false });
+    }
   }, [selectedFeature, selectedLocation, map]);
 
   // Current center for the device tests: "lat,lon" in degrees, east 0-360.
