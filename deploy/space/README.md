@@ -14,7 +14,7 @@ short_description: Meter-scale Marswalk planner built on NASA mission data
 
 NASA Space Apps Challenge 2026 project by Team NeuroNexus.
 
-Source code and documentation: https://github.com/kmmohaimenulhaque-code/martian-map
+Source code and documentation: https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus
 (branch `feature/mission-console-v2`).
 
 This Space builds the repository at a pinned commit (see `Dockerfile`, `NN_REF`). MOLA terrain is

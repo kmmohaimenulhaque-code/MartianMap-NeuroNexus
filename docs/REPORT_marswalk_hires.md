@@ -110,7 +110,7 @@ Backend warm: traverse 0.015 s (was 15–20 s), conditions 0.003 s, places 1.26 
 
 ## 9. Live demo and exact commands
 
-Live static demo: https://mhaquehaque-neuronexus-marswalk.static.hf.space (Space page: https://huggingface.co/spaces/Mhaquehaque/neuronexus-marswalk). 3,394 real recorded responses, bannered as not live.
+Live static demo: https://mhaquehaque-martianmap-neuronexus.static.hf.space (Space page: https://huggingface.co/spaces/Mhaquehaque/MartianMap-NeuroNexus). 3,394 real recorded responses, bannered as not live.
 
 
 ```bash
@@ -121,5 +121,5 @@ python -m uvicorn science.serve:app --host 0.0.0.0 --port 7860   # console + API
 python -m pytest -q && (cd frontend && npm run lint && npm test)
 node frontend/e2e/screenshots.mjs                         # e2e + v3 screenshots (needs the server)
 python -m science.validation.run --site all && python tools/update_readme_validation.py
-node tools/record_demo_pack.mjs && python tools/deploy_static_space.py --space Mhaquehaque/neuronexus-marswalk
+node tools/record_demo_pack.mjs && python tools/deploy_static_space.py --space Mhaquehaque/MartianMap-NeuroNexus
 ```

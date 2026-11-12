@@ -16,8 +16,8 @@ The console must reach the API at `/api`. Every deployment option below does thi
 ## 0. Prerequisites (every option)
 
 ```bash
-git clone https://github.com/kmmohaimenulhaque-code/martian-map.git
-cd martian-map
+git clone https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus.git
+cd MartianMap-NeuroNexus
 git lfs install && git lfs pull        # real NASA MOLA terrain (~520 MB), not LFS pointers
 cp .env.example .env                    # then paste your Gemini key into .env
 ```

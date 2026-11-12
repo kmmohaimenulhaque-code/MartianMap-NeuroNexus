@@ -1,13 +1,13 @@
 # NeuroNexus - Martian Map · Setup Instructions
 
-NASA Space Apps Challenge 2026 · branch `landing-core-features2`
+NASA Space Apps Challenge 2026 · branch `main`
 
 ## Quick start (one server: landing page, console and API on port 7860)
 
 After the one-time setup in steps 1 to 4 below:
 
 ```bash
-git switch landing-core-features2
+git switch main
 git pull --ff-only
 git lfs pull
 cd frontend
@@ -20,7 +20,7 @@ python -m uvicorn science.serve:app --host 0.0.0.0 --port 7860
 One shot (same thing, one line):
 
 ```bash
-git switch landing-core-features2 && git pull --ff-only && git lfs pull && (cd frontend && npm ci && npm run build) && python -m uvicorn science.serve:app --host 0.0.0.0 --port 7860
+git switch main && git pull --ff-only && git lfs pull && (cd frontend && npm ci && npm run build) && python -m uvicorn science.serve:app --host 0.0.0.0 --port 7860
 ```
 
 Open **http://localhost:7860** (landing page) or **http://localhost:7860/console/** (mission console).
@@ -48,8 +48,8 @@ The frontend forwards `/api/*` to the backend on port 8002, so **start the backe
 ## 2. Get the code and the NASA data
 
 ```bash
-git clone --branch landing-core-features2 https://github.com/kmmohaimenulhaque-code/martian-map.git
-cd martian-map
+git clone --branch main https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus.git
+cd MartianMap-NeuroNexus
 
 git lfs install
 git lfs pull                               # NASA MOLA terrain tiles (~2.7 GB)
@@ -142,7 +142,7 @@ http://127.0.0.1:8002/ai/status (`"configured": true` once the key is set).
 ## 5. Start the frontend (terminal 2)
 
 ```bash
-cd martian-map
+cd MartianMap-NeuroNexus
 cd frontend
 npm install
 npm run dev
@@ -160,8 +160,8 @@ npm run preview    # serves the build at http://localhost:4173 (still uses the b
 **One server for everything** (landing page, console and API on one port; used for demos and Codespaces):
 
 ```bash
-cd martian-map
-git switch landing-core-features2
+cd MartianMap-NeuroNexus
+git switch main
 git pull --ff-only && git lfs pull              # latest code and the real MOLA terrain tiles
 cd frontend && npm ci && npm run build && cd ..
 python -m uvicorn science.serve:app --host 0.0.0.0 --port 7860

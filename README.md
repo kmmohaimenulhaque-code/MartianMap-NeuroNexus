@@ -1,6 +1,6 @@
 ## Team NeuroNexus - Interplanetary Survival Guide: Martian Map
 
-NASA Space Apps Challenge 2026 · branch `landing-core-features2`
+NASA Space Apps Challenge 2026 · branch `main`
 
 <p align="center">
   <img alt="NASA Space Apps 2026" src="https://img.shields.io/badge/NASA_Space_Apps-2026-0B3D91?style=flat-square">
@@ -34,7 +34,7 @@ Official judging cut: [30-second subtitled demo](https://www.youtube.com/watch?v
 Setup first: SETUP_INSTRUCTIONS.md contains the complete installation, NASA data, Gemini API-key, backend/frontend startup, troubleshooting, and demo instructions.
 
 Setup instructions:
-https://github.com/kmmohaimenulhaque-code/martian-map/blob/landing-core-features2/SETUP_INSTRUCTIONS.md
+https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus/blob/main/SETUP_INSTRUCTIONS.md
 
 ## OUR CHALLENGE:
 
@@ -85,7 +85,7 @@ Two ways to run it, and they are not the same thing:
 | Use it for | Any site, route or sol; the numbers judged as science | An instant, zero-setup preview |
 | Limits | Needs the setup in SETUP_INSTRUCTIONS.md | Only the recorded requests answer; the app shows a banner, and it is not live data |
 
-Static preview: **https://mhaquehaque-neuronexus-marswalk.static.hf.space**
+Static preview: **https://mhaquehaque-martianmap-neuronexus.static.hf.space**
 
 ## Mission Console v3: one active sol, a radial HUD, exports everywhere
 
@@ -615,7 +615,7 @@ Use the full SETUP_INSTRUCTIONS.md for installation, data acquisition, Gemini co
 
 The intended branch is:
 
-landing-core-features
+main
 
 Backend:
 ```
@@ -697,10 +697,10 @@ Runtime notes
 # Repository
 
 NASA Space Apps 2026 submission branch:
-https://github.com/kmmohaimenulhaque-code/martian-map/tree/landing-core-features
+https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus/tree/main
 
 # Source ledger:
-https://github.com/kmmohaimenulhaque-code/martian-map/blob/landing-core-features/data/manifests/updated_source_ledger.json
+https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus/blob/main/data/manifests/updated_source_ledger.json
 
 
 ## Project tour: the whole console in screenshots

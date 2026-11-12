@@ -5,7 +5,7 @@ demo is static: the production frontend built with VITE_DEMO_PACK=1 plus the dem
 tools/record_demo_pack.mjs (real backend responses, replayed by a service worker, bannered in the UI).
 
   PLAYWRIGHT_MODULE=... node tools/record_demo_pack.mjs          # -> build/demo-pack
-  python tools/deploy_static_space.py --space Mhaquehaque/neuronexus-marswalk
+  python tools/deploy_static_space.py --space Mhaquehaque/MartianMap-NeuroNexus
 
 Authentication comes from HF_TOKEN or an authenticating proxy; no token is written to disk.
 """
@@ -36,8 +36,8 @@ short_description: Marswalk planning on HiRISE/CTX/MOLA with NASA mission data
 
 # NeuroNexus · Interplanetary Survival Guide: Martian Map (static demo)
 
-NASA Space Apps Challenge 2026. Source: https://github.com/kmmohaimenulhaque-code/martian-map
-(branch `feature/mission-console-v2`, commit `{commit}`).
+NASA Space Apps Challenge 2026. Source: https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus
+(branch `main`, commit `{commit}`).
 
 This Space is the console's production build in **static demo mode**: a service worker replays
 {count:,} real API responses recorded on {recorded_at} from the live NeuroNexus backend (NASA PDS MOLA,

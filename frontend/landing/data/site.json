@@ -10,11 +10,11 @@
     "updates on current conditions",
     "the data necessary to make informed and scientifically meaningful decisions"
   ],
-  "repoUrl": "https://github.com/kmmohaimenulhaque-code/martian-map",
+  "repoUrl": "https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus",
   "teamPageUrl": "https://www.spaceappschallenge.org/2026/find-a-team/neuronexus1/",
   "demoVideoUrl": "https://www.youtube.com/watch?v=0MLtYKHewcA",
-  "staticDemoUrl": "https://mhaquehaque-neuronexus-marswalk.static.hf.space",
-  "validationDocUrl": "https://github.com/kmmohaimenulhaque-code/martian-map/blob/HEAD/docs/VALIDATION.md",
-  "dataDocUrl": "https://github.com/kmmohaimenulhaque-code/martian-map/blob/HEAD/docs/submission/NASA_DATA_USED.md",
+  "staticDemoUrl": "https://mhaquehaque-martianmap-neuronexus.static.hf.space",
+  "validationDocUrl": "https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus/blob/HEAD/docs/VALIDATION.md",
+  "dataDocUrl": "https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus/blob/HEAD/docs/submission/NASA_DATA_USED.md",
   "team": []
 }

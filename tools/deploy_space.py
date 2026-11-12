@@ -4,7 +4,7 @@ Uploads deploy/space/{Dockerfile,README.md} with NN_REF set to the commit to bui
 commit must already be pushed to GitHub. Authentication comes from the environment
 (HF_TOKEN) or an authenticating proxy; no token is ever written to disk.
 
-  python tools/deploy_space.py --space Mhaquehaque/neuronexus-marswalk --ref $(git rev-parse HEAD)
+  python tools/deploy_space.py --space Mhaquehaque/MartianMap-NeuroNexus --ref $(git rev-parse HEAD)
 """
 from __future__ import annotations
 
@@ -58,7 +58,7 @@ def commit(space: str, ref: str) -> str:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--space", default="Mhaquehaque/neuronexus-marswalk")
+    parser.add_argument("--space", default="Mhaquehaque/MartianMap-NeuroNexus")
     parser.add_argument("--ref", required=True, help="full git commit SHA already pushed to GitHub")
     args = parser.parse_args(argv)
     if not re.fullmatch(r"[0-9a-f]{40}", args.ref):

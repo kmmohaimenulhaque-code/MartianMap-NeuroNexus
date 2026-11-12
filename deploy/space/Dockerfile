@@ -1,7 +1,7 @@
 # NeuroNexus on a Hugging Face Docker Space (single container, port 7860).
 # The image is built from the public GitHub repository at a pinned commit; tools/deploy_space.py
 # rewrites NN_REF on every deploy so each Space build is reproducible.
-ARG NN_REPO=https://github.com/kmmohaimenulhaque-code/martian-map.git
+ARG NN_REPO=https://github.com/kmmohaimenulhaque-code/MartianMap-NeuroNexus.git
 ARG NN_REF=main
 
 FROM node:22-slim AS source

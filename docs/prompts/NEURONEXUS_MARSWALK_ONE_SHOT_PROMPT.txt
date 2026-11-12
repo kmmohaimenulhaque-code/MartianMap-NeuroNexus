@@ -2,7 +2,7 @@
 NEURONEXUS · INTERPLANETARY SURVIVAL GUIDE: MARTIAN MAP
 ONE-SHOT EXECUTION PROMPT: "MARSWALK: METER-SCALE, VALIDATED, TRACEABLE"
 NASA Space Apps Challenge 2026 · target: Global Finalist
-Repository: kmmohaimenulhaque-code/martian-map
+Repository: kmmohaimenulhaque-code/MartianMap-NeuroNexus
 Base branch: feature/mission-console-v2
 Prompt version: v2 (2026-10-20). Merges the v1 prompt, the team's edits (UI
 upgrades, metabolic model, hamburger manual), rule R12 (American English),
