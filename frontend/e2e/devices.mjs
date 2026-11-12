@@ -27,7 +27,7 @@ const check = (ok, message) => {
 // WebGL on any machine: ANGLE, GPU blocklist ignored (software rendering where there is no GPU).
 const browser = await chromium.launch({ args: ["--enable-webgl", "--ignore-gpu-blocklist", "--use-gl=angle", "--enable-unsafe-swiftshader"] });
 
-async function open(name, viewport, touch, dpr = touch ? 2 : 1) {
+async function open(name, viewport, touch, dpr = 2) { // 2x everywhere (iPhone passes 3): sharp README screenshots
   const context = await browser.newContext({ viewport, isMobile: touch && viewport.width < 768, hasTouch: touch, deviceScaleFactor: dpr });
   await context.route(/fontshare\.com/, async (route) => {
     const response = await route.fetch();
@@ -132,7 +132,7 @@ const cockpit = async (page, w, label) => {
     await page.waitForSelector(".map-panel-body .leaflet-control-zoom-in", { timeout: 60000 });
     await page.waitForTimeout(1500);
   }
-  check(errors.length === before, "desktop 1440: switching to MARSWALK mid-zoom raises no Leaflet error");
+  check(errors.length === before, `desktop 1440: switching to MARSWALK mid-zoom raises no Leaflet error${errors.length > before ? `: ${errors.slice(before).join(" | ")}` : ""}`);
 
   // Shared LAYERS: a layer turned on from the ArcGIS map's menu is on in the 2D map's menu too.
   await page.click('#panel-usgs-map [role="radio"]:first-child');

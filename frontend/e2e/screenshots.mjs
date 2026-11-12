@@ -23,7 +23,7 @@ const check = (ok, message) => {
 };
 
 const browser = await chromium.launch();
-const context = await browser.newContext({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
+const context = await browser.newContext({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 2 }); // 2x: README screenshots stay sharp on phones and retina screens
 // Some sandboxes strip CORS from the Fontshare CDN; re-serve the same bytes so Switzer renders.
 await context.route(/fontshare\.com/, async (route) => {
   const response = await route.fetch();
