@@ -142,25 +142,25 @@ The intended branch is:
 Master-Ai
 
 Backend:
-
+```
 python -m uvicorn science.weather.api.environment:app --host 127.0.0.1 --port 8002
-
+```
 Frontend:
-
+```
 cd frontend
 npm install
 npm run dev
-
+```
 Validation
 
 The repository contains tests covering AI behaviour, routing, USGS integration, orbital tracking, Mars 3D services, exports, and other mission subsystems.
 
 Run:
-
+```
 python -m pytest tests -q
 cd frontend && node --test "tests/*.test.js"
 npm run build
-
+```
 Runtime notes
 
 * The ArcGIS 3D experience loads only when opened and requires internet access to Esri’s public services.
