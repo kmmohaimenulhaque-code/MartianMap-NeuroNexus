@@ -117,6 +117,14 @@
     "qgmarswalk": {
       "src": "assets/screenshots/v3/landing-qg-marswalk.png",
       "w": 1600
+    },
+    "qgroute3b": {
+      "src": "assets/screenshots/v3/landing-qg-route3b.png",
+      "w": 1600
+    },
+    "qgglobe": {
+      "src": "assets/screenshots/v3/landing-qg-globe.png",
+      "w": 1600
     }
   },
   "tutorials": [
@@ -1105,7 +1113,7 @@
           0.3,
           0.26
         ],
-        "caption": "Route Design: set START and DESTINATION, press GENERATE ROUTES, then save the candidates.",
+        "caption": "Route Design: set START and DESTINATION, generate, save, APPLY a route and see it draped on the 3D globe.",
         "taps": [
           {
             "cursor": [
@@ -1140,7 +1148,7 @@
             ]
           },
           {
-            "media": "qgroute3",
+            "media": "qgroute3b",
             "focus": [
               0.29,
               0.12,
@@ -1150,6 +1158,41 @@
             "cursor": [
               0.371,
               0.228
+            ]
+          },
+          {
+            "media": "qgroute3b",
+            "focus": [
+              0.29,
+              0.12,
+              0.59,
+              0.85
+            ],
+            "cursor": [
+              0.395,
+              0.636
+            ]
+          },
+          {
+            "media": "qgglobe",
+            "focus": [
+              0.45,
+              0.0,
+              0.55,
+              0.3
+            ],
+            "cursor": [
+              0.5803,
+              0.0565
+            ]
+          },
+          {
+            "media": "qgglobe",
+            "focus": [
+              0.2,
+              0.3,
+              0.55,
+              0.55
             ]
           }
         ]
@@ -1200,7 +1243,21 @@
           1.0,
           1.0
         ],
-        "caption": "Every number carries its NASA source, checked against rover ground truth."
+        "caption": "Every number carries its NASA source, checked against rover ground truth.",
+        "taps": [
+          {
+            "cursor": [
+              0.8544,
+              0.2742
+            ]
+          },
+          {
+            "cursor": [
+              0.8544,
+              0.4774
+            ]
+          }
+        ]
       }
     ]
   }
