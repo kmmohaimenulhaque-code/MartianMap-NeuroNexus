@@ -1,6 +1,6 @@
 # NeuroNexus: Sources Researched and Used (MLA 9 Works Cited)
 
-NASA Space Apps Challenge 2026 · Repository: https://github.com/kmmohaimenulhaque-code/martian-map (branch Master-Ai)
+NASA Space Apps Challenge 2026 · Repository: https://github.com/kmmohaimenulhaque-code/martian-map (branch landing-core-features)
 
 All online sources were accessed September–October 2026. Entries are grouped by category and alphabetised within each group. Where an organisation is both author and publisher, the entry starts with the title, as MLA requires.
 

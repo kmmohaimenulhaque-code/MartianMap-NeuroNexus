@@ -1,6 +1,6 @@
 ## Team NeuroNexus - Interplanetary Survival Guide: Martian Map
 
-NASA Space Apps Challenge 2026 · branch `v4-argon-landing-routing`
+NASA Space Apps Challenge 2026 · branch `landing-core-features`
 
 <p align="center">
   <img alt="NASA Space Apps 2026" src="https://img.shields.io/badge/NASA_Space_Apps-2026-0B3D91?style=flat-square">
@@ -32,7 +32,7 @@ NASA Space Apps Challenge 2026 · branch `v4-argon-landing-routing`
 Setup first: SETUP_INSTRUCTIONS.md contains the complete installation, NASA data, Gemini API-key, backend/frontend startup, troubleshooting, and demo instructions.
 
 Setup instructions:
-https://github.com/kmmohaimenulhaque-code/martian-map/blob/v4-argon-landing-routing/SETUP_INSTRUCTIONS.md
+https://github.com/kmmohaimenulhaque-code/martian-map/blob/landing-core-features/SETUP_INSTRUCTIONS.md
 
 ## OUR CHALLENGE:
 
@@ -597,7 +597,7 @@ Use the full SETUP_INSTRUCTIONS.md for installation, data acquisition, Gemini co
 
 The intended branch is:
 
-v4-argon-landing-routing
+landing-core-features
 
 Backend:
 ```
@@ -679,10 +679,10 @@ Runtime notes
 # Repository
 
 NASA Space Apps 2026 submission branch:
-https://github.com/kmmohaimenulhaque-code/martian-map/tree/v4-argon-landing-routing
+https://github.com/kmmohaimenulhaque-code/martian-map/tree/landing-core-features
 
 # Source ledger:
-https://github.com/kmmohaimenulhaque-code/martian-map/blob/v4-argon-landing-routing/data/manifests/updated_source_ledger.json
+https://github.com/kmmohaimenulhaque-code/martian-map/blob/landing-core-features/data/manifests/updated_source_ledger.json
 
 
 ## Project tour: the whole console in screenshots
