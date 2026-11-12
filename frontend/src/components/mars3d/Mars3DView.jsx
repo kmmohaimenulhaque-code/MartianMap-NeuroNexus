@@ -123,6 +123,23 @@ function haversineKm(a, b) {
 }
 
 /* Camera looking north at a target from `distanceKm`, tilted 45°, above the local terrain. */
+/* Fly with the flat-ground camera estimate, then re-center exactly on the target: on a curved planet the
+ * estimate lands a few degrees off (3.5° at 1300 km), and "center" keeps the camera's tilt and distance. */
+function flyToTarget(view, lat, lon, distanceKm, options, tilt) {
+  const cam = cameraFor(view, lat, lon, distanceKm, tilt);
+  return view
+    .goTo(cam, options)
+    .then(() => {
+      // Shift the camera by however far the screen center missed the target (curvature), keeping tilt and height.
+      const c = view.center;
+      if (!c) return undefined;
+      const dLat = Number(lat) - c.y;
+      if (Math.abs(dLat) < 0.05) return undefined;
+      return view.goTo({ ...cam, position: { ...cam.position, y: cam.position.y + dLat } }, { animate: false });
+    })
+    .catch(() => {});
+}
+
 function cameraFor(view, lat, lon, distanceKm, tilt = 45) {
   let ground = 0;
   try {
@@ -1075,7 +1092,7 @@ export default function Mars3DView({
       ownSelectionRef.current = null; // selection came from this view: keep the camera where the user is
       return;
     }
-    view.goTo(cameraFor(view, lat, lon, 1300), { duration: 1400 }).catch(() => {});
+    flyToTarget(view, lat, lon, 1300, { duration: 1400 });
   }, [ready, selectedLocation?.latitude_deg, selectedLocation?.longitude_deg]);
 
   useEffect(() => {
@@ -1157,7 +1174,7 @@ export default function Mars3DView({
 
   function flyTo(lat, lon, distanceKm = 600) {
     const view = viewRef.current;
-    if (view) view.goTo(cameraFor(view, lat, lon, distanceKm), { duration: 1400 }).catch(() => {});
+    if (view) flyToTarget(view, lat, lon, distanceKm, { duration: 1400 });
   }
 
   function flyToRoute(route) {

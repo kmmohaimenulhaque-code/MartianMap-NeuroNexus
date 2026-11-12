@@ -18,7 +18,8 @@ import { cssVar } from "../../marswalk/walkabilityRamp";
 import { declutterLabels, landingSiteDetail, landingSiteLabel, roverLabelRecords } from "./useContextLayerData";
 
 /* Tooltip offsets per side (px) so a label clears its marker; the declutter gap matches (offset + 6 px arrow). */
-const TIP_OFFSET = { right: [8, 0], left: [-8, 0], top: [0, -8], bottom: [0, 8] };
+// Clear of the 13 px selection ring and its glow, so labels never sit on top of it.
+const TIP_OFFSET = { right: [22, 0], left: [-22, 0], top: [0, -22], bottom: [0, 22] };
 const LABEL_GAP = 14;
 
 const lon360 = (lon) => ((Number(lon) % 360) + 360) % 360;
