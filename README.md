@@ -30,7 +30,7 @@ What it does
 * USGS route snapshot + exports: route visualisation against USGS SIM 3292 geology plus JSON/CSV exports.
 * Mars Intelligence: Google Gemini interprets structured NeuroNexus results and explains trade-offs; Gemini does not generate route geometry or alter deterministic numerical results.
 
-## Screenshots — the mission console in action
+## Screenshots : the mission console in action
 
 The screenshots below show the Master-Ai interface, including Gale site context, historical thermal evidence, route comparison, and the interactive 3D workspace. Displayed values belong to the captured selection and configuration; historical observations, modelled scenarios, and derived planning aids are not live measurements or safety guarantees.
 
@@ -46,7 +46,7 @@ The main console brings USGS/IAU site identity and coordinates, applicable rover
 
 The THEMIS panel keeps the nearest historical brightness temperature separate from the minimum, maximum, and mean shown directly beneath it in Kelvin and Celsius. Historical sample counts, the 50 km search radius, observation years, seasonal coverage, and evidence strength make the scope of the archive data explicit. These observations are not current Martian weather or exact-coordinate measurements.
 
-### AI Route Designer — deterministic candidates
+### AI Route Designer : deterministic candidates
 
 ![AI Route Designer showing start and destination coordinates, mission-objective weights, EVA settings, and multiple terrain-aware route candidates](assets/screenshots/ai-route-design.png)
 
@@ -58,7 +58,7 @@ The route-design workspace lets users set start and destination coordinates, adj
 
 Colour-coded saved routes remain visible together while comparison cards show distance, waypoint counts, slope, roughness, MOLA coverage, elevation range, and review notes. The displayed routes illustrate comparison tools, not validated or recommended EVA plans.
 
-### Mars Intelligence — tool-grounded interpretation
+### Mars Intelligence : tool-grounded interpretation
 
 ![Mars Intelligence assistant discussing saved-route trade-offs while explicitly marking unavailable deterministic metrics and distinguishing project data from AI interpretation](assets/screenshots/mars-intelligence.png)
 
