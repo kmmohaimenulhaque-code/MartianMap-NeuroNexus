@@ -31,6 +31,7 @@ def test_part_serves_only_its_router(monkeypatch, name, route):
     health = client.get("/api/health").json()
     assert (health["status"], health["part"], health["heavy_concurrency"]) == ("ok", name, 1)
     assert health["window_cache"] == 2 and health["layer_cache"] == 1
+    assert client.get("/api/health").headers["x-neuronexus-served-by"] == name
     paths = client.get("/api/openapi.json").json()["paths"]
     assert route in paths
     assert "/environment" not in paths and "/dust/meta" not in paths  # the full app stays in science.serve

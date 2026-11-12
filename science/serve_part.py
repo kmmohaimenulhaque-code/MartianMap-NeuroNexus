@@ -70,6 +70,14 @@ api = FastAPI(title=f"NeuroNexus API part: {PART}", version="1.0.0", lifespan=_l
 api.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=False, allow_methods=["*"],
                    allow_headers=["*"])
 install_error_handlers(api)
+SERVED_BY = os.environ.get("RENDER_SERVICE_NAME") or os.environ.get("NN_SERVICE_NAME") or PART
+
+
+@api.middleware("http")
+async def _served_by(request, call_next):
+    response = await call_next(request)
+    response.headers["X-NeuroNexus-Served-By"] = SERVED_BY  # which shard answered (routing checks)
+    return response
 
 if PART == "marswalk":
     from science.marswalk.api import router  # noqa: E402
