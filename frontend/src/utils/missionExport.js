@@ -240,43 +240,68 @@ export function missionToCsv(mission, options = {}) {
   return options.bom === false ? body : `\uFEFF${body}`;
 }
 
-/* Human-readable per-waypoint CSV, kept alongside the complete export. */
+/*
+ * Human-readable per-waypoint route CSV, kept alongside the complete export.
+ * Works for the route editor, an AI candidate (full terrain-aware path when
+ * present) or a saved route. Segment and cumulative distances are Haversine
+ * on the 3396 km Mars sphere; per-waypoint terrain columns are filled only
+ * when the route has been analysed (otherwise left blank, never invented).
+ */
+const ROUTE_RADIUS_KM = 3396.0;
+
+function routeHaversineKm(a, b) {
+  const toRad = (value) => (Number(value) * Math.PI) / 180;
+  const dLat = toRad(b.latitude_deg) - toRad(a.latitude_deg);
+  const dLon = toRad(((((Number(b.longitude_deg) - Number(a.longitude_deg)) % 360) + 540) % 360) - 180);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(a.latitude_deg)) * Math.cos(toRad(b.latitude_deg)) * Math.sin(dLon / 2) ** 2;
+  return 2 * ROUTE_RADIUS_KM * Math.asin(Math.sqrt(Math.min(1, h)));
+}
+
+export const ROUTE_CSV_COLUMNS = [
+  "route_name",
+  "route_id",
+  "index",
+  "label",
+  "latitude_deg",
+  "longitude_deg",
+  "segment_km",
+  "cumulative_km",
+  "status",
+  "elevation_m",
+  "slope_deg",
+  "aspect_deg",
+  "roughness_m",
+  "local_elevation_min_m",
+  "local_elevation_max_m",
+];
+
 export function routeToCsv(route, options = {}) {
-  const header = [
-    "route_name",
-    "route_id",
-    "index",
-    "label",
-    "latitude_deg",
-    "longitude_deg",
-    "status",
-    "elevation_m",
-    "slope_deg",
-    "aspect_deg",
-    "roughness_m",
-    "local_elevation_min_m",
-    "local_elevation_max_m",
-  ];
-  const waypoints = route?.waypoint_analysis ?? route?.plan?.waypoint_analysis ?? [];
-  const coordinates = route?.coordinates ?? route?.points ?? [];
-  const rows = (waypoints.length ? waypoints : coordinates).map((row, index) =>
-    csvRow([
+  const analysed = route?.waypoint_analysis ?? route?.plan?.waypoint_analysis ?? [];
+  const geometry = route?.path_coordinates ?? route?.coordinates ?? route?.points ?? [];
+  const points = analysed.length ? analysed : geometry;
+  let cumulative = 0;
+  const rows = points.map((row, index) => {
+    const segment = index === 0 ? 0 : routeHaversineKm(points[index - 1], row);
+    cumulative += segment;
+    return csvRow([
       route?.name ?? "",
       route?.id ?? route?.route_id ?? "",
       index + 1,
-      row.label ?? "",
-      row.latitude_deg ?? "",
-      row.longitude_deg ?? "",
-      row.status ?? "",
+      row.label ?? (index === 0 ? "START" : index === points.length - 1 ? "DESTINATION" : `WP ${index + 1}`),
+      Number.isFinite(Number(row.latitude_deg)) ? Number(Number(row.latitude_deg).toFixed(6)) : "",
+      Number.isFinite(Number(row.longitude_deg)) ? Number(Number(row.longitude_deg).toFixed(6)) : "",
+      Number(segment.toFixed(4)),
+      Number(cumulative.toFixed(4)),
+      row.status ?? (analysed.length ? "" : "NOT ANALYSED"),
       row.elevation_m ?? "",
       row.slope_deg ?? "",
       row.aspect_deg ?? "",
       row.roughness_m ?? "",
       row.local_elevation_min_m ?? "",
       row.local_elevation_max_m ?? "",
-    ]),
-  );
-  const body = [csvRow(header), ...rows].join("\r\n");
+    ]);
+  });
+  const body = [csvRow(ROUTE_CSV_COLUMNS), ...rows].join("\r\n");
   return options.bom === false ? body : `\uFEFF${body}`;
 }
 
