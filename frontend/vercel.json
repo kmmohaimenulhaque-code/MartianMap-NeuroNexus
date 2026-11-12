@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    { "source": "/api", "destination": "https://martian-map-api.onrender.com/api" },
+    { "source": "/api/:path*", "destination": "https://martian-map-api.onrender.com/api/:path*" },
+    { "source": "/terrain/:path*", "destination": "https://martian-map-api.onrender.com/terrain/:path*" },
+    { "source": "/((?!api/|terrain/).*)", "destination": "/index.html" }
+  ]
+}
