@@ -1240,6 +1240,16 @@ kbd {
   color: var(--nn-text-dim);
 }
 
+/* Which model answered (fine-tuned Qwen or Gemini) and why: one gray line, scrolls sideways, never wraps. */
+.intel-route {
+  margin-top: 6px;
+  color: var(--nn-text-dim);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
 .intel-foot {
   display: flex;
   align-items: center;

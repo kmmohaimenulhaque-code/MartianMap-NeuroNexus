@@ -3,6 +3,7 @@
 #   git lfs pull           # real MOLA terrain files
 #   docker compose up --build -d
 # Console: http://localhost:8080   API docs: http://localhost:8002/docs
+# The qwen service serves the fine-tuned MARS INTELLIGENCE voice model (4B GGUF from the Hub, CPU).
 services:
   backend:
     build:
@@ -11,8 +12,22 @@ services:
     env_file:
       - path: .env
         required: false
+    environment:
+      QWEN_BASE_URL: http://qwen:8081
     ports:
       - "8002:8002"
+    depends_on:
+      - qwen
+    restart: unless-stopped
+
+  qwen:
+    image: ghcr.io/ggml-org/llama.cpp:server
+    command: ["-hf", "Mhaquehaque/neuronexus-qwen3-4b-mars-intel:Q4_K_M", "--jinja", "-c", "4096", "-np", "1",
+              "--host", "0.0.0.0", "--port", "8081", "--alias", "neuronexus-qwen3-4b-mars-intel"]
+    environment:
+      LLAMA_CACHE: /models
+    volumes:
+      - qwen-models:/models
     restart: unless-stopped
 
   frontend:
@@ -24,3 +39,6 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+
+volumes:
+  qwen-models:

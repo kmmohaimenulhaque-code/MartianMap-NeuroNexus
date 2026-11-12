@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { routeLabel } from "./routeLabel.js";
 
 /*
  * MARS INTELLIGENCE
@@ -168,6 +169,7 @@ function transcriptMarkdown(messages) {
   ].join("\n");
 }
 
+
 export default function MarsIntelligence({ open, onClose, status, onAsk, missionSummary }) {
   const [messages, setMessages] = useState(() => readJson(HISTORY_KEY, []));
   const [input, setInput] = useState("");
@@ -230,6 +232,7 @@ export default function MarsIntelligence({ open, onClose, status, onAsk, mission
             elapsed: reply.elapsed_ms ?? null,
             model: reply.model,
             notice: reply.model_notice ?? null,
+            route: routeLabel(reply),
           },
         ]);
       } else {
@@ -350,6 +353,7 @@ export default function MarsIntelligence({ open, onClose, status, onAsk, mission
                   ))}
                 </div>
               )}
+              {message.route && <div className="intel-route" title={message.route.title}>{message.route.text}</div>}
               {message.role === "assistant" && !message.error && (
                 <div className="intel-foot">
                   <small className="intel-note">

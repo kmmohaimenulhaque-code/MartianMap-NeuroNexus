@@ -17,7 +17,7 @@ import json
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-FILTERS_SRC = (HERE / "filters.py").read_text()
+FILTERS_SRC = (HERE.parent / "science" / "ai" / "guard.py").read_text()
 
 TARGETS = {
     "qwen3_14b_mi300x": {

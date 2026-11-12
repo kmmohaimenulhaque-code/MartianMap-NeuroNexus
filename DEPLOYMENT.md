@@ -24,6 +24,7 @@ cp .env.example .env                    # then paste your Gemini key into .env
 
 - The **dust scenario** is read from `external/mars-gcm/data/DustScenario_MY34.nc` when the submodule is checked out (`git submodule update --init`). Otherwise the copy in the repository root is used. You can also set `NEURONEXUS_DUST_FILE` to point at a specific file.
 - `GEMINI_API_KEY` is optional. Without it, everything works except Mars Intelligence, which then reports itself as unavailable.
+- The fine-tuned Qwen voice model is optional too. See [Mars Intelligence: fine-tuned Qwen + Gemini router](#mars-intelligence-fine-tuned-qwen--gemini-router).
 
 ---
 
@@ -163,3 +164,31 @@ cd frontend && npm test             # vitest (saved routes, command registry) + 
 | Mars Intelligence "GEMINI_API_KEY is not configured" | Set the key in `.env` (Docker) or the host's environment variables, then restart the API. |
 | Mars Intelligence model errors | `/api/ai/status` lists the models your key can use. Set `GEMINI_MODEL` to one of them. |
 | Console loads but every panel errors | The `/api` rewrite or proxy is missing or points at the wrong host. |
+
+
+---
+
+## Mars Intelligence: fine-tuned Qwen + Gemini router
+
+`AI_PROVIDER=auto` (the default) routes each question (`science/ai/router.py`, rules in `science/ai/intent.py`):
+
+| Question | Answered by | Why |
+|---|---|---|
+| Explain a site, terrain, dose, weather or route value; app help; Mars knowledge | Fine-tuned Qwen 4B | The router runs the matching deterministic tools and hands the model a tagged CONTEXT block. |
+| "Is it safe...?" | Fine-tuned Qwen 4B | Trained to decline safety verdicts and give the planning status and dose instead. |
+| Compare, rank, plan, multi-topic; web search; route analysis | Gemini function calling | Needs several tool rounds or the web. |
+
+Every Qwen answer passes `science/ai/guard.py` (every number must appear in the CONTEXT, no "safe", only the three
+planning statuses). A failed guard, a timeout or a down server sends the question to Gemini; Gemini down sends it to
+Qwen. Each answer shows "Answered by ... · reason ..." in the chat, and `/api/ai/status` lists the last 50 decisions.
+
+Serve the model (weights: <https://huggingface.co/Mhaquehaque/neuronexus-qwen3-4b-mars-intel>):
+
+```bash
+llama-server -hf Mhaquehaque/neuronexus-qwen3-4b-mars-intel:Q4_K_M --jinja -c 4096 -np 1 --port 8081
+export QWEN_BASE_URL=http://127.0.0.1:8081       # then start the API as usual
+```
+
+Docker Compose runs it as the `qwen` service. On a 4-core CPU a short answer takes about 10 to 40 s; give it its own
+cores (a busy CPU pushes it past `QWEN_TIMEOUT_S`, and the router then answers with Gemini). Hugging Face Docker Spaces
+need a PRO plan, so host `llama-server` next to the API instead. Training, data and eval: `training/README.md`.

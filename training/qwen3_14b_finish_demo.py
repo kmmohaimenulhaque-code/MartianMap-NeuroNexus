@@ -151,8 +151,8 @@ mark("GGUF: " + ", ".join(g.name for g in GGUFS))
 """Answer guards for MARS INTELLIGENCE.
 
 Used three times with the same code: to filter the SFT dataset, to score the base and
-fine-tuned models in the notebooks, and (later) live in the router before a Qwen answer is
-shown. Pure standard library so it can be pasted into a notebook cell.
+fine-tuned models in the notebooks, and live in the router before a Qwen answer is
+shown (science/ai/router.py). Pure standard library so it can be pasted into a notebook cell.
 """
 
 
