@@ -202,3 +202,398 @@
 .topographic-map-shell .leaflet-tile-pane img[src*="/contours/"] {
   image-rendering: crisp-edges;
 }
+
+/* =====================================================
+   NEURONEXUS HAZARD / DEFENCE PANEL
+   ===================================================== */
+
+.hazard-defence-panel {
+  margin-top: 18px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.hazard-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.hazard-eyebrow {
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  opacity: 0.48;
+}
+
+.hazard-panel-header h2 {
+  margin: 6px 0 5px;
+  font-size: 19px;
+  letter-spacing: -0.02em;
+}
+
+.hazard-panel-header p {
+  margin: 0;
+  max-width: 650px;
+  font-size: 10px;
+  line-height: 1.5;
+  opacity: 0.48;
+}
+
+.hazard-status-pill {
+  flex: 0 0 auto;
+  padding: 6px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(126, 255, 168, 0.2);
+  color: #9dffbe;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+}
+
+.hazard-loading,
+.hazard-error,
+.hazard-empty,
+.hazard-orbit-note,
+.defence-boundary,
+.ai-ready-box {
+  margin-top: 11px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.hazard-loading {
+  background: rgba(126, 255, 168, 0.04);
+  color: #a8efba;
+}
+
+.hazard-error {
+  background: rgba(255, 90, 90, 0.07);
+  color: #ffb4b4;
+}
+
+.hazard-empty {
+  background: rgba(255, 255, 255, 0.018);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  opacity: 0.68;
+}
+
+.hazard-orbit-note {
+  background: rgba(255, 255, 255, 0.018);
+  border-left: 2px solid rgba(126, 255, 168, 0.24);
+  opacity: 0.66;
+}
+
+.hazard-site-strip {
+  display: grid;
+  grid-template-columns: 1.7fr 0.7fr 1fr;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.hazard-site-strip > div {
+  padding: 10px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.hazard-site-strip span {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 7px;
+  letter-spacing: 0.12em;
+  opacity: 0.42;
+}
+
+.hazard-site-strip strong {
+  font-size: 12px;
+}
+
+.hazard-section {
+  margin-top: 18px;
+}
+
+.hazard-section-title {
+  margin-bottom: 10px;
+  font-size: 8px;
+  letter-spacing: 0.15em;
+  opacity: 0.46;
+}
+
+.asteroid-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 9px;
+}
+
+.asteroid-card {
+  min-width: 0;
+  padding: 11px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.asteroid-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.asteroid-top strong {
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.asteroid-band {
+  flex: 0 0 auto;
+  padding: 3px 5px;
+  border-radius: 999px;
+  font-size: 6px;
+  letter-spacing: 0.08em;
+  border: 1px solid rgba(126, 255, 168, 0.12);
+  color: #a7efb9;
+}
+
+.asteroid-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 9px;
+}
+
+.hazard-signal {
+  min-width: 0;
+  padding: 9px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.hazard-signal-label {
+  font-size: 7px;
+  letter-spacing: 0.08em;
+  opacity: 0.4;
+}
+
+.hazard-signal-value {
+  margin-top: 4px;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.hazard-signal-source {
+  margin-top: 3px;
+  font-size: 7px;
+  opacity: 0.4;
+  overflow-wrap: anywhere;
+}
+
+.asteroid-footnote {
+  margin-top: 8px;
+  font-size: 8px;
+  line-height: 1.4;
+  opacity: 0.4;
+}
+
+.hazard-signal-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.hazard-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.hazard-card {
+  padding: 11px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.hazard-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.hazard-card-top strong {
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.hazard-evidence-badge {
+  padding: 3px 5px;
+  border-radius: 999px;
+  border: 1px solid rgba(126, 255, 168, 0.12);
+  font-size: 6px;
+  letter-spacing: 0.07em;
+  color: #a7efb9;
+  opacity: 0.7;
+}
+
+.hazard-applicability {
+  margin-top: 7px;
+  font-size: 7px;
+  letter-spacing: 0.08em;
+  opacity: 0.43;
+}
+
+.hazard-card p {
+  margin: 8px 0 0;
+  font-size: 9px;
+  line-height: 1.5;
+  opacity: 0.62;
+}
+
+.hazard-plan-title {
+  margin-top: 11px;
+  margin-bottom: 7px;
+  font-size: 7px;
+  letter-spacing: 0.1em;
+  opacity: 0.45;
+}
+
+.hazard-plan-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.hazard-plan-item {
+  display: grid;
+  grid-template-columns: 10px 1fr;
+  gap: 5px;
+  font-size: 8px;
+  line-height: 1.4;
+  opacity: 0.68;
+}
+
+.hazard-plan-item > span:first-child {
+  opacity: 0.45;
+}
+
+.hazard-source-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.hazard-source-link {
+  display: block;
+  text-decoration: none;
+  color: #9bdcab;
+  font-size: 8px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  opacity: 0.66;
+}
+
+.hazard-source-link:hover {
+  opacity: 1;
+}
+
+.defence-doctrine-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.defence-step {
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.055);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.defence-step-phase {
+  font-size: 8px;
+  letter-spacing: 0.09em;
+  color: #a4efb8;
+  margin-bottom: 8px;
+}
+
+.defence-step-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.defence-action {
+  font-size: 8px;
+  line-height: 1.38;
+  opacity: 0.58;
+}
+
+.defence-boundary {
+  border: 1px dashed rgba(255, 201, 110, 0.2);
+  background: rgba(255, 201, 110, 0.03);
+  color: #dcbf8d;
+  opacity: 0.78;
+}
+
+.hazard-source-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.ai-ready-box {
+  border: 1px solid rgba(126, 255, 168, 0.08);
+  background: rgba(126, 255, 168, 0.025);
+}
+
+.ai-ready-box strong {
+  font-size: 9px;
+  color: #a3eeb5;
+}
+
+.ai-ready-box p {
+  margin: 7px 0 0;
+  font-size: 9px;
+  line-height: 1.5;
+  opacity: 0.58;
+}
+
+.ai-ready-box code {
+  margin: 0 3px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: #b8efc4;
+}
+
+@media (max-width: 850px) {
+  .asteroid-grid,
+  .hazard-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .defence-doctrine-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hazard-signal-grid,
+  .hazard-site-strip {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .hazard-panel-header {
+    flex-direction: column;
+  }
+
+  .defence-doctrine-grid,
+  .hazard-source-grid {
+    grid-template-columns: 1fr;
+  }
+}

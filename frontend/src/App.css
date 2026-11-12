@@ -483,7 +483,9 @@ a {
   flex: 1 1 auto;
   min-height: 0;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns:
+    minmax(0, 1.2fr)
+    minmax(0, 0.8fr);
   gap: 8px;
   padding: 8px;
 }
@@ -1203,5 +1205,302 @@ a {
 
   .mission-state {
     flex-wrap: wrap;
+  }
+}
+
+/* =========================================================
+   NEURONEXUS ROUTE CONSOLE
+   ========================================================= */
+
+.route-console {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 9px 10px;
+  border-top: 1px solid var(--border);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(8, 14, 18, 0.98),
+      rgba(6, 10, 13, 0.98)
+    );
+}
+
+.route-console-main {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.route-console-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.route-console-heading span {
+  color: var(--cyan);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+}
+
+.route-console-heading strong {
+  color: #dce7eb;
+  font-family: monospace;
+  font-size: 8px;
+  letter-spacing: 0.08em;
+}
+
+.route-console-main small {
+  color: #687a82;
+  font-size: 8px;
+  line-height: 1.4;
+}
+
+.route-console-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.route-console-actions button {
+  min-height: 29px;
+  padding: 0 9px;
+  border: 1px solid #29414b;
+  background: #0a1318;
+  color: #93a7af;
+  font-family: monospace;
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.route-console-actions button:hover {
+  border-color: var(--cyan);
+  color: #fff;
+}
+
+.route-console-actions button.active,
+.route-console-actions button.primary {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  background: #0d2028;
+}
+
+.route-console-actions button.danger {
+  border-color: #5b3037;
+  color: #ff9aa9;
+}
+
+.route-console-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.32;
+}
+
+.route-console-strip {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  padding: 6px 7px;
+  border: 1px solid rgba(117, 230, 255, 0.08);
+  background: #071014;
+}
+
+.route-console-strip span {
+  color: #91a4ac;
+  font-family: monospace;
+  font-size: 7px;
+}
+
+.route-console-strip span + span::before {
+  content: '→';
+  margin-right: 6px;
+  color: #405b65;
+}
+
+.route-console-results {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.route-console-results .metric {
+  padding: 5px 0;
+}
+
+.route-console-results .metric strong {
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   MARS BRIEFING / NASA RSS
+   ========================================================= */
+
+.briefing-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.briefing-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  max-height: 430px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color:
+    rgba(117, 230, 255, 0.18)
+    transparent;
+}
+
+.briefing-card {
+  padding: 9px;
+  border: 1px solid #1c2c33;
+  background: #080f13;
+}
+
+.briefing-card-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--cyan);
+  font-size: 7px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.briefing-card-meta time {
+  color: #61727b;
+}
+
+.briefing-card-title {
+  width: 100%;
+  margin-top: 6px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #edf4f6;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+}
+
+.briefing-card-title:hover {
+  color: var(--cyan);
+}
+
+.briefing-card p {
+  margin: 6px 0 0;
+  color: #73848c;
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+.briefing-card-link,
+.briefing-reference-link,
+.briefing-retry {
+  margin-top: 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--cyan);
+  font-family: monospace;
+  font-size: 7px;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+}
+
+.briefing-feed-state {
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  padding: 12px;
+  border: 1px dashed #24343c;
+  background: #091115;
+  color: #778991;
+  font-family: monospace;
+  font-size: 8px;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.briefing-feed-state strong {
+  color: var(--cyan);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+}
+
+.briefing-reference {
+  padding: 12px;
+  border: 1px solid #1c2c33;
+  background: #080f13;
+}
+
+.briefing-reference > span {
+  color: var(--cyan);
+  font-size: 7px;
+  letter-spacing: 0.12em;
+}
+
+.briefing-reference strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+}
+
+.briefing-reference p {
+  margin: 7px 0 0;
+  color: #7f8d95;
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   MAP SIZING
+   ========================================================= */
+
+.maps-grid {
+  grid-template-columns:
+    minmax(0, 1.35fr)
+    minmax(0, 0.85fr);
+}
+
+.map-panel-body {
+  min-height: 420px;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 1050px) {
+  .maps-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .route-console-results {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .route-console-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .route-console-actions button {
+    flex: 1 1 auto;
   }
 }

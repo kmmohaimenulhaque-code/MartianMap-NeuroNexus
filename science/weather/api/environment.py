@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import re
+import urllib.request
+from xml.etree import ElementTree as ET
+
 from fastapi import (
     FastAPI,
     HTTPException,
@@ -32,6 +36,10 @@ from science.weather.models.environment_assessment import (
 
 from science.weather.models.mars_environment import (
     MarsEnvironmentEngine,
+)
+
+from science.hazards.api import (
+    router as hazards_router,
 )
 
 
@@ -69,7 +77,123 @@ app.add_middleware(
 
 
 engine = MarsEnvironmentEngine()
+NASA_MARS_RSS_URL = (
+    "https://science.nasa.gov/"
+    "feed/photojournal/gallery/mars/"
+)
 
+
+def _clean_feed_text(
+    value: str | None,
+) -> str:
+    text = str(
+        value or "",
+    )
+
+    text = re.sub(
+        r"<[^>]+>",
+        " ",
+        text,
+    )
+
+    return " ".join(
+        text.split()
+    )
+
+
+@app.get("/briefing/mars")
+def mars_briefing(
+    limit: int = Query(
+        6,
+        ge=1,
+        le=10,
+    ),
+):
+    request = urllib.request.Request(
+        NASA_MARS_RSS_URL,
+        headers={
+            "User-Agent":
+                "NeuroNexus-MarsMap/1.0",
+        },
+    )
+
+    try:
+        with urllib.request.urlopen(
+            request,
+            timeout=10,
+        ) as response:
+            xml_bytes = (
+                response.read()
+            )
+
+        root = ET.fromstring(
+            xml_bytes,
+        )
+
+        items = []
+
+        for item in root.findall(
+            ".//item",
+        )[:limit]:
+            title = _clean_feed_text(
+                item.findtext(
+                    "title",
+                ),
+            )
+
+            link = (
+                item.findtext(
+                    "link",
+                )
+                or NASA_MARS_RSS_URL
+            )
+
+            published = _clean_feed_text(
+                item.findtext(
+                    "pubDate",
+                ),
+            )
+
+            description = _clean_feed_text(
+                item.findtext(
+                    "description",
+                ),
+            )
+
+            items.append(
+                {
+                    "title": title,
+                    "url": link,
+                    "published":
+                        published,
+                    "description":
+                        description,
+                },
+            )
+
+        return {
+            "status": "ok",
+            "source":
+                "NASA Science / Mars Photojournal",
+            "feed_url":
+                NASA_MARS_RSS_URL,
+            "count": len(
+                items,
+            ),
+            "items": items,
+        }
+
+    except Exception:
+        return {
+            "status":
+                "unavailable",
+            "source":
+                "NASA Science / Mars Photojournal",
+            "feed_url":
+                NASA_MARS_RSS_URL,
+            "count": 0,
+            "items": [],
+        }
 
 @app.get("/environment")
 def environment(
@@ -104,16 +228,24 @@ def environment(
         assess_environment(state)
     )
 
-    nearest = (
-        state
-        .get("gazetteer", {})
-        .get("nearest_feature")
+    gazetteer = state.get(
+        "gazetteer",
+        {},
     )
 
-    if nearest:
+    site_feature = (
+        gazetteer.get(
+            "selected_feature",
+        )
+        or gazetteer.get(
+            "nearest_feature",
+        )
+    )
+
+    if site_feature:
         state["site_science"] = (
             build_site_science(
-                nearest
+                site_feature,
             )
         )
 
@@ -508,3 +640,7 @@ def rover_photos(
         name,
         limit=limit,
     )
+
+
+# NeuroNexus hazard/evidence router
+app.include_router(hazards_router)

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react'
 
 import MarsMap from './components/mars/MarsMap'
@@ -7,7 +6,6 @@ import MarsBriefingPanel from './components/mars/MarsBriefingPanel'
 import RoverPhotosPanel from './components/mars/RoverPhotosPanel'
 import SiteSciencePanel from './components/mars/SiteSciencePanel'
 import MissionOpsPanel from './components/mission/MissionOpsPanel'
-
 
 import {
   fetchEnvironmentByPlace,
@@ -24,15 +22,32 @@ const DEFAULT_SOL = 100
 const MAX_ROUTE_POINTS = 32
 
 
-function Panel({ eyebrow, title, children, className = '' }) {
+function Panel({
+  eyebrow,
+  title,
+  children,
+  className = '',
+}) {
   return (
-    <section className={`panel ${className}`}>
+    <section
+      className={`panel ${className}`}
+    >
       <div className="panel-heading">
         <div>
-          {eyebrow && <div className="eyebrow">{eyebrow}</div>}
-          <h2>{title}</h2>
+          {eyebrow && (
+            <div className="eyebrow">
+              {eyebrow}
+            </div>
+          )}
+
+          <h2>
+            {title}
+          </h2>
         </div>
-        <span className="panel-mark">+</span>
+
+        <span className="panel-mark">
+          +
+        </span>
       </div>
 
       <div className="panel-body">
@@ -43,10 +58,16 @@ function Panel({ eyebrow, title, children, className = '' }) {
 }
 
 
-function Metric({ label, value, detail }) {
+function Metric({
+  label,
+  value,
+  detail,
+}) {
   return (
     <div className="metric">
-      <span>{label}</span>
+      <span>
+        {label}
+      </span>
 
       <strong>
         {value ?? '—'}
@@ -129,11 +150,14 @@ function SearchBar({
                 </span>
 
                 <span className="suggestion-meta">
-                  {suggestion.diameter_km == null
-                    ? '—'
-                    : `${Number(
-                        suggestion.diameter_km,
-                      ).toFixed(2)} km`}
+                  {
+                    suggestion.diameter_km ==
+                    null
+                      ? '—'
+                      : `${Number(
+                          suggestion.diameter_km,
+                        ).toFixed(2)} km`
+                  }
                 </span>
               </button>
             ),
@@ -145,75 +169,17 @@ function SearchBar({
 }
 
 
-function MissionSystemsPanel() {
-  const systems = [
-    'Mission plans',
-    'Crew health',
-    'Life support',
-    'Food / water / O₂',
-    'Fuel & propellant',
-    'Spacecraft health',
-    'Rover health',
-    'Greenhouse / biomass',
-  ]
-
-  return (
-    <Panel
-      eyebrow="MISSION / SYSTEMS"
-      title="Operational state"
-    >
-      <div className="system-list">
-        {systems.map(
-          (system) => (
-            <div
-              className="system-row"
-              key={system}
-            >
-              <span>
-                {system}
-              </span>
-
-              <strong>
-                NOT CONNECTED
-              </strong>
-            </div>
-          ),
-        )}
-      </div>
-
-      <div className="simulation-note">
-        <span>DATA CLASS</span>
-
-        <strong>
-          Simulation layer reserved for
-          mission-state models.
-        </strong>
-      </div>
-    </Panel>
-  )
-}
-
-
-function RouteSummary({
-  routePlan,
+function RouteConsole({
+  routeMode,
   routePoints,
+  routePlan,
   loading,
+  hasSelectedPlace,
+  onToggle,
+  onAddSelected,
+  onAnalyze,
   onClear,
 }) {
-  if (!routePoints.length) {
-    return (
-      <div className="route-empty">
-        <span>ROUTE STATE</span>
-
-        <strong>
-          Enter PLAN ROUTE mode on the
-          topographic map and click at least
-          two points.
-        </strong>
-      </div>
-    )
-  }
-
   const displacement =
     routePlan?.displacement
       ?.distance_km
@@ -226,160 +192,243 @@ function RouteSummary({
     routePlan?.planned_route
       ?.extension_km
 
-  const extensionPercent =
-    routePlan?.planned_route
-      ?.extension_percent
-
   return (
-    <div className="route-summary-body">
-      <div className="route-kpis">
-        <Metric
-          label="Straight-line displacement"
-          value={
-            displacement == null
-              ? 'PENDING'
-              : `${Number(
-                  displacement,
-                ).toFixed(2)} km`
-          }
-          detail="Haversine · first point → last point"
-        />
+    <div className="route-console">
+      <div className="route-console-main">
+        <div className="route-console-heading">
+          <span>
+            NAVIGATION / USER WAYPOINTS
+          </span>
 
-        <Metric
-          label="Planned route"
-          value={
-            planned == null
-              ? 'PENDING'
-              : `${Number(
-                  planned,
-                ).toFixed(2)} km`
-          }
-          detail="Haversine sum of user waypoints"
-        />
+          <strong>
+            {routeMode
+              ? 'PLAN ROUTE ACTIVE'
+              : routePoints.length
+                ? `${routePoints.length} WAYPOINT${routePoints.length === 1 ? '' : 'S'}`
+                : 'READY'}
+          </strong>
+        </div>
 
-        <Metric
-          label="Route extension"
-          value={
-            extension == null
-              ? 'PENDING'
-              : `${Number(
-                  extension,
-                ).toFixed(2)} km`
-          }
-          detail={
-            extensionPercent == null
-              ? '—'
-              : `${Number(
-                  extensionPercent,
-                ).toFixed(1)}% longer than displacement`
-          }
-        />
+        <small>
+          {routeMode
+            ? 'Click anywhere on the coloured Mars map to add a waypoint.'
+            : 'Optional user-defined Haversine route geometry.'}
+        </small>
       </div>
 
-      <div className="route-meta-grid">
-        <Metric
-          label="Waypoints"
-          value={routePoints.length}
-        />
-
-        <Metric
-          label="Legs"
-          value={
-            routePlan?.planned_route
-              ?.leg_count ?? '—'
+      <div className="route-console-actions">
+        <button
+          type="button"
+          className={
+            routeMode
+              ? 'active'
+              : ''
           }
-        />
+          onClick={
+            onToggle
+          }
+        >
+          {routeMode
+            ? 'STOP PLANNING'
+            : 'PLAN ROUTE'}
+        </button>
 
-        <Metric
-          label="Terrain search"
-          value="NONE"
-          detail="No corridor / no A*"
-        />
+        <button
+          type="button"
+          disabled={
+            !hasSelectedPlace ||
+            routePoints.length >=
+              MAX_ROUTE_POINTS
+          }
+          onClick={
+            onAddSelected
+          }
+        >
+          ADD SELECTED
+        </button>
 
-        <Metric
-          label="MOLA guidance"
-          value={
+        <button
+          type="button"
+          className="primary"
+          disabled={
+            routePoints.length <
+              2 ||
             loading
-              ? 'ANALYZING'
-              : routePlan
-                ? 'LOCAL SAMPLES'
-                : 'PENDING'
           }
-          detail="Only selected waypoint neighborhoods"
-        />
+          onClick={
+            onAnalyze
+          }
+        >
+          {loading
+            ? 'ANALYZING…'
+            : 'ANALYZE'}
+        </button>
+
+        <button
+          type="button"
+          className="danger"
+          disabled={
+            !routePoints.length
+          }
+          onClick={
+            onClear
+          }
+        >
+          CLEAR
+        </button>
       </div>
 
-      {routePlan?.guidance?.notes?.map(
-        (note) => (
-          <div
-            className="route-guidance"
-            key={note}
-          >
-            {note}
-          </div>
-        ),
-      )}
-
-      {routePlan?.guidance
-        ?.disclaimer && (
-        <div className="route-disclaimer">
-          {
-            routePlan.guidance
-              .disclaimer
-          }
+      {routePoints.length > 0 && (
+        <div className="route-console-strip">
+          {routePoints.map(
+            (point, index) => (
+              <span
+                key={`${point.latitude_deg}:${point.longitude_deg}:${index}`}
+              >
+                {index === 0
+                  ? 'A'
+                  : `P${index}`}
+                {' '}
+                {point.label ||
+                  `${Number(
+                    point.latitude_deg,
+                  ).toFixed(2)}°,${Number(
+                    point.longitude_deg,
+                  ).toFixed(2)}°E`}
+              </span>
+            ),
+          )}
         </div>
       )}
 
-      <button
-        type="button"
-        className="clear-route-button"
-        onClick={onClear}
-      >
-        CLEAR ROUTE
-      </button>
+      {routePlan && (
+        <div className="route-console-results">
+          <Metric
+            label="Displacement"
+            value={
+              displacement == null
+                ? '—'
+                : `${Number(
+                    displacement,
+                  ).toFixed(2)} km`
+            }
+          />
+
+          <Metric
+            label="Planned route"
+            value={
+              planned == null
+                ? '—'
+                : `${Number(
+                    planned,
+                  ).toFixed(2)} km`
+            }
+          />
+
+          <Metric
+            label="Extension"
+            value={
+              extension == null
+                ? '—'
+                : `${Number(
+                    extension,
+                  ).toFixed(2)} km`
+            }
+          />
+        </div>
+      )}
     </div>
   )
 }
 
 
 export default function App() {
-  const [places, setPlaces] =
-    useState([])
+  const [
+    places,
+    setPlaces,
+  ] = useState([])
 
-  const [query, setQuery] =
-    useState('')
+  const [
+    query,
+    setQuery,
+  ] = useState('')
 
-  const [suggestions, setSuggestions] =
-    useState([])
+  const [
+    suggestions,
+    setSuggestions,
+  ] = useState([])
 
   const [
     selectedFeature,
     setSelectedFeature,
   ] = useState(null)
 
-  const [environment, setEnvironment] =
-    useState(null)
+  const [
+    environment,
+    setEnvironment,
+  ] = useState(null)
 
-  const [loading, setLoading] =
-    useState(true)
+  const [
+    loading,
+    setLoading,
+  ] = useState(true)
 
-  const [searching, setSearching] =
-    useState(false)
+  const [
+    searching,
+    setSearching,
+  ] = useState(false)
 
-  const [error, setError] =
-    useState('')
+  const [
+    error,
+    setError,
+  ] = useState('')
 
-  const [routeMode, setRouteMode] =
-    useState(false)
+  const [
+    routeMode,
+    setRouteMode,
+  ] = useState(false)
 
-  const [routePoints, setRoutePoints] =
-    useState([])
+  const [
+    routePoints,
+    setRoutePoints,
+  ] = useState([])
 
-  const [routePlan, setRoutePlan] =
-    useState(null)
+  const [
+    routePlan,
+    setRoutePlan,
+  ] = useState(null)
 
-  const [routeLoading, setRouteLoading] =
-    useState(false)
+  const [
+    routeLoading,
+    setRouteLoading,
+  ] = useState(false)
+
+
+  const place =
+    environment?.gazetteer
+      ?.selected_feature ??
+    environment?.gazetteer
+      ?.nearest_feature ??
+    selectedFeature
+
+  const thermal =
+    environment?.thermal
+      ?.observations?.[0]
+
+  const thermalEvidence =
+    thermal?.evidence
+
+  const dust =
+    environment?.dust
+
+  const terrain =
+    environment?.terrain
+
+  const solar =
+    environment?.solar
+
+  const siteScience =
+    environment?.site_science
 
 
   useEffect(() => {
@@ -392,9 +441,12 @@ export default function App() {
 
         const [
           placesResponse,
-          galeResponse,
+          marsResponse,
         ] = await Promise.all([
-          fetchPlaces(2052),
+          fetchPlaces(
+            2052,
+          ),
+
           fetchEnvironmentByPlace(
             DEFAULT_PLACE,
             DEFAULT_SOL,
@@ -411,19 +463,19 @@ export default function App() {
         )
 
         setEnvironment(
-          galeResponse,
+          marsResponse,
         )
 
         setSelectedFeature(
-          galeResponse?.gazetteer
+          marsResponse?.gazetteer
             ?.selected_feature ??
-            galeResponse?.gazetteer
+            marsResponse?.gazetteer
               ?.nearest_feature ??
             null,
         )
 
         setQuery(
-          galeResponse?.query
+          marsResponse?.query
             ?.resolved_name ??
             DEFAULT_PLACE,
         )
@@ -455,6 +507,7 @@ export default function App() {
     if (!value.length) {
       setSuggestions([])
       setSearching(false)
+
       return undefined
     }
 
@@ -582,8 +635,8 @@ export default function App() {
         ) % 360,
 
       label:
-        point.label ||
-        fallbackLabel ||
+        point.label ??
+        fallbackLabel ??
         null,
     }
   }
@@ -606,10 +659,13 @@ export default function App() {
 
         const label =
           point.label ||
-          `WP ${current.length + 1}`
+          `WP ${
+            current.length + 1
+          }`
 
         return [
           ...current,
+
           normalizeRoutePoint(
             point,
             label,
@@ -632,8 +688,10 @@ export default function App() {
     handleRoutePointAdd({
       latitude_deg:
         place.latitude_deg,
+
       longitude_deg:
         place.longitude_deg,
+
       label:
         place.feature_name,
     })
@@ -659,6 +717,8 @@ export default function App() {
       setRoutePlan(
         response,
       )
+
+      setRouteMode(false)
     } catch (err) {
       setRoutePlan(null)
 
@@ -683,33 +743,6 @@ export default function App() {
     setRoutePlan(null)
     setRouteMode(false)
   }
-
-
-  const place =
-    environment?.gazetteer
-      ?.selected_feature ??
-    environment?.gazetteer
-      ?.nearest_feature ??
-    selectedFeature
-
-  const thermal =
-    environment?.thermal
-      ?.observations?.[0]
-
-  const thermalEvidence =
-    thermal?.evidence
-
-  const dust =
-    environment?.dust
-
-  const terrain =
-    environment?.terrain
-
-  const solar =
-    environment?.solar
-
-  const siteScience =
-    environment?.site_science
 
 
   return (
@@ -759,7 +792,9 @@ export default function App() {
             </span>
 
             <strong>
-              {places.length.toLocaleString()}
+              {
+                places.length.toLocaleString()
+              }
             </strong>
           </div>
 
@@ -873,7 +908,9 @@ export default function App() {
             title="Applicable rover photos"
           >
             <RoverPhotosPanel
-              feature={place}
+              feature={
+                place
+              }
             />
           </Panel>
 
@@ -916,7 +953,7 @@ export default function App() {
                 value={
                   thermalEvidence
                     ?.score ==
-                    null
+                  null
                     ? '—'
                     : Number(
                         thermalEvidence.score,
@@ -1009,7 +1046,7 @@ export default function App() {
               </span>
 
               <span>
-                MOLA 128 PX/DEG
+                MOLA SITE ANALYSIS
               </span>
             </div>
           </div>
@@ -1019,7 +1056,7 @@ export default function App() {
             <div className="map-panel">
               <div className="map-panel-title">
                 <span>
-                  COLORED GLOBAL MAP
+                  COLOURED GLOBAL MAP
                 </span>
 
                 <small>
@@ -1038,30 +1075,6 @@ export default function App() {
                   onSelect={
                     handleSelectPlace
                   }
-                />
-              </div>
-            </div>
-
-
-            <div className="map-panel">
-              <div className="map-panel-title topo-title">
-                <span>
-                  2D TOPOGRAPHIC MAP
-                </span>
-
-                <small>
-                  MOLA / HILLSHADE / ELEVATION
-                </small>
-              </div>
-
-              <div className="map-panel-body">
-                <MarsTopographicMap
-                  features={
-                    places
-                  }
-                  selectedFeature={
-                    selectedFeature
-                  }
                   routeMode={
                     routeMode
                   }
@@ -1071,31 +1084,57 @@ export default function App() {
                   routePlan={
                     routePlan
                   }
-                  routeLoading={
-                    routeLoading
-                  }
-                  terrain={
-                    terrain
-                  }
-                  onSelect={
-                    handleSelectPlace
-                  }
-                  onRoutePointAdd={
+                  onMapLocationSelect={
                     handleRoutePointAdd
                   }
-                  onToggleRouteMode={
-                    toggleRouteMode
-                  }
-                  onAddSelected={
-                    handleAddSelected
-                  }
-                  onAnalyzeRoute={
-                    handleAnalyzeRoute
-                  }
-                  onClear={
-                    clearRoute
-                  }
                 />
+              </div>
+
+              <RouteConsole
+                routeMode={
+                  routeMode
+                }
+                routePoints={
+                  routePoints
+                }
+                routePlan={
+                  routePlan
+                }
+                loading={
+                  routeLoading
+                }
+                hasSelectedPlace={
+                  Boolean(place)
+                }
+                onToggle={
+                  toggleRouteMode
+                }
+                onAddSelected={
+                  handleAddSelected
+                }
+                onAnalyze={
+                  handleAnalyzeRoute
+                }
+                onClear={
+                  clearRoute
+                }
+              />
+            </div>
+
+
+            <div className="map-panel">
+              <div className="map-panel-title">
+                <span>
+                  USGS SCIENTIFIC MAP
+                </span>
+
+                <small>
+                  ARCGIS / TOPOGRAPHY / GEOLOGY / MEASUREMENTS
+                </small>
+              </div>
+
+              <div className="map-panel-body">
+                <MarsTopographicMap />
               </div>
             </div>
           </div>
@@ -1122,28 +1161,6 @@ export default function App() {
               Other USGS feature
             </div>
           </div>
-
-
-          <Panel
-            eyebrow="NAVIGATION / GEOMETRY"
-            title="Route analysis"
-            className="route-analysis-panel"
-          >
-            <RouteSummary
-              routePlan={
-                routePlan
-              }
-              routePoints={
-                routePoints
-              }
-              loading={
-                routeLoading
-              }
-              onClear={
-                clearRoute
-              }
-            />
-          </Panel>
         </section>
 
 
@@ -1235,6 +1252,16 @@ export default function App() {
                 }
               />
             </div>
+
+            <div className="source-note">
+              <span>
+                DATA LINK
+              </span>
+
+              <strong>
+                NASA MOLA LOCAL SAMPLE
+              </strong>
+            </div>
           </Panel>
 
 
@@ -1299,24 +1326,24 @@ export default function App() {
               </strong>
             </div>
 
-            {
-              environment
-                ?.assessment
-                ?.warnings
-                ?.length > 0 && (
+            {environment
+              ?.assessment
+              ?.warnings
+              ?.length > 0 && (
               <div className="warning-box">
-                {
-                  environment.assessment
-                    .warnings.map(
-                      (warning) => (
-                        <p
-                          key={warning}
-                        >
-                          {warning}
-                        </p>
-                      ),
-                    )
-                }
+                {environment.assessment
+                  .warnings
+                  .map(
+                    (warning) => (
+                      <p
+                        key={
+                          warning
+                        }
+                      >
+                        {warning}
+                      </p>
+                    ),
+                  )}
               </div>
             )}
           </Panel>
@@ -1327,16 +1354,24 @@ export default function App() {
             title="Crewed Mars console"
           >
             <MissionOpsPanel
-              selectedFeature={place}
-              sol={DEFAULT_SOL}
-              environment={environment}
-              routePlan={routePlan}
+              selectedFeature={
+                place
+              }
+              sol={
+                DEFAULT_SOL
+              }
+              environment={
+                environment
+              }
+              routePlan={
+                routePlan
+              }
             />
           </Panel>
 
 
           <Panel
-            eyebrow="BRIEFING / LIVE WEB"
+            eyebrow="BRIEFING / NASA FEED"
             title="Mars reference feed"
           >
             <MarsBriefingPanel />
@@ -1347,42 +1382,59 @@ export default function App() {
 
       <footer className="evidence-bar">
         <div>
-          <span>USGS</span>
+          <span>
+            USGS
+          </span>
+
           <strong>
             2,052 REGISTERED FEATURES
           </strong>
         </div>
 
         <div>
-          <span>THEMIS</span>
+          <span>
+            THEMIS
+          </span>
+
           <strong>
             HISTORICAL IR-PBT
           </strong>
         </div>
 
         <div>
-          <span>GCM</span>
+          <span>
+            GCM
+          </span>
+
           <strong>
             AMES MY34
           </strong>
         </div>
 
         <div>
-          <span>MOLA</span>
+          <span>
+            MOLA
+          </span>
+
           <strong>
             128 PX / DEG
           </strong>
         </div>
 
         <div>
-          <span>MEDIA</span>
+          <span>
+            MEDIA
+          </span>
+
           <strong>
             NASA IMAGE LIBRARY
           </strong>
         </div>
 
         <div className="evidence-warning">
-          <span>DATA MODEL</span>
+          <span>
+            DATA MODEL
+          </span>
 
           <strong>
             Observed · Modeled · Derived · Simulated

@@ -4,7 +4,6 @@ import {
   ImageOverlay,
   MapContainer,
   Polyline,
-  TileLayer,
   Tooltip,
   useMap,
   useMapEvents,
@@ -13,6 +12,7 @@ import {
   CRS,
   Transformation,
 } from 'leaflet'
+
 import 'leaflet/dist/leaflet.css'
 
 
@@ -34,19 +34,26 @@ const MARS_CRS = {
     ),
 
   scale(zoom) {
-    return Math.pow(2, zoom)
+    return Math.pow(
+      2,
+      zoom,
+    )
   },
 }
 
 
-const MOLA_TILE_URL =
-  '/terrain/tile/{z}/{x}/{y}.png'
-
-
 function marsPosition(feature) {
   return [
-    Number(feature.latitude_deg),
-    Number(feature.longitude_deg) % 360,
+    Number(
+      feature.latitude_deg,
+    ),
+
+    (
+      Number(
+        feature.longitude_deg,
+      ) % 360 +
+      360
+    ) % 360,
   ]
 }
 
@@ -54,9 +61,10 @@ function marsPosition(feature) {
 function featureColor(
   featureType = '',
 ) {
-  const type = featureType
-    .split(',')[0]
-    .trim()
+  const type =
+    featureType
+      .split(',')[0]
+      .trim()
 
   const colors = {
     Crater: '#d9c2a5',
@@ -81,13 +89,46 @@ function featureColor(
 }
 
 
+function MapResizeHandler() {
+  const map = useMap()
+
+  useEffect(() => {
+    const container =
+      map.getContainer()
+
+    const resizeObserver =
+      new ResizeObserver(() => {
+        map.invalidateSize({
+          animate: false,
+        })
+      })
+
+    resizeObserver.observe(
+      container,
+    )
+
+    map.invalidateSize({
+      animate: false,
+    })
+
+    return () => {
+      resizeObserver.disconnect()
+    }
+  }, [map])
+
+  return null
+}
+
+
 function MapFocus({
   feature,
 }) {
   const map = useMap()
 
   useEffect(() => {
-    if (!feature) return
+    if (!feature) {
+      return
+    }
 
     map.flyTo(
       marsPosition(feature),
@@ -111,11 +152,14 @@ function RouteClickCapture({
 }) {
   useMapEvents({
     click(event) {
-      if (!enabled) return
+      if (!enabled) {
+        return
+      }
 
       onSelect({
         latitude_deg:
           event.latlng.lat,
+
         longitude_deg:
           event.latlng.lng,
       })
@@ -131,7 +175,9 @@ function RoutePointMarker({
   label,
   type,
 }) {
-  if (!point) return null
+  if (!point) {
+    return null
+  }
 
   const color =
     type === 'start'
@@ -180,7 +226,7 @@ function RoutePointMarker({
 
 
 export default function MarsMap({
-  features,
+  features = [],
   selectedFeature,
   onSelect,
 
@@ -188,24 +234,32 @@ export default function MarsMap({
   routeStart = null,
   routeEnd = null,
   route = null,
+
   onMapLocationSelect =
     () => {},
 }) {
   const routeCoordinates =
-    route?.route?.coordinates ??
+    route?.route
+      ?.coordinates ??
     []
 
   return (
     <MapContainer
-      center={[0, 180]}
+      center={[
+        0,
+        180,
+      ]}
       zoom={0}
       minZoom={0}
       maxZoom={7}
       crs={MARS_CRS}
-      maxBounds={MARS_BOUNDS}
+      maxBounds={
+        MARS_BOUNDS
+      }
       maxBoundsViscosity={1}
       scrollWheelZoom
       zoomControl
+      preferCanvas
       style={{
         width: '100%',
         height: '100%',
@@ -213,30 +267,26 @@ export default function MarsMap({
           '#090c0f',
       }}
     >
+      <MapResizeHandler />
+
       <ImageOverlay
         url="/mars-mola-global.jpg"
-        bounds={MARS_BOUNDS}
-        opacity={0.35}
-      />
-
-      <TileLayer
-        url={MOLA_TILE_URL}
-        tileSize={180}
-        minZoom={0}
-        maxZoom={7}
+        bounds={
+          MARS_BOUNDS
+        }
         opacity={1}
-        bounds={MARS_BOUNDS}
-        noWrap
-        updateWhenZooming
-        keepBuffer={2}
       />
 
       <MapFocus
-        feature={selectedFeature}
+        feature={
+          selectedFeature
+        }
       />
 
       <RouteClickCapture
-        enabled={routeMode}
+        enabled={
+          routeMode
+        }
         onSelect={
           onMapLocationSelect
         }
@@ -244,9 +294,12 @@ export default function MarsMap({
 
       {routeCoordinates.length > 1 && (
         <Polyline
-          positions={routeCoordinates}
+          positions={
+            routeCoordinates
+          }
           pathOptions={{
-            color: '#75e6ff',
+            color:
+              '#75e6ff',
             weight: 4,
             opacity: 0.95,
           }}
@@ -254,13 +307,17 @@ export default function MarsMap({
       )}
 
       <RoutePointMarker
-        point={routeStart}
+        point={
+          routeStart
+        }
         label="ROUTE START"
         type="start"
       />
 
       <RoutePointMarker
-        point={routeEnd}
+        point={
+          routeEnd
+        }
         label="DESTINATION"
         type="end"
       />
@@ -275,15 +332,18 @@ export default function MarsMap({
           const selected =
             selectedFeature &&
             String(
-              selectedFeature.feature_name,
+              selectedFeature
+                .feature_name,
             ) ===
               String(
-                feature.feature_name,
+                feature
+                  .feature_name,
               )
 
           const markerColor =
             featureColor(
-              feature.feature_type,
+              feature
+                .feature_type,
             )
 
           return (
@@ -293,7 +353,9 @@ export default function MarsMap({
                 feature.latitude_deg,
                 feature.longitude_deg,
               ].join(':')}
-              center={position}
+              center={
+                position
+              }
               radius={
                 selected
                   ? 5
@@ -304,16 +366,20 @@ export default function MarsMap({
                   selected
                     ? '#75e6ff'
                     : markerColor,
+
                 weight:
                   selected
                     ? 2
                     : 0.7,
+
                 opacity:
                   selected
                     ? 1
                     : 0.78,
+
                 fillColor:
                   markerColor,
+
                 fillOpacity:
                   selected
                     ? 1
@@ -327,6 +393,23 @@ export default function MarsMap({
                     .originalEvent
                     ?.stopPropagation()
 
+                  if (
+                    routeMode
+                  ) {
+                    onMapLocationSelect({
+                      latitude_deg:
+                        feature.latitude_deg,
+
+                      longitude_deg:
+                        feature.longitude_deg,
+
+                      label:
+                        feature.feature_name,
+                    })
+
+                    return
+                  }
+
                   onSelect(
                     feature,
                   )
@@ -335,18 +418,23 @@ export default function MarsMap({
             >
               <Tooltip
                 direction="top"
-                offset={[0, -4]}
+                offset={[
+                  0,
+                  -4,
+                ]}
               >
                 <strong>
                   {
-                    feature.feature_name
+                    feature
+                      .feature_name
                   }
                 </strong>
 
                 <br />
 
                 {
-                  feature.feature_type
+                  feature
+                    .feature_type
                 }
               </Tooltip>
             </CircleMarker>

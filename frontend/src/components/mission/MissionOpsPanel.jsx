@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 
 import './mission-ops.css'
+import HazardDefencePanel from './HazardDefencePanel'
 
 const TABS = [
   'MISSION',

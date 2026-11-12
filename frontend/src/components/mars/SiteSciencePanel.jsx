@@ -1,211 +1,333 @@
-import {
-  useEffect,
-  useState,
-} from 'react'
-
-import {
-  fetchRoverPhotos,
-} from '../../services/marsEnvironmentApi'
-
-
-function truncate(
-  value,
-  length = 130,
+function statusLabel(
+  status,
 ) {
-  const text =
-    String(
-      value ?? '',
-    ).trim()
+  const labels = {
+    global_reference:
+      'GLOBAL REFERENCE',
 
-  if (
-    text.length <=
-    length
-  ) {
-    return text
+    site_measurement_context:
+      'SITE-LINKED CONTEXT',
+
+    context_only:
+      'CONTEXT ONLY',
+
+    not_ingested:
+      'NOT INGESTED',
+
+    proxy_only:
+      'PROXY ONLY',
+
+    no_confirmed_native_vegetation:
+      'NO CONFIRMED NATIVE OBSERVATION',
   }
 
-  return `${text.slice(
-    0,
-    length - 1,
-  )}…`
+  return (
+    labels[status] ??
+    String(
+      status ??
+      'UNKNOWN',
+    )
+      .replaceAll(
+        '_',
+        ' ',
+      )
+      .toUpperCase()
+  )
 }
 
 
-export default function RoverPhotosPanel({
-  feature,
+function ScienceField({
+  label,
+  data,
 }) {
-  const [data, setData] =
-    useState(null)
-
-  const [loading, setLoading] =
-    useState(false)
-
-
-  useEffect(() => {
-    if (
-      !feature?.feature_name
-    ) {
-      setData(null)
-      return undefined
-    }
-
-    const controller =
-      new AbortController()
-
-
-    async function load() {
-      try {
-        setLoading(true)
-
-        const response =
-          await fetchRoverPhotos(
-            feature.feature_name,
-            8,
-          )
-
-        if (
-          !controller.signal
-            .aborted
-        ) {
-          setData(
-            response,
-          )
-        }
-      } catch {
-        if (
-          !controller.signal
-            .aborted
-        ) {
-          setData({
-            status:
-              'unavailable',
-
-            count: 0,
-
-            photos: [],
-          })
-        }
-      } finally {
-        if (
-          !controller.signal
-            .aborted
-        ) {
-          setLoading(false)
-        }
-      }
-    }
-
-    load()
-
-    return () =>
-      controller.abort()
-  }, [
-    feature?.feature_name,
-  ])
-
-
-  if (!feature) {
+  if (!data) {
     return (
-      <div className="photo-empty">
-        SELECT A MARS SITE
+      <div className="science-block">
+        <div className="science-block-head">
+          <span>
+            {label}
+          </span>
+
+          <small>
+            NOT AVAILABLE
+          </small>
+        </div>
+
+        <strong>
+          NO SITE-SPECIFIC DATA
+        </strong>
+
+        <p>
+          This dataset has not been
+          loaded for the selected
+          location.
+        </p>
       </div>
     )
   }
-
-
-  if (loading) {
-    return (
-      <div className="photo-empty">
-        QUERYING NASA IMAGE LIBRARY…
-      </div>
-    )
-  }
-
-
-  if (
-    data?.status ===
-    'unavailable'
-  ) {
-    return (
-      <div className="photo-empty">
-        NASA IMAGE LIBRARY TEMPORARILY UNAVAILABLE
-      </div>
-    )
-  }
-
-
-  if (
-    !data?.photos?.length
-  ) {
-    return (
-      <div className="photo-empty">
-        NO PHOTOS APPLICABLE
-      </div>
-    )
-  }
-
 
   return (
-    <div className="photo-grid">
-      {data.photos.map(
-        (photo) => (
-          <article
-            className="photo-card"
-            key={photo.id}
-          >
-            <a
-              href={
-                photo.nasa_url
-              }
-              target="_blank"
-              rel="noreferrer"
-              className="photo-link"
-            >
-              <img
-                src={
-                  photo.preview_url
-                }
-                alt={
-                  photo.title
-                }
-                loading="lazy"
-              />
-            </a>
+    <div className="science-block">
+      <div className="science-block-head">
+        <span>
+          {label}
+        </span>
 
-            <div className="photo-card-body">
-              <div className="photo-card-meta">
+        <small>
+          {statusLabel(
+            data.status,
+          )}
+        </small>
+      </div>
+
+      <strong>
+        {data.value ??
+          'NO VALUE'}
+      </strong>
+
+      {data.note && (
+        <p>
+          {data.note}
+        </p>
+      )}
+
+      <div className="science-block-foot">
+        <span>
+          SOURCE
+        </span>
+
+        {data.url ? (
+          <a
+            className="science-source-link"
+            href={data.url}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {data.source ??
+              'NASA'} ↗
+          </a>
+        ) : (
+          <span>
+            {data.source ??
+              '—'}
+          </span>
+        )}
+      </div>
+    </div>
+  )
+}
+
+
+export default function SiteSciencePanel({
+  science,
+}) {
+  if (!science) {
+    return (
+      <div className="science-panel-body">
+        <div className="science-block">
+          <div className="science-block-head">
+            <span>
+              SITE SCIENCE
+            </span>
+
+            <small>
+              WAITING
+            </small>
+          </div>
+
+          <strong>
+            SELECT A MARS SITE
+          </strong>
+
+          <p>
+            Site-linked science
+            context will appear
+            after a USGS feature
+            is selected.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  const atmosphere =
+    science.atmosphere
+
+  const gases =
+    atmosphere?.gases ??
+    []
+
+  return (
+    <div className="science-panel-body">
+      <div className="science-block">
+        <div className="science-block-head">
+          <span>
+            SELECTED FEATURE
+          </span>
+
+          <small>
+            {
+              science.feature_name
+                ? 'SITE CONTEXT'
+                : 'UNSELECTED'
+            }
+          </small>
+        </div>
+
+        <strong>
+          {
+            science.feature_name ??
+            'MARS'
+          }
+        </strong>
+
+        <p>
+          The science layer distinguishes
+          measured site context, global
+          reference, proxies and datasets
+          that have not yet been ingested.
+        </p>
+      </div>
+
+      <ScienceField
+        label="SOIL / REGOLITH"
+        data={
+          science.soil
+        }
+      />
+
+      <ScienceField
+        label="MINERALS / COMPOSITION"
+        data={
+          science.minerals
+        }
+      />
+
+      <div className="science-block">
+        <div className="science-block-head">
+          <span>
+            ATMOSPHERE / GASES
+          </span>
+
+          <small>
+            {
+              statusLabel(
+                atmosphere?.status,
+              )
+            }
+          </small>
+        </div>
+
+        <strong>
+          {
+            atmosphere?.reference ??
+            'Mars atmosphere'
+          }
+        </strong>
+
+        <div className="gas-grid">
+          {gases.map(
+            (gas) => (
+              <div
+                className="gas-row"
+                key={
+                  gas.name
+                }
+              >
                 <span>
                   {
-                    photo.rover ??
-                    'ROVER'
+                    gas.name
                   }
                 </span>
 
-                <a
-                  href={
-                    photo.nasa_url
+                <strong>
+                  {
+                    gas.volume_percent ==
+                    null
+                      ? 'NO SITE VALUE'
+                      : `${gas.volume_percent}%`
                   }
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  NASA ↗
-                </a>
+                </strong>
               </div>
+            ),
+          )}
+        </div>
 
-              <strong>
-                {
-                  photo.title
-                }
-              </strong>
+        {atmosphere?.note && (
+          <p>
+            {
+              atmosphere.note
+            }
+          </p>
+        )}
 
-              <p>
-                {truncate(
-                  photo.description,
-                )}
-              </p>
-            </div>
-          </article>
-        ),
+        <div className="science-block-foot">
+          <span>
+            SOURCE
+          </span>
+
+          {atmosphere?.url ? (
+            <a
+              className="science-source-link"
+              href={
+                atmosphere.url
+              }
+              target="_blank"
+              rel="noreferrer"
+            >
+              {
+                atmosphere.source ??
+                'NASA'
+              } ↗
+            </a>
+          ) : (
+            <span>
+              {
+                atmosphere?.source ??
+                '—'
+              }
+            </span>
+          )}
+        </div>
+      </div>
+
+      <ScienceField
+        label="WATER / ICE"
+        data={{
+          status:
+            'not_ingested',
+
+          value:
+            'SITE-SPECIFIC EVIDENCE REQUIRED',
+
+          note:
+            'A site-linked water or ice evidence layer is not yet ingested into NeuroNexus.',
+
+          source:
+            'NeuroNexus science roadmap',
+        }}
+      />
+
+      <ScienceField
+        label="BIOAVAILABILITY"
+        data={
+          science.bioavailability
+        }
+      />
+
+      <ScienceField
+        label="VEGETATION / BIOLOGY"
+        data={
+          science.vegetation
+        }
+      />
+
+      {science.provenance?.note && (
+        <div className="science-provenance">
+          {
+            science.provenance.note
+          }
+        </div>
       )}
     </div>
   )
