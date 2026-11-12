@@ -42,15 +42,108 @@ The goal is not to declare a universally "safe" place on Mars. NeuroNexus provid
 * USGS route snapshot + exports: route visualisation against USGS SIM 3292 geology plus JSON/CSV exports.
 * Mars Intelligence: Google Gemini interprets structured NeuroNexus results and explains trade-offs; Gemini does not generate route geometry or alter deterministic numerical results.
 
-## Mission Console v2
+## 🆕 NEW FEATURES — Mission Console v2
 
-* **Dust scenario graphics:** opacity across all 668 sols of NASA Ames MY34, dust-top height, a clickable global dust map and a sol scrubber with playback. The console sol is now adjustable.
-* **Site morphology statistics:** elevation, slope and roughness AT SITE plus MIN / MEAN / MAX over a 2, 4, 10 or 20 km NASA MOLA window.
-* **Saved routes everywhere:** every saved route gets along-track MIN / MEAN / MAX statistics and an elevation profile. Routes are drawn on the 3D globe (⌁ ROUTES panel) and compared side by side with best and worst marked per metric, per-route and combined USGS snapshots, and CSV/JSON export.
-* **☰ Mission Command Index:** every console feature by category, with search, keyboard shortcuts (Ctrl/⌘+K) and a reason shown when an action is unavailable. It also holds field notes, the checklist and **Meet the Team**.
-* **Mars Intelligence v2:** answers about this mission, Mars science, missions and history, and how to use NeuroNexus. It draws on 26 tools, a cited knowledge base and optional web search.
+Everything in this section is **new** in the `feature/mission-console-v2` release. Screenshots were captured from the production build of the running application (`npm run build` + `vite preview` against the live API). Design record: [docs/architecture/mission-console-v2.md](docs/architecture/mission-console-v2.md) · Deployment: [DEPLOYMENT.md](DEPLOYMENT.md).
 
-Design: [docs/architecture/mission-console-v2.md](docs/architecture/mission-console-v2.md) · Deployment: [DEPLOYMENT.md](DEPLOYMENT.md)
+| # | New feature | One line |
+|---|-------------|----------|
+| 1 | [Dust scenario graphics](#1-new--dust-scenario-graphics-right-panel) | Opacity over all 668 sols, dust-top height, global dust map, sol scrubber |
+| 2 | [Site morphology statistics](#2-new--site-morphology-min--mean--max) | Elevation, slope, roughness: AT SITE plus MIN / MEAN / MAX over a 2–20 km window |
+| 3 | [☰ Mission Command Index](#3-new--mission-command-index-the--menu) | Every feature by category, searchable, keyboard-driven |
+| 4 | [Team NeuroNexus credits + Meet the Team](#4-new--team-neuronexus-credits-and-meet-the-team) | Logo, copyright and a direct link to our Space Apps team page |
+| 5 | [Mars Intelligence v2](#5-new--mars-intelligence-v2) | Answers about the mission, Mars, missions, history and the app, with cited sources |
+| 6 | [Save AI routes by name](#6-new--save-ai-designed-routes-by-name) | Save any or all AI candidates; every saved route is reproducible |
+| 7 | [Multi-route USGS snapshot](#7-new--multi-route-usgs-snapshot) | Every route selected for comparison drawn in one USGS SIM 3292 frame |
+| 8 | [Route comparison workspace](#8-new--route-comparison-workspace) | Along-track MIN / MEAN / MAX, best/worst per row, profiles, per-route snapshots, **Verify** |
+| 9 | [Route Projection on the 3D globe](#9-new--route-projection-on-the-3d-globe) | Tick saved routes and project them bold with names, camera reframes |
+
+### 1. NEW · Dust scenario graphics (right panel)
+
+![New: dust scenario panel with opacity over 668 sols, dust-top height, global dust map and sol scrubber](assets/screenshots/v2/01-dust-scenario.png)
+
+The right-hand **Dust scenario** panel is now a full graphical view of the NASA Ames Mars GCM MY34 dust scenario, clearly labelled **MODELED**:
+
+* **KPI strip:** opacity τ for the selected sol with its backend class (LOW / MODERATE / HIGH / VERY HIGH), dust-top height and areocentric season Ls.
+* **Opacity chart:** τ at the selected site across all 668 sols, with threshold bands from the backend's own dust classes, MIN / MEAN / MAX and a pulsing marker on the current sol. Click the chart to jump to a sol.
+* **Dust-top height** sparkline on the same axis.
+* **Global dust map** for the current sol with a crosshair on the site. Click it to select any coordinate.
+* **Sol scrubber** with previous / next / play. The console sol is now adjustable (it used to be fixed at sol 100) and drives the environment assessment.
+* The screenshot shows sol 411, the site's modeled dust peak (the 2018 global storm).
+
+### 2. NEW · Site morphology (MIN / MEAN / MAX)
+
+![New: site morphology panel with at-site values and min, mean, max over a selectable window](assets/screenshots/v2/02-site-morphology.png)
+
+Elevation, slope and roughness now show **AT SITE** (the local MOLA sample) separately from **MIN / MEAN / MAX** over a selectable **2 / 4 / 10 / 20 km** NASA MOLA window, with the valid-pixel count and slope p90 as the stated basis. Values above the route engine's own risk references are flagged amber (a planning aid, not a safety limit). Aspect is shown at the site only, because the mean of a circular quantity is not meaningful.
+
+### 3. NEW · Mission Command Index (the ☰ menu)
+
+![New: the Mission Command Index with every console feature grouped by category, search and keyboard shortcuts](assets/screenshots/v2/03-command-index.png)
+
+The ☰ button now opens a categorised **Command Index** with **every feature in the console**: Site & Navigation, Route Planning, Saved Routes & Comparison, Analysis & Intelligence, Environment, Views, Mission Operations, Data & Export, Workspace, and System & Team.
+
+* **Search** and keyboard control (`Ctrl/⌘ + K` anywhere, ↑ ↓ Enter, Esc) plus single-key shortcuts (R route mode, S save route, C compare, I intelligence, 3 globe…).
+* Unavailable actions **say why** (for example "Needs at least 2 waypoints") instead of silently greying out.
+* Field notes and the checklist moved into a tab of the same panel.
+
+### 4. NEW · Team NeuroNexus credits and Meet the Team
+
+![New: team tab with the Team NeuroNexus logo, Meet the Team link and copyright](assets/screenshots/v2/04-team-and-credits.png)
+
+A **Team** tab in the Command Index (and **Meet the Team** in the Command Index list) opens our official Space Apps team page: https://www.spaceappschallenge.org/2026/find-a-team/neuronexus1/. The Team NeuroNexus logo appears in the top bar, the Command Index and the footer, with the copyright line and the NASA non-endorsement notice.
+
+### 5. NEW · Mars Intelligence v2
+
+![New: Mars Intelligence assistant welcome screen with grouped suggestions, web search toggle, export and clear](assets/screenshots/v2/05-mars-intelligence-welcome.png)
+
+![New: Mars Intelligence answering a Mars-time, mission-history and how-to question with tool calls and cited sources](assets/screenshots/v2/06-mars-intelligence-answer.png)
+
+The assistant answers three kinds of question, not only tool lookups:
+
+* **This mission:** site, routes, terrain statistics, dust at any sol, thermal evidence, the crewed console.
+* **Mars:** planetary science, every NASA and partner-agency mission, history, human exploration, ISRU, and exact Mars time (Ls, Mars Year, season) computed for any date.
+* **This app and project:** how to use every feature, data sources, setup, deployment, the team.
+
+How it works: 26 tools (8 new), a curated and cited knowledge base (185 sections: reference notes, project docs and the UI command catalogue), and an optional **WEB SEARCH** toggle for recent events. Each answer lists the **tools it called** and the **sources it cited**, with per-section evidence classes (NASA REFERENCE, PROJECT DOCS, COMPUTED…). History persists, answers can be copied and the conversation exported as Markdown. The screenshot shows one question that used three tools: a Mars-time calculation, the missions library (Opportunity and the 2018 storm) and the UI guide.
+
+### 6. NEW · Save AI-designed routes by name
+
+![New: AI Route Design with Save as route buttons and Save all candidates, six candidates saved as named routes](assets/screenshots/v2/07-ai-routes-saved-by-name.png)
+
+Every AI Route Designer candidate now has **SAVE AS ROUTE** (you choose the name), and **SAVE ALL CANDIDATES** saves the whole set under a name prefix. **Every saved route is reproducible:** it stores its exact geometry plus the inputs that produced it. For AI routes that is the exact generation request, objective weights, candidate id and engine version. Saved routes are numbered with a stable colour and appear in 2D, 3D, the comparison workspace, exports and the AI assistant.
+
+### 7. NEW · Multi-route USGS snapshot
+
+![New: one USGS SIM 3292 snapshot showing four routes selected for comparison in their own colours](assets/screenshots/v2/08-multi-route-usgs-snapshot.png)
+
+Select two or more routes for comparison and **USGS SNAPSHOT** draws **all of them in a single USGS SIM 3292 frame** over MOLA hillshade, each in its own colour with start and end markers, plus the geologic units each route crosses. With one route selected it behaves as before.
+
+### 8. NEW · Route comparison workspace
+
+![New: comparison workspace with four routes on the map](assets/screenshots/v2/09-route-comparison.png)
+
+![New: comparison table with along-track min, mean, max elevation, slope and roughness and best/worst marked, plus elevation profiles](assets/screenshots/v2/10-comparison-table-and-profile.png)
+
+![New: per-route USGS snapshots with statistics, units crossed and a Reproduced verification result](assets/screenshots/v2/11-snapshots-and-verify-reproducible.png)
+
+* **Along-track statistics:** every saved route is evaluated along its whole path (not only at the waypoints) over NASA MOLA, giving **MIN / MEAN / MAX** elevation, slope and roughness plus gain/loss, slope p90, terrain risk proxy, EVA time and data support.
+* **Best and worst** are marked per row by the metric's stated direction (★ best, ▾ worst). Elevation rows are informational.
+* **Overlaid elevation profiles** of all compared routes, up to four at a time.
+* **Per-route USGS snapshot** with the units crossed, and a **COMBINED SNAPSHOT** frame. CSV and JSON export.
+* **RENAME** and **VERIFY** on every card: AI routes replay the stored request and compare geometry vertex by vertex; manual routes re-run the deterministic evaluation. The result reads REPRODUCED, DIFFERS or ERROR.
+
+### 9. NEW · Route Projection on the 3D globe
+
+![New: Route Projection on the 3D globe, three saved routes projected bold with name labels](assets/screenshots/v2/12-route-projection-3d.png)
+
+The 3D toolbar has a new **◎ ROUTE PROJECTION** button. Turn it on, **tick saved routes**, and each ticked route is projected bold above the terrain with its name and start/end markers; unticked routes fade. The camera reframes to show every ticked route whenever the selection changes (PROJECT ALL, CLEAR and REFRAME buttons are in the panel). The 3D **⌁ ROUTES** panel also gives per-route show/hide, fly-to, compare, USGS and rename.
+
+### Also new
+
+* Deployment guide ([DEPLOYMENT.md](DEPLOYMENT.md)) with local, Docker Compose and split-hosting options.
+* Test suites for the new engines (dust, terrain statistics, along-track statistics, snapshots, Mars time, knowledge base, route reproducibility) and for the command registry.
+* Fixes: the NASA briefing endpoint no longer fails on repeated requests, and first-time USGS snapshots place routes at the right scale.
 
 ## Screenshots : the mission console in action
 
