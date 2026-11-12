@@ -1741,19 +1741,28 @@ main > section {
   left: 0;
   top: 0;
   transform-origin: 0 0;
-  will-change: transform;
+  overflow: hidden; /* clips the spotlight's 200vmax shadow: unclipped it grew this layer to ~400 MB on a 3x phone */
   transition: transform 700ms var(--ease-reveal);
 }
 
+/* Every screenshot of a tutorial is mounted at once. Hidden ones leave the GPU after their fade (visibility, no
+   will-change): a dozen 1600 px layers at 3x density is more memory than iOS gives a page, and Safari kills it. */
 .tt-frame {
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity 600ms var(--ease-out);
+  visibility: hidden;
+  transition: opacity 600ms var(--ease-out), visibility 0s linear 600ms;
 }
 
 .tt-frame.is-on {
   opacity: 1;
+  visibility: visible;
+  transition: opacity 600ms var(--ease-out), visibility 0s;
+}
+
+.tt-frame.is-on .tt-cam {
+  will-change: transform;
 }
 
 .tt-frame img {
