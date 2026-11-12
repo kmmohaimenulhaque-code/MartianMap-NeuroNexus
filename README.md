@@ -180,4 +180,4 @@ NASA Space Apps 2026 submission branch:
 https://github.com/kmmohaimenulhaque-code/martian-map/tree/Master-Ai
 
 Source ledger:
-https://github.com/kmmohaimenulhaque-code/martian-map/blob/Master-Ai/data/manifests/source_ledger.json
+https://github.com/kmmohaimenulhaque-code/martian-map/blob/Master-Ai/data/manifests/updated_source_ledger.json
