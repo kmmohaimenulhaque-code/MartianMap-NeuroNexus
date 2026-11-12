@@ -261,7 +261,7 @@ export default function MarsIntelligence({ open, onClose, status, onAsk, mission
             <h2>MARS INTELLIGENCE</h2>
             <small>
               {status?.configured
-                ? `${status.model} · ${status.tools?.length ?? 0} tools · ${status.knowledge?.chunks ?? 0} knowledge sections`
+                ? `${status.model}${status.router?.providers?.qwen?.healthy ? ` + ${status.router.providers.qwen.model}` : ""} · ${status.tools?.length ?? 0} tools · ${status.knowledge?.chunks ?? 0} knowledge sections`
                 : "GEMINI_API_KEY is not configured on the server"}
             </small>
           </div>
