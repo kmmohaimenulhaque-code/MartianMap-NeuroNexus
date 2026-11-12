@@ -2134,3 +2134,28 @@ body.lp::before {
     transform: none;
   }
 }
+
+/* Monochrome hero; color arrives after the scroll dust storm (js/fx.js dustStorm). */
+body.lp {
+  background-color: rgb(18, 20, 22);
+}
+
+.lp-hero .lp-lens__canvas,
+.lp-hero .lp-lens__fallback,
+.lp-hero__backdrop {
+  filter: grayscale(1) contrast(1.08) brightness(0.9);
+}
+
+.lp-hero__backdrop {
+  opacity: 0.1;
+  filter: grayscale(1) blur(80px);
+}
+
+.lp-dust {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}

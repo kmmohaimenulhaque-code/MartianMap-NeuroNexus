@@ -5,6 +5,7 @@
    sparks:   drifting light particles behind the proof number.
    wave:     a field of cyan points rippling under the pointer (principles).
    Cards:    pointer-following tilt and glow on the Core Features cards.
+   Storm:    a dust storm on scroll that carries the page from the monochrome hero into the colored sections.
    Every canvas pauses off screen and when the tab is hidden. Reduced motion or Save-Data draw one still frame. */
 
 import gale from "../data/gale-mola.json";
@@ -269,9 +270,115 @@ function tiltCards(list) {
   });
 }
 
+/* ------------------------------------------------------------------ dust storm transition */
+
+/* Scrolling out of the monochrome hero, a dust storm sweeps across the screen while the page color moves
+   charcoal -> rust dust -> navy; it clears as the next sections arrive. Reduced motion keeps only the color. */
+const SKY = [
+  [0, [18, 20, 22]],
+  [0.55, [58, 34, 22]],
+  [1, [6, 12, 20]],
+];
+const mix = (a, b, k) => a.map((v, i) => Math.round(v + (b[i] - v) * k));
+function skyAt(p) {
+  for (let i = 1; i < SKY.length; i += 1) {
+    if (p <= SKY[i][0]) return mix(SKY[i - 1][1], SKY[i][1], (p - SKY[i - 1][0]) / (SKY[i][0] - SKY[i - 1][0]));
+  }
+  return SKY[SKY.length - 1][1];
+}
+
+function puff(rgb) {
+  const c = document.createElement("canvas");
+  c.width = c.height = 128;
+  const g = c.getContext("2d");
+  const r = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  r.addColorStop(0, `rgba(${rgb},0.55)`);
+  r.addColorStop(0.5, `rgba(${rgb},0.22)`);
+  r.addColorStop(1, `rgba(${rgb},0)`);
+  g.fillStyle = r;
+  g.fillRect(0, 0, 128, 128);
+  return c;
+}
+
+function dustStorm(doc) {
+  const hero = doc.querySelector(".lp-hero");
+  if (!hero) return;
+  const body = doc.body;
+  const canvas = doc.createElement("canvas");
+  canvas.className = "lp-dust";
+  canvas.setAttribute("aria-hidden", "true");
+  body.append(canvas);
+  const ctx = canvas.getContext("2d");
+  const sprites = [puff("196,120,74"), puff("150,88,56"), puff("222,170,120")];
+  const puffs = Array.from({ length: 70 }, () => ({ x: Math.random(), y: Math.random(), s: 120 + Math.random() * 420, v: 0.04 + Math.random() * 0.12, k: (Math.random() * 3) | 0, w: Math.random() * 6 }));
+  const grains = Array.from({ length: 260 }, () => ({ x: Math.random(), y: Math.random(), v: 0.25 + Math.random() * 0.6, l: 6 + Math.random() * 22 }));
+  let w = 0;
+  let h = 0;
+  let level = 0;
+  let raf = 0;
+  const size = () => {
+    w = canvas.width = innerWidth; // soft dust needs no device-pixel detail
+    h = canvas.height = innerHeight;
+  };
+  const progress = () => {
+    const r = hero.getBoundingClientRect();
+    return Math.min(1, Math.max(0, -r.top / (r.height * 1.25)));
+  };
+  const draw = (t) => {
+    ctx.clearRect(0, 0, w, h);
+    if (level < 0.01) return;
+    ctx.globalAlpha = level * 0.55;
+    ctx.fillStyle = "rgb(120,72,44)";
+    ctx.fillRect(0, 0, w, h);
+    for (const q of puffs) {
+      const x = (((q.x + t * q.v) % 1.4) - 0.2) * w;
+      const y = (q.y + Math.sin(t * 0.4 + q.w) * 0.04) * h;
+      ctx.globalAlpha = level * 0.9;
+      ctx.drawImage(sprites[q.k], x - q.s / 2, y - q.s / 2, q.s * 1.6, q.s);
+    }
+    ctx.globalAlpha = level * 0.5;
+    ctx.strokeStyle = "rgb(236,196,150)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (const g of grains) {
+      const x = ((g.x + t * g.v) % 1.1) * w;
+      const y = g.y * h + Math.sin(t * 2 + g.x * 20) * 6;
+      ctx.moveTo(x, y);
+      ctx.lineTo(x - g.l, y + g.l * 0.12);
+    }
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  };
+  const t0 = performance.now();
+  const loop = (now) => {
+    raf = 0;
+    draw((now - t0) / 1000);
+    if (level >= 0.01 && !document.hidden) raf = requestAnimationFrame(loop);
+  };
+  const onScroll = () => {
+    const p = progress();
+    body.style.backgroundColor = `rgb(${skyAt(p)})`;
+    body.classList.toggle("is-colored", p > 0.75);
+    // Storm strength: a bell between the hero's lower half and the next section, zero before and after.
+    const k = Math.min(1, Math.max(0, (p - 0.12) / 0.86));
+    level = still() ? 0 : Math.sin(k * Math.PI) ** 1.5;
+    if (level >= 0.01 && !raf) raf = requestAnimationFrame(loop);
+    if (level < 0.01) ctx.clearRect(0, 0, w, h);
+  };
+  addEventListener("resize", () => {
+    size();
+    onScroll();
+  });
+  addEventListener("scroll", onScroll, { passive: true });
+  document.addEventListener("visibilitychange", onScroll);
+  size();
+  onScroll();
+}
+
 const FX = { streams, terrain: (c) => terrain(c), "terrain-sparks": (c) => terrain(c, { rings: false, sparks: 70 }), wave };
 
 export function initFx(doc = document) {
   doc.querySelectorAll("canvas[data-fx]").forEach((c) => FX[c.dataset.fx]?.(c));
   tiltCards(doc.querySelector("[data-cards]"));
+  dustStorm(doc);
 }
