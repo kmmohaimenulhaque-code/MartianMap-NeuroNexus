@@ -43,7 +43,7 @@ ENTRIES: list[dict[str, Any]] = [
      "url": "https://themis.asu.edu/", "use": "Historical thermal evidence at and around sites."},
     {"id": "nasa_ames_mgcm", "class": "EXTERNAL SOURCE", "organisation": "NASA Ames Research Center",
      "title": "Mars Global Climate Model MY34 dust scenario",
-     "url": "https://www.nasa.gov/ames/mars-climate-modeling-center/", "use": "Modelled dust opacity and height."},
+     "url": "https://www.nasa.gov/space-science-and-astrobiology-at-ames/division-overview/planetary-systems-branch-overview-stt/mars-climate-modeling-center-mcmc/", "use": "Modelled dust opacity and height."},
     {"id": "nasa_rad", "class": "EXTERNAL SOURCE", "organisation": "NASA MSL / RAD",
      "title": "Radiation Assessment Detector surface measurements (Gale crater)",
      "url": "https://science.nasa.gov/resource/radiation-measurements-on-mars/",
