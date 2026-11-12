@@ -1,55 +1,72 @@
-import { Canvas } from "@react-three/fiber";
-import { OrbitControls, useGLTF } from "@react-three/drei";
-import { Suspense } from "react";
+import { Canvas } from '@react-three/fiber'
+import { OrbitControls, useGLTF } from '@react-three/drei'
+import * as THREE from 'three'
 
 function MarsTerrain() {
-  const { scene } = useGLTF("/assets/mars_terrain.glb");
+  const { scene } = useGLTF('/assets/mola_test_region.glb')
+
+  scene.traverse((object) => {
+    if (object.isMesh) {
+      object.castShadow = true
+      object.receiveShadow = true
+
+      object.material = new THREE.MeshStandardMaterial({
+        color: '#8f6b55',
+        roughness: 0.95,
+        metalness: 0.0,
+        side: THREE.DoubleSide,
+      })
+    }
+  })
 
   return (
     <primitive
       object={scene}
-      scale={0.000001}
+      scale={0.001}
+      rotation={[0, 0, 0]}
     />
-  );
+  )
 }
 
-function Loading() {
-  return null;
-}
+useGLTF.preload('/assets/mola_test_region.glb')
 
-function App() {
+export default function App() {
   return (
-    <div style={{ width: "100vw", height: "100vh" }}>
+    <div
+      style={{
+        width: '100vw',
+        height: '100vh',
+        background: '#050505',
+      }}
+    >
       <Canvas
         camera={{
-          position: [0, 0, 7],
+          position: [0, 0, 8],
           fov: 45,
           near: 0.01,
           far: 100,
         }}
       >
-        <color attach="background" args={["#050505"]} />
-
-        <ambientLight intensity={1.2} />
+        <ambientLight intensity={1.5} />
 
         <directionalLight
           position={[5, 5, 5]}
           intensity={3}
         />
 
-        <Suspense fallback={<Loading />}>
-          <MarsTerrain />
-        </Suspense>
+        <MarsTerrain />
 
         <OrbitControls
           enableDamping
-          dampingFactor={0.08}
-          minDistance={3.6}
-          maxDistance={20}
+          minDistance={0.1}
+          maxDistance={50}
+        />
+
+        <gridHelper
+          args={[10, 10]}
+          position={[0, 0, 0]}
         />
       </Canvas>
     </div>
-  );
+  )
 }
-
-export default App;
