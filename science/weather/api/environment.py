@@ -42,6 +42,22 @@ from science.hazards.api import (
     router as hazards_router,
 )
 
+from science.routing.api import (
+    router as routes_router,
+)
+
+from science.usgs.api import (
+    router as usgs_router,
+)
+
+from science.orbital.api import (
+    router as orbital_router,
+)
+
+from science.ai.api import (
+    router as ai_router,
+)
+
 
 app = FastAPI(
     title=(
@@ -644,3 +660,14 @@ def rover_photos(
 
 # NeuroNexus hazard/evidence router
 app.include_router(hazards_router)
+
+
+# NeuroNexus v2 subsystems:
+#   /routes   deterministic multi-objective route engine
+#   /usgs     ArcGIS synchronisation and scientific route snapshots
+#   /orbital  near-Mars small-body tracking (NASA/JPL)
+#   /ai       server-side Gemini (API key never reaches the browser)
+app.include_router(routes_router)
+app.include_router(usgs_router)
+app.include_router(orbital_router)
+app.include_router(ai_router)
