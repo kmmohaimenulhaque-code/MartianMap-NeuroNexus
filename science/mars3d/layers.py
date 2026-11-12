@@ -75,10 +75,21 @@ def rover_traverses(fetch=_get_json, use_cache: bool = True) -> dict[str, Any]:
     with _lock:
         if use_cache and _traverse_cache["payload"] and time.time() - _traverse_cache["at"] < TRAVERSE_CACHE_S:
             return _traverse_cache["payload"]
-    rovers = []
-    for spec in TRAVERSES:
+    from concurrent.futures import ThreadPoolExecutor
+
+    def _load(spec):
         try:
-            collection = fetch(spec["source_url"])
+            return spec, fetch(spec["source_url"]), None
+        except Exception as exc:  # one rover failing never breaks the layer
+            return spec, None, exc
+
+    with ThreadPoolExecutor(max_workers=len(TRAVERSES)) as pool:
+        loaded = list(pool.map(_load, TRAVERSES))
+    rovers = []
+    for spec, collection, error in loaded:
+        try:
+            if error is not None:
+                raise error
             vertices: list[list[float]] = []
             sols: list[int] = []
             for feature in collection.get("features", []):
@@ -265,4 +276,93 @@ def exploration_context() -> dict[str, Any]:
             },
         },
         "boundary": "No region is labelled NASA-certified safe or universally the best place to walk or land.",
+    }
+
+
+# ------------------------------------------------------------ potential exploration zones
+
+PEZ_CRITERIA = {
+    "walkability_min": 70.0,
+    "slope_max_deg": 5.0,
+    "elevation_max_m": 0.0,
+    "ice_band_abs_latitude_deg": [30.0, 50.0],
+}
+PEZ_METHOD = (
+    "DERIVED — NEURONEXUS. Within a bounded +/-30 km NASA MOLA 128 ppd window, a cell is a candidate when "
+    "NeuroNexus walkability >= 70, mean slope <= 5 deg and elevation <= 0 m (below the MOLA datum, i.e. more "
+    "atmosphere above the surface for entry, descent and landing). The zone reports whether its centre lies in the "
+    "30-50 deg latitude band where SWIM documents accessible shallow-ice study regions. Exploration context only: "
+    "not a NASA-certified safe zone, no guarantee of habitability and no confirmed resource."
+)
+PEZ_CACHE: dict[str, dict[str, Any]] = {}
+
+
+def _cell_area_km2(cell: dict[str, Any]) -> float:
+    from science.routing.metrics import MARS_RADIUS_KM
+
+    dlat = math.radians(abs(cell["lat_max"] - cell["lat_min"]))
+    dlon = math.radians(abs(((cell["lon_max"] - cell["lon_min"]) + 180.0) % 360.0 - 180.0))
+    lat = math.radians((cell["lat_max"] + cell["lat_min"]) / 2.0)
+    return (MARS_RADIUS_KM ** 2) * dlat * dlon * math.cos(lat)
+
+
+def evaluate_exploration_zone(name: str, latitude: float, longitude: float, *, context: str,
+                              loader=None, half_width_km: float = 30.0) -> dict[str, Any]:
+    key = f"{name}:{latitude:.3f}:{longitude % 360.0:.3f}"
+    if loader is None and key in PEZ_CACHE:
+        return PEZ_CACHE[key]
+    base = {"name": name, "latitude_deg": latitude, "longitude_deg": longitude % 360.0, "context": context,
+            "criteria": PEZ_CRITERIA, "classification": "POTENTIAL EXPLORATION ZONE — DERIVED — NEURONEXUS"}
+    try:
+        grid = local_terrain_grid(latitude, longitude, half_width_km=half_width_km, max_cells=24, loader=loader)
+    except Exception as exc:
+        return {**base, "status": "UNAVAILABLE", "reason": f"MOLA terrain unavailable here: {str(exc)[:160]}",
+                "cells": [], "extent": None}
+    cells = grid["cells"]
+    passing = [c for c in cells if c["walkability"] >= PEZ_CRITERIA["walkability_min"]
+               and c["slope_deg"] <= PEZ_CRITERIA["slope_max_deg"] and c["elevation_m"] <= PEZ_CRITERIA["elevation_max_m"]]
+    lo, hi = PEZ_CRITERIA["ice_band_abs_latitude_deg"]
+    total_area = sum(_cell_area_km2(c) for c in cells) or 1.0
+    zone_area = sum(_cell_area_km2(c) for c in passing)
+    mean = lambda key: round(sum(c[key] for c in passing) / len(passing), 2) if passing else None  # noqa: E731
+    result = {
+        **base,
+        "status": "DERIVED" if passing else "NO CANDIDATE CELLS",
+        "in_ice_study_latitude_band": lo <= abs(latitude) <= hi,
+        "candidate_area_km2": round(zone_area, 1),
+        "candidate_fraction": round(zone_area / total_area, 3),
+        "mean_walkability": mean("walkability"),
+        "mean_slope_deg": mean("slope_deg"),
+        "mean_roughness_m": mean("roughness_m"),
+        "mean_elevation_m": mean("elevation_m"),
+        "cells": passing,
+        "extent": {
+            "lat_min": min(c["lat_min"] for c in passing), "lat_max": max(c["lat_max"] for c in passing),
+            "lon_min": min(c["lon_min"] for c in passing), "lon_max": max(c["lon_max"] for c in passing),
+        } if passing else None,
+        "window_half_width_km": grid["half_width_km"],
+        "source": grid["source"],
+    }
+    if loader is None:
+        PEZ_CACHE[key] = result
+    return result
+
+
+def exploration_zones(site: dict[str, Any] | None = None, loader=None) -> dict[str, Any]:
+    zones = []
+    for region in SWIM_STUDY_REGIONS:
+        where = _locate(region["name"])
+        if where:
+            zones.append(evaluate_exploration_zone(region["name"], where["latitude_deg"], where["longitude_deg"],
+                                                   context="Documented accessible-ice study region (SWIM literature)", loader=loader))
+    if site is not None:
+        zones.append(evaluate_exploration_zone("Selected site", float(site["latitude_deg"]), float(site["longitude_deg"]),
+                                               context="Currently selected NeuroNexus site", loader=loader))
+    return {
+        "status": "ok",
+        "label": "POTENTIAL EXPLORATION ZONES — DERIVED — NEURONEXUS",
+        "method": PEZ_METHOD,
+        "criteria": PEZ_CRITERIA,
+        "zones": zones,
+        "boundary": "Not an official NASA zone. No zone is certified safe, habitable or resource-confirmed.",
     }
