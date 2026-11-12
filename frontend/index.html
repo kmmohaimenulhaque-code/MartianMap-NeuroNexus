@@ -159,6 +159,11 @@
 
       <!-- 4. Pareto proof -->
       <section class="lp-pareto" id="pareto" aria-labelledby="pareto-title">
+        <div class="lp-pano" data-pano aria-hidden="true">
+          <img class="lp-pano__img" src="/landing/media/mars-panorama.webp" alt="" decoding="async" />
+          <img class="lp-pano__frost" src="/landing/media/mars-panorama.webp" alt="" decoding="async" />
+        </div>
+        <canvas class="lp-neurons" data-neurons aria-hidden="true"></canvas>
         <canvas class="lp-fx" data-fx="motes" aria-hidden="true"></canvas>
         <p class="lp-eyebrow" data-reveal><span class="lp-dot" aria-hidden="true"></span>Multi-Objective Pareto Proof · Gale to Escalante (2,018 ms)</p>
         <h2 class="lp-display lp-display--md" id="pareto-title" data-reveal>When the Shortest Line Is a Trap.</h2>
@@ -185,6 +190,7 @@
           </table>
         </div>
         <aside class="lp-pareto-detail" data-pareto-detail aria-live="polite"></aside>
+        <p class="lp-pano__credit">Mars panorama: NASA/JPL-Caltech. Move the cursor to look around and wipe the dust.</p>
         <a class="lp-pill lp-pill--cyan lp-magnetic" href="/console/?tutorial=route-design"><span class="lp-dot" aria-hidden="true"></span>Inspect All 6 Pareto Candidates Live in Console</a>
       </section>
 

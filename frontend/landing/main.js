@@ -20,7 +20,7 @@ import { initFinale } from "./js/finale.js";
 import { initGlass, initIntro } from "./js/hero.js";
 import { initFx } from "./js/fx.js";
 import { initApolloStory } from "./js/apollo.js";
-import { initPareto } from "./js/pareto.js";
+import { initPareto, initParetoScene } from "./js/pareto.js";
 
 const doc = document;
 doc.documentElement.classList.remove("no-js");
@@ -39,6 +39,7 @@ const player = createPlayer(doc.querySelector("[data-player]"), spec, { sizes, t
 renderCards(doc.querySelector("[data-cards]"), spec, { sizes, tokens, consolePath: site.consolePath, openPlayer: player.open });
 initApolloStory(doc);
 initPareto(doc);
+initParetoScene(doc);
 doc.querySelector("[data-play-reel]")?.addEventListener("click", (e) => player.openReel(e.currentTarget));
 
 initIntro();

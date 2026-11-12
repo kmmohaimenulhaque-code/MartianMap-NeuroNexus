@@ -3166,34 +3166,6 @@ body.lp {
   pointer-events: none;
 }
 
-.lp-moon__shard {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(1, 255, 255, 0.03) 60%, rgba(255, 255, 255, 0.05));
-  -webkit-backdrop-filter: blur(16px) saturate(130%);
-  backdrop-filter: blur(16px) saturate(130%);
-  will-change: transform, opacity;
-}
-
-.lp-moon__cracks {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  opacity: calc(1 - var(--burst, 0) * 1.8);
-  filter: drop-shadow(0 0 3px rgba(1, 255, 255, 0.55));
-}
-
-.lp-moon__cracks path {
-  fill: none;
-  stroke: rgba(236, 250, 255, 0.85);
-  stroke-width: 1.2;
-  vector-effect: non-scaling-stroke;
-  stroke-dasharray: 1;
-  stroke-dashoffset: calc(1 - var(--crack, 0));
-}
-
 .lp-moon__copy {
   position: relative;
   z-index: 3;
@@ -3422,4 +3394,144 @@ body.lp {
   border-radius: 50%;
   background: currentColor;
   box-shadow: 0 0 12px 2px currentColor;
+}
+
+.lp-moon__glass canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Pareto scene: the panorama pans with the cursor under a dust frost that the cursor wipes clear; neurons glow
+   behind a glass table and fire signals into the rows (js/pareto.js initParetoScene). */
+.lp-pareto {
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.lp-pano {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: -2;
+  height: clamp(340px, 58vh, 600px);
+  overflow: hidden;
+  --fx: -999px;
+  --fy: -999px;
+}
+
+.lp-pano img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: auto;
+  max-width: none;
+  will-change: transform;
+}
+
+.lp-pano__img {
+  filter: brightness(0.82) contrast(1.1) saturate(1.1);
+}
+
+.lp-pano__frost {
+  filter: blur(14px) brightness(0.5) saturate(1.25) sepia(0.15);
+  -webkit-mask-image: radial-gradient(200px circle at var(--fx) var(--fy), transparent 40%, #000 78%);
+  mask-image: radial-gradient(200px circle at var(--fx) var(--fy), transparent 40%, #000 78%);
+}
+
+/* The wiped window gets a faint cyan lens ring. */
+.lp-pano::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: radial-gradient(200px circle at var(--fx) var(--fy), transparent 70%, rgba(1, 255, 255, 0.22) 76%, transparent 80%);
+  opacity: 0;
+  transition: opacity 300ms;
+  pointer-events: none;
+}
+
+.lp-pano.is-wiping::before {
+  opacity: 1;
+}
+
+.lp-pano::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(6, 12, 20, 0.7), rgba(6, 12, 20, 0.2) 55%, rgba(6, 12, 20, 0.05)),
+    linear-gradient(rgba(6, 12, 20, 0.45), transparent 25%, transparent 50%, var(--paper));
+  pointer-events: none;
+}
+
+.lp-pano__credit {
+  margin: 14px 0 0;
+  color: var(--slate);
+  font: 10.5px/1.4 var(--mono);
+  letter-spacing: 0.05em;
+}
+
+.lp-neurons {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+#pareto-title {
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.6), 0 0 40px rgba(1, 255, 255, 0.12);
+}
+
+.lp-table-wrap,
+.lp-pareto-detail {
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
+  backdrop-filter: blur(14px) saturate(130%);
+  box-shadow: 0 40px 90px -40px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(1, 255, 255, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.lp-table-wrap {
+  background:
+    radial-gradient(460px circle at var(--sx, -999px) var(--sy, -999px), rgba(1, 255, 255, 0.09), transparent 60%),
+    rgba(9, 15, 20, 0.72);
+}
+
+.lp-pareto-detail {
+  background:
+    radial-gradient(380px circle at var(--sx, -999px) var(--sy, -999px), rgba(1, 255, 255, 0.09), transparent 60%),
+    rgba(12, 20, 26, 0.74);
+}
+
+.lp-pareto-table thead th {
+  background: rgba(14, 22, 28, 0.6);
+}
+
+.lp-pareto-table .is-col {
+  background: rgba(1, 255, 255, 0.045);
+}
+
+.lp-pareto-table thead th.is-col {
+  color: var(--cyan);
+  box-shadow: inset 0 -2px 0 var(--cyan);
+}
+
+.lp-pareto-table tbody tr.is-zap th,
+.lp-pareto-table tbody tr.is-zap td {
+  animation: lp-zap 450ms ease-out;
+}
+
+@keyframes lp-zap {
+  from {
+    background: rgba(1, 255, 255, 0.16);
+  }
+}
+
+@media (max-width: 600px) {
+  .lp-pareto > .lp-pill {
+    max-width: 100%;
+    white-space: normal;
+    text-align: left;
+  }
 }

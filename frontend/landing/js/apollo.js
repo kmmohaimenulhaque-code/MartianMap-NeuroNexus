@@ -1,7 +1,8 @@
-/* Apollo 14 scene: a pinned section whose scroll progress drives a shattering pane of frosted glass in front of the
-   animated NASA photo (AS14-64-9089). 0 to 0.2: frosted and whole. 0.15 to 0.35: cracks run from the impact point.
-   0.3 to 0.8: shards fly apart and the scene sharpens. The copy rises in front from 0.35. The HUD chips retell the
-   story. Reduced motion: no glass, the scene and copy show at once. The video only plays while on screen. */
+/* Apollo 14 scene: a pinned section whose scroll progress drives a pane of frosted glass in front of the animated
+   NASA photo (AS14-64-9089). The pane is ~100 small fragments of a blurred copy of the scene; as a wind front sweeps
+   left to right, each fragment lifts, turns, shrinks and dissolves into glass dust (dispersion, no crack web).
+   The copy rises in front from 0.35. HUD chips retell the story. Reduced motion: no glass. The video only plays
+   while on screen; the canvas only redraws when the scroll position changes. */
 
 import { reducedMotion } from "./env.js";
 
@@ -13,20 +14,36 @@ const PIN_COPY = {
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
 const ease = (v) => 1 - (1 - v) ** 3;
 
-/* Shards: polygons between jittered rays and rings around an impact point, in percent of the stage. */
-function shardPolygons(cx, cy, rays = 9, rings = [9, 30, 160]) {
-  let seed = 7;
+/* Jittered grid split into triangles, in 0..1 stage units, with seeded motion per fragment. */
+function fragments(cols = 9, rows = 6) {
+  let seed = 11;
   const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-  const angles = Array.from({ length: rays }, (_, i) => ((i + 0.25 + rnd() * 0.5) / rays) * Math.PI * 2);
-  const point = (a, r) => [cx + Math.cos(a) * r * (0.85 + rnd() * 0.3), cy + Math.sin(a) * r * 1.6 * (0.85 + rnd() * 0.3)];
-  const grid = rings.map((r) => angles.map((a) => point(a, r)));
-  const shards = [];
-  for (let i = 0; i < rays; i += 1) {
-    const j = (i + 1) % rays;
-    shards.push([[cx, cy], grid[0][i], grid[0][j]]);
-    for (let k = 0; k < rings.length - 1; k += 1) shards.push([grid[k][i], grid[k + 1][i], grid[k + 1][j], grid[k][j]]);
-  }
-  return shards;
+  const pts = [];
+  for (let r = 0; r <= rows; r += 1)
+    for (let c = 0; c <= cols; c += 1) {
+      const edge = r === 0 || c === 0 || r === rows || c === cols;
+      pts.push([(c + (edge ? 0 : (rnd() - 0.5) * 0.7)) / cols, (r + (edge ? 0 : (rnd() - 0.5) * 0.7)) / rows]);
+    }
+  const at = (c, r) => pts[r * (cols + 1) + c];
+  const out = [];
+  for (let r = 0; r < rows; r += 1)
+    for (let c = 0; c < cols; c += 1) {
+      const quad = [at(c, r), at(c + 1, r), at(c + 1, r + 1), at(c, r + 1)];
+      const tris = rnd() > 0.5 ? [[quad[0], quad[1], quad[2]], [quad[0], quad[2], quad[3]]] : [[quad[0], quad[1], quad[3]], [quad[1], quad[2], quad[3]]];
+      for (const poly of tris) {
+        const cx = (poly[0][0] + poly[1][0] + poly[2][0]) / 3;
+        const cy = (poly[0][1] + poly[1][1] + poly[2][1]) / 3;
+        out.push({
+          poly, cx, cy,
+          delay: cx * 0.55 + rnd() * 0.15,
+          vx: 0.12 + rnd() * 0.3,
+          vy: -0.16 + rnd() * 0.22,
+          rot: (rnd() - 0.5) * 2.2,
+          specks: Array.from({ length: 4 }, () => [(rnd() - 0.5) * 0.04, (rnd() - 0.5) * 0.04, 0.6 + rnd() * 1.4]),
+        });
+      }
+    }
+  return out;
 }
 
 export function initApolloStory(root = document) {
@@ -49,7 +66,6 @@ export function initApolloStory(root = document) {
     }),
   );
 
-  // Play only while visible (battery, and a hidden decode costs nothing).
   if (video) {
     new IntersectionObserver(([e]) => {
       if (e.isIntersecting && !reducedMotion()) video.play().catch(() => {});
@@ -63,29 +79,84 @@ export function initApolloStory(root = document) {
     return;
   }
 
-  const cx = 62;
-  const cy = 44;
-  const shards = shardPolygons(cx, cy).map((poly) => {
-    const el = document.createElement("span");
-    el.className = "lp-moon__shard";
-    el.style.clipPath = `polygon(${poly.map(([x, y]) => `${x}% ${y}%`).join(",")})`;
-    const mx = poly.reduce((s, p) => s + p[0], 0) / poly.length - cx;
-    const my = poly.reduce((s, p) => s + p[1], 0) / poly.length - cy;
-    const d = Math.hypot(mx, my) || 1;
-    glass.append(el);
-    return { el, dx: (mx / d) * (40 + d * 2.2), dy: (my / d) * (30 + d * 1.6), rot: (mx > 0 ? 1 : -1) * (8 + d * 0.35), delay: Math.min(0.25, d / 400) };
-  });
-  // Crack lines: the shard edges, drawn as one SVG over the glass.
-  const svgNS = "http://www.w3.org/2000/svg";
-  const svg = document.createElementNS(svgNS, "svg");
-  svg.setAttribute("viewBox", "0 0 100 100");
-  svg.setAttribute("preserveAspectRatio", "none");
-  svg.classList.add("lp-moon__cracks");
-  const path = document.createElementNS(svgNS, "path");
-  path.setAttribute("d", shardPolygons(cx, cy).map((poly) => `M${poly.map(([x, y]) => `${x.toFixed(2)} ${y.toFixed(2)}`).join(" L")} Z`).join(" "));
-  path.setAttribute("pathLength", "1");
-  svg.append(path);
-  glass.append(svg);
+  const canvas = document.createElement("canvas");
+  glass.append(canvas);
+  const ctx = canvas.getContext("2d");
+  const frost = document.createElement("canvas");
+  const frags = fragments();
+  const poster = new Image();
+  poster.src = video?.getAttribute("poster") || "/landing/media/apollo-poster.webp";
+  let w = 0;
+  let h = 0;
+  let burst = 0;
+
+  /* The frosted pane: the scene's poster frame, cover-fitted like the video, blurred and lifted with a cool frost. */
+  const buildFrost = () => {
+    const dpr = Math.min(1.5, devicePixelRatio || 1);
+    w = bg.clientWidth;
+    h = bg.clientHeight;
+    canvas.width = frost.width = Math.round(w * dpr);
+    canvas.height = frost.height = Math.round(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const f = frost.getContext("2d");
+    f.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (poster.naturalWidth) {
+      const s = Math.max(w / poster.naturalWidth, h / poster.naturalHeight) * 1.08;
+      const iw = poster.naturalWidth * s;
+      const ih = poster.naturalHeight * s;
+      f.filter = "blur(18px) brightness(0.62) saturate(1.1)";
+      f.drawImage(poster, (w - iw) * 0.3, (h - ih) / 2, iw, ih);
+      f.filter = "none";
+    }
+    const g = f.createLinearGradient(0, 0, w, h);
+    g.addColorStop(0, "rgba(255,255,255,0.10)");
+    g.addColorStop(0.6, "rgba(1,255,255,0.04)");
+    g.addColorStop(1, "rgba(255,255,255,0.07)");
+    f.fillStyle = g;
+    f.fillRect(0, 0, w, h);
+    draw();
+  };
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+    for (const fr of frags) {
+      const k = ease(clamp01((burst - fr.delay) / (1 - fr.delay) * 1.6));
+      if (k >= 1) continue;
+      const ox = fr.vx * w * k;
+      const oy = (fr.vy * k - 0.12 * k * k) * h;
+      const cx = fr.cx * w;
+      const cy = fr.cy * h;
+      ctx.save();
+      ctx.globalAlpha = (1 - k) ** 1.2;
+      ctx.translate(cx + ox, cy + oy);
+      ctx.rotate(fr.rot * k);
+      ctx.scale(1 - 0.55 * k, 1 - 0.55 * k);
+      ctx.translate(-cx, -cy);
+      ctx.beginPath();
+      fr.poly.forEach(([x, y], i) => (i ? ctx.lineTo(x * w, y * h) : ctx.moveTo(x * w, y * h)));
+      ctx.closePath();
+      ctx.save();
+      ctx.clip();
+      ctx.drawImage(frost, 0, 0, w, h);
+      ctx.restore();
+      if (k > 0) {
+        // A glint on the edges only while a fragment is in flight: no crack web on the intact pane.
+        ctx.strokeStyle = `rgba(232,250,255,${(4 * k * (1 - k) * 0.5).toFixed(3)})`;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+      ctx.restore();
+      if (k > 0.04) {
+        // Glass dust trailing the fragment.
+        for (const [sx, sy, r] of fr.specks) {
+          ctx.fillStyle = `rgba(214,250,255,${((1 - k) * 0.85).toFixed(3)})`;
+          ctx.beginPath();
+          ctx.arc(cx + ox * 0.75 + sx * w * (1 + k * 3), cy + oy * 0.75 + sy * h * (1 + k * 3), r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+    }
+  }
 
   let raf = 0;
   const update = () => {
@@ -100,18 +171,16 @@ export function initApolloStory(root = document) {
       const r = bg.getBoundingClientRect();
       p = clamp01((innerHeight - r.top) / (innerHeight * 1.05));
     }
-    const crack = clamp01((p - 0.12) / 0.22);
-    const burst = clamp01((p - 0.3) / 0.5);
-    card.style.setProperty("--crack", crack.toFixed(3));
-    card.style.setProperty("--burst", burst.toFixed(3));
+    const next = clamp01((p - 0.18) / 0.55);
+    card.style.setProperty("--burst", next.toFixed(3));
     card.style.setProperty("--copy", ease(clamp01((p - 0.32) / 0.3)).toFixed(3));
-    for (const s of shards) {
-      const k = ease(clamp01((burst - s.delay) / (1 - s.delay)));
-      s.el.style.transform = `translate(${(s.dx * k).toFixed(1)}vw, ${(s.dy * k).toFixed(1)}vh) rotate(${(s.rot * k).toFixed(1)}deg) scale(${(1 + k * 0.15).toFixed(3)})`;
-      s.el.style.opacity = (1 - k).toFixed(3);
+    if (Math.abs(next - burst) > 0.0005 || !w) {
+      burst = next;
+      draw();
     }
   };
+  poster.addEventListener("load", buildFrost, { once: true });
+  new ResizeObserver(buildFrost).observe(bg);
   addEventListener("scroll", () => (raf ||= requestAnimationFrame(update)), { passive: true });
-  addEventListener("resize", update);
   update();
 }
