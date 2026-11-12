@@ -33,6 +33,8 @@ MARS_KNOWLEDGE = re.compile(r"\b(what is|what are|why|explain|tell me about|hist
 MULTI_STEP = re.compile(r"\b(compare|versus|vs\.?|rank|plan (a|the|me)|design|optimi[sz]e|which (route|of)|"
                         r"and then|step by step|find (me )?(a|the)|look up|nearest|search)\b", re.I)
 SAFETY = re.compile(r"\b(safe|unsafe|danger(ous)?|hazard(ous)?|risky?|go or no.?go|should (we|i) go)\b", re.I)
+# Broad overviews need several knowledge sections; Gemini's multi-round search answers them better.
+BROAD = re.compile(r"\b(history|missions\b|overview|everything|in general|all about|timeline|summar(y|ize))", re.I)
 SEARCH = re.compile(r"\b(latest|news|today|this week|recent(ly)?|current (mission )?status|right now)\b", re.I)
 
 
@@ -61,8 +63,10 @@ def classify(question: str, *, enable_search: bool = False) -> Intent:
     if families:
         tools = [t for f in families for t in FAMILIES[f]]
         return Intent("qwen", "explain from mission data: " + ", ".join(families), families, tools)
+    if BROAD.search(q):
+        return Intent("gemini", "broad question: multi-source knowledge search")
     if MARS_KNOWLEDGE.search(q):
         return Intent("qwen", "Mars knowledge base", ["knowledge"], [("search_mars_knowledge", {"query": q[:300]})])
-    # Unclear: give Qwen the site overview; the guard sends it to Gemini if the answer does not hold up.
-    return Intent("qwen", "general: site overview", ["site", "environment"],
+    # Unclear: Gemini picks its own tools; Qwen remains the fallback with the site overview.
+    return Intent("gemini", "general question: Gemini chooses the tools", ["site", "environment"],
                   FAMILIES["site"] + FAMILIES["environment"])

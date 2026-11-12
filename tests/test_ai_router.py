@@ -37,6 +37,10 @@ def use_qwen(monkeypatch, text):
     ("What is the latest news from Perseverance?", "gemini"),
     ("Dose, dust and slope for this route?", "gemini"),
     ("Is it safe to walk here?", "qwen"),
+    ("Mars history", "gemini"),
+    ("Explain the Mars missions", "gemini"),
+    ("Explain the Curiosity mission", "qwen"),
+    ("hello", "gemini"),
 ])
 def test_intent_rules(question, route):
     assert intent.classify(question).route == route
