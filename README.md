@@ -104,9 +104,9 @@ The exploration-zone view connects derived candidate areas to documented study-r
 
 The mission workspace keeps field notes and tickable checklist actions alongside the planning workflow. It supports local-save persistence and export to JSON, CSV, and printable or PDF formats.
 
-Scientific data and external sources
+## Scientific data and external sources
 
-NASA
+# NASA
 
 * NASA Planetary Data System (PDS): primary archival source framework.
 * Mars Global Surveyor / MOLA: MEGDR 128 pixels/degree global topography and 512 pixels/degree polar topography for elevation and terrain analysis.
@@ -119,12 +119,12 @@ NASA
 * NASA human-exploration references: EVA, Mars mission, radiation, Martian dust, life-support and mobility context.
 * NASA SWIM / NASA Mars Water Maps: accessible-ice exploration context. The full SWIM ice-consensus raster is explicitly marked UNAVAILABLE in NeuroNexus; documented study regions are not presented as a substitute.
 
-USGS / IAU
+# USGS / IAU
 
 * USGS Gazetteer of Planetary Nomenclature / IAU: 2,052 named Martian features, coordinates, feature types, and identity.
 * USGS SIM 3292 — Geologic Map of Mars (Tanaka et al., 2014): geologic units, contacts, structures, landing-site layer, and scientific route snapshots.
 
-NASA/JPL
+# NASA/JPL
 
 * NASA/JPL Solar System Dynamics Close-Approach Data API: near-Mars small-body close-approach awareness, distance and uncertainty information.
 
@@ -152,8 +152,8 @@ Examples of NeuroNexus-derived outputs include the multi-objective route engine,
 
 NeuroNexus does not label any route or location as NASA-certified safe, universally best, habitable, or resource-confirmed.
 
-Architecture
-
+# Architecture
+```
 Authoritative Mars data
         ↓
 Ingestion + validation
@@ -172,17 +172,17 @@ React/Vite mission console
 Google Gemini
       ↓
 AI interpretation of structured results
-
+```
 Stack
 
-Frontend
+# Frontend
 
 * React 19
 * Vite
 * Leaflet / React-Leaflet
 * ArcGIS Maps SDK for JavaScript, loaded on demand for 3D
 
-Backend
+# Backend
 
 * Python
 * FastAPI + Uvicorn
@@ -192,12 +192,12 @@ Backend
 * VTK / PyVista / Trimesh
 * Google GenAI SDK
 
-Acceleration / development
+# Acceleration / development
 
 * AMD Instinct MI300X + ROCm for terrain and engineering acceleration work
 * Large/generated datasets and assets are handled through manifests, Git LFS, submodules, or external services where appropriate.
 
-Gemini AI setup
+# Gemini AI setup
 
 AI is optional for the rest of NeuroNexus.
 
@@ -212,7 +212,7 @@ Never commit a real Gemini API key. The backend reads GEMINI_API_KEY; it is neve
 
 For the complete setup and model troubleshooting flow, see SETUP_INSTRUCTIONS.md.
 
-Quick start
+# Quick start
 
 Use the full SETUP_INSTRUCTIONS.md for installation, data acquisition, Gemini configuration and startup.
 
@@ -230,7 +230,7 @@ cd frontend
 npm install
 npm run dev
 ```
-Validation
+# Validation
 
 The repository contains tests covering AI behaviour, routing, USGS integration, orbital tracking, Mars 3D services, exports, and other mission subsystems.
 
@@ -248,10 +248,10 @@ Runtime notes
 * Some high-resolution orbital datasets listed in the scientific catalogue remain explicitly not-ingested rather than being fabricated.
 * The 3D terrain service and local MOLA measurements may differ because they come from different terrain products/resolutions; NeuroNexus keeps that distinction explicit.
 
-Repository
+# Repository
 
 NASA Space Apps 2026 submission branch:
 https://github.com/kmmohaimenulhaque-code/martian-map/tree/Master-Ai
 
-Source ledger:
+# Source ledger:
 https://github.com/kmmohaimenulhaque-code/martian-map/blob/Master-Ai/data/manifests/updated_source_ledger.json
