@@ -13,14 +13,12 @@ env/
 # Jupyter
 .ipynb_checkpoints/
 
-# Data — NEVER commit raw NASA datasets
-data/raw/*
-data/processed/*
+# Data
+# Keep temporary/cache data out of Git.
 data/cache/*
 
 # Generated assets
 assets/meshes/*
-23
 assets/textures/*
 
 # Node
