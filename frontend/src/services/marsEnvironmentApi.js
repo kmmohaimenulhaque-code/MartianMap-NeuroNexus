@@ -215,3 +215,13 @@ export async function fetchMars3dTerrainGrid(latitude, longitude, halfWidthKm = 
 export async function fetchMars3dContext() {
   return fetchJson(`${API_BASE}/mars3d/context`);
 }
+
+export async function fetchMars3dExplorationZones(site = null) {
+  const params = new URLSearchParams();
+  if (site) {
+    params.set("latitude", String(Number(site.latitude_deg)));
+    params.set("longitude", String(normaliseLongitude(site.longitude_deg)));
+  }
+  const query = params.toString();
+  return fetchJson(`${API_BASE}/mars3d/exploration-zones${query ? `?${query}` : ""}`);
+}
