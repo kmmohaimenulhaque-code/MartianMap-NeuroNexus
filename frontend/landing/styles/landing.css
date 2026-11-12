@@ -3575,3 +3575,14 @@ body.lp {
 .lp-pano__credit a {
   color: var(--cyan);
 }
+
+/* Canvases and the finale globe fade out at their box edges, so nothing ends in a hard clipped line. */
+.lp-holo__canvas {
+  -webkit-mask-image: radial-gradient(ellipse closest-side, #000 62%, transparent 100%);
+  mask-image: radial-gradient(ellipse closest-side, #000 62%, transparent 100%);
+}
+
+.lp-finale__globe {
+  -webkit-mask-image: linear-gradient(transparent, #000 10%, #000 70%, transparent 98%);
+  mask-image: linear-gradient(transparent, #000 10%, #000 70%, transparent 98%);
+}
