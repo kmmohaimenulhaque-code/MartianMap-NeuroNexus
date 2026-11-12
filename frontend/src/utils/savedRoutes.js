@@ -119,6 +119,21 @@ export function routeStats(route) {
   return route?.evaluation?.status === "ok" || route?.evaluation?.status === "partial" ? route.evaluation : waypointStats(route);
 }
 
+/* Route-record metrics for a USGS snapshot of a saved route: the along-track evaluation, else the numbers the
+   route had when it was saved from Route Design. Missing values stay null (shown as UNAVAILABLE). */
+export function snapshotMetrics(route) {
+  const s = routeStats(route);
+  const saved = route?.generation?.metrics_at_save ?? {};
+  const pick = (a, b) => (a ?? null) !== null ? a : (b ?? null);
+  return {
+    distance_km: pick(s.distanceKm, saved.distance_km),
+    estimated_eva_hours: pick(s.evaHours, saved.estimated_eva_hours),
+    terrain_burden_score: pick(s.terrainBurden, saved.terrain_burden_score),
+    terrain_risk_proxy: pick(s.terrainRisk, saved.terrain_risk_proxy),
+    science_evidence_count: saved.science_evidence_count ?? null,
+  };
+}
+
 /*
  * Comparison rows. `better` drives best/worst marking: "lower", "higher" or
  * "none" (informational, e.g. elevation).

@@ -28,6 +28,7 @@ export default function UsgsRouteSnapshot({ open, onClose, snapshot, loading, er
   const height = image?.height ?? 600;
   const k = snapshotMarkScale(width, height);
   const units = snapshot?.geology?.units_crossed ?? [];
+  const multi = (snapshot?.routes ?? []).length > 1;
 
   return (
     <div className="snapshot-backdrop" role="dialog" aria-label="USGS route snapshot">
@@ -147,8 +148,19 @@ export default function UsgsRouteSnapshot({ open, onClose, snapshot, loading, er
               <div className="snapshot-block">
                 <h3>Route record</h3>
                 <dl>
-                  <dt>Route ID</dt>
-                  <dd>{snapshot.route?.route_id ?? "n/a"}</dd>
+                  {!multi && (
+                    <>
+                      <dt>Route ID</dt>
+                      <dd>{snapshot.route?.route_id ?? "n/a"}</dd>
+                    </>
+                  )}
+                  {multi ? (
+                    <>
+                      <dt>Routes</dt>
+                      <dd>{snapshot.routes.length} (metrics per route below)</dd>
+                    </>
+                  ) : (
+                  <>
                   <dt>Start</dt>
                   <dd>
                     {format(snapshot.start?.latitude_deg, 4, "°")}, {format(snapshot.start?.longitude_deg, 4, "°E")}
@@ -169,6 +181,8 @@ export default function UsgsRouteSnapshot({ open, onClose, snapshot, loading, er
                   <dd>{format(snapshot.route?.metrics?.terrain_risk_proxy, 1)}</dd>
                   <dt>Science evidence</dt>
                   <dd>{snapshot.route?.metrics?.science_evidence_count ?? "UNAVAILABLE"}</dd>
+                  </>
+                  )}
                   <dt>Method</dt>
                   <dd>{snapshot.route?.generation_method ?? "n/a"}</dd>
                 </dl>
@@ -183,6 +197,13 @@ export default function UsgsRouteSnapshot({ open, onClose, snapshot, loading, er
                         <span className="unit-swatch" style={{ background: overlay.colour }} />
                         <div>
                           <strong>{overlay.name}</strong>
+                          {snapshot.route?.per_route?.[overlay.route_id] && (
+                            <small>
+                              {format(snapshot.route.per_route[overlay.route_id].distance_km, 2, " km")} ·{" "}
+                              {format(snapshot.route.per_route[overlay.route_id].estimated_eva_hours, 2, " h EVA")} · risk{" "}
+                              {format(snapshot.route.per_route[overlay.route_id].terrain_risk_proxy, 1)}
+                            </small>
+                          )}
                           <small>
                             {(overlay.units_crossed ?? []).map((unit) => `${unit.unit} ${(unit.fraction_of_route * 100).toFixed(0)}%`).join(" · ") ||
                               "No mapped unit crossed"}

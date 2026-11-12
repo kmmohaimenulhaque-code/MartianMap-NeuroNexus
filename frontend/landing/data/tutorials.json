@@ -43,7 +43,7 @@
       "w": 1600
     },
     "snapshot": {
-      "src": "assets/screenshots/v3/usgs-route-snapshot.png",
+      "src": "assets/screenshots/v3/landing-usgs-snapshot.png",
       "w": 1600
     },
     "intel": {
@@ -159,6 +159,76 @@
       ],
       "steps": [
         {
+          "media": "qg3a",
+          "focus": [
+            0.0,
+            0.56,
+            1.0,
+            0.44
+          ],
+          "cursor": [
+            0.42,
+            0.8063
+          ],
+          "caption": "Select the starting point on the map, then open Route Design.",
+          "taps": [
+            {
+              "cursor": [
+                0.42,
+                0.8063
+              ]
+            },
+            {
+              "cursor": [
+                0.0352,
+                0.55
+              ]
+            }
+          ]
+        },
+        {
+          "media": "qg3d1",
+          "focus": [
+            0.13,
+            0.18,
+            0.3,
+            0.26
+          ],
+          "cursor": [
+            0.2133,
+            0.2578
+          ],
+          "caption": "Set the selected site as the START point."
+        },
+        {
+          "media": "qg3b",
+          "focus": [
+            0.0,
+            0.56,
+            1.0,
+            0.44
+          ],
+          "cursor": [
+            0.58,
+            0.7417
+          ],
+          "caption": "Select the destination point on the map."
+        },
+        {
+          "media": "qg3d2",
+          "focus": [
+            0.13,
+            0.25,
+            0.3,
+            0.2
+          ],
+          "cursor": [
+            0.2133,
+            0.3687
+          ],
+          "caption": "Set it as the DESTINATION point."
+        },
+        {
           "media": "designer",
           "focus": [
             0.085,
@@ -171,6 +241,20 @@
             0.48
           ],
           "caption": "Weight your goals: EVA time, terrain, science and operations."
+        },
+        {
+          "media": "qgroute2",
+          "focus": [
+            0.13,
+            0.55,
+            0.3,
+            0.35
+          ],
+          "cursor": [
+            0.213,
+            0.86
+          ],
+          "caption": "Generate the routes."
         },
         {
           "media": "designer",
@@ -187,18 +271,32 @@
           "caption": "Six deterministic route candidates appear. Save any of them as a named, reproducible route."
         },
         {
-          "media": "designer",
+          "media": "qgroute3b",
           "focus": [
-            0.27,
-            0.22,
-            0.22,
-            0.05
+            0.29,
+            0.12,
+            0.59,
+            0.85
           ],
           "cursor": [
-            0.34,
-            0.248
+            0.371,
+            0.228
           ],
-          "caption": "Save every candidate as a named, reproducible route in one tap."
+          "caption": "Save every candidate as a named, reproducible route, then apply one to the map.",
+          "taps": [
+            {
+              "cursor": [
+                0.371,
+                0.228
+              ]
+            },
+            {
+              "cursor": [
+                0.395,
+                0.636
+              ]
+            }
+          ]
         },
         {
           "media": "compare",
@@ -234,11 +332,11 @@
           "media": "snapshot",
           "focus": [
             0.13,
-            0.1,
+            0.03,
             0.74,
-            0.86
+            0.94
           ],
-          "caption": "Export a USGS geologic map snapshot with the route record and its provenance."
+          "caption": "Export a USGS geologic map snapshot with each route's distance, EVA hours, risk and provenance."
         }
       ]
     },
@@ -683,7 +781,7 @@
         "SIM 3292",
         "Geology"
       ],
-      "summary": "Every compared route on the USGS Geologic Map of Mars, with the units it crosses and full provenance.",
+      "summary": "Every compared route on the USGS Geologic Map of Mars, with its distance, EVA hours, risk, the units it crosses and full provenance.",
       "glossary": [
         "sim-3292"
       ],
@@ -692,43 +790,43 @@
           "media": "snapshot",
           "focus": [
             0.137,
-            0.11,
-            0.55,
-            0.855
+            0.123,
+            0.554,
+            0.846
           ],
           "caption": "Compared routes drawn together on the USGS Geologic Map of Mars, SIM 3292."
         },
         {
           "media": "snapshot",
           "focus": [
-            0.705,
-            0.37,
-            0.157,
-            0.2
+            0.704,
+            0.122,
+            0.159,
+            0.342
           ],
-          "caption": "Each route lists the geologic units it crosses, by share of its length."
+          "caption": "The route record lists every route in the frame with its distance, estimated EVA hours and terrain risk proxy."
         },
         {
           "media": "snapshot",
           "focus": [
-            0.705,
-            0.12,
-            0.157,
-            0.225
+            0.704,
+            0.207,
+            0.159,
+            0.257
           ],
-          "caption": "Values this view does not compute read UNAVAILABLE instead of being guessed."
+          "caption": "Each route also lists the geologic units it crosses, by share of its length."
         },
         {
           "media": "snapshot",
           "focus": [
-            0.705,
-            0.585,
-            0.157,
-            0.31
+            0.704,
+            0.475,
+            0.159,
+            0.315
           ],
           "cursor": [
-            0.733,
-            0.877
+            0.7344,
+            0.7713
           ],
           "caption": "Provenance lists the map, projection and tile resolution behind the snapshot."
         }

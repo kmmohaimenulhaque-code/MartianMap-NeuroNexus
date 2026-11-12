@@ -20,6 +20,7 @@ import {
   nextColourIndex,
   routeColour,
   routeStats,
+  snapshotMetrics,
 } from "./utils/savedRoutes";
 
 import {
@@ -1520,7 +1521,11 @@ export default function App() {
     setSnapshotError("");
     try {
       const response = multi ? await fetchUsgsMultiRouteSnapshot(comparedRoutes) : await fetchUsgsRouteSnapshot(subject);
-      setSnapshot(multi ? { ...response, route: { name: comparedRoutes.map((r) => r.name).join(" · ") } } : response);
+      setSnapshot(
+        multi
+          ? { ...response, route: { name: comparedRoutes.map((r) => r.name).join(" · "), generation_method: [...new Set(comparedRoutes.map((r) => r.generation?.source).filter(Boolean))].join(", ") || null, per_route: Object.fromEntries(comparedRoutes.map((r) => [r.id, snapshotMetrics(r)])) } }
+          : response,
+      );
     } catch (err) {
       setSnapshot(null);
       setSnapshotError(err.message);
@@ -1654,7 +1659,15 @@ export default function App() {
     setSnapshotLoading(true);
     setSnapshotError("");
     try {
-      setSnapshot(await fetchUsgsRouteSnapshot({ id: route.id, name: route.name, coordinates: route.points }));
+      setSnapshot(
+        await fetchUsgsRouteSnapshot({
+          id: route.id,
+          name: route.name,
+          coordinates: route.points,
+          metrics: snapshotMetrics(route),
+          generation_method: route.generation?.source ?? null,
+        }),
+      );
     } catch (err) {
       setSnapshot(null);
       setSnapshotError(err.message);
