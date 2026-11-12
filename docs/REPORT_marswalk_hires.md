@@ -71,7 +71,8 @@ sol, 07 Browser Optimization (opt-in), 08 Command Index exports.
 
 ## 5. Measured performance
 
-See `docs/PERFORMANCE.md` (backend timings; browser FPS and heap with Browser Optimization OFF and ON).
+`docs/PERFORMANCE.md`. Browser (OFF / ON): ready 8.2 / 8.6 s; global FPS 36.5 / 38.1; MARSWALK heap 126.8 / 99.9 MB.
+Backend warm: traverse 0.015 s (was 15–20 s), conditions 0.003 s, places 1.26 s.
 
 ## 6. Data verification log
 
@@ -107,7 +108,10 @@ See `docs/PERFORMANCE.md` (backend timings; browser FPS and heap with Browser Op
 - Seam handling at Jezero (CTX ≈ 18 m below HiRISE): re-align CTX to HiRISE per window, or keep flagging only.
 - Default EVA parameters (pace, review/limit slopes, reserve) for the judged demo.
 
-## 9. Exact commands
+## 9. Live demo and exact commands
+
+Live static demo: https://mhaquehaque-neuronexus-marswalk.static.hf.space (Space page: https://huggingface.co/spaces/Mhaquehaque/neuronexus-marswalk). 3,394 real recorded responses, bannered as not live.
+
 
 ```bash
 python -m pip install -r requirements.txt

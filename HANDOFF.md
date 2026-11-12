@@ -22,7 +22,7 @@ Branch `feature/mission-console-v2` (the harness branch; the prompt's `feature/m
 
 Checks at hand-off: pytest all green, vitest 58, node:test 48, lint 0 errors (2 old warnings in Mars3DView), build OK.
 
-Still open: live deployment. Hugging Face Docker Spaces need PRO (402), so the plan is a free *static* Space serving
+Live: https://mhaquehaque-neuronexus-marswalk.static.hf.space (static Space, demo pack via tools/record_demo_pack.mjs + tools/deploy_static_space.py). Earlier note: live deployment. Hugging Face Docker Spaces need PRO (402), so the plan is a free *static* Space serving
 `dist/` with a service worker that replays pre-recorded real API responses (bannered as a replay). Not built yet
 (`tools/build_demo_pack.py` does not exist). PERFORMANCE.md, METHODOLOGY/LIMITATIONS docs and the Section 11 final
 report are also still to write.

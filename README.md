@@ -42,6 +42,10 @@ The goal is not to declare a universally "safe" place on Mars. NeuroNexus provid
 * USGS route snapshot + exports: route visualisation against USGS SIM 3292 geology plus JSON/CSV exports.
 * Mars Intelligence: Google Gemini interprets structured NeuroNexus results and explains trade-offs; Gemini does not generate route geometry or alter deterministic numerical results.
 
+## Live demo
+
+**https://mhaquehaque-neuronexus-marswalk.static.hf.space** · static demo replaying 3,394 real responses recorded from the NeuroNexus backend (banner in the app; not live data). Run locally for live computation.
+
 ## Mission Console v3: one active sol, a radial HUD, exports everywhere
 
 Captured by the Playwright e2e tour (`node frontend/e2e/screenshots.mjs`), which also asserts each behavior shown (12 checks, zero page errors). Production build, live API, 1920 × 1080.
