@@ -175,16 +175,18 @@ export function initApolloStory(root = document) {
     raf = 0;
     // Pinned (wide screens): progress through the section. Unpinned (phones): progress of the scene band itself,
     // so the glass clears while the band is still on screen.
-    let p;
     if (getComputedStyle(stage).position === "sticky") {
       const r = card.getBoundingClientRect();
-      p = clamp01(-r.top / Math.max(1, r.height - innerHeight));
+      const p = clamp01(-r.top / Math.max(1, r.height - innerHeight));
+      target = clamp01((p - 0.18) / 0.55);
+      copyTarget = ease(clamp01((p - 0.32) / 0.3));
     } else {
+      // Intact while the band slides in; shatters from "fully on screen" until 40% of it has scrolled past the top.
       const r = bg.getBoundingClientRect();
-      p = clamp01((innerHeight - r.top) / (innerHeight * 1.05));
+      const start = Math.max(0, innerHeight - r.height);
+      target = clamp01((start - r.top) / (start + 0.4 * r.height));
+      copyTarget = 1;
     }
-    target = clamp01((p - 0.18) / 0.55);
-    copyTarget = ease(clamp01((p - 0.32) / 0.3));
     glide();
   };
   // Smooth scroll: the glass and the copy ease toward the scroll position instead of jumping with each wheel step.
