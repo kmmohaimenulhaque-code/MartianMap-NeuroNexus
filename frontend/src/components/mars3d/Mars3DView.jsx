@@ -63,7 +63,7 @@ const LAYERS = [
   { key: "traverses", group: "ROVERS", label: "Rover traverses · Curiosity, Perseverance (NASA MMGIS)", status: "OBSERVED", on: true },
   { key: "route", group: "MISSION", label: "Active route and waypoints", status: "DERIVED", on: true },
   { key: "candidates", group: "MISSION", label: "Route candidates", status: "DERIVED", on: true },
-  { key: "places", group: "MISSION", label: "Safe Havens and custom places (user-defined)", status: "DERIVED", on: true },
+  { key: "places", group: "MISSION", label: "Shelter Points and custom places (user-defined)", status: "DERIVED", on: true },
   { key: "dust", group: "ATMOSPHERE", label: "MY34 dust optical depth τ tint (modeled, follows the sol)", status: "MODELED", on: false },
   { key: "themis", group: "SCIENCE", label: "THEMIS thermal observations near the site", status: "OBSERVED", on: false },
   { key: "zones", group: "EXPLORATION", label: "Potential Exploration Zones · DERIVED · NEURONEXUS", status: "DERIVED", on: false },
@@ -994,7 +994,7 @@ export default function Mars3DView({
   useEffect(() => {
     if (!ready) return;
     entities("places", [
-      ...safeHavens.map((h) => ({ lat: h.latitude_deg, lon: h.longitude_deg, kind: "safeHaven", name: h.name ?? "Safe Haven" })),
+      ...safeHavens.map((h) => ({ lat: h.latitude_deg, lon: h.longitude_deg, kind: "safeHaven", name: h.name ?? "Shelter Point" })),
       ...customPlaces.map((c) => ({ lat: c.latitude_deg, lon: c.longitude_deg, kind: "customPlace", name: c.name ?? "Custom place" })),
     ]);
   }, [ready, safeHavens, customPlaces]);

@@ -287,10 +287,10 @@ export default function MissionOpsPanel({ consoleState, missionInput, profile, o
           <Section title="Safe-haven relationship" link={NASA_LINKS.marsExploration} linkLabel="NASA Mars exploration">
             <Row label="Status" entry={{ value: state.eva.safe_haven_relationship.status, status: "COMPUTED" }} />
             <Row
-              label="Nearest Safe Haven"
+              label="Nearest Shelter Point"
               entry={{
                 value: state.eva.safe_haven_relationship.nearest_safe_haven
-                  ? `${state.eva.safe_haven_relationship.nearest_safe_haven.name ?? "Safe Haven"} · ${state.eva.safe_haven_relationship.nearest_safe_haven.distance_km.toFixed(2)} km`
+                  ? `${state.eva.safe_haven_relationship.nearest_safe_haven.name ?? "Shelter Point"} · ${state.eva.safe_haven_relationship.nearest_safe_haven.distance_km.toFixed(2)} km`
                   : "UNAVAILABLE",
                 status: state.eva.safe_haven_relationship.nearest_safe_haven ? "COMPUTED" : "UNAVAILABLE",
               }}
@@ -307,7 +307,7 @@ export default function MissionOpsPanel({ consoleState, missionInput, profile, o
             />
             <div className="mission-warning">
               {state.eva.safe_haven_relationship.note ??
-                "A Safe Haven is a user-defined planning location. It is not established as physically safe."}
+                "A Shelter Point is a user-defined planning location. It is not established as physically safe."}
             </div>
           </Section>
         </>
@@ -411,7 +411,7 @@ export default function MissionOpsPanel({ consoleState, missionInput, profile, o
           </Section>
 
           <Section title="Habitat resilience" link={NASA_LINKS.isru} linkLabel="NASA ISRU">
-            <Row label="Safe Havens defined" entry={state.life_support.safe_havens} />
+            <Row label="Shelter Points defined" entry={state.life_support.safe_havens} />
             <Row label="ISRU context" entry={state.life_support.isru_context} />
           </Section>
         </>

@@ -12,6 +12,12 @@ export function initPareto(root = document) {
   const rows = [...root.querySelectorAll("[data-pareto-row]")];
   const filters = [...root.querySelectorAll("[data-pareto-filter]")];
   if (!section || !rows.length) return;
+  // Status cells become pills: coral for the dominated route, cyan for the non-dominated frontier.
+  rows.forEach((row) => {
+    const cell = row.cells[1];
+    const dominated = row.dataset.paretoStatus === "dominated";
+    cell.innerHTML = `<span class="lp-status lp-status--${dominated ? "dominated" : "pareto"}">${cell.textContent.trim()}</span>`;
+  });
 
   const select = (index) => {
     rows.forEach((row) => {

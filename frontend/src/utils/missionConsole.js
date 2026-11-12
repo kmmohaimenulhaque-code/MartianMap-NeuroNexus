@@ -119,7 +119,7 @@ export function safeHavenRelationship(route, safeHavens = []) {
     return { status: "UNAVAILABLE", detail: "No route is planned." };
   }
   if (!safeHavens.length) {
-    return { status: "NONE DEFINED", detail: "No Safe Haven has been created." };
+    return { status: "NONE DEFINED", detail: "No Shelter Point has been created." };
   }
   let nearestToRoute = null;
   let worstExposure = null;
@@ -141,7 +141,7 @@ export function safeHavenRelationship(route, safeHavens = []) {
     max_distance_to_nearest_safe_haven_km: worstExposure?.distance_km ?? null,
     start_nearest: nearestSafeHaven(coordinates[0], safeHavens),
     end_nearest: nearestSafeHaven(coordinates[coordinates.length - 1], safeHavens),
-    note: "A Safe Haven is a user-defined planning location. It is not established as physically safe.",
+    note: "A Shelter Point is a user-defined planning location. It is not established as physically safe.",
   };
 }
 
@@ -281,7 +281,7 @@ export function buildMissionConsoleState(state = {}) {
       distance_from_habitat_km: value(
         round(distanceFromHabitat),
         habitat ? "COMPUTED" : "UNAVAILABLE",
-        habitat ? `Habitat: ${habitat.name ?? "Safe Haven"}` : "No habitat/Safe Haven defined",
+        habitat ? `Habitat: ${habitat.name ?? "Shelter Point"}` : "No habitat/Shelter Point defined",
       ),
       return_path: value(route?.coordinates?.length ? "MANUAL REVIEW REQUIRED" : null, "SIMULATED"),
       terrain_burden_score: value(round(metrics?.terrain_burden_score), "DERIVED", "NASA MOLA MEGDR", NASA_LINKS.mola),
@@ -320,7 +320,7 @@ export function buildMissionConsoleState(state = {}) {
       solar_particle_events: value(null, "NO LIVE FEED", "NASA CCMC DONKI (not connected)", NASA_LINKS.donki),
       crew_dosimeters: value(null, "NOT CONNECTED"),
       shelter_configuration: value(
-        safeHavens.length ? `${safeHavens.length} Safe Haven(s) defined` : null,
+        safeHavens.length ? `${safeHavens.length} Shelter Point(s) defined` : null,
         safeHavens.length ? "PROJECT DATA" : "UNAVAILABLE",
       ),
       route_radiation_context: value(null, "NO LIVE FEED", "No route-resolved radiation model is ingested"),

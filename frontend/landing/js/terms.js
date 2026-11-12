@@ -30,7 +30,10 @@ export function initTerms(root, glossary) {
     current?.setAttribute("aria-expanded", "false");
     current = btn;
     btn.setAttribute("aria-expanded", "true");
-    card.innerHTML = `<strong>${escapeHtml(entry.term)}</strong>${escapeHtml(entry.short)}`;
+    card.innerHTML =
+      `<strong>${escapeHtml(entry.term)}</strong>${escapeHtml(entry.short)}` +
+      (entry.equation ? `<code class="lp-termcard__eq">${escapeHtml(entry.equation)}</code>` : "") +
+      (entry.source ? `<span class="lp-termcard__src">${escapeHtml(entry.source)}</span>` : "");
     card.hidden = false;
     place(btn);
     requestAnimationFrame(() => card.classList.add("is-open"));

@@ -1014,7 +1014,7 @@ export default function App() {
       return;
     }
 
-    const fallback = `Safe Haven ${safeHavens.length + 1}`;
+    const fallback = `Shelter Point ${safeHavens.length + 1}`;
 
     const name = String(point.name ?? "").trim() || fallback;
 
@@ -1058,9 +1058,9 @@ export default function App() {
       return;
     }
 
-    const defaultName = `Safe Haven ${safeHavens.length + 1}`;
+    const defaultName = `Shelter Point ${safeHavens.length + 1}`;
 
-    const name = window.prompt("Optional Safe Haven name:", defaultName);
+    const name = window.prompt("Optional Shelter Point name:", defaultName);
 
     if (name === null) {
       return;
@@ -2342,7 +2342,7 @@ export default function App() {
                   background: "#8cf0b1",
                 }}
               />
-              Safe Haven
+              Shelter Point
             </div>
           </div>
         </section>

@@ -86,8 +86,3 @@ if (innovation) {
     evidence.textContent = `${button.dataset.warning}. Open the console warning card to inspect the source and uncertainty.`;
   }));
 }
-doc.querySelectorAll(".lp-impact-more").forEach((button) => button.addEventListener("click", () => {
-  const card = button.closest("article");
-  card.classList.toggle("is-expanded");
-  button.textContent = card.classList.contains("is-expanded") ? "−" : "+";
-}));

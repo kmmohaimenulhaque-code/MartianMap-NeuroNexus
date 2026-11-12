@@ -82,9 +82,9 @@
     {
       "id": "add-safe-haven",
       "category": "site",
-      "label": "Add Safe Haven",
-      "description": "Mark the selected location as a user-defined Safe Haven (planning retreat point, not certified safe).",
-      "how": "Select a site, then choose Add Safe Haven.",
+      "label": "Add Shelter Point",
+      "description": "Mark the selected location as a user-defined Shelter Point (planning retreat point, not certified safe).",
+      "how": "Select a site, then choose Add Shelter Point.",
       "where": "Route console under the 2D map"
     },
     {

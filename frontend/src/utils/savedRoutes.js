@@ -139,7 +139,7 @@ export const COMPARISON_METRICS = [
   { key: "rough_mean", label: "Roughness MEAN", unit: "m", digits: 1, better: "lower", get: (s) => s.roughness_m?.mean },
   { key: "rough_max", label: "Roughness MAX", unit: "m", digits: 1, better: "lower", get: (s) => s.roughness_m?.max },
   { key: "risk", label: "Terrain risk proxy", unit: "/100", digits: 1, better: "lower", get: (s) => s.terrainRisk },
-  { key: "haven", label: "Max from Safe Haven", unit: "km", digits: 2, better: "lower", get: (s) => s.maxFromSafeHavenKm },
+  { key: "haven", label: "Max from Shelter Point", unit: "km", digits: 2, better: "lower", get: (s) => s.maxFromSafeHavenKm },
   { key: "support", label: "Data support", unit: "%", digits: 1, better: "higher", get: (s) => s.dataSupportPct },
 ];
 

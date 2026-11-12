@@ -318,7 +318,7 @@ export default function AiRouteDesigner({
             )}
             {!loading && result?.segmentation?.segmented && <div className="ai-info">{result.segmentation.message}</div>}
             {error && <div className="ai-error">{error}</div>}
-            {safeHavens.length > 0 && <small className="ai-note">{safeHavens.length} Safe Haven(s) inform the operational-burden objective.</small>}
+            {safeHavens.length > 0 && <small className="ai-note">{safeHavens.length} Shelter Point(s) inform the operational-burden objective.</small>}
           </aside>
 
           <div className="ai-designer-results">
