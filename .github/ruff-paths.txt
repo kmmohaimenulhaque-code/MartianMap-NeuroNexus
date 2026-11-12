@@ -18,3 +18,8 @@ tests/test_hires_selector.py
 science/sources
 tools/build_ledger.py
 tests/test_source_ledger.py
+science/rovers
+tests/test_rovers_ingest.py
+tests/marswalk_fixtures.py
+tests/test_marswalk_planner.py
+tests/test_marswalk_contracts.py

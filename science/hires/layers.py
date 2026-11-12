@@ -12,7 +12,7 @@ import warnings
 import numpy as np
 from PIL import Image
 
-from science.hires import derivatives, palette
+from science.hires import datum, derivatives, palette
 from science.hires.ladder import NOMINAL_GSD_M, TerrainWindow
 
 CLASS_NAMES = {0: "UNAVAILABLE", 1: "WITHIN PLANNING LIMITS", 2: "REVIEW REQUIRED", 3: "EXCEEDS PLANNING LIMIT"}
@@ -28,13 +28,41 @@ def composite_slope(window: TerrainWindow, baseline_m: float, cache: dict | None
         sel = window.source == code
         if not sel.any():
             continue
-        step = derivatives.baseline_step(max(baseline_m, NOMINAL_GSD_M[code]), res)
-        if step not in cache:
-            cache[step] = derivatives.slope_at_baseline(window.elevation, res, step * res)
-        values, eff = cache[step]
+        if code == 3:  # MOLA: Horn on the MOLA surface itself at its 463 m posting, whatever the window size
+            if "mola" not in cache:
+                cache["mola"] = (mola_slope(window), NOMINAL_GSD_M[3])
+            values, eff = cache["mola"]
+        else:
+            step = derivatives.baseline_step(max(baseline_m, NOMINAL_GSD_M[code]), res)
+            if step not in cache:
+                cache[step] = derivatives.slope_at_baseline(window.elevation, res, step * res)
+            values, eff = cache[step]
         slope[sel] = values[sel]
         effective[sel] = eff
     return slope, effective
+
+
+def mola_slope(window: TerrainWindow, stride_m: float = 50.0) -> np.ndarray:
+    """Slope (deg) of MOLA at a 463 m baseline: Horn's stencil with neighbors 463 m apart, sampled
+    bilinearly from MEG128 on a 50 m lattice and repeated to the window pixels (MOLA varies slowly)."""
+    grid = window.grid
+    k = max(1, int(round(stride_m / grid.res_m)))
+    xs, ys = grid.centers
+    sx, sy = xs[::k], ys[::k]
+    xx, yy = np.meshgrid(sx, sy)
+    d = NOMINAL_GSD_M[3]
+    z = {}
+    for dr in (-1, 0, 1):
+        for dc in (-1, 0, 1):
+            if dr == 0 and dc == 0:
+                continue
+            lat, lon = grid.to_latlon(xx + dc * d, yy - dr * d)
+            z[(dr, dc)] = datum.SAMPLER.sample(lat, lon, "t")
+    p = ((z[(-1, 1)] + 2 * z[(0, 1)] + z[(1, 1)]) - (z[(-1, -1)] + 2 * z[(0, -1)] + z[(1, -1)])) / (8 * d)
+    q = ((z[(1, -1)] + 2 * z[(1, 0)] + z[(1, 1)]) - (z[(-1, -1)] + 2 * z[(-1, 0)] + z[(-1, 1)])) / (8 * d)
+    coarse = np.degrees(np.arctan(np.hypot(p, q)))
+    full = np.repeat(np.repeat(coarse, k, axis=0), k, axis=1)[: grid.size, : grid.size]
+    return full.astype("float32")
 
 
 def hirise_roughness(window: TerrainWindow, window_m: float) -> np.ndarray:

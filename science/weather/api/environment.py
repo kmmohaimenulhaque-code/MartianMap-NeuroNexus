@@ -623,3 +623,9 @@ app.include_router(hires_router)
 from science.sources.api import router as sources_router  # noqa: E402
 
 app.include_router(sources_router)
+from science.rovers.api import router as rovers_router  # noqa: E402
+
+app.include_router(rovers_router)
+from science.marswalk.api import router as marswalk_router  # noqa: E402
+
+app.include_router(marswalk_router)
