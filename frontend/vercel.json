@@ -1,9 +1,13 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
-    { "source": "/api", "destination": "https://martian-map-api.onrender.com/api" },
-    { "source": "/api/:path*", "destination": "https://martian-map-api.onrender.com/api/:path*" },
-    { "source": "/terrain/:path*", "destination": "https://martian-map-api.onrender.com/terrain/:path*" },
+    { "source": "/api/terrain/hires/window", "destination": "https://nn-v3-terrain-window.onrender.com/api/terrain/hires/window" },
+    { "source": "/api/terrain/sources", "destination": "https://nn-v3-terrain-window.onrender.com/api/terrain/sources" },
+    { "source": "/api/terrain/hires/image", "destination": "https://nn-v3-terrain-image.onrender.com/api/terrain/hires/image" },
+    { "source": "/api/marswalk/:path*", "destination": "https://nn-v3-marswalk.onrender.com/api/marswalk/:path*" },
+    { "source": "/api", "destination": "https://nn-v3-core.onrender.com/api" },
+    { "source": "/api/:path*", "destination": "https://nn-v3-core.onrender.com/api/:path*" },
+    { "source": "/terrain/:path*", "destination": "https://nn-v3-core.onrender.com/terrain/:path*" },
     { "source": "/((?!api/|terrain/).*)", "destination": "/index.html" }
   ]
 }

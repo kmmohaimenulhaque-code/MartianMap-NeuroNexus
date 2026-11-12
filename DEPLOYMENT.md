@@ -106,6 +106,25 @@ The API sends permissive CORS headers. With these rewrites the browser only ever
 
 ---
 
+## 3b. Split API for 512 MB instances (branch `feature/mission-console-v3`)
+
+The full API idles at about 400 MB, and one MARSWALK terrain frame (3 km at 2 m) adds several hundred MB,
+so a 512 MB instance (Render free) is killed on the first MARSWALK request. `science/serve_part.py` serves
+one slice per instance, imports only that slice (about 130 MB idle) and runs one heavy request at a time:
+
+| Service | Start command | Paths |
+|---|---|---|
+| core | `uvicorn science.serve:app` | everything else |
+| terrain window | `NN_PART=terrain-window uvicorn science.serve_part:app` | `/api/terrain/hires/window`, `/api/terrain/sources` |
+| terrain image | `NN_PART=terrain-image uvicorn science.serve_part:app` | `/api/terrain/hires/image` |
+| marswalk | `NN_PART=marswalk uvicorn science.serve_part:app` | `/api/marswalk/*` |
+
+Part build command: `pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero`
+(MOLA straight from NASA PDS, no Git LFS). Set `MALLOC_ARENA_MAX=2`. `frontend/vercel.json` routes each path.
+Measured peaks with Curiosity's latest position (100% HiRISE): window 373 MB, image 380 MB, marswalk 317 MB.
+
+---
+
 ## 4. Production build without Docker
 
 ```bash
