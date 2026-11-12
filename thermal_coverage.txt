@@ -1,0 +1,77 @@
+\=======================================================================
+ACTUAL THEMIS METADATA KEYS
+\========================================================================
+product_id: i90919001pbt
+archive_path: odtip2_0083/i909xxpbt/I90919001PBT.IMG
+source_url: [https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0083/i909xxpbt/I90919001PBT.IMG](https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0083/i909xxpbt/I90919001PBT.IMG)
+record_bytes: 2252
+label_records: 2
+product_creation_time: 2022-10-27T18:51:11
+start_time: 2022-06-13T12:53:09.897
+stop_time: 2022-06-13T12:54:10.163
+local_time: 18.733
+solar_longitude: 246.109
+lines: 1822
+line_samples: 563
+sample_type: PC_REAL
+sample_bits: 32
+null_constant: 0
+scaling_factor: 1.0
+map_projection_type: SINUSOIDAL
+map_longitude_system: 360
+a_axis_radius: 3396.19
+center_latitude: 0.0
+center_longitude: 174.791
+map_scale: 0.1
+map_resolution: 592.747
+sample_projection_offset: 298.5
+line_projection_offset: -1002.5
+minimum_latitude: -4.767
+maximum_latitude: -1.694
+westernmost_longitude: 174.288
+easternmost_longitude: 175.238
+sample_name: BRIGHTNESS_TEMPERATURE
+sample_unit: KELVIN
+measurement: BRIGHTNESS_TEMPERATURE
+unit: KELVIN
+status: metadata_harvested
+\========================================================================
+(.venv) root@=======================================================================
+ACTUAL THEMIS METADATA KEYS
+\========================================================================
+product_id: i90919001pbt
+archive_path: odtip2_0083/i909xxpbt/I90919001PBT.IMG
+source_url: [https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0083/i909xxpbt/I90919001PBT.IMG](https://static.mars.asu.edu/pds/ODTGEO_v2/data/odtip2_0083/i909xxpbt/I90919001PBT.IMG)
+record_bytes: 2252
+label_records: 2
+product_creation_time: 2022-10-27T18:51:11
+start_time: 2022-06-13T12:53:09.897
+stop_time: 2022-06-13T12:54:10.163
+local_time: 18.733
+solar_longitude: 246.109
+lines: 1822
+line_samples: 563
+sample_type: PC_REAL
+sample_bits: 32
+null_constant: 0
+scaling_factor: 1.0
+map_projection_type: SINUSOIDAL
+map_longitude_system: 360
+a_axis_radius: 3396.19
+center_latitude: 0.0
+center_longitude: 174.791
+map_scale: 0.1
+map_resolution: 592.747
+sample_projection_offset: 298.5
+line_projection_offset: -1002.5
+minimum_latitude: -4.767
+maximum_latitude: -1.694
+westernmost_longitude: 174.288
+easternmost_longitude: 175.238
+sample_name: BRIGHTNESS_TEMPERATURE
+sample_unit: KELVIN
+measurement: BRIGHTNESS_TEMPERATURE
+unit: KELVIN
+status: metadata_harvested
+\========================================================================
+(.venv) root\@NeuroNexus-mi300x1-192gb-devcloud-atl1:\~/martian-map# NeuroNexus-mi300x1-192gb-devcloud-atl1:\~/martian-map# 
