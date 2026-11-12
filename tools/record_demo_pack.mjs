@@ -32,6 +32,7 @@ rmSync(OUT, { recursive: true, force: true });
 mkdirSync(join(OUT, "r"), { recursive: true });
 const entries = {};
 const recorded = []; // [{ method, url, body }]
+const planIds = new Set(); // every plan the tour produced: its EVA brief (JSON + printable) is recorded too
 let bytes = 0;
 
 async function store(method, url, bodyText, status, type, buffer) {
@@ -63,6 +64,14 @@ await context.route((url) => url.pathname.startsWith("/api/"), async (route) => 
     return;
   }
   const body = await response.body();
+  if (req.method() === "POST" && /\/marswalk\/(plan|evaluate)/.test(req.url()) && response.status() === 200) {
+    try {
+      const id = JSON.parse(body.toString("utf8")).plan_id;
+      if (id) planIds.add(id);
+    } catch {
+      // not JSON: nothing to add
+    }
+  }
   if (response.status() < 500) {
     await store(req.method(), req.url(), req.postData() ?? "", response.status(), response.headers()["content-type"], body);
     recorded.push({ method: req.method(), url: req.url(), body: req.postData() ?? "" });
@@ -86,6 +95,13 @@ step("global console at Gale");
 
 await idle(4000);
 step("layers (all on via nn.layers)");
+
+// 3D globe: its layer and site requests (ArcGIS itself loads from js.arcgis.com at view time).
+await page.click(".map-3d-button").catch(() => {});
+await idle(25000);
+await page.click(".m3d-close").catch(() => {});
+await idle(1500);
+step("3D globe");
 
 // Sol-dependent requests at two sols, so their URL patterns are known.
 for (const sol of [101, 400]) {
@@ -161,6 +177,13 @@ for (const u of patterns.values()) {
     await grab(next.toString());
   }
 }
+
+/* ---------------------------------------------------------------- 3. EVA briefs of every recorded plan */
+for (const id of planIds) {
+  await grab(`${BASE}/api/marswalk/brief/${id}`);
+  await grab(`${BASE}/api/marswalk/brief/${id}?format=html`);
+}
+console.log(`briefs: ${planIds.size} plans`);
 
 const recordedAt = new Date().toISOString().slice(0, 10);
 const manifest = {
