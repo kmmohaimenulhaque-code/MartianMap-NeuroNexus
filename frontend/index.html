@@ -174,13 +174,14 @@
         <h2 class="lp-display" id="st2" data-split>Where NASA Data Becomes a Walking Plan.</h2>
         <ul class="lp-principles">
           <li data-reveal><span class="lp-num">01</span><h3>Planning Limits Are Not Safety Limits</h3><p>Every status reads Within Planning Limits, Review Required or Exceeds Planning Limit. Nothing is ever called safe.</p></li>
-          <li data-reveal><span class="lp-num">02</span><h3>Missing Data Stays Missing</h3><p>Where there is no evidence, the console shows n/a or Unavailable instead of inventing a value.</p></li>
+          <li data-reveal><span class="lp-num">02</span><h3>No Evidence, No Number</h3><p>Where NASA data does not reach, the console says n/a or Unavailable. A gap is shown as a gap, never filled with a guess.</p></li>
           <li data-reveal><span class="lp-num">03</span><h3>AI May Explain, Never Invent</h3><p>A deterministic engine owns every route and number. <button class="lp-term" type="button" data-term="mars-intelligence">Mars Intelligence</button> answers through <button class="lp-term" type="button" data-term="tool-call">tool calls</button> and labels each answer as AI interpretation.</p></li>
         </ul>
       </section>
 
       <!-- 8. Challenge -->
       <section class="lp-challenge" id="challenge" aria-labelledby="ch-title">
+        <canvas class="lp-fx" data-fx="network" aria-hidden="true"></canvas>
         <p class="lp-eyebrow" data-reveal><span class="lp-dot" aria-hidden="true"></span>NASA Space Apps Challenge 2026</p>
         <h2 class="lp-display lp-display--md" id="ch-title" data-split>Interplanetary Survival Guide: Martian Map</h2>
         <div class="lp-trace" data-reveal>
@@ -210,6 +211,7 @@
 
       <!-- 9. Data band -->
       <section class="lp-data" id="data" aria-labelledby="dt-title">
+        <canvas class="lp-fx" data-fx="streams" aria-hidden="true"></canvas>
         <h2 class="lp-eyebrow" id="dt-title"><span class="lp-dot" aria-hidden="true"></span>Built on Open Data From</h2>
         <div class="lp-ticker" aria-hidden="true"><div class="lp-ticker__track" data-ticker></div></div>
         <p class="lp-body lp-data__list">
@@ -221,14 +223,26 @@
 
       <!-- 10. Team -->
       <section class="lp-team" id="team" aria-labelledby="tm-title">
+        <canvas class="lp-fx" data-fx="network" aria-hidden="true"></canvas>
         <p class="lp-eyebrow" data-reveal><span class="lp-dot" aria-hidden="true"></span>Team</p>
         <h2 class="lp-display lp-display--md" id="tm-title" data-split>Team NeuroNexus</h2>
         <ul class="lp-team__list" data-team></ul>
         <p class="lp-body" data-reveal><a data-link="teamPageUrl" href="#" rel="noopener">Meet the team on Space Apps</a></p>
+        <div class="lp-ai" data-reveal data-ai-panel>
+          <h3 class="lp-eyebrow"><span class="lp-dot" aria-hidden="true"></span>How AI Helped Build NeuroNexus</h3>
+          <p class="lp-body">AI tools assisted the team. None of them produces a number in the console: every value comes from NASA and USGS data through deterministic code.</p>
+          <dl class="lp-ai__grid">
+            <div><dt>Architecture</dt><dd><button type="button" data-ai="chatgpt">ChatGPT</button></dd></div>
+            <div><dt>Image Generation</dt><dd><button type="button" data-ai="gemini">Gemini</button></dd></div>
+            <div><dt>Code</dt><dd><button type="button" data-ai="chatgpt">ChatGPT</button><button type="button" data-ai="claude">Claude</button></dd></div>
+            <div><dt>Review</dt><dd><button type="button" data-ai="chatgpt">ChatGPT</button><button type="button" data-ai="gemini">Gemini</button><button type="button" data-ai="claude">Claude</button><button type="button" data-ai="grok">Grok</button></dd></div>
+          </dl>
+        </div>
       </section>
 
       <!-- 11. Finale -->
       <section class="lp-finale" id="finale" aria-labelledby="fn-title" data-finale>
+        <canvas class="lp-fx lp-fx--stars" data-fx="stars" aria-hidden="true"></canvas>
         <div class="lp-finale__globe" data-globe aria-hidden="true">
           <img class="lp-finale__poster" src="/mars-mola-global.jpg" alt="" width="1440" height="720" loading="lazy" decoding="async" data-globe-poster />
         </div>

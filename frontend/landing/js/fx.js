@@ -5,6 +5,7 @@
    sparks:   drifting light particles behind the proof number.
    wave:     a field of cyan points rippling under the pointer (principles).
    Cards:    pointer-following tilt and glow on the Core Features cards.
+   network:  drifting linked nodes that reach for the pointer (challenge, team); stars: the finale's sky.
    Storm:    a dust storm on scroll that carries the page from the monochrome hero into the colored sections.
    Every canvas pauses off screen and when the tab is hidden. Reduced motion or Save-Data draw one still frame. */
 
@@ -375,10 +376,111 @@ function dustStorm(doc) {
   onScroll();
 }
 
-const FX = { streams, terrain: (c) => terrain(c), "terrain-sparks": (c) => terrain(c, { rings: false, sparks: 70 }), wave };
+/* ------------------------------------------------------------------ network + stars */
+
+/* Drifting nodes linked to their neighbors; the pointer pulls nearby nodes and links to them (challenge, team). */
+function network(canvas) {
+  const nodes = Array.from({ length: 64 }, () => ({ x: Math.random(), y: Math.random(), vx: (Math.random() - 0.5) * 0.02, vy: (Math.random() - 0.5) * 0.02 }));
+  let last = 0;
+  stage(canvas, (ctx, w, h, t, ptr) => {
+    const dt = Math.min(0.05, t - last || 0.016);
+    last = t;
+    const px = (ptr.x + 1) * 0.5 * w;
+    const py = (ptr.y + 1) * 0.5 * h;
+    for (const n of nodes) {
+      n.x = (n.x + n.vx * dt + 1) % 1;
+      n.y = (n.y + n.vy * dt + 1) % 1;
+      if (ptr.active) {
+        const dx = px - n.x * w;
+        const dy = py - n.y * h;
+        const d = Math.hypot(dx, dy);
+        if (d < 220 && d > 1) {
+          n.x += (dx / d) * 0.0006;
+          n.y += (dy / d) * 0.0006;
+        }
+      }
+    }
+    ctx.globalCompositeOperation = "lighter";
+    ctx.lineWidth = 1;
+    for (let i = 0; i < nodes.length; i += 1) {
+      const a = nodes[i];
+      for (let j = i + 1; j < nodes.length; j += 1) {
+        const b = nodes[j];
+        const d = Math.hypot((a.x - b.x) * w, (a.y - b.y) * h);
+        if (d < 150) {
+          ctx.strokeStyle = `rgba(${CYAN},${(1 - d / 150) * 0.28})`;
+          ctx.beginPath();
+          ctx.moveTo(a.x * w, a.y * h);
+          ctx.lineTo(b.x * w, b.y * h);
+          ctx.stroke();
+        }
+      }
+      if (ptr.active) {
+        const d = Math.hypot(a.x * w - px, a.y * h - py);
+        if (d < 220) {
+          ctx.strokeStyle = `rgba(255,210,122,${(1 - d / 220) * 0.6})`;
+          ctx.beginPath();
+          ctx.moveTo(a.x * w, a.y * h);
+          ctx.lineTo(px, py);
+          ctx.stroke();
+        }
+      }
+      ctx.fillStyle = `rgba(${CYAN},${0.5 + 0.5 * Math.sin(t * 2 + i)})`;
+      ctx.beginPath();
+      ctx.arc(a.x * w, a.y * h, 1.6, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalCompositeOperation = "source-over";
+  });
+}
+
+/* Twinkling stars with pointer parallax and an occasional meteor (finale). */
+function stars(canvas) {
+  const field = Array.from({ length: 280 }, () => ({ x: Math.random(), y: Math.random(), z: 0.2 + Math.random() * 0.8, p: Math.random() * 6 }));
+  let meteor = null;
+  stage(canvas, (ctx, w, h, t, ptr) => {
+    for (const s of field) {
+      const x = (s.x * w - ptr.x * 30 * s.z + w) % w;
+      const y = (s.y * h - ptr.y * 20 * s.z + h) % h;
+      ctx.fillStyle = `rgba(230,246,250,${(0.25 + 0.55 * s.z) * (0.6 + 0.4 * Math.sin(t * 1.5 + s.p))})`;
+      ctx.fillRect(x, y, s.z * 1.8, s.z * 1.8);
+    }
+    if (!meteor && Math.random() < 0.01) meteor = { x: Math.random() * w, y: Math.random() * h * 0.4, t };
+    if (meteor) {
+      const k = (t - meteor.t) / 0.9;
+      if (k > 1) meteor = null;
+      else {
+        const x = meteor.x + k * 320;
+        const y = meteor.y + k * 140;
+        const g = ctx.createLinearGradient(x - 120, y - 52, x, y);
+        g.addColorStop(0, "rgba(1,255,255,0)");
+        g.addColorStop(1, `rgba(230,250,255,${1 - k})`);
+        ctx.strokeStyle = g;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(x - 120, y - 52);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+      }
+    }
+  });
+}
+
+/* AI disclosure: pointing at a model highlights every role it played. */
+function aiPanel(panel) {
+  if (!panel) return;
+  const set = (id) => panel.querySelectorAll("[data-ai]").forEach((b) => b.classList.toggle("is-lit", b.dataset.ai === id));
+  panel.addEventListener("pointerover", (e) => set(e.target.closest("[data-ai]")?.dataset.ai));
+  panel.addEventListener("focusin", (e) => set(e.target.closest("[data-ai]")?.dataset.ai));
+  panel.addEventListener("pointerleave", () => set(null));
+  panel.addEventListener("click", (e) => set(e.target.closest("[data-ai]")?.dataset.ai));
+}
+
+const FX = { streams, terrain: (c) => terrain(c), "terrain-sparks": (c) => terrain(c, { rings: false, sparks: 70 }), wave, network, stars };
 
 export function initFx(doc = document) {
   doc.querySelectorAll("canvas[data-fx]").forEach((c) => FX[c.dataset.fx]?.(c));
   tiltCards(doc.querySelector("[data-cards]"));
   dustStorm(doc);
+  aiPanel(doc.querySelector("[data-ai-panel]"));
 }

@@ -106,6 +106,25 @@ async function start(section, host) {
     });
   }
 
+  // Drag (or swipe) the globe to spin it; it coasts and slows. A tap sends a pulse through the rings.
+  let drag = null;
+  let spin = 0;
+  let pulse = 0;
+  section.addEventListener("pointerdown", (e) => {
+    if (e.target.closest("a, button")) return;
+    drag = { x: e.clientX };
+    spin = 0;
+    pulse = 1;
+  });
+  addEventListener("pointermove", (e) => {
+    if (!drag) return;
+    spin = (e.clientX - drag.x) * 0.004;
+    drag.x = e.clientX;
+    globe.rotation.y += spin;
+  });
+  addEventListener("pointerup", () => (drag = null));
+  addEventListener("pointercancel", () => (drag = null));
+
   let visible = true;
   let slow = 0;
   let last = performance.now();
@@ -126,7 +145,15 @@ async function start(section, host) {
       slow = 0;
     }
     globe.rotation.y += dt * 0.00006;
-    rings.children.forEach((ring, i) => (ring.rotation.y += dt * (0.00018 + i * 0.00006) * (i % 2 ? -1 : 1)));
+    if (!drag) {
+      globe.rotation.y += spin;
+      spin *= 0.95;
+    }
+    pulse *= 0.93;
+    rings.children.forEach((ring, i) => {
+      ring.rotation.y += dt * (0.00018 + i * 0.00006) * (i % 2 ? -1 : 1) * (1 + pulse * 12);
+      ring.scale.setScalar(1 + pulse * 0.08 * (i + 1));
+    });
     scene.rotation.y += (target.x - scene.rotation.y) * 0.04;
     scene.rotation.x += (target.y - scene.rotation.x) * 0.04;
     renderer.render(scene, camera);

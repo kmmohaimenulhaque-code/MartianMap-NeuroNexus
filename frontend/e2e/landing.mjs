@@ -69,7 +69,7 @@ async function run(browserType, label) {
     if (SHOTS) await page.screenshot({ path: `${OUT}${name}-hero.png` });
 
     const cards = await page.locator(".lp-card").count();
-    check(cards === 13, `${tag}: 13 tutorial cards (${cards})`);
+    check(cards === 15, `${tag}: 15 tutorial cards (${cards})`);
 
     await page.locator("[data-menu-open]").focus();
     await page.keyboard.press("Enter");
@@ -114,7 +114,7 @@ async function run(browserType, label) {
   await page.goto(`${BASE}/#features`);
   check(new URL(page.url()).pathname === "/", `${label}: landing anchors stay on the landing page`);
   await page.goto(`${BASE}/tutorials/`, { waitUntil: "networkidle" });
-  check((await page.locator(".lp-card").count()) === 13, `${label}: gallery lists 13 tutorials`);
+  check((await page.locator(".lp-card").count()) === 15, `${label}: gallery lists 15 tutorials`);
   await ctx.close();
   await browser.close();
 }

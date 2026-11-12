@@ -73,6 +73,30 @@
     "radiation8": {
       "src": "assets/screenshots/v3/landing-radiation-8h.png",
       "w": 1600
+    },
+    "sollayers": {
+      "src": "assets/screenshots/v3/landing-sol-layers.png",
+      "w": 1600
+    },
+    "solcalm": {
+      "src": "assets/screenshots/v3/landing-sol-calm.png",
+      "w": 1600
+    },
+    "solstorm": {
+      "src": "assets/screenshots/v3/landing-sol-storm.png",
+      "w": 1600
+    },
+    "crew": {
+      "src": "assets/screenshots/v3/landing-crew-mission.png",
+      "w": 1600
+    },
+    "crewrad": {
+      "src": "assets/screenshots/v3/landing-crew-radiation.png",
+      "w": 1600
+    },
+    "zones": {
+      "src": "assets/screenshots/v3/landing-zones.png",
+      "w": 1600
     }
   },
   "tutorials": [
@@ -245,9 +269,9 @@
       "tags": [
         "Sol",
         "Dust",
-        "Decision"
+        "Live Maps"
       ],
-      "summary": "One slider moves time. The same walk changes its decision inside the 2018 global dust storm.",
+      "summary": "Press play and time moves: the dust layer, the charts and the EVA dust class update live on every map.",
       "glossary": [
         "sol",
         "tau",
@@ -255,7 +279,31 @@
       ],
       "steps": [
         {
-          "media": "marswalk",
+          "media": "sollayers",
+          "focus": [
+            0.2,
+            0.55,
+            0.3,
+            0.1
+          ],
+          "cursor": [
+            0.214,
+            0.604
+          ],
+          "caption": "Turn on the modeled MY34 dust layer. The 2D, ArcGIS and 3D maps share it."
+        },
+        {
+          "media": "solcalm",
+          "focus": [
+            0.2,
+            0.14,
+            0.36,
+            0.62
+          ],
+          "caption": "At sol 85 the modeled dust over Gale is low."
+        },
+        {
+          "media": "solstorm",
           "focus": [
             0.36,
             0.035,
@@ -263,44 +311,40 @@
             0.05
           ],
           "cursor": [
-            0.437,
-            0.055
+            0.551,
+            0.052
           ],
-          "caption": "The active sol sets the season. At sol 100 the modeled dust is light."
+          "caption": "Press play or slide to sol 606. Every map updates live, sol by sol."
         },
         {
-          "media": "marswalk",
+          "media": "solstorm",
           "focus": [
-            0.82,
-            0.19,
-            0.175,
+            0.2,
+            0.14,
+            0.36,
+            0.62
+          ],
+          "caption": "A late-season regional storm sweeps across the dust layer."
+        },
+        {
+          "media": "solstorm",
+          "focus": [
+            0.79,
+            0.22,
+            0.2,
             0.08
           ],
-          "caption": "Dust opacity of 0.31 stays within the planning limit."
+          "caption": "Dust optical depth 1.73 now reads Very High."
         },
         {
-          "media": "storm",
+          "media": "solstorm",
           "focus": [
-            0.36,
-            0.035,
-            0.21,
-            0.05
+            0.0,
+            0.9,
+            0.22,
+            0.08
           ],
-          "cursor": [
-            0.46,
-            0.055
-          ],
-          "caption": "Slide to sol 400, inside the 2018 global dust storm."
-        },
-        {
-          "media": "storm",
-          "focus": [
-            0.82,
-            0.19,
-            0.175,
-            0.09
-          ],
-          "caption": "Opacity 4.62 now exceeds its planning limit. Same walk, different sol, different decision."
+          "caption": "The EVA dust class moves from Within to Exceeds Planning Limit. Same site, different sol."
         }
       ]
     },
@@ -361,6 +405,66 @@
             0.1
           ],
           "caption": "The band doubles to 52 µGy. A screening estimate, not a dose limit or a forecast."
+        }
+      ]
+    },
+    {
+      "id": "crewed-console",
+      "title": "Crewed Mars Console",
+      "tags": [
+        "Mission",
+        "Crew",
+        "Radiation"
+      ],
+      "summary": "A mission model around the walk: crew, vehicles, EVA, radiation and life support, with every simulated value labeled.",
+      "glossary": [
+        "eva",
+        "modeled"
+      ],
+      "steps": [
+        {
+          "media": "crew",
+          "focus": [
+            0.79,
+            0.1,
+            0.21,
+            0.14
+          ],
+          "caption": "Mission, crew, vehicles, EVA, radiation, life support and resources in one console."
+        },
+        {
+          "media": "crew",
+          "focus": [
+            0.79,
+            0.27,
+            0.21,
+            0.4
+          ],
+          "caption": "A research model, labeled as one: never a live crew, vehicle or mission control feed."
+        },
+        {
+          "media": "crewrad",
+          "focus": [
+            0.79,
+            0.17,
+            0.21,
+            0.06
+          ],
+          "cursor": [
+            0.953,
+            0.193
+          ],
+          "caption": "Open Radiation."
+        },
+        {
+          "media": "crewrad",
+          "focus": [
+            0.79,
+            0.32,
+            0.21,
+            0.4
+          ],
+          "caption": "Archived MSL RAD rates as reference. Live feeds that do not exist read Unavailable."
         }
       ]
     },
@@ -465,6 +569,66 @@
             0.632
           ],
           "caption": "Tick saved routes. They are drawn bold with their names, and the camera reframes."
+        }
+      ]
+    },
+    {
+      "id": "exploration-zones",
+      "title": "Potential Exploration Zones",
+      "tags": [
+        "3D",
+        "Ice",
+        "Planning"
+      ],
+      "summary": "Documented ice-study regions on the 3D globe, scored for walkability and labeled Derived, never official landing sites.",
+      "glossary": [
+        "modeled",
+        "mola"
+      ],
+      "steps": [
+        {
+          "media": "zones",
+          "focus": [
+            0.2,
+            0.53,
+            0.2,
+            0.05
+          ],
+          "cursor": [
+            0.29,
+            0.55
+          ],
+          "caption": "Turn on Potential Exploration Zones on the 3D globe."
+        },
+        {
+          "media": "zones",
+          "focus": [
+            0.8,
+            0.57,
+            0.2,
+            0.18
+          ],
+          "caption": "Documented ice-study regions such as Arcadia Planitia, each tagged Derived, not an official NASA zone."
+        },
+        {
+          "media": "zones",
+          "focus": [
+            0.8,
+            0.75,
+            0.2,
+            0.24
+          ],
+          "caption": "Each zone lists its candidate area, walkability, slope and the evidence behind it."
+        },
+        {
+          "media": "zones",
+          "focus": [
+            0.0,
+            0.57,
+            0.8,
+            0.42
+          ],
+          "caption": "Fly to a zone on the globe and plan a Marswalk around it."
         }
       ]
     },

@@ -2159,3 +2159,110 @@ body.lp {
   height: 100%;
   pointer-events: none;
 }
+
+/* Header always visible: Menu and Enter Console never scroll away. A soft navy fade keeps the wordmark
+   readable over any section. */
+.lp-header,
+.lp-header.is-hidden {
+  transform: none;
+}
+
+.lp-header::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 -24px;
+  z-index: -1;
+  background: linear-gradient(rgba(6, 12, 20, 0.92), rgba(6, 12, 20, 0.6) 60%, rgba(6, 12, 20, 0));
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  -webkit-mask-image: linear-gradient(#000 60%, transparent);
+  mask-image: linear-gradient(#000 60%, transparent);
+  pointer-events: none;
+}
+
+.lp-challenge,
+.lp-data,
+.lp-team {
+  position: relative;
+  overflow: hidden;
+}
+
+.lp-challenge > :not(.lp-fx),
+.lp-data > :not(.lp-fx),
+.lp-team > :not(.lp-fx) {
+  position: relative;
+  z-index: 1;
+}
+
+.lp-finale {
+  cursor: grab;
+  touch-action: pan-y;
+  -webkit-user-select: none;
+  user-select: none; /* dragging the globe must not select the headline */
+}
+
+.lp-finale:active {
+  cursor: grabbing;
+}
+
+.lp-finale .lp-fx--stars {
+  z-index: 0;
+}
+
+/* AI disclosure */
+.lp-ai {
+  max-width: 980px;
+  margin-top: clamp(40px, 6vw, 72px);
+  padding: clamp(20px, 3vw, 32px);
+  border: 1px solid rgba(1, 255, 255, 0.24);
+  border-radius: var(--radius);
+  background: linear-gradient(160deg, rgba(1, 255, 255, 0.07), rgba(6, 12, 20, 0.6));
+  box-shadow: inset 0 0 40px rgba(1, 255, 255, 0.05), 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+
+.lp-ai h3 {
+  margin: 0 0 10px;
+}
+
+.lp-ai__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+  gap: 16px;
+  margin: 20px 0 0;
+}
+
+.lp-ai__grid dt {
+  margin-bottom: 8px;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--night-text);
+}
+
+.lp-ai__grid dd {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+}
+
+.lp-ai__grid button {
+  padding: 6px 12px;
+  border: 1px solid rgba(1, 255, 255, 0.35);
+  border-radius: 999px;
+  background: rgba(1, 255, 255, 0.06);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition:
+    background var(--t-base) var(--ease-out),
+    box-shadow var(--t-base) var(--ease-out),
+    color var(--t-base) var(--ease-out);
+}
+
+.lp-ai__grid button.is-lit {
+  background: var(--cyan);
+  color: #03070c;
+  box-shadow: 0 0 24px rgba(1, 255, 255, 0.55);
+}
