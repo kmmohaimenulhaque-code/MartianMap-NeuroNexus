@@ -73,11 +73,23 @@
       <section class="lp-hero" id="top" aria-labelledby="hero-title">
         <div class="lp-hero__backdrop" aria-hidden="true"></div>
         <span class="lp-glass" aria-hidden="true" data-glass></span>
-        <aside class="lp-story" data-reveal aria-label="Apollo 14 story">
-          <p class="lp-eyebrow"><span class="lp-dot" aria-hidden="true"></span>A True Story // Apollo 14 · February 1971 · Cone Crater</p>
-          <h2>Thirty Meters Decided the Mission.</h2>
-          <p>Alan Shepard and Edgar Mitchell turned back roughly thirty meters from Cone Crater when the terrain and their oxygen limits made the final push too costly. NeuroNexus asks the same question before an EVA: what does the map hide at walking scale?</p>
-          <p class="lp-small">Imagery &amp; Context: LROC (NASA/GSFC/Arizona State University) · Apollo 14 AS14-64-9089 (NASA)</p>
+        <aside class="lp-story" data-reveal data-apollo-card aria-label="Interactive Apollo 14 story">
+          <div class="lp-story__media">
+            <img src="https://images-assets.nasa.gov/image/AS14-64-9089/AS14-64-9089~orig.jpg" data-apollo-image alt="Apollo 14 view of Cone Crater terrain" />
+            <span class="lp-story__pin lp-story__pin--crater" data-apollo-pin="crater">Cone Crater</span>
+            <span class="lp-story__pin lp-story__pin--turnaround" data-apollo-pin="turnaround">30 m turnaround</span>
+            <span class="lp-story__scale">LROC / Apollo 14</span>
+          </div>
+          <div class="lp-story__body">
+            <p class="lp-eyebrow"><span class="lp-dot" aria-hidden="true"></span>A True Story // Apollo 14 · February 1971 · Cone Crater</p>
+            <h2>Thirty Meters Decided the Mission.</h2>
+            <p data-apollo-copy>Alan Shepard and Edgar Mitchell turned back roughly thirty meters from Cone Crater when the terrain and their oxygen limits made the final push too costly. NeuroNexus asks the same question before an EVA: what does the map hide at walking scale?</p>
+            <div class="lp-story__controls" role="tablist" aria-label="Apollo story views">
+              <button type="button" class="is-active" data-apollo-view="story" role="tab" aria-selected="true">The story</button>
+              <button type="button" data-apollo-view="map" role="tab" aria-selected="false">The map lesson</button>
+            </div>
+            <p class="lp-small">Imagery &amp; Context: LROC (NASA/GSFC/Arizona State University) · Apollo 14 AS14-64-9089 (NASA). <a href="https://images-assets.nasa.gov/image/AS14-64-9089/" target="_blank" rel="noopener">Open source image</a></p>
+          </div>
         </aside>
         <h1 class="lp-hero__intro" id="hero-title" data-intro>
           NeuroNexus turns NASA's sharpest Mars terrain into walking plans for future astronauts, and shows how sure every number is.
@@ -137,19 +149,28 @@
         <p class="lp-eyebrow" data-reveal><span class="lp-dot" aria-hidden="true"></span>Multi-Objective Pareto Proof // Gale to Escalante (2,283.9 x 56.3 km window)</p>
         <h2 class="lp-display lp-display--md" id="pareto-title" data-reveal>Standard Routers Give You One Shortest Line. Our Engine Proves When That Line Is a Trap.</h2>
         <p class="lp-body" data-reveal>Six deterministic candidates expose the trade-off instead of hiding it inside one score. The shortest route is not automatically the best route for an EVA.</p>
+        <div class="lp-pareto-toolbar" data-reveal>
+          <span class="lp-small">Select a candidate to inspect its trade-off.</span>
+          <div class="lp-pareto-filters" role="group" aria-label="Pareto candidate filters">
+            <button type="button" class="is-active" data-pareto-filter="all">All 6</button>
+            <button type="button" data-pareto-filter="non-dominated">Non-dominated</button>
+            <button type="button" data-pareto-filter="dominated">Dominated</button>
+          </div>
+        </div>
         <div class="lp-table-wrap" data-reveal>
           <table class="lp-pareto-table">
             <thead><tr><th>Candidate Route</th><th>Pareto Status</th><th>Distance</th><th>Total Climb</th><th>Est. EVA Time</th><th>Mean / Max Slope</th><th>Risk Proxy</th><th>Why It Matters</th></tr></thead>
             <tbody>
-              <tr><th scope="row">1. Low distance</th><td><strong>Dominated in this set</strong></td><td>1,464.72 km</td><td>31,332 m</td><td>630.11 h</td><td>3.54 deg / 31.23 deg</td><td>94.3</td><td>The shortest-path trap: minimizing horizontal distance forces 31.3 km of vertical climbing and the highest risk proxy.</td></tr>
-              <tr><th scope="row">2. Low EVA</th><td>Pareto / non-dominated</td><td>1,465.20 km (+480 m)</td><td>22,597 m</td><td>623.74 h</td><td>3.05 deg / 32.90 deg</td><td>93.1</td><td>Walking just 480 meters farther (+0.03%) saves 8,735 meters of vertical climb and 6.37 hours of EVA time.</td></tr>
-              <tr><th scope="row">3. Low terrain-risk proxy</th><td>Pareto / non-dominated</td><td>1,510.34 km (+45.6 km)</td><td>21,416 m</td><td>639.83 h</td><td>2.07 deg / 28.07 deg</td><td>79.5</td><td>Trading +45.6 km (+3.1% distance) cuts 9,916 meters of climb and lowers the cubic slope and roughness risk proxy from 94.3 to 79.5.</td></tr>
-              <tr><th scope="row">4. Low terrain burden</th><td>Pareto / non-dominated</td><td>1,620.55 km</td><td>20,099 m</td><td>681.72 h</td><td>1.58 deg / 33.81 deg</td><td>82.1</td><td>Lowest total terrain burden (12.4 versus 23.9) and lowest cumulative climb, 11,233 m less than the shortest path.</td></tr>
-              <tr><th scope="row">5. Science first</th><td>Pareto / non-dominated</td><td>1,471.76 km</td><td>22,815 m</td><td>626.73 h</td><td>2.22 deg / 32.90 deg</td><td>85.9</td><td>Weighted 55% Science, 20% Terrain, 15% EVA and 10% Ops to maximize proximity to cataloged USGS, IAU and THEMIS evidence.</td></tr>
-              <tr><th scope="row">6. Balanced</th><td>Pareto / non-dominated</td><td>1,474.38 km</td><td>22,652 m</td><td>627.58 h</td><td>2.18 deg / 32.90 deg</td><td>85.9</td><td>Equal weights across all four normalized objectives. Score: 1.031.</td></tr>
+              <tr tabindex="0" data-pareto-row="0" data-pareto-status="dominated"><th scope="row">1. Low distance</th><td><strong>Dominated in this set</strong></td><td>1,464.72 km</td><td>31,332 m</td><td>630.11 h</td><td>3.54 deg / 31.23 deg</td><td>94.3</td><td>The shortest-path trap: minimizing horizontal distance forces 31.3 km of vertical climbing and the highest risk proxy.</td></tr>
+              <tr tabindex="0" data-pareto-row="1" data-pareto-status="non-dominated"><th scope="row">2. Low EVA</th><td>Pareto / non-dominated</td><td>1,465.20 km (+480 m)</td><td>22,597 m</td><td>623.74 h</td><td>3.05 deg / 32.90 deg</td><td>93.1</td><td>Walking just 480 meters farther (+0.03%) saves 8,735 meters of vertical climb and 6.37 hours of EVA time.</td></tr>
+              <tr tabindex="0" data-pareto-row="2" data-pareto-status="non-dominated"><th scope="row">3. Low terrain-risk proxy</th><td>Pareto / non-dominated</td><td>1,510.34 km (+45.6 km)</td><td>21,416 m</td><td>639.83 h</td><td>2.07 deg / 28.07 deg</td><td>79.5</td><td>Trading +45.6 km (+3.1% distance) cuts 9,916 meters of climb and lowers the cubic slope and roughness risk proxy from 94.3 to 79.5.</td></tr>
+              <tr tabindex="0" data-pareto-row="3" data-pareto-status="non-dominated"><th scope="row">4. Low terrain burden</th><td>Pareto / non-dominated</td><td>1,620.55 km</td><td>20,099 m</td><td>681.72 h</td><td>1.58 deg / 33.81 deg</td><td>82.1</td><td>Lowest total terrain burden (12.4 versus 23.9) and lowest cumulative climb, 11,233 m less than the shortest path.</td></tr>
+              <tr tabindex="0" data-pareto-row="4" data-pareto-status="non-dominated"><th scope="row">5. Science first</th><td>Pareto / non-dominated</td><td>1,471.76 km</td><td>22,815 m</td><td>626.73 h</td><td>2.22 deg / 32.90 deg</td><td>85.9</td><td>Weighted 55% Science, 20% Terrain, 15% EVA and 10% Ops to maximize proximity to cataloged USGS, IAU and THEMIS evidence.</td></tr>
+              <tr tabindex="0" data-pareto-row="5" data-pareto-status="non-dominated"><th scope="row">6. Balanced</th><td>Pareto / non-dominated</td><td>1,474.38 km</td><td>22,652 m</td><td>627.58 h</td><td>2.18 deg / 32.90 deg</td><td>85.9</td><td>Equal weights across all four normalized objectives. Score: 1.031.</td></tr>
             </tbody>
           </table>
         </div>
+        <aside class="lp-pareto-detail" data-pareto-detail aria-live="polite"></aside>
         <p class="lp-formula" data-reveal><span>Edge Cost</span> = L * (1 + (slope / 15 deg)<sup>3</sup> + (max_slope / 15 deg)<sup>2</sup> + (roughness / 150 m)<sup>2</sup>)</p>
         <a class="lp-pill lp-pill--cyan lp-magnetic" href="/console/?tutorial=route-design"><span class="lp-dot" aria-hidden="true"></span>Inspect All 6 Pareto Candidates Live in Console</a>
       </section>
@@ -174,7 +195,6 @@
         </button>
         <div class="lp-reel__links" aria-label="Demo videos">
           <a href="https://www.youtube.com/watch?v=0MLtYKHewcA" target="_blank" rel="noopener">Global Judging Official Demo · 30 seconds</a>
-          <a href="https://www.youtube.com/watch?v=0MLtYKHewcA" target="_blank" rel="noopener">Full Local Pitch Story · 3:57</a>
         </div>
       </section>
 

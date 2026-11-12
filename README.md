@@ -28,7 +28,6 @@ NASA Space Apps Challenge 2026 · branch `landing-core-features2`
 </div>
 
 Official judging cut: [30-second subtitled demo](https://www.youtube.com/watch?v=0MLtYKHewcA).
-Full local pitch story: [3:57 narrative video](https://www.youtube.com/watch?v=0MLtYKHewcA).
 
 ---
 
