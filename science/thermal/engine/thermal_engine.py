@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from pathlib import Path
 from math import radians, sin, cos, asin, sqrt
-import pyarrow.parquet as pq
 
 
 MARS_RADIUS_KM = 3396.19
@@ -10,6 +9,8 @@ MARS_RADIUS_KM = 3396.19
 
 class NeuroNexusThermalEngine:
     def __init__(self, parquet_path: str | Path):
+        import pyarrow.parquet as pq
+
         self.path = Path(parquet_path)
         self.table = pq.read_table(self.path)
         self.rows = self.table.to_pylist()
@@ -32,6 +33,63 @@ class NeuroNexusThermalEngine:
     def _seasonal_distance(a, b):
         d = abs(a - b) % 360.0
         return min(d, 360.0 - d)
+
+    @staticmethod
+    def _temperature_stats(observations):
+        """Return Kelvin/Celsius statistics without fabricating missing values."""
+        temperatures = [
+            float(observation["brightness_temperature_k"])
+            for observation in observations
+            if observation.get("brightness_temperature_k") is not None
+        ]
+
+        if not temperatures:
+            return {
+                "min_k": None,
+                "max_k": None,
+                "mean_k": None,
+                "min_c": None,
+                "max_c": None,
+                "mean_c": None,
+            }
+
+        mean_k = sum(temperatures) / len(temperatures)
+        return {
+            "min_k": round(min(temperatures), 3),
+            "max_k": round(max(temperatures), 3),
+            "mean_k": round(mean_k, 3),
+            "min_c": round(min(temperatures) - 273.15, 3),
+            "max_c": round(max(temperatures) - 273.15, 3),
+            "mean_c": round(mean_k - 273.15, 3),
+        }
+
+    @classmethod
+    def _day_night_stats(cls, observations):
+        """Aggregate only source-provided day/night classifications.
+
+        Local solar time is intentionally not used as a proxy here.  Some
+        source rows do not carry a classification, and those rows remain in
+        the overall historical statistics without being assigned to either
+        bucket.
+        """
+        buckets = {"day": [], "night": []}
+
+        for observation in observations:
+            day_night = observation.get("day_night")
+            if isinstance(day_night, str):
+                day_night = day_night.strip().lower()
+            if day_night in buckets:
+                buckets[day_night].append(observation)
+
+        if not any(buckets.values()):
+            return None
+
+        result = {}
+        for label, bucket in buckets.items():
+            stats = cls._temperature_stats(bucket)
+            stats["sample_count"] = len(bucket)
+            result[label] = stats
+        return result
 
     def nearest(
         self,
@@ -122,6 +180,12 @@ class NeuroNexusThermalEngine:
         )
 
         if not observations:
+            nearest = self.nearest(
+                latitude_deg=latitude_deg,
+                longitude_deg=longitude_deg,
+                solar_longitude_deg=solar_longitude_deg,
+                limit=nearest_limit,
+            )
             return {
                 "landing_site": {
                     "latitude_deg": latitude_deg,
@@ -133,11 +197,16 @@ class NeuroNexusThermalEngine:
                 },
                 "coverage": {
                     "observation_count": 0,
+                    "valid_sample_count": 0,
                     "seasonal_bins": 0,
+                    "seasonal_bins_total": 24,
+                    "seasonal_coverage_fraction": 0.0,
                     "years": 0,
+                    "observation_years": [],
                 },
-                "thermal": None,
+                "thermal": self._temperature_stats([]),
                 "observations": [],
+                "nearest_observations": nearest,
                 "status": "no_historical_themis_observations",
                 "source": "NASA THEMIS IR-PBT",
                 "measurement_note": (
@@ -145,12 +214,6 @@ class NeuroNexusThermalEngine:
                     "not a direct measurement of physical surface temperature."
                 ),
             }
-
-        temps = [
-            float(o["brightness_temperature_k"])
-            for o in observations
-            if o.get("brightness_temperature_k") is not None
-        ]
 
         ls_values = [
             float(o["solar_longitude_deg"])
@@ -196,6 +259,15 @@ class NeuroNexusThermalEngine:
             limit=nearest_limit,
         )
 
+        thermal_stats = self._temperature_stats(observations)
+        valid_sample_count = sum(
+            observation.get("brightness_temperature_k") is not None
+            for observation in observations
+        )
+        day_night_stats = self._day_night_stats(observations)
+        if day_night_stats is not None:
+            thermal_stats["day_night"] = day_night_stats
+
         return {
             "landing_site": {
                 "latitude_deg": latitude_deg,
@@ -207,6 +279,7 @@ class NeuroNexusThermalEngine:
             },
             "coverage": {
                 "observation_count": len(observations),
+                "valid_sample_count": valid_sample_count,
                 "seasonal_bins": len(seasonal_bins),
                 "seasonal_bins_total": 24,
                 "seasonal_coverage_fraction": round(
@@ -229,17 +302,7 @@ class NeuroNexusThermalEngine:
             "thermal": {
                 "measurement": "BRIGHTNESS_TEMPERATURE",
                 "unit": "KELVIN",
-                "min_k": round(min(temps), 3) if temps else None,
-                "max_k": round(max(temps), 3) if temps else None,
-                "mean_k": round(sum(temps) / len(temps), 3)
-                if temps else None,
-                "min_c": round(min(temps) - 273.15, 3)
-                if temps else None,
-                "max_c": round(max(temps) - 273.15, 3)
-                if temps else None,
-                "mean_c": round(
-                    sum(temps) / len(temps) - 273.15, 3
-                ) if temps else None,
+                **thermal_stats,
             },
             "nearest_observations": nearest,
             "scientific_constraints": [

@@ -32,6 +32,7 @@ import {
 import { DEFAULT_MISSION_PROFILE, buildMissionConsoleState, safeHavenRelationship } from "./utils/missionConsole";
 import { CANDIDATE_COLOURS } from "./utils/routeObjectives";
 import { EXPORT_SCHEMA, exportFilename, missionToCsv, routeToCsv } from "./utils/missionExport";
+import { buildThermalPanel } from "./utils/thermalPanel";
 
 import "./App.css";
 
@@ -1891,7 +1892,7 @@ export default function App() {
 
   const thermal = environment?.thermal?.observations?.[0];
 
-  const thermalEvidence = thermal?.evidence;
+  const thermalPanel = buildThermalPanel(environment?.thermal);
 
   const dust = environment?.dust;
 
@@ -3374,26 +3375,66 @@ export default function App() {
           </Panel>
 
           <Panel eyebrow="THERMAL / NASA THEMIS" title="Historical evidence">
+            {!thermalPanel.hasHistorical && (
+              <div className="thermal-note" role="status">
+                <strong>THERMAL DATA UNAVAILABLE</strong>
+                <div>{loading ? "Loading..." : thermalPanel.unavailableDetail}</div>
+              </div>
+            )}
+
             <Metric
-              label="Nearest historical brightness temperature"
-              value={thermal ? `${Number(thermal.brightness_temperature_k).toFixed(1)} K` : "—"}
-              detail={
-                thermal
-                  ? `${Number(thermal.brightness_temperature_c).toFixed(1)} °C · nearest historical THEMIS observation`
-                  : loading
-                    ? "Loading..."
-                    : "No historical observation"
-              }
+              label={thermalPanel.nearest.label}
+              value={thermalPanel.nearest.value}
+              detail={thermalPanel.nearest.detail}
             />
 
+            <div className="thermal-stat-grid">
+              {thermalPanel.stats.map(({ key, ...metric }) => <Metric key={key} {...metric} />)}
+            </div>
+
             <div className="evidence-grid">
-              <Metric label="Evidence" value={thermalEvidence?.label} />
+              <Metric label="Evidence" value={thermalPanel.evidence.label} />
 
-              <Metric label="Score" value={thermalEvidence?.score == null ? "—" : Number(thermalEvidence.score).toFixed(1)} />
+              <Metric label="Score" value={thermalPanel.evidence.score} />
 
-              <Metric label="Observations" value={thermalEvidence?.observation_count} />
+              <Metric label="Evidence observations" value={thermalPanel.evidence.observationCount} />
 
-              <Metric label="Years" value={thermalEvidence?.years} />
+              <Metric label="Evidence years" value={thermalPanel.evidence.years} />
+
+              <Metric label="Historical radius samples" value={thermalPanel.coverage.sampleCount} />
+
+              <Metric label="Valid temperature samples" value={thermalPanel.coverage.validSampleCount} />
+
+              <Metric label="Search radius" value={thermalPanel.coverage.searchRadius} />
+
+              <Metric label="Historical radius years" value={thermalPanel.coverage.years} />
+
+              <Metric
+                label="Seasonal coverage"
+                value={thermalPanel.coverage.seasonalCoverage}
+                detail={thermalPanel.coverage.seasonalBins}
+              />
+            </div>
+
+            {thermalPanel.conditions.length > 0 && (
+              <div className="thermal-condition-block">
+                <div className="thermal-condition-title">SOURCE-CLASSIFIED CONDITIONS</div>
+
+                {thermalPanel.conditions.map((condition) => (
+                  <div key={condition.key}>
+                    <div className="thermal-condition-title">{condition.label}</div>
+                    <div className="thermal-stat-grid">
+                      {condition.stats.map(({ key, ...metric }) => <Metric key={key} {...metric} />)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="thermal-note">{thermalPanel.conditionNote}</div>
+
+            <div className="thermal-note">
+              Aggregate statistics cover historical THEMIS brightness-temperature observations within the stated search radius. The nearest reference is shown separately; these are not exact-coordinate measurements or current Martian weather.
             </div>
 
             <div className="source-note">

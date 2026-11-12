@@ -358,10 +358,53 @@ a {
 }
 
 .metric-grid,
-.evidence-grid {
+.evidence-grid,
+.thermal-stat-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0 15px;
+}
+
+.thermal-stat-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 8px;
+}
+
+.thermal-stat-grid .metric {
+  min-width: 0;
+}
+
+.thermal-stat-grid .metric > span {
+  font-size: 9px;
+  letter-spacing: 0;
+}
+
+.thermal-stat-grid .metric strong {
+  font-size: 13px;
+}
+
+.thermal-stat-grid .metric strong,
+.thermal-stat-grid .metric small {
+  overflow-wrap: anywhere;
+}
+
+.thermal-condition-block {
+  margin-top: 4px;
+  border-top: 1px solid rgba(124, 225, 255, 0.07);
+}
+
+.thermal-condition-title {
+  padding-top: 9px;
+  color: var(--muted);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+
+.thermal-note {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1.5;
 }
 
 .source-note,
