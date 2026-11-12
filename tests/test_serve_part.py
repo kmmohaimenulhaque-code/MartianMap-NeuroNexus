@@ -8,12 +8,15 @@ import numpy as np
 import pytest
 from fastapi.testclient import TestClient
 
-from science.hires import layers
-from science.marswalk import config
+from science.hires import ladder, layers
+from science.marswalk import config, planner
 from tests.marswalk_fixtures import synthetic_window
 
 
 def _part(monkeypatch, name):
+    # The part sets these module-wide; monkeypatch restores them for the rest of the suite.
+    monkeypatch.setattr(ladder, "CACHE_WINDOWS", ladder.CACHE_WINDOWS)
+    monkeypatch.setattr(planner, "LAYER_CACHE", planner.LAYER_CACHE)
     monkeypatch.setenv("NN_PART", name)
     sys.modules.pop("science.serve_part", None)
     return importlib.import_module("science.serve_part")
@@ -25,7 +28,9 @@ def _part(monkeypatch, name):
 def test_part_serves_only_its_router(monkeypatch, name, route):
     part = _part(monkeypatch, name)
     client = TestClient(part.app)
-    assert client.get("/api/health").json() == {"status": "ok", "part": name, "heavy_concurrency": 1}
+    health = client.get("/api/health").json()
+    assert (health["status"], health["part"], health["heavy_concurrency"]) == ("ok", name, 1)
+    assert health["window_cache"] == 2 and health["layer_cache"] == 1
     paths = client.get("/api/openapi.json").json()["paths"]
     assert route in paths
     assert "/environment" not in paths and "/dust/meta" not in paths  # the full app stays in science.serve

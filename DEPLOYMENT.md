@@ -120,8 +120,11 @@ one slice per instance, imports only that slice (about 130 MB idle) and runs one
 | marswalk | `NN_PART=marswalk uvicorn science.serve_part:app` | `/api/marswalk/*` |
 
 Part build command: `pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero`
-(MOLA straight from NASA PDS, no Git LFS). Set `MALLOC_ARENA_MAX=2`. `frontend/vercel.json` routes each path.
-Measured peaks with Curiosity's latest position (100% HiRISE): window 373 MB, image 380 MB, marswalk 317 MB.
+(MOLA straight from NASA PDS, no Git LFS). `frontend/vercel.json` routes each path. Each part also caps GDAL's
+cache, keeps a small thread pool and frame cache, fixes glibc's mmap threshold and trims the heap after every
+heavy request; without that, idle memory crept up with each new location until Render killed the instance.
+Measured (Curiosity's latest position, 100% HiRISE): MARSWALK load peaks window 324 MB, image 330 MB, marswalk
+293 MB; a soak of 12 new frames plus 6 route plans peaks at 414 MB (image) and 415 MB (marswalk).
 
 ---
 

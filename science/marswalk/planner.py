@@ -33,6 +33,7 @@ SNAP_RADIUS_M = 25.0
 ROUTE_WALK_PENALTY = 3.0  # planning choice: cost per meter = 1 + 3 * (1 - walkability / 100)
 SITES = {"gale": {"lat": -4.7, "lon": 137.4, "rover": "msl"}, "jezero": {"lat": 18.44, "lon": 77.45, "rover": "m2020"}}
 _layer_cache: OrderedDict[tuple, dict] = OrderedDict()
+LAYER_CACHE = 4  # computed layer sets kept; small hosts lower it (science.serve_part)
 _lock = threading.Lock()
 
 
@@ -84,7 +85,7 @@ def _layers(window, v: dict) -> dict:
     computed = layers.compute(window, v, baselines=(1, 3), extras=False)
     with _lock:
         _layer_cache[key] = computed
-        while len(_layer_cache) > 4:
+        while len(_layer_cache) > LAYER_CACHE:
             _layer_cache.popitem(last=False)
     return computed
 
