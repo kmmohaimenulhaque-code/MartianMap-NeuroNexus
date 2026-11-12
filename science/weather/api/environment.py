@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+from science.terrain.api import router as terrain_router
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -16,7 +16,7 @@ app = FastAPI(
         "NASA Ames Mars GCM dust scenarios, and NASA MOLA terrain."
     ),
 )
-
+app.include_router(terrain_router)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

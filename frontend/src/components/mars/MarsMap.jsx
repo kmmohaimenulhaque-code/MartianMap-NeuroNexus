@@ -3,20 +3,53 @@ import {
   CircleMarker,
   ImageOverlay,
   MapContainer,
+  TileLayer,
   Tooltip,
   useMap,
 } from 'react-leaflet'
-import { CRS } from 'leaflet'
+import { CRS, Transformation } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
 const MARS_BOUNDS = [
-  [0, 0],
-  [180, 360],
+  [-90, 0],
+  [90, 360],
 ]
+
+/*
+ * Mars CRS
+ *
+ * One map unit = one degree.
+ *
+ * At zoom 0:
+ *   360 px across Mars
+ *
+ * At zoom 7:
+ *   360 × 2^7 = 46,080 px
+ *   = 128 px / degree
+ *
+ * This exactly matches the native MOLA 128 ppd grid.
+ */
+const MARS_CRS = {
+  ...CRS.Simple,
+
+  transformation: new Transformation(
+    1,
+    0,
+    -1,
+    90,
+  ),
+
+  scale(zoom) {
+    return Math.pow(2, zoom)
+  },
+}
+
+const MOLA_TILE_URL =
+  '/terrain/tile/{z}/{x}/{y}.png'
 
 function marsPosition(feature) {
   return [
-    90 - Number(feature.latitude_deg),
+    Number(feature.latitude_deg),
     Number(feature.longitude_deg) % 360,
   ]
 }
@@ -70,11 +103,11 @@ export default function MarsMap({
 }) {
   return (
     <MapContainer
-      center={[90, 180]}
+      center={[0, 180]}
       zoom={0}
-      minZoom={-1}
-      maxZoom={5}
-      crs={CRS.Simple}
+      minZoom={0}
+      maxZoom={7}
+      crs={MARS_CRS}
       maxBounds={MARS_BOUNDS}
       maxBoundsViscosity={1}
       scrollWheelZoom
@@ -85,10 +118,24 @@ export default function MarsMap({
         background: '#090c0f',
       }}
     >
+      {/* Existing global overview remains intact */}
       <ImageOverlay
         url="/mars-mola-global.jpg"
         bounds={MARS_BOUNDS}
         opacity={0.92}
+      />
+
+      {/* Native-resolution NASA MOLA terrain pyramid */}
+      <TileLayer
+        url={MOLA_TILE_URL}
+        tileSize={180}
+        minZoom={0}
+        maxZoom={7}
+        opacity={0.72}
+        bounds={MARS_BOUNDS}
+        noWrap
+        updateWhenZooming
+        keepBuffer={2}
       />
 
       <MapFocus feature={selectedFeature} />
