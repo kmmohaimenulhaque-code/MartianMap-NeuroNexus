@@ -620,3 +620,6 @@ from science.ops.errors import install as install_error_handlers  # noqa: E402
 
 install_error_handlers(app)
 app.include_router(hires_router)
+from science.sources.api import router as sources_router  # noqa: E402
+
+app.include_router(sources_router)

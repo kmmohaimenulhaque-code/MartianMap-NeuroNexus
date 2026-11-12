@@ -15,3 +15,6 @@ tests/test_hires_grid.py
 tests/test_derivatives_multi.py
 tests/test_hires_datum.py
 tests/test_hires_selector.py
+science/sources
+tools/build_ledger.py
+tests/test_source_ledger.py

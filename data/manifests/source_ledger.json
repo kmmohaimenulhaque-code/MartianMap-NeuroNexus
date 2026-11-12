@@ -1,90 +1,2452 @@
 {
+  "schema": "neuronexus.source-ledger.v3",
   "project": "NeuroNexus",
-  "sources": [
+  "generated_by": "tools/migrations/ledger_v2_to_v3.py (once), then edited directly",
+  "evidence_classes": {
+    "OBSERVED": "A real instrument measurement from a mission archive.",
+    "NASA REFERENCE": "A published NASA/USGS/partner reference value, catalog or map.",
+    "MODELED": "Output of a physical model (e.g. NASA Ames Mars GCM).",
+    "DERIVED": "Computed by NeuroNexus from observed or modeled inputs.",
+    "COMPUTED": "Geometry or arithmetic computed by NeuroNexus.",
+    "SIMULATED": "A configurable NeuroNexus simulation value, not a measurement.",
+    "AI INTERPRETATION": "Language-model interpretation of structured results; never a NASA observation."
+  },
+  "ingestion_statuses": {
+    "INGESTED": "Data are read and used by the pipeline.",
+    "QUERIED LIVE": "Fetched from the provider at run time (cached).",
+    "REFERENCE ONLY": "Linked for context; the data are not ingested.",
+    "CATALOGED NOT INGESTED": "Registered but not ingested; nothing is inferred from it.",
+    "UNAVAILABLE": "Known but not reachable or not usable."
+  },
+  "legacy_export": {
+    "project": "NeuroNexus",
+    "schema_version": "3.0",
+    "purpose": "External-source and provenance ledger for the NeuroNexus Mars mission-planning and scientific intelligence system.",
+    "provenance_boundary": {
+      "external_sources": "Authoritative or external datasets, APIs, catalogues, models, imagery, and reference material used by NeuroNexus.",
+      "derived_outputs": "Values and classifications calculated by NeuroNexus from external inputs.",
+      "team_methods": "Algorithms, scoring methods, route objectives, and models implemented by the NeuroNexus team.",
+      "ai_interpretation": "Google Gemini interpretation of structured NeuroNexus results; AI prose is never treated as a NASA observation.",
+      "unavailable": "A source or dataset that is known/referenced but not ingested into the application is explicitly marked unavailable or not_ingested rather than replaced with invented data."
+    },
+    "evidence_statuses": {
+      "USED": "External source actively used by an application subsystem.",
+      "USED_AND_INGESTED": "External source data are locally ingested/indexed and used by the scientific pipeline.",
+      "USED_AS_REFERENCE": "External source supports scientific or mission context but is not necessarily a locally ingested measurement dataset.",
+      "USED_AS_REFERENCE_ONLY": "External source is linked/referenced for context; the underlying full dataset is not ingested.",
+      "CATALOGUED_NOT_INGESTED": "The source is registered in the science catalogue/provenance roadmap but its data are not currently ingested for site-specific calculations.",
+      "UNAVAILABLE": "The source is known but unavailable in the current runtime; NeuroNexus does not fabricate a substitute."
+    },
+    "project_boundary": {
+      "no_fake_data": true,
+      "no_nasa_certified_safety_claims": true,
+      "no_present_day_habitability_claim_from_ancient_evidence": true,
+      "no_resource_confirmation_from_context_layers": true,
+      "ai_is_not_presented_as_nasa_observation": true,
+      "unavailable_data_are_reported_explicitly": true
+    }
+  },
+  "legacy_provenance": {
+    "evidence_statuses": {
+      "PROJECT DATA": "Stored in this application's own state.",
+      "NASA OBSERVED": "A real instrument measurement from a NASA mission archive.",
+      "NASA REFERENCE": "A published NASA/USGS reference value or catalogue entry.",
+      "MODELED": "Output of a physical model (e.g. NASA Ames Mars GCM).",
+      "DERIVED": "Computed by NeuroNexus from observed or modelled inputs.",
+      "COMPUTED": "Pure geometry or arithmetic computed by NeuroNexus.",
+      "SIMULATED": "A configurable NeuroNexus simulation value, not a measurement.",
+      "UNAVAILABLE": "No evidence is ingested; nothing is inferred."
+    }
+  },
+  "entries": [
     {
       "id": "NASA_PDS",
+      "aliases": [],
       "organization": "NASA Planetary Data System",
-      "role": "primary_archive"
+      "mission": null,
+      "instrument": null,
+      "product_title": "Nasa Pds",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://pds.nasa.gov/",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "QUERIED LIVE",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "NASA_PDS",
+        "role": "primary_archive",
+        "status": "USED",
+        "used_for": [
+          "authoritative planetary-data archive",
+          "MOLA data provenance",
+          "Mars science dataset provenance"
+        ]
+      }
     },
     {
-      "id": "MOLA",
-      "organization": "NASA / MGS / MOLA",
-      "role": "terrain"
+      "id": "MOLA_MEGDR",
+      "aliases": [
+        "MOLA",
+        "nasa_mola"
+      ],
+      "organization": "NASA / Mars Global Surveyor / MOLA",
+      "mission": "Mars Global Surveyor",
+      "instrument": "MOLA",
+      "product_title": "MOLA MEGDR 128 pixels/degree topography (MGS-M-MOLA-5-MEGDR-L3-V1.0)",
+      "product_id_pattern": "megt*hb.img / megr*hb.img",
+      "doi": null,
+      "url": "https://pds-geosciences.wustl.edu/mgs/mgs-m-mola-5-megdr-l3-v1/mgsl_300x/meg128/",
+      "landing_page": "https://pds-geosciences.wustl.edu/missions/mgs/megdr.html",
+      "license": "public domain (NASA PDS)",
+      "citation": "Smith et al. (2003), MGS-M-MOLA-5-MEGDR-L3-V1.0, NASA PDS",
+      "evidence_class": "OBSERVED",
+      "ingestion_status": "INGESTED",
+      "access_method": "tools/fetch_mola.py (size-checked, sha256 logged); memory-mapped",
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": "2026-10-20",
+      "verification_note": "megt00n090hb/megr00n090hb/megt44n000hb/megr44n000hb downloaded from PDS: 129,761,280 bytes each; megr label OFFSET = 3396000, SCALING_FACTOR = 1, UNIT = METER.",
+      "legacy": {
+        "id": "MOLA",
+        "role": "terrain",
+        "status": "USED_AND_INGESTED",
+        "used_for": [
+          "global elevation",
+          "bounded local terrain windows",
+          "slope derivation",
+          "roughness derivation",
+          "local relief",
+          "deterministic route-planning terrain grids",
+          "waypoint terrain analysis"
+        ],
+        "extra": {
+          "datasets": [
+            "MGS-M-MOLA-5-MEGDR-L3-V1.0 128 px/degree global topography",
+            "MOLA polar 512 px/degree topography"
+          ]
+        }
+      },
+      "provenance": {
+        "class": "EXTERNAL SOURCE",
+        "use": "Elevation, slope, roughness, route planning grid and terrain metrics."
+      }
     },
     {
       "id": "THEMIS",
-      "organization": "NASA / Mars Odyssey / THEMIS",
-      "role": "visible_and_thermal_imagery"
+      "aliases": [
+        "nasa_themis"
+      ],
+      "organization": "NASA / Mars Odyssey / THEMIS / Arizona State University",
+      "mission": null,
+      "instrument": null,
+      "product_title": "THEMIS IR predicted brightness temperature observations",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://themis.asu.edu/",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "OBSERVED",
+      "ingestion_status": "INGESTED",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [
+        "THEMIS values in NeuroNexus represent historical archived observations, not live measurements."
+      ],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "THEMIS",
+        "role": "visible_and_thermal_imagery",
+        "status": "USED_AND_INGESTED",
+        "used_for": [
+          "historical thermal observations",
+          "IR predicted brightness-temperature context",
+          "site thermal evidence",
+          "THEMIS-derived scientific indexing"
+        ],
+        "note": "THEMIS values in NeuroNexus represent historical archived observations, not live measurements."
+      },
+      "provenance": {
+        "class": "EXTERNAL SOURCE",
+        "use": "Historical thermal evidence at and around sites."
+      }
+    },
+    {
+      "id": "NASA_AMES_MGCM",
+      "aliases": [
+        "nasa_ames_mgcm"
+      ],
+      "organization": "NASA Ames Research Center",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Mars Global Climate Model MY34 dust scenario",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://www.nasa.gov/space-science-and-astrobiology-at-ames/division-overview/planetary-systems-branch-overview-stt/mars-climate-modeling-center-mcmc/",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "MODELED",
+      "ingestion_status": "INGESTED",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "NASA_AMES_MGCM",
+        "role": "mars_climate_model",
+        "status": "USED_AND_INGESTED",
+        "used_for": [
+          "MY34 modelled dust opacity context",
+          "dust height/scenario information"
+        ],
+        "extra": {
+          "evidence_class": "MODELED"
+        }
+      },
+      "provenance": {
+        "class": "EXTERNAL SOURCE",
+        "use": "Modelled dust opacity and height."
+      }
+    },
+    {
+      "id": "USGS_IAU_GAZETTEER",
+      "aliases": [
+        "usgs_nomenclature"
+      ],
+      "organization": "USGS Astrogeology / International Astronomical Union",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Gazetteer of Planetary Nomenclature (Mars, 2,052 features)",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://planetarynames.wr.usgs.gov/",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "INGESTED",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "USGS_IAU_GAZETTEER",
+        "role": "named_features",
+        "status": "USED_AND_INGESTED",
+        "used_for": [
+          "2,052 Mars named features",
+          "feature names",
+          "feature classes",
+          "coordinates",
+          "diameters where available",
+          "site identity",
+          "named-feature search",
+          "nearest-feature context"
+        ]
+      },
+      "provenance": {
+        "class": "EXTERNAL SOURCE",
+        "use": "Named feature search, site identity, science evidence."
+      }
+    },
+    {
+      "id": "USGS_SIM_3292",
+      "aliases": [
+        "usgs_sim3292"
+      ],
+      "organization": "USGS Astrogeology",
+      "mission": null,
+      "instrument": null,
+      "product_title": "SIM 3292 Geologic Map of Mars, 1:20M (Tanaka et al., 2014)",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://pubs.usgs.gov/sim/3292/",
+      "landing_page": null,
+      "license": null,
+      "citation": "Tanaka et al., 2014, Geologic Map of Mars, USGS SIM 3292, 1:20,000,000.",
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "QUERIED LIVE",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "USGS_SIM_3292",
+        "role": "geologic_map",
+        "status": "USED",
+        "used_for": [
+          "global Mars geology",
+          "geologic units",
+          "geologic contacts",
+          "geologic structures",
+          "landing-site map layer",
+          "USGS route snapshot",
+          "scientific map synchronisation"
+        ],
+        "extra": {
+          "citation": "Tanaka et al., 2014, Geologic Map of Mars, USGS SIM 3292, 1:20,000,000."
+        }
+      },
+      "provenance": {
+        "class": "EXTERNAL SOURCE",
+        "use": "Scientific map view and route geologic-unit snapshot."
+      }
+    },
+    {
+      "id": "USGS_SIM_3292_ARCGIS",
+      "aliases": [],
+      "organization": "USGS / ArcGIS",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Usgs Sim 3292 Arcgis",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://services.arcgis.com/v01gqwM5QqNysAAi/arcgis/rest/services/Tanaka_et_al_2014_Mars_Global_Map_Features/FeatureServer",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "QUERIED LIVE",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [
+        "The ArcGIS FeatureServer is used as the delivery mechanism for USGS SIM 3292 map features."
+      ],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "USGS_SIM_3292_ARCGIS",
+        "role": "geology_feature_services",
+        "status": "USED",
+        "used_for": [
+          "3D-accessible geology feature queries",
+          "geologic units",
+          "contacts",
+          "structures",
+          "landing-site points"
+        ],
+        "note": "The ArcGIS FeatureServer is used as the delivery mechanism for USGS SIM 3292 map features."
+      }
+    },
+    {
+      "id": "NASA_MMGIS",
+      "aliases": [],
+      "organization": "NASA",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Nasa Mmgis",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://mars.nasa.gov/mmgis/",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "OBSERVED",
+      "ingestion_status": "QUERIED LIVE",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [
+        "Traverse paths are fetched from NASA MMGIS and decimated only for browser rendering; coordinates are not fabricated."
+      ],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "NASA_MMGIS",
+        "role": "rover_traverses",
+        "status": "USED",
+        "used_for": [
+          "Curiosity traverse path",
+          "Perseverance traverse path",
+          "latest rover traverse position context"
+        ],
+        "note": "Traverse paths are fetched from NASA MMGIS and decimated only for browser rendering; coordinates are not fabricated.",
+        "extra": {
+          "endpoints": [
+            "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_traverse.json",
+            "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_traverse.json"
+          ]
+        }
+      }
+    },
+    {
+      "id": "NASA_CURIOSITY",
+      "aliases": [],
+      "organization": "NASA / Mars Science Laboratory",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Nasa Curiosity",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://science.nasa.gov/mission/msl-curiosity/",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "REFERENCE ONLY",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "NASA_CURIOSITY",
+        "role": "rover_and_science_context",
+        "status": "USED_AS_REFERENCE",
+        "used_for": [
+          "Curiosity mission context",
+          "Gale Crater ancient-habitability context",
+          "surface science interpretation"
+        ]
+      }
+    },
+    {
+      "id": "NASA_PERSEVERANCE",
+      "aliases": [],
+      "organization": "NASA / Mars 2020",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Nasa Perseverance",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://science.nasa.gov/mission/mars-2020-perseverance/",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "REFERENCE ONLY",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "NASA_PERSEVERANCE",
+        "role": "rover_and_science_context",
+        "status": "USED_AS_REFERENCE",
+        "used_for": [
+          "Perseverance mission context",
+          "Jezero ancient-habitability context",
+          "rover exploration context"
+        ]
+      }
+    },
+    {
+      "id": "MSL_RAD_RDR",
+      "aliases": [
+        "NASA_RAD",
+        "nasa_rad"
+      ],
+      "organization": "NASA / Mars Science Laboratory / Radiation Assessment Detector",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Radiation Assessment Detector surface measurements (Gale crater)",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://science.nasa.gov/resource/radiation-measurements-on-mars/",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "OBSERVED",
+      "ingestion_status": "REFERENCE ONLY",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [
+        "Historical measurement context only; not presented as a live forecast."
+      ],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "NASA_RAD",
+        "role": "surface_radiation_reference",
+        "status": "USED_AS_REFERENCE",
+        "used_for": [
+          "historical Gale Crater surface-radiation reference"
+        ],
+        "note": "Historical measurement context only; not presented as a live forecast."
+      },
+      "provenance": {
+        "class": "EXTERNAL SOURCE",
+        "use": "Historical surface radiation reference only. Not a forecast."
+      }
+    },
+    {
+      "id": "NASA_IMAGE_LIBRARY",
+      "aliases": [
+        "nasa_image_library"
+      ],
+      "organization": "NASA",
+      "mission": null,
+      "instrument": null,
+      "product_title": "NASA Image and Video Library",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://images.nasa.gov/",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "REFERENCE ONLY",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "NASA_IMAGE_LIBRARY",
+        "role": "mission_imagery_metadata",
+        "status": "USED_AS_REFERENCE",
+        "used_for": [
+          "rover and mission imagery metadata"
+        ]
+      },
+      "provenance": {
+        "class": "EXTERNAL SOURCE",
+        "use": "Rover and mission imagery metadata."
+      }
+    },
+    {
+      "id": "NASA_MARS",
+      "aliases": [
+        "nasa_photojournal"
+      ],
+      "organization": "NASA",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Mars photojournal feed",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://science.nasa.gov/mars/",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "REFERENCE ONLY",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "NASA_MARS",
+        "role": "mars_reference",
+        "status": "USED_AS_REFERENCE",
+        "used_for": [
+          "Mars reference information",
+          "global atmospheric context",
+          "general Mars science context"
+        ]
+      },
+      "provenance": {
+        "class": "EXTERNAL SOURCE",
+        "use": "Reference briefing feed."
+      }
+    },
+    {
+      "id": "NASA_HUMANS_TO_MARS",
+      "aliases": [],
+      "organization": "NASA",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Nasa Humans To Mars",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://www.nasa.gov/humans-in-space/humans-to-mars/",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "REFERENCE ONLY",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "NASA_HUMANS_TO_MARS",
+        "role": "human_exploration_context",
+        "status": "USED_AS_REFERENCE",
+        "used_for": [
+          "human Mars mission context",
+          "oxygen/water/food/power planning context",
+          "long-duration mission context"
+        ]
+      }
+    },
+    {
+      "id": "NASA_SPACE_RADIATION",
+      "aliases": [],
+      "organization": "NASA Human Research Program",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Nasa Space Radiation",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://www.nasa.gov/hrp/hazard-space-radiation/",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "REFERENCE ONLY",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "NASA_SPACE_RADIATION",
+        "role": "radiation_hazard_reference",
+        "status": "USED_AS_REFERENCE",
+        "used_for": [
+          "galactic cosmic ray context",
+          "solar particle event context",
+          "radiation monitoring context"
+        ]
+      }
+    },
+    {
+      "id": "NASA_EVA",
+      "aliases": [],
+      "organization": "NASA",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Nasa Eva",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://www.nasa.gov/suits-and-rovers/",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "REFERENCE ONLY",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "NASA_EVA",
+        "role": "surface_mobility_reference",
+        "status": "USED_AS_REFERENCE",
+        "used_for": [
+          "EVA terminology",
+          "surface mobility context",
+          "spacesuit context"
+        ]
+      }
+    },
+    {
+      "id": "NASA_MARS_EVA_TECHNOLOGY",
+      "aliases": [],
+      "organization": "NASA Technical Reports Server",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Nasa Mars Eva Technology",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://ntrs.nasa.gov/api/citations/20260001086/downloads/20260001086.pdf?attachment=true",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "REFERENCE ONLY",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "NASA_MARS_EVA_TECHNOLOGY",
+        "role": "human_surface_mobility_reference",
+        "status": "USED_AS_REFERENCE",
+        "used_for": [
+          "surface mobility context",
+          "life-support/ECLSS context"
+        ]
+      }
+    },
+    {
+      "id": "NASA_MARTIAN_DUST",
+      "aliases": [],
+      "organization": "NASA",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Nasa Martian Dust",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://www.nasa.gov/general/establishing-crew-exposure-limits-of-martian-dust/",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "REFERENCE ONLY",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "NASA_MARTIAN_DUST",
+        "role": "dust_exposure_reference",
+        "status": "USED_AS_REFERENCE",
+        "used_for": [
+          "crew dust exposure context",
+          "research uncertainty"
+        ]
+      }
+    },
+    {
+      "id": "NASA_SWIM",
+      "aliases": [],
+      "organization": "NASA / SWIM research programme",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Nasa Swim",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://swim.psi.edu/SWIM4MIMProducts.php",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "REFERENCE ONLY",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [
+        "The full SWIM ice-consensus raster is not ingested by NeuroNexus and is explicitly reported as UNAVAILABLE. Region markers are context only and are not the SWIM raster."
+      ],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "NASA_SWIM",
+        "role": "accessible_water_ice_context",
+        "status": "USED_AS_REFERENCE_ONLY",
+        "used_for": [
+          "documented accessible-ice study regions",
+          "human exploration context"
+        ],
+        "note": "The full SWIM ice-consensus raster is not ingested by NeuroNexus and is explicitly reported as UNAVAILABLE. Region markers are context only and are not the SWIM raster."
+      }
+    },
+    {
+      "id": "NASA_MARS_WATER_MAPS",
+      "aliases": [],
+      "organization": "NASA / Mars Water Maps",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Nasa Mars Water Maps",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://ammos.nasa.gov/marswatermaps/?mission=MWR",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "REFERENCE ONLY",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [
+        "Reference link only; no fabricated water-ice values are generated."
+      ],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "NASA_MARS_WATER_MAPS",
+        "role": "water_ice_reference",
+        "status": "USED_AS_REFERENCE_ONLY",
+        "used_for": [
+          "water-ice exploration context"
+        ],
+        "note": "Reference link only; no fabricated water-ice values are generated."
+      }
+    },
+    {
+      "id": "NASA_JPL_CAD",
+      "aliases": [
+        "jpl_cad"
+      ],
+      "organization": "NASA / JPL Solar System Dynamics",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Small-Body Database Close-Approach Data API",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://ssd-api.jpl.nasa.gov/doc/cad.html",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "OBSERVED",
+      "ingestion_status": "QUERIED LIVE",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [
+        "Close-approach data are for observation and awareness; they are not impact predictions."
+      ],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "NASA_JPL_CAD",
+        "role": "orbital_tracking",
+        "status": "USED",
+        "used_for": [
+          "near-Mars small-body close approaches",
+          "distance information",
+          "uncertainty information"
+        ],
+        "note": "Close-approach data are for observation and awareness; they are not impact predictions."
+      },
+      "provenance": {
+        "class": "EXTERNAL SOURCE",
+        "use": "Near-Mars small-body close approaches, distances and uncertainties."
+      }
+    },
+    {
+      "id": "ESRI_MARS",
+      "aliases": [],
+      "organization": "Esri / ArcGIS",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Esri Mars",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "QUERIED LIVE",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [
+        "These services provide the browser-facing 3D visualisation. They are distinct from NeuroNexus's locally ingested NASA MOLA measurements used for deterministic analysis."
+      ],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "ESRI_MARS",
+        "role": "3d_planetary_visualisation",
+        "status": "USED",
+        "used_for": [
+          "on-demand interactive 3D Mars SceneView",
+          "public Mars elevation service",
+          "Viking MDIM imagery",
+          "colourised Mars elevation",
+          "Mars 2000 coordinate visualisation"
+        ],
+        "note": "These services provide the browser-facing 3D visualisation. They are distinct from NeuroNexus's locally ingested NASA MOLA measurements used for deterministic analysis.",
+        "extra": {
+          "urls": [
+            "https://astro.arcgis.com/",
+            "https://js.arcgis.com/"
+          ],
+          "services": [
+            "https://astro.arcgis.com/arcgis/rest/services/OnMars/MDIM/MapServer",
+            "https://astro.arcgis.com/arcgis/rest/services/OnMars/MColorDEM/MapServer",
+            "https://astro.arcgis.com/arcgis/rest/services/OnMars/MDEM200M/ImageServer"
+          ]
+        }
+      }
+    },
+    {
+      "id": "ESA_MARS_EXPRESS",
+      "aliases": [],
+      "organization": "European Space Agency",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Esa Mars Express",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://www.esa.int/rssfeed/Science_Exploration/Space_Science/Mars_Express",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "QUERIED LIVE",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "ESA_MARS_EXPRESS",
+        "role": "mars_news",
+        "status": "USED",
+        "used_for": [
+          "recent Mars briefing/news feed",
+          "Mars Express updates"
+        ]
+      }
+    },
+    {
+      "id": "ESA_EXOMARS",
+      "aliases": [],
+      "organization": "European Space Agency",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Esa Exomars",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://www.esa.int/rssfeed/Science_Exploration/Human_and_Robotic_Exploration/Exploration/ExoMars",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "QUERIED LIVE",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "ESA_EXOMARS",
+        "role": "mars_news",
+        "status": "USED",
+        "used_for": [
+          "recent Mars briefing/news feed",
+          "ExoMars updates"
+        ]
+      }
+    },
+    {
+      "id": "PLANETARY_SOCIETY",
+      "aliases": [],
+      "organization": "The Planetary Society",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Planetary Society",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://www.planetary.org/rss/articles",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "QUERIED LIVE",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "PLANETARY_SOCIETY",
+        "role": "mars_news",
+        "status": "USED",
+        "used_for": [
+          "recent Mars briefing/news feed"
+        ]
+      }
     },
     {
       "id": "CRISM",
+      "aliases": [],
       "organization": "NASA / Mars Reconnaissance Orbiter / CRISM",
-      "role": "mineralogy"
+      "mission": null,
+      "instrument": null,
+      "product_title": "Crism",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://science.nasa.gov/mission/mars-reconnaissance-orbiter/crism/",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "CATALOGED NOT INGESTED",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [
+        "NeuroNexus does not currently present a complete site-specific CRISM mineralogy layer."
+      ],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "CRISM",
+        "role": "mineralogy",
+        "status": "CATALOGUED_NOT_INGESTED",
+        "used_for": [
+          "science catalogue/provenance roadmap",
+          "future mineralogy ingestion context"
+        ],
+        "note": "NeuroNexus does not currently present a complete site-specific CRISM mineralogy layer."
+      }
     },
     {
       "id": "APXS",
+      "aliases": [],
       "organization": "NASA / Mars Science Laboratory / APXS",
-      "role": "elemental_soil_and_rock_chemistry"
+      "mission": null,
+      "instrument": null,
+      "product_title": "Apxs",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "CATALOGED NOT INGESTED",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "APXS",
+        "role": "elemental_soil_and_rock_chemistry",
+        "status": "CATALOGUED_NOT_INGESTED",
+        "used_for": [
+          "science catalogue/provenance roadmap"
+        ]
+      }
     },
     {
       "id": "CHEMCAM",
+      "aliases": [],
       "organization": "NASA / Mars Science Laboratory / ChemCam",
-      "role": "geochemistry"
+      "mission": null,
+      "instrument": null,
+      "product_title": "Chemcam",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "CATALOGED NOT INGESTED",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "CHEMCAM",
+        "role": "geochemistry",
+        "status": "CATALOGUED_NOT_INGESTED",
+        "used_for": [
+          "science catalogue/provenance roadmap"
+        ]
+      }
     },
     {
       "id": "CHEMIN",
+      "aliases": [],
       "organization": "NASA / Mars Science Laboratory / CheMin",
-      "role": "mineralogy"
+      "mission": null,
+      "instrument": null,
+      "product_title": "Chemin",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "CATALOGED NOT INGESTED",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "CHEMIN",
+        "role": "mineralogy",
+        "status": "CATALOGUED_NOT_INGESTED",
+        "used_for": [
+          "science catalogue/provenance roadmap"
+        ]
+      }
     },
     {
       "id": "GRS",
+      "aliases": [],
       "organization": "NASA / Mars Odyssey / GRS",
-      "role": "regional_composition_and_hydrogen"
+      "mission": null,
+      "instrument": null,
+      "product_title": "Grs",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "CATALOGED NOT INGESTED",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "GRS",
+        "role": "regional_composition_and_hydrogen",
+        "status": "CATALOGUED_NOT_INGESTED",
+        "used_for": [
+          "science catalogue/provenance roadmap"
+        ]
+      }
     },
     {
       "id": "SHARAD",
+      "aliases": [],
       "organization": "NASA / Mars Reconnaissance Orbiter / SHARAD",
-      "role": "subsurface"
+      "mission": null,
+      "instrument": null,
+      "product_title": "Sharad",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "CATALOGED NOT INGESTED",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "SHARAD",
+        "role": "subsurface",
+        "status": "CATALOGUED_NOT_INGESTED",
+        "used_for": [
+          "science catalogue/provenance roadmap"
+        ]
+      }
     },
     {
       "id": "MCS",
+      "aliases": [],
       "organization": "NASA / Mars Reconnaissance Orbiter / MCS",
-      "role": "atmosphere"
+      "mission": null,
+      "instrument": null,
+      "product_title": "Mcs",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "CATALOGED NOT INGESTED",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "MCS",
+        "role": "atmosphere",
+        "status": "CATALOGUED_NOT_INGESTED",
+        "used_for": [
+          "science catalogue/provenance roadmap"
+        ]
+      }
     },
     {
       "id": "MARCI",
+      "aliases": [],
       "organization": "NASA / Mars Reconnaissance Orbiter / MARCI",
-      "role": "clouds_and_dust"
+      "mission": null,
+      "instrument": null,
+      "product_title": "Marci",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "CATALOGED NOT INGESTED",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "MARCI",
+        "role": "clouds_and_dust",
+        "status": "CATALOGUED_NOT_INGESTED",
+        "used_for": [
+          "science catalogue/provenance roadmap"
+        ]
+      }
     },
     {
       "id": "MAVEN",
+      "aliases": [],
       "organization": "NASA / MAVEN",
-      "role": "upper_atmosphere_and_space_environment"
+      "mission": null,
+      "instrument": null,
+      "product_title": "Maven",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "CATALOGED NOT INGESTED",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "MAVEN",
+        "role": "upper_atmosphere_and_space_environment",
+        "status": "CATALOGUED_NOT_INGESTED",
+        "used_for": [
+          "science catalogue/provenance roadmap"
+        ]
+      }
     },
     {
       "id": "MSL_REMS",
+      "aliases": [],
       "organization": "NASA / Mars Science Laboratory / REMS",
-      "role": "surface_weather"
+      "mission": null,
+      "instrument": null,
+      "product_title": "Msl Rems",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "CATALOGED NOT INGESTED",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "MSL_REMS",
+        "role": "surface_weather",
+        "status": "CATALOGUED_NOT_INGESTED",
+        "used_for": [
+          "science catalogue/provenance roadmap"
+        ]
+      }
     },
     {
       "id": "MARS2020_MEDA",
+      "aliases": [],
       "organization": "NASA / Mars 2020 / MEDA",
-      "role": "surface_environment"
+      "mission": null,
+      "instrument": null,
+      "product_title": "Mars2020 Meda",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "CATALOGED NOT INGESTED",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "MARS2020_MEDA",
+        "role": "surface_environment",
+        "status": "CATALOGUED_NOT_INGESTED",
+        "used_for": [
+          "science catalogue/provenance roadmap"
+        ]
+      }
     },
     {
       "id": "CTX",
+      "aliases": [],
       "organization": "NASA / Mars Reconnaissance Orbiter / CTX",
-      "role": "regional_imagery"
+      "mission": null,
+      "instrument": null,
+      "product_title": "Ctx",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "INGESTED",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": "2026-10-20",
+      "verification_note": "Ingested through the USGS STAC DTM collections (see HIRISE_STAC_DTM / CTX_STAC_DTM).",
+      "legacy": {
+        "id": "CTX",
+        "role": "regional_imagery",
+        "status": "USED_AND_INGESTED",
+        "used_for": [
+          "science catalogue/provenance roadmap"
+        ]
+      }
     },
     {
       "id": "HIRISE",
+      "aliases": [],
       "organization": "NASA / Mars Reconnaissance Orbiter / HiRISE",
-      "role": "high_resolution_imagery"
+      "mission": null,
+      "instrument": null,
+      "product_title": "Hirise",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "INGESTED",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": "2026-10-20",
+      "verification_note": "Ingested through the USGS STAC DTM collections (see HIRISE_STAC_DTM / CTX_STAC_DTM).",
+      "legacy": {
+        "id": "HIRISE",
+        "role": "high_resolution_imagery",
+        "status": "USED_AND_INGESTED",
+        "used_for": [
+          "science catalogue/provenance roadmap"
+        ]
+      }
     },
     {
       "id": "SPICE",
+      "aliases": [],
       "organization": "NASA / NAIF",
-      "role": "observation_geometry"
+      "mission": null,
+      "instrument": null,
+      "product_title": "Spice",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "CATALOGED NOT INGESTED",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "legacy": {
+        "id": "SPICE",
+        "role": "observation_geometry",
+        "status": "CATALOGUED_NOT_INGESTED",
+        "used_for": [
+          "science catalogue/provenance roadmap"
+        ]
+      }
+    },
+    {
+      "id": "NN_ROUTE_ENGINE",
+      "aliases": [
+        "nn_route_engine"
+      ],
+      "organization": "NeuroNexus",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Deterministic multi-objective Mars route engine",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "COMPUTED",
+      "ingestion_status": "INGESTED",
+      "access_method": "computed in this application",
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": "2026-10-20",
+      "verification_note": "Team method or output in this repository.",
+      "legacy_team_output": {
+        "type": "TEAM_METHOD",
+        "status": "IMPLEMENTED",
+        "description": "Generates route candidates from bounded terrain planning grids using documented objectives and deterministic numerical calculations."
+      },
+      "provenance": {
+        "class": "TEAM METHOD",
+        "use": "Dijkstra candidate generation and metric computation over MOLA windows."
+      }
+    },
+    {
+      "id": "NN_WALKABILITY",
+      "aliases": [],
+      "organization": "NeuroNexus",
+      "mission": null,
+      "instrument": null,
+      "product_title": "NeuroNexus derived walkability score",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "DERIVED",
+      "ingestion_status": "INGESTED",
+      "access_method": "computed in this application",
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": "2026-10-20",
+      "verification_note": "Team method or output in this repository.",
+      "legacy_team_output": {
+        "type": "DERIVED_OUTPUT",
+        "status": "IMPLEMENTED",
+        "description": "Derived from NASA MOLA slope, roughness and local relief. Planning aid only."
+      }
+    },
+    {
+      "id": "NN_TERRAIN_RISK_PROXY",
+      "aliases": [
+        "nn_risk_proxy"
+      ],
+      "organization": "NeuroNexus",
+      "mission": null,
+      "instrument": null,
+      "product_title": "NeuroNexus terrain-risk proxy",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "DERIVED",
+      "ingestion_status": "INGESTED",
+      "access_method": "computed in this application",
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": "2026-10-20",
+      "verification_note": "Team method or output in this repository.",
+      "legacy_team_output": {
+        "type": "DERIVED_OUTPUT",
+        "status": "IMPLEMENTED",
+        "description": "Transparent terrain-burden proxy used for route comparison. Not a NASA-certified safety assessment."
+      },
+      "provenance": {
+        "class": "DERIVED OUTPUT",
+        "use": "Transparent weighted proxy. Not a NASA or mission safety certification."
+      }
+    },
+    {
+      "id": "NN_EVA_MODEL",
+      "aliases": [
+        "nn_eva_model"
+      ],
+      "organization": "NeuroNexus",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Estimated EVA time model",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "COMPUTED",
+      "ingestion_status": "INGESTED",
+      "access_method": "computed in this application",
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": "2026-10-20",
+      "verification_note": "Team method or output in this repository.",
+      "legacy_team_output": {
+        "type": "TEAM_METHOD",
+        "status": "IMPLEMENTED",
+        "description": "Configurable planning estimate based on route distance and ascent allowance. Not operational flight data."
+      },
+      "provenance": {
+        "class": "TEAM METHOD",
+        "use": "Planning estimate only. Not operational flight data."
+      }
+    },
+    {
+      "id": "NN_EXPLORATION_ZONES",
+      "aliases": [],
+      "organization": "NeuroNexus",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Potential Exploration Zone",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "DERIVED",
+      "ingestion_status": "INGESTED",
+      "access_method": "computed in this application",
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": "2026-10-20",
+      "verification_note": "Team method or output in this repository.",
+      "legacy_team_output": {
+        "type": "DERIVED_OUTPUT",
+        "status": "IMPLEMENTED",
+        "description": "Bounded terrain-derived candidate zones using NeuroNexus criteria and exploration context. Not an official NASA landing or safety zone."
+      }
+    },
+    {
+      "id": "NN_MISSION_SIM",
+      "aliases": [
+        "nn_mission_sim"
+      ],
+      "organization": "NeuroNexus",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Crewed Mars mission-console simulation profile",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "SIMULATED",
+      "ingestion_status": "INGESTED",
+      "access_method": "computed in this application",
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": "2026-10-20",
+      "verification_note": "Team method or output in this repository.",
+      "legacy_team_output": {
+        "type": "TEAM_EXPERIMENT",
+        "status": "IMPLEMENTED",
+        "description": "Configurable simulation values for mission-planning interface experiments; simulation values are not measurements."
+      },
+      "provenance": {
+        "class": "TEAM EXPERIMENT",
+        "use": "Configurable simulation of crew, vehicle and life-support planning values."
+      }
+    },
+    {
+      "id": "NN_SOURCE_PROVENANCE",
+      "aliases": [],
+      "organization": "NeuroNexus",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Evidence/provenance classification system",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "COMPUTED",
+      "ingestion_status": "INGESTED",
+      "access_method": "computed in this application",
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": "2026-10-20",
+      "verification_note": "Team method or output in this repository.",
+      "legacy_team_output": {
+        "type": "TEAM_METHOD",
+        "status": "IMPLEMENTED",
+        "description": "Separates NASA observations, NASA references, model outputs, derived computations, simulations and unavailable evidence."
+      }
+    },
+    {
+      "id": "GEMINI",
+      "aliases": [
+        "gemini"
+      ],
+      "organization": "Google",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Google Gemini interpretation layer",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://ai.google.dev/gemini-api/docs",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "AI INTERPRETATION",
+      "ingestion_status": "INGESTED",
+      "access_method": "computed in this application",
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": "2026-10-20",
+      "verification_note": "Team method or output in this repository.",
+      "legacy_team_output": {
+        "type": "AI_INTERPRETATION",
+        "status": "IMPLEMENTED",
+        "description": "Interprets structured NeuroNexus results, explains trade-offs and supports mission-console interaction. Gemini does not generate deterministic route geometry or alter computed numerical results.",
+        "url": "https://ai.google.dev/gemini-api/docs"
+      },
+      "provenance": {
+        "class": "AI INTERPRETATION",
+        "use": "Explanation and prioritisation only. AI prose is never a NASA observation."
+      }
+    },
+    {
+      "id": "USGS_ASTROGEOLOGY_STAC",
+      "aliases": [],
+      "organization": "USGS Astrogeology Science Center",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Astrogeology STAC API (analysis-ready planetary data)",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://stac.astrogeology.usgs.gov/api",
+      "landing_page": "https://stac.astrogeology.usgs.gov/docs/",
+      "license": "public domain (USGS)",
+      "citation": null,
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "QUERIED LIVE",
+      "access_method": "POST /api/search, 24 h disk cache",
+      "used_by": [
+        "GET /terrain/sources",
+        "science/hires/stac.py"
+      ],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": "2026-10-20",
+      "verification_note": "Live search over Gale bbox [137.0,-5.2,137.8,-4.3]: 16 HiRISE DTM items; next links point at an API Gateway host and are rewritten to the allowlisted host."
+    },
+    {
+      "id": "HIRISE_STAC_DTM",
+      "aliases": [
+        "HIRISE_DTM"
+      ],
+      "organization": "NASA / MRO / HiRISE (University of Arizona); USGS Astrogeology",
+      "mission": "Mars Reconnaissance Orbiter",
+      "instrument": "HiRISE",
+      "product_title": "MRO HiRISE SOCET DTMs (collection mro_hirise_socet_dtms)",
+      "product_id_pattern": "DTEEC_*",
+      "doi": null,
+      "url": "https://stac.astrogeology.usgs.gov/api/collections/mro_hirise_socet_dtms",
+      "landing_page": "https://www.uahirise.org/dtm/",
+      "license": "CC0-1.0",
+      "citation": "McEwen et al. (2007), JGR 112, E05S02; DTMs produced with BAE SOCET Set/GXP",
+      "evidence_class": "OBSERVED",
+      "ingestion_status": "INGESTED",
+      "access_method": "COG range reads (/vsicurl/) into LocalGrid; corridor COGs when present",
+      "used_by": [
+        "/terrain/hires/*",
+        "/marswalk/*",
+        "validation V1-V6"
+      ],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [
+        "About 1.01 m posting; features below 1-2 m (rocks, ripples) are not represented",
+        "Some STAC dtm links return HTTP 404; they are marked UNAVAILABLE"
+      ],
+      "verified_on": "2026-10-20",
+      "verification_note": "Gale: 13 of 16 DTMs read via HTTP range reads; DTEEC_040770_1755_039280_1755_A01, DTEEC_018788_1755_018287_1755_A01 and DTEEC_008147_1750_007356_1750_H01 returned HTTP 404. All 13 passed the datum check (|median vs MOLA| <= 21 m)."
+    },
+    {
+      "id": "HIRISE_STAC_ORTHO",
+      "aliases": [],
+      "organization": "NASA / MRO / HiRISE; USGS Astrogeology",
+      "mission": "Mars Reconnaissance Orbiter",
+      "instrument": "HiRISE",
+      "product_title": "HiRISE orthoimages paired with the SOCET DTMs",
+      "product_id_pattern": "*_ORTHO / ortho_*",
+      "doi": null,
+      "url": "https://stac.astrogeology.usgs.gov/api/collections/mro_hirise_socet_dtms",
+      "landing_page": null,
+      "license": "CC0-1.0",
+      "citation": null,
+      "evidence_class": "OBSERVED",
+      "ingestion_status": "INGESTED",
+      "access_method": "COG range reads, percentile-stretched for display",
+      "used_by": [
+        "GET /terrain/hires/image?layer=ortho"
+      ],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": "2026-10-20",
+      "verification_note": "Ortho and DTM share CRS and bounds within 2 m; registration vs DTM hillshade within 1-2 px at 2 m."
+    },
+    {
+      "id": "CTX_STAC_DTM",
+      "aliases": [
+        "CTX_DTM"
+      ],
+      "organization": "NASA / MRO / CTX (MSSS); USGS Astrogeology",
+      "mission": "Mars Reconnaissance Orbiter",
+      "instrument": "CTX",
+      "product_title": "MRO CTX controlled USGS DTMs (collection mro_ctx_controlled_usgs_dtms, Ames Stereo Pipeline, pc_align to MOLA)",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://stac.astrogeology.usgs.gov/api/collections/mro_ctx_controlled_usgs_dtms",
+      "landing_page": "https://stac.astrogeology.usgs.gov/docs/data/mars/ctxdtms/",
+      "license": "CC0-1.0",
+      "citation": null,
+      "evidence_class": "OBSERVED",
+      "ingestion_status": "INGESTED",
+      "access_method": "COG range reads; geoid_adjusted_dem preferred",
+      "used_by": [
+        "/terrain/hires/*",
+        "/marswalk/*"
+      ],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [
+        "The collection notes some DTMs are jittery or gappy and not an improvement over MOLA: every product is QA-gated",
+        "2024 items' qa_metrics assets returned 404; QA uses the empirical MOLA comparison"
+      ],
+      "verified_on": "2026-10-20",
+      "verification_note": "3,698 CTX items' geometries contain Curiosity's area (137.42E, -4.7N); 20 m posting, nodata -32767, eqc lat_ts=0 R=3396190."
+    },
+    {
+      "id": "CTX_MOLA_SHOTS",
+      "aliases": [],
+      "organization": "NASA MGS MOLA via USGS Astrogeology",
+      "mission": "Mars Global Surveyor",
+      "instrument": "MOLA",
+      "product_title": "mola_csv assets of 2023 CTX DTM items (latitude, longitude, radius in m)",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://stac.astrogeology.usgs.gov/api/collections/mro_ctx_controlled_usgs_dtms",
+      "landing_page": null,
+      "license": "CC0-1.0",
+      "citation": null,
+      "evidence_class": "OBSERVED",
+      "ingestion_status": "INGESTED",
+      "access_method": "CSV per item",
+      "used_by": [
+        "validation V2"
+      ],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": "2026-10-20",
+      "verification_note": "Format confirmed on P18_008002_1748_XN_05S222W__B01_009927_1752_XN_04S222W: header latitude,longitude,radius."
+    },
+    {
+      "id": "MSL_GALE_DEM_1M",
+      "aliases": [],
+      "organization": "USGS Astrogeology",
+      "mission": "Mars Science Laboratory",
+      "instrument": null,
+      "product_title": "MSL Gale Merged DEM 1m (Parker & Calef, 2016)",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://planetarymaps.usgs.gov/mosaic/Mars/MSL/MSL_Gale_DEM_Mosaic_1m_v3.tif",
+      "landing_page": "https://astrogeology.usgs.gov/search/map/mars_msl_gale_merged_dem_1m",
+      "license": "public domain (USGS)",
+      "citation": null,
+      "evidence_class": "OBSERVED",
+      "ingestion_status": "CATALOGED NOT INGESTED",
+      "access_method": "offline corridor COGs only (tools/build_corridors.py); never read in a request handler",
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [
+        "7.6 GB striped GeoTIFF with no overviews"
+      ],
+      "verified_on": null,
+      "verification_note": "Facts from the prompt's 2026-10-20 check; not re-read in this session."
+    },
+    {
+      "id": "M2020_TRN_DTM_MOSAIC",
+      "aliases": [],
+      "organization": "USGS Astrogeology",
+      "mission": "Mars 2020",
+      "instrument": null,
+      "product_title": "Mars 2020 TRN HiRISE DTM Mosaic (Fergason et al., 2020)",
+      "product_id_pattern": null,
+      "doi": "10.5066/P9REJ9JN",
+      "url": "https://planetarymaps.usgs.gov/mosaic/mars2020_trn/HiRISE/JEZ_hirise_soc_006_DTM_MOLAtopography_DeltaGeoid_1m_Eqc_latTs0_lon0_blend40.tif",
+      "landing_page": "https://astrogeology.usgs.gov/search/map/mars_2020_terrain_relative_navigation_hirise_dtm_mosaic",
+      "license": "CC0-1.0",
+      "citation": null,
+      "evidence_class": "OBSERVED",
+      "ingestion_status": "CATALOGED NOT INGESTED",
+      "access_method": "offline corridor COGs only",
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Facts from the prompt's 2026-10-20 check; not re-read in this session."
+    },
+    {
+      "id": "M2020_TRN_ORTHO_MOSAIC",
+      "aliases": [],
+      "organization": "USGS Astrogeology",
+      "mission": "Mars 2020",
+      "instrument": null,
+      "product_title": "Mars 2020 TRN HiRISE orthomosaic",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": "https://astrogeology.usgs.gov/search/map/mars_2020_terrain_relative_navigation_hirise_dtm_mosaic",
+      "license": "CC0-1.0",
+      "citation": null,
+      "evidence_class": "OBSERVED",
+      "ingestion_status": "CATALOGED NOT INGESTED",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified."
+    },
+    {
+      "id": "MMGIS_MSL_TRAVERSE",
+      "aliases": [],
+      "organization": "NASA / JPL MMGIS",
+      "mission": "Mars Science Laboratory",
+      "instrument": null,
+      "product_title": "Curiosity traverse (MSL_traverse.json)",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_traverse.json",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "OBSERVED",
+      "ingestion_status": "QUERIED LIVE",
+      "access_method": "live GeoJSON with dated snapshot fallback",
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [
+        "Operations localization, not the archival PDS product"
+      ],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified."
+    },
+    {
+      "id": "MMGIS_MSL_WAYPOINTS",
+      "aliases": [],
+      "organization": "NASA / JPL MMGIS",
+      "mission": "Mars Science Laboratory",
+      "instrument": null,
+      "product_title": "Curiosity end-of-drive waypoints (MSL_waypoints.json) with rover attitude",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "OBSERVED",
+      "ingestion_status": "QUERIED LIVE",
+      "access_method": "live GeoJSON with dated snapshot fallback",
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [
+        "-9999 is a missing-value sentinel",
+        "Operations localization registered to HiRISE base maps"
+      ],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified."
+    },
+    {
+      "id": "MMGIS_M2020_TRAVERSE",
+      "aliases": [],
+      "organization": "NASA / JPL MMGIS",
+      "mission": "Mars 2020",
+      "instrument": null,
+      "product_title": "Perseverance traverse (M20_traverse.json)",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_traverse.json",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "OBSERVED",
+      "ingestion_status": "QUERIED LIVE",
+      "access_method": "live GeoJSON with dated snapshot fallback",
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [
+        "Operations localization, not the archival PDS product"
+      ],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified."
+    },
+    {
+      "id": "MMGIS_M2020_WAYPOINTS",
+      "aliases": [],
+      "organization": "NASA / JPL MMGIS",
+      "mission": "Mars 2020",
+      "instrument": null,
+      "product_title": "Perseverance waypoints (M20_waypoints.json) with rover attitude",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "OBSERVED",
+      "ingestion_status": "QUERIED LIVE",
+      "access_method": "live GeoJSON with dated snapshot fallback",
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [
+        "-9999 is a missing-value sentinel"
+      ],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified."
+    },
+    {
+      "id": "PDS_PLACES_MSL",
+      "aliases": [],
+      "organization": "NASA PDS Imaging Node",
+      "mission": "Mars Science Laboratory",
+      "instrument": null,
+      "product_title": "MSL PLACES localization bundle",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://pds.nasa.gov/data/pds4/releases/img/msl_places-20260317/",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "OBSERVED",
+      "ingestion_status": "CATALOGED NOT INGESTED",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified."
+    },
+    {
+      "id": "PDS_PLACES_M2020",
+      "aliases": [],
+      "organization": "NASA PDS Geosciences Node",
+      "mission": "Mars 2020",
+      "instrument": null,
+      "product_title": "Mars 2020 rover PLACES bundle",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://pds.nasa.gov/data/pds4/releases/geo/mars2020_rover_places-20260811/",
+      "landing_page": "https://pds-geosciences.wustl.edu/missions/mars2020/places.htm",
+      "license": null,
+      "citation": null,
+      "evidence_class": "OBSERVED",
+      "ingestion_status": "CATALOGED NOT INGESTED",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified."
+    },
+    {
+      "id": "MSL_REMS_OUTREACH",
+      "aliases": [],
+      "organization": "NASA / JPL / CAB (Centro de Astrobiologia)",
+      "mission": "Mars Science Laboratory",
+      "instrument": "REMS",
+      "product_title": "REMS weather outreach feed",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "OBSERVED",
+      "ingestion_status": "CATALOGED NOT INGESTED",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [
+        "OUTREACH FEED (CAB/NASA), not for operations"
+      ],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified."
+    },
+    {
+      "id": "M2020_MEDA_OUTREACH",
+      "aliases": [],
+      "organization": "NASA / JPL",
+      "mission": "Mars 2020",
+      "instrument": "MEDA",
+      "product_title": "MEDA weather outreach feed",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=mars2020&feedtype=json",
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "OBSERVED",
+      "ingestion_status": "CATALOGED NOT INGESTED",
+      "access_method": null,
+      "used_by": [],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [
+        "Latest entry 2024-04 at prompt time: NO RECENT DATA"
+      ],
+      "verified_on": null,
+      "verification_note": "Carried over from the v2 ledgers; not re-verified."
+    },
+    {
+      "id": "NEURONEXUS_TERRAIN_LADDER",
+      "aliases": [],
+      "organization": "NeuroNexus",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Terrain resolution ladder (HiRISE -> CTX -> MOLA per-pixel priority mosaic)",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "DERIVED",
+      "ingestion_status": "INGESTED",
+      "access_method": "computed in this application",
+      "used_by": [
+        "science/hires/ladder.py",
+        "/terrain/hires/*"
+      ],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": "2026-10-20",
+      "verification_note": "Implemented and unit-tested in this repository; formulas in docs/METHODOLOGY.md."
+    },
+    {
+      "id": "NEURONEXUS_SLOPE_MULTI_BASELINE",
+      "aliases": [],
+      "organization": "NeuroNexus",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Multi-baseline Horn slope and detrended roughness",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "COMPUTED",
+      "ingestion_status": "INGESTED",
+      "access_method": "computed in this application",
+      "used_by": [
+        "science/hires/derivatives.py"
+      ],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": "2026-10-20",
+      "verification_note": "Implemented and unit-tested in this repository; formulas in docs/METHODOLOGY.md."
+    },
+    {
+      "id": "NEURONEXUS_WALKABILITY",
+      "aliases": [],
+      "organization": "NeuroNexus",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Meter-scale walkability index and planning classes (Appendix A5)",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "DERIVED",
+      "ingestion_status": "INGESTED",
+      "access_method": "computed in this application",
+      "used_by": [
+        "science/hires/layers.py",
+        "/marswalk/*"
+      ],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": "2026-10-20",
+      "verification_note": "Implemented and unit-tested in this repository; formulas in docs/METHODOLOGY.md."
+    },
+    {
+      "id": "NEURONEXUS_MARSWALK_PARAMETERS",
+      "aliases": [],
+      "organization": "NeuroNexus",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Marswalk planning limits and parameters (science/marswalk/config.py)",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "DERIVED",
+      "ingestion_status": "INGESTED",
+      "access_method": "computed in this application",
+      "used_by": [
+        "GET /marswalk/config"
+      ],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": "2026-10-20",
+      "verification_note": "Implemented and unit-tested in this repository; formulas in docs/METHODOLOGY.md."
+    },
+    {
+      "id": "NEURONEXUS_PACE_MODEL",
+      "aliases": [],
+      "organization": "NeuroNexus",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Tobler pace normalized to the flat pace; Naismith option (Appendix A6)",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "COMPUTED",
+      "ingestion_status": "INGESTED",
+      "access_method": "computed in this application",
+      "used_by": [
+        "/marswalk/*"
+      ],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": "2026-10-20",
+      "verification_note": "Implemented and unit-tested in this repository; formulas in docs/METHODOLOGY.md."
+    },
+    {
+      "id": "NEURONEXUS_METABOLIC_PROXY",
+      "aliases": [],
+      "organization": "NeuroNexus",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Gravity-scaled Pandolf-type metabolic and consumables screening proxy (Appendix A6b)",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "COMPUTED",
+      "ingestion_status": "INGESTED",
+      "access_method": "computed in this application",
+      "used_by": [
+        "/marswalk/*"
+      ],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": "2026-10-20",
+      "verification_note": "Implemented and unit-tested in this repository; formulas in docs/METHODOLOGY.md."
+    },
+    {
+      "id": "NEURONEXUS_PNR_MODEL",
+      "aliases": [],
+      "organization": "NeuroNexus",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Turnaround point (Point of No Return, Appendix A7)",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "COMPUTED",
+      "ingestion_status": "INGESTED",
+      "access_method": "computed in this application",
+      "used_by": [
+        "/marswalk/*"
+      ],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": "2026-10-20",
+      "verification_note": "Implemented and unit-tested in this repository; formulas in docs/METHODOLOGY.md."
+    },
+    {
+      "id": "NEURONEXUS_MARSWALK_PLANNER",
+      "aliases": [],
+      "organization": "NeuroNexus",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Multi-resolution corridor planner on the terrain ladder",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "DERIVED",
+      "ingestion_status": "INGESTED",
+      "access_method": "computed in this application",
+      "used_by": [
+        "POST /marswalk/plan"
+      ],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": "2026-10-20",
+      "verification_note": "Implemented and unit-tested in this repository; formulas in docs/METHODOLOGY.md."
+    },
+    {
+      "id": "NEURONEXUS_DOSE_SCREENING",
+      "aliases": [],
+      "organization": "NeuroNexus",
+      "mission": null,
+      "instrument": null,
+      "product_title": "EVA dose screening from archived RAD dose rates (Appendix A8)",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "COMPUTED",
+      "ingestion_status": "INGESTED",
+      "access_method": "computed in this application",
+      "used_by": [
+        "GET /conditions"
+      ],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": "2026-10-20",
+      "verification_note": "Implemented and unit-tested in this repository; formulas in docs/METHODOLOGY.md."
+    },
+    {
+      "id": "NEURONEXUS_VALIDATION_SUITE",
+      "aliases": [],
+      "organization": "NeuroNexus",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Rover ground-truth validation suite V1-V6",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "COMPUTED",
+      "ingestion_status": "INGESTED",
+      "access_method": "computed in this application",
+      "used_by": [
+        "GET /validation/latest"
+      ],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": "2026-10-20",
+      "verification_note": "Implemented and unit-tested in this repository; formulas in docs/METHODOLOGY.md."
+    },
+    {
+      "id": "NEURONEXUS_CLIENT_MATH",
+      "aliases": [],
+      "organization": "NeuroNexus",
+      "mission": null,
+      "instrument": null,
+      "product_title": "Browser Optimization client math (worker parity with the backend formulas)",
+      "product_id_pattern": null,
+      "doi": null,
+      "url": null,
+      "landing_page": null,
+      "license": null,
+      "citation": null,
+      "evidence_class": "COMPUTED",
+      "ingestion_status": "INGESTED",
+      "access_method": "computed in this application",
+      "used_by": [
+        "frontend/src/workers/marswalkMath.worker.js"
+      ],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [],
+      "verified_on": "2026-10-20",
+      "verification_note": "Implemented and unit-tested in this repository; formulas in docs/METHODOLOGY.md."
     }
   ]
 }

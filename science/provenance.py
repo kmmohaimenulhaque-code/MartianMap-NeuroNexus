@@ -1,4 +1,7 @@
-"""NASA / partner data-source ledger.
+"""NASA / partner data-source ledger (compatibility wrapper).
+
+The canonical ledger is data/manifests/source_ledger.json (schema v3, science/sources/ledger.py).
+This module keeps the v2 ``source_ledger()`` output for /ai/provenance and existing callers.
 
 Distinguishes EXTERNAL SOURCE, DERIVED OUTPUT, TEAM EXPERIMENT,
 TEAM BENCHMARK, TEAM METHOD and AI INTERPRETATION so that AI prose is never
@@ -27,51 +30,23 @@ EVIDENCE_STATUSES = {
     "UNAVAILABLE": "No evidence is ingested; nothing is inferred.",
 }
 
-ENTRIES: list[dict[str, Any]] = [
-    {"id": "usgs_nomenclature", "class": "EXTERNAL SOURCE", "organisation": "USGS Astrogeology / IAU",
-     "title": "Gazetteer of Planetary Nomenclature (Mars, 2,052 features)",
-     "url": "https://planetarynames.wr.usgs.gov/", "use": "Named feature search, site identity, science evidence."},
-    {"id": "usgs_sim3292", "class": "EXTERNAL SOURCE", "organisation": "USGS",
-     "title": "SIM 3292 Geologic Map of Mars, 1:20M (Tanaka et al., 2014)",
-     "url": "https://pubs.usgs.gov/sim/3292/", "use": "Scientific map view and route geologic-unit snapshot."},
-    {"id": "nasa_mola", "class": "EXTERNAL SOURCE", "organisation": "NASA MGS / MOLA",
-     "title": "MOLA MEGDR 128 pixels/degree topography (MGS-M-MOLA-5-MEGDR-L3-V1.0)",
-     "url": "https://pds-geosciences.wustl.edu/missions/mgs/megdr.html",
-     "use": "Elevation, slope, roughness, route planning grid and terrain metrics."},
-    {"id": "nasa_themis", "class": "EXTERNAL SOURCE", "organisation": "NASA Mars Odyssey / ASU",
-     "title": "THEMIS IR predicted brightness temperature observations",
-     "url": "https://themis.asu.edu/", "use": "Historical thermal evidence at and around sites."},
-    {"id": "nasa_ames_mgcm", "class": "EXTERNAL SOURCE", "organisation": "NASA Ames Research Center",
-     "title": "Mars Global Climate Model MY34 dust scenario",
-     "url": "https://www.nasa.gov/space-science-and-astrobiology-at-ames/division-overview/planetary-systems-branch-overview-stt/mars-climate-modeling-center-mcmc/", "use": "Modelled dust opacity and height."},
-    {"id": "nasa_rad", "class": "EXTERNAL SOURCE", "organisation": "NASA MSL / RAD",
-     "title": "Radiation Assessment Detector surface measurements (Gale crater)",
-     "url": "https://science.nasa.gov/resource/radiation-measurements-on-mars/",
-     "use": "Historical surface radiation reference only. Not a forecast."},
-    {"id": "nasa_image_library", "class": "EXTERNAL SOURCE", "organisation": "NASA",
-     "title": "NASA Image and Video Library", "url": "https://images.nasa.gov/", "use": "Rover and mission imagery metadata."},
-    {"id": "nasa_photojournal", "class": "EXTERNAL SOURCE", "organisation": "NASA Science",
-     "title": "Mars photojournal feed", "url": "https://science.nasa.gov/mars/", "use": "Reference briefing feed."},
-    {"id": "jpl_cad", "class": "EXTERNAL SOURCE", "organisation": "NASA/JPL Solar System Dynamics",
-     "title": "Small-Body Database Close-Approach Data API", "url": "https://ssd-api.jpl.nasa.gov/doc/cad.html",
-     "use": "Near-Mars small-body close approaches, distances and uncertainties."},
-    {"id": "nn_route_engine", "class": "TEAM METHOD", "organisation": "NeuroNexus",
-     "title": "Deterministic multi-objective route engine", "url": None,
-     "use": "Dijkstra candidate generation and metric computation over MOLA windows."},
-    {"id": "nn_risk_proxy", "class": "DERIVED OUTPUT", "organisation": "NeuroNexus",
-     "title": "NeuroNexus derived terrain-risk proxy", "url": None,
-     "use": "Transparent weighted proxy. Not a NASA or mission safety certification."},
-    {"id": "nn_eva_model", "class": "TEAM METHOD", "organisation": "NeuroNexus",
-     "title": "Estimated EVA time model (configurable pace + ascent allowance)", "url": None,
-     "use": "Planning estimate only. Not operational flight data."},
-    {"id": "nn_mission_sim", "class": "TEAM EXPERIMENT", "organisation": "NeuroNexus",
-     "title": "Crewed Mars Console simulation profile", "url": None,
-     "use": "Configurable simulation of crew, vehicle and life-support planning values."},
-    {"id": "gemini", "class": "AI INTERPRETATION", "organisation": "Google",
-     "title": "Gemini model interpretation of NeuroNexus structured results",
-     "url": "https://ai.google.dev/gemini-api/docs",
-     "use": "Explanation and prioritisation only. AI prose is never a NASA observation."},
-]
+def _entries_from_canonical_ledger() -> list[dict[str, Any]]:
+    """The v2 ENTRIES shape, generated from the canonical v3 ledger (lowercase ids are its aliases)."""
+    from science.sources import ledger
+
+    out = []
+    for entry in ledger.load()["entries"]:
+        prov = entry.get("provenance")
+        if not prov:
+            continue
+        legacy_id = next((a for a in entry["aliases"] if a.islower()), entry["id"])
+        out.append({"id": legacy_id, "class": prov["class"], "organisation": entry["organization"],
+                    "title": entry["product_title"], "url": entry.get("url"), "use": prov["use"],
+                    "ledger_id": entry["id"]})
+    return out
+
+
+ENTRIES: list[dict[str, Any]] = _entries_from_canonical_ledger()
 
 
 def source_ledger() -> dict[str, Any]:
@@ -81,6 +56,7 @@ def source_ledger() -> dict[str, Any]:
         "evidence_statuses": EVIDENCE_STATUSES,
         "entries": ENTRIES,
         "boundary": "AI-generated prose is an AI INTERPRETATION and is never a NASA observation.",
+        "canonical_ledger": "data/manifests/source_ledger.json (neuronexus.source-ledger.v3); GET /sources",
     }
     try:
         payload["repository_ledger"] = json.loads(LEDGER_FILE.read_text())

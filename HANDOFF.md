@@ -1,6 +1,18 @@
-# HANDOFF — NeuroNexus Mission Console v2
+# HANDOFF — NeuroNexus Mission Console v2 + Marswalk meter-scale work
 
 Team NeuroNexus · NASA Space Apps Challenge 2026 · Branch `feature/mission-console-v2`
+
+## Current session (2026-10-20): Marswalk work in progress
+
+Following `docs/prompts/NEURONEXUS_MARSWALK_ONE_SHOT_PROMPT.txt`. Live phase status, verified facts and next
+steps: **`docs/REPORT_marswalk_hires.md`**. To resume in a new session: read that file and `git log`, run
+`python tools/fetch_mola.py --sites gale jezero` (MOLA now comes from PDS, not Git LFS), then continue from the
+first phase whose gate is not met.
+
+Quick checks: `python -m pytest -q` (network tests skipped), `python tools/build_ledger.py --check`,
+`cd frontend && npm run lint && npm test && npm run build`.
+
+---
 
 ## Status
 
@@ -46,7 +58,7 @@ If port 8002 is "address already in use", a leftover uvicorn worker is holding i
 
 ## Known issues
 
-1. **MOLA terrain is partly missing.** Most MOLA tiles under `data/raw/mola/` are Git LFS pointer stubs (134 bytes). Only the equatorial band is real data. `megt44n000hb.img` is a partial download and shows as modified in git. High-latitude sites and the exploration-zone list show "MOLA terrain unavailable". Fix: `git lfs pull` (about 1.7 GB). Not done, because disk space is low.
+1. **MOLA terrain (fixed 2026-10-20).** The LFS pointer stubs are no longer needed: `python tools/fetch_mola.py --all` downloads the 16 MEG128 tiles from PDS into `data/cache/mola/meg128/` (gitignored); the loaders use them automatically.
 2. **Docker and compose files are untested.** `docker-compose.yml`, `deploy/*` and `DEPLOYMENT.md` exist but were never run. The user banned Docker for this session.
 3. **Pre-existing lint warnings** remain in `comparisonRoutes`, `handleMapLocationSelect`, a setState-in-effect in `App.jsx`, `MarsBriefingPanel`, `MarsMap`, `RoverPhotosPanel`, and some `Mars3DView` hook dependencies. None were introduced by v2 work.
 
