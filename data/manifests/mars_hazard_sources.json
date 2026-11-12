@@ -1,0 +1,70 @@
+{
+  "schema": "neuronexus.hazard-sources.v1",
+  "purpose": "Source registry for Mars environmental hazards and orbital close-approach screening.",
+  "sources": [
+    {
+      "id": "jpl_cad",
+      "organisation": "NASA/JPL CNEOS",
+      "title": "Small-Body Close Approach Data API",
+      "url": "https://ssd-api.jpl.nasa.gov/cad.api",
+      "type": "measurement_database",
+      "use": "Mars close-approach screening."
+    },
+    {
+      "id": "jpl_sbdb",
+      "organisation": "NASA/JPL Solar System Dynamics",
+      "title": "Small-Body Database",
+      "url": "https://ssd-api.jpl.nasa.gov/doc/sbdb.html",
+      "type": "orbital_database",
+      "use": "Orbital information for known small bodies."
+    },
+    {
+      "id": "nasa_mars_facts",
+      "organisation": "NASA Science",
+      "title": "Mars Facts",
+      "url": "https://science.nasa.gov/mars/facts/",
+      "type": "mission_science",
+      "use": "Mars atmospheric and environmental context."
+    },
+    {
+      "id": "nasa_dust_cycle",
+      "organisation": "NASA",
+      "title": "Dust Cycle",
+      "url": "https://www.nasa.gov/general/dust-cycle/",
+      "type": "mission_science",
+      "use": "Mars dust-cycle evidence."
+    },
+    {
+      "id": "nasa_dust_modeling",
+      "organisation": "NASA",
+      "title": "Dust Lifting and Dust Cycle Modeling",
+      "url": "https://www.nasa.gov/general/dust-lifting-and-dust-cycle-modeling/",
+      "type": "mission_science",
+      "use": "Dust lifting and convective-vortex evidence."
+    },
+    {
+      "id": "nasa_mars_cyclones",
+      "organisation": "NASA Ames / NASA Technical Reports Server",
+      "title": "Large-scale weather systems on Mars",
+      "url": "https://ntrs.nasa.gov/citations/20170000649",
+      "type": "research",
+      "use": "Martian cyclone and large-scale weather-system evidence."
+    },
+    {
+      "id": "nasa_mars_greenhouse",
+      "organisation": "NASA Science",
+      "title": "10 Things: Planetary Atmospheres",
+      "url": "https://science.nasa.gov/solar-system/10-things-planetary-atmospheres/",
+      "type": "mission_science",
+      "use": "Weak Martian greenhouse-effect context."
+    },
+    {
+      "id": "noaa_enso",
+      "organisation": "NOAA Climate Prediction Center",
+      "title": "ENSO Cycle",
+      "url": "https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/ensocycle/ensocycle.shtml",
+      "type": "earth_analogue",
+      "use": "Earth El Niño / La Niña comparison."
+    }
+  ]
+}
