@@ -1,0 +1,1089 @@
+================================================================================
+NEURONEXUS · INTERPLANETARY SURVIVAL GUIDE: MARTIAN MAP
+ONE-SHOT EXECUTION PROMPT: "MARSWALK, METRE-SCALE AND VALIDATED"
+NASA Space Apps Challenge 2026 · target: Global Finalist
+Repository: kmmohaimenulhaque-code/martian-map
+Base branch: feature/mission-console-v2 (HEAD b0f5f84 at time of writing)
+Prompt written: 2026-10-20, from a code audit of that branch plus live checks
+of every data endpoint listed in Section 5.
+================================================================================
+
+HOW TO USE THIS PROMPT (operator note, not for the agent)
+- Paste everything from "BEGIN PROMPT" to "END PROMPT" into a fresh coding-agent
+  session (Claude Code or equivalent) opened at the repository root.
+- The session needs outbound HTTPS to: stac.astrogeology.usgs.gov,
+  astrogeo-ard.s3-us-west-2.amazonaws.com, planetarymaps.usgs.gov,
+  mars.nasa.gov, pds-geosciences.wustl.edu, pds-ppi.igpp.ucla.edu, pds.nasa.gov,
+  and (optional) pds-atmospheres.nmsu.edu.
+- Budget about 10 GB of free disk for caches and corridor subsets. Nothing larger
+  than about 20 MB is committed to git.
+- Tags used inside the prompt:
+  [VERIFIED 2026-10-20] = checked against the live source while writing this.
+  [VERIFY] = the agent must confirm before relying on it, and record the result.
+
+================================================================================
+BEGIN PROMPT
+================================================================================
+
+------------------------------------------------------------------------------
+0. ROLE AND MISSION
+------------------------------------------------------------------------------
+You are the lead engineer and the scientific-integrity owner of NeuroNexus, a
+Mars mission-planning console for the NASA Space Apps 2026 challenge
+"Interplanetary Survival Guide: Martian Map".
+
+Challenge statement (verbatim): NASA has explored Mars robotically for decades,
+studying its extreme environment, mapping its surface, and collecting many types
+of data. Far from home, the first astronauts to set foot on Mars will want the
+best map possible, with information on the details of their routes and
+destinations, updates on current conditions, and the data needed to complete
+their mission quickly and safely. Your challenge is to create a layered,
+integrated view of a location or route on the Martian surface that pulls
+together data from multiple NASA science missions and could help a human
+explorer plan and carry out a successful Marswalk while conducting new and
+exciting science along the way.
+
+Your mission in this session:
+Turn the existing console into a decision instrument that works at the scale
+of a human footstep, and prove it against the only ground truth humanity has
+on Mars: the drives of Curiosity and Perseverance.
+
+Concretely, deliver all four of these:
+  (1) a TERRAIN RESOLUTION LADDER: HiRISE ~1 m DTMs, then CTX ~20 m DTMs, then
+      MOLA ~463 m. Every elevation, slope and route segment states which rung
+      it came from.
+  (2) METRE-SCALE MARSWALK PLANNING: a route, an EVA time budget, a turnaround
+      point, and walkability per segment.
+  (3) CURIOSITY AND PERSEVERANCE TRAVERSES as map layers AND as a validation
+      dataset.
+  (4) A REPRODUCIBLE VALIDATION SUITE whose numbers are generated, versioned and
+      shown in the UI and README. No hand-typed results.
+
+Keep the existing colour theme (dark background, cyan glow, green/amber/red
+semantics). Change layout and hierarchy where it serves the decision. Everything
+that works today must keep working.
+
+The one question every layer must answer:
+  "Is it within our planning limits to walk here, for this long, today, and what
+   science can I do along the way?"
+
+------------------------------------------------------------------------------
+1. NON-NEGOTIABLE RULES (read twice; violating any of these fails the task)
+------------------------------------------------------------------------------
+R1  NO FABRICATED DATA. Never invent, interpolate across, or "fill" a
+    measurement. Missing data is shown as UNAVAILABLE with the reason (outside
+    coverage, HTTP 404, nodata, datum mismatch, stale feed, parse failure).
+    Cached or pre-fetched data must be real NASA/USGS data, labelled with its
+    retrieval date.
+R2  EVIDENCE CLASSES EVERYWHERE. Keep and extend the existing taxonomy:
+    OBSERVED, NASA REFERENCE, MODELED, DERIVED/COMPUTED, SIMULATED, UNAVAILABLE.
+    Every number in the UI and API carries a unit, a source (product id) and a
+    basis (pixel, window, baseline, sample count, sol, retrieved_at).
+R3  NEVER LABEL ANYTHING "SAFE". Use "WITHIN PLANNING LIMITS",
+    "REVIEW REQUIRED" and "EXCEEDS PLANNING LIMIT". Limits come from one config
+    file. Each limit is tagged "published value (citation)" or
+    "NeuroNexus planning choice". The frontend never invents thresholds
+    (existing principle in docs/architecture/mission-console-v2.md §2).
+R4  THE AI NEVER PRODUCES GEOMETRY OR NUMBERS. Gemini (Mars Intelligence)
+    interprets structured results through tools only. Deterministic engines stay
+    authoritative. No LLM "mission recommendations".
+R5  DETERMINISM AND REPRODUCIBILITY. The same inputs and the same data versions
+    give the same route and the same metrics. Every plan and validation run
+    records data versions (product ids, retrieved_at, checksums) and the engine
+    version. Do not add randomness. The existing VERIFY feature must keep
+    passing.
+R6  SCOPE RULE (enforced by an existing test). Reference only NASA, NASA Space
+    Apps 2026 partner agencies, and SpaceX. Do not add Soviet or Chinese mission
+    references.
+R7  DO NOT BREAK THE CONSOLE. All existing pytest, vitest and node:test suites
+    pass at the end. Existing features (2D/USGS/3D maps, AI Route Designer,
+    saved routes v3, comparison, Command Index, dust panel, THEMIS, orbital,
+    Mars Intelligence) keep working. If you change a contract, migrate it and
+    test the migration.
+R8  SAME THEME. Reuse frontend/src/ui/tokens.css (--nn-cyan #75e6ff,
+    --nn-green #8cf0b1, --nn-amber #ffc46b, --nn-red #ff647c, surfaces
+    #091115/#081014, border #29414b, series colours). Add tokens; never
+    hard-code new hex values in components.
+R9  NO SECRETS. Never commit keys. GEMINI_API_KEY stays server-side.
+    Outbound fetches go through an allowlist of hosts (Section 5).
+R10 HONEST SCIENCE OVER IMPRESSIVE SCIENCE. If a result is weak or a hypothesis
+    fails, show it and say so. Judges reward teams that know the limits of their
+    models.
+R11 GIT HYGIENE. Work on a new branch: feature/marswalk-hires, created from
+    feature/mission-console-v2. Make small logical commits with clear messages.
+    Do not commit rasters larger than 20 MB, caches, .env, or the 21
+    LFS-tracked MOLA files that may show as modified (pointer drift). Push the
+    branch at the end. Do not merge into another branch and do not open a PR
+    unless the operator asks.
+
+------------------------------------------------------------------------------
+2. WHAT EXISTS TODAY (audit of feature/mission-console-v2; trust, but re-check)
+------------------------------------------------------------------------------
+Stack
+- Backend: FastAPI app at science/weather/api/environment.py (port 8002).
+  Routers: terrain, routing, dust, mars3d, hazards, mission, orbital, ai, usgs,
+  briefing, media. Python deps are unpinned in requirements.txt (rasterio,
+  scikit-image, scipy, pyproj, fastapi, google-genai, ...).
+- Frontend: React 19 + Vite 8, Leaflet/react-leaflet, ArcGIS SceneView for 3D
+  (loaded on demand), @react-three/fiber and three are installed. App.jsx is
+  about 3,740 lines (the target in the architecture doc is under 1,500).
+  Tokens live in frontend/src/ui/tokens.css. Charts: ui/NeonLineChart.jsx,
+  ui/NeonHeatmap.jsx, ui/StatTriplet.jsx.
+- Tests: about 88 pytest test functions in tests/ (HANDOFF.md reports 99 passing),
+  vitest in frontend/src/__tests__, node:test in frontend/tests.
+- CI: only .github/workflows/publish-ghcr.yml (Docker publish on master).
+  No test or lint CI.
+
+Terrain and routing
+- MOLA MEGDR 128 ppd tiles under data/raw/mola/meg128 are Git LFS. In fresh
+  clones they are 134-byte pointer stubs, so terrain endpoints return 503
+  "Run git lfs pull" (HANDOFF known issue #1). Polar 512 ppd: same.
+- science/routing/engine.py: deterministic multi-objective Dijkstra
+  (scipy.sparse.csgraph) on a coarsened MOLA grid (DEFAULT_MAX_CELLS = 140,
+  MAX_ROUTE_VERTICES = 32). EVA time = distance/pace + gain/ascent
+  (Naismith-style; defaults 2.5 km/h and 600 m/h).
+- science/routing/metrics.py: REFERENCES (burden slope 25°, roughness 50 m,
+  risk max slope 30°, ...), METHODOLOGY text, Pareto filter.
+  MARS_RADIUS_KM = 3396.0 (the IAU sphere is 3396.19 km; unify, see WS1).
+- science/terrain/derivatives.py: slope, aspect, "roughness" as a 3x3 elevation
+  range. RESULTS.md itself says this is not a standard ruggedness metric.
+- science/mars3d/layers.py: MMGIS traverses for Curiosity and Perseverance,
+  fetched live and decimated to 4,000 vertices, display only. Its WALKABILITY
+  formula is 100*(1-min(1, 0.55*slope/25 + 0.30*rough/50 + 0.15*relief/200)) on
+  MOLA.
+- science/routing/evidence.py: NOT_INGESTED = ["MRO CTX", "MRO HiRISE",
+  "MRO CRISM mineralogy", "MRO SHARAD", "Mars 2020 in-situ"]. This is exactly
+  the gap you close for CTX and HiRISE.
+
+Conditions
+- Dust: NASA Ames MGCM MY34 scenario (MODELED), 668 sols, with a sol scrubber.
+- Radiation: science/mission/state.py holds a constant 210 µGy/day
+  "Curiosity RAD reference". There is no RAD data ingestion.
+- THEMIS: historical brightness temperatures (OBSERVED, historical).
+
+Repo hygiene issues to fix
+- README says "branch Master-Ai" and links Master-Ai while work happens on
+  feature/mission-console-v2. Make this consistent with the real submission
+  branch.
+- Root clutter: an empty file named "HTTP", modified-files.patch (335 KB),
+  validation_master_query_result.txt (contains a stray shell heredoc),
+  packages/martian-map-publish-package.tar.gz, scratch notes (MI300X*.md,
+  master_query.md, NeuroNexus-projected-UI.md, "Next Level Architecture.md",
+  README_ONE_SHOT.md, thermal-*.txt).
+  Move notes to docs/archive/ with git mv. Never delete user notes. Delete only
+  the empty "HTTP" file and the stray heredoc wrapper lines.
+- The MIT LICENSE was added and then deleted, and the README says
+  "All rights reserved". Leave licensing as is and list it in the final report
+  as an operator decision.
+- Docker/compose files were never tested (HANDOFF known issue #2).
+
+------------------------------------------------------------------------------
+3. THE WINNING THESIS AND THE ONE DEMO MOMENT
+------------------------------------------------------------------------------
+Thesis (put this sentence in README and slide 1):
+"Orbital maps say Gale Crater is flat; Curiosity's wheels say otherwise.
+NeuroNexus fuses HiRISE, CTX and MOLA terrain into a metre-scale Marswalk
+planner, validates it against 2,000+ real rover drive end-points, and shows the astronaut
+exactly where the map can be trusted and where it cannot."
+
+Why Gale is the hero site (default; Jezero is the generalisation test):
+- 1 m HiRISE DEM mosaic coverage of the entire Curiosity traverse (all 1,386
+  end-of-drive waypoints fall within its bounds) [VERIFIED 2026-10-20].
+- RAD radiation measurements and REMS weather from the same rover, at the same
+  site.
+- About 38.5 km of driving with per-drive rover attitude (tilt, roll, pitch)
+  that the orbital DTMs can be checked against.
+- A ~1 km elevation climb up Mount Sharp, a natural altitude experiment.
+Jezero (Perseverance) is the out-of-sample check: same pipeline, second site,
+no re-tuning. 662 of its 706 waypoints fall within the bounds of the Jezero
+1 m TRN mosaic;
+the other 44 lie on the western rim and must fall back to HiRISE strips or CTX.
+Show that fallback honestly.
+
+The demo moment (90 seconds, must work offline from the demo pack):
+1. Open MARSWALK mode at Gale. The map flies from the MOLA global view to a
+   1 m hillshade plus HiRISE orthoimage around Curiosity's latest position.
+   The TERRAIN LADDER chip reads "HiRISE 1.0 m · DTEEC_xxx".
+2. Click a target about 1-2 km away. Choose EVA 4 h. Within about 2 s you get
+   a route coloured by walkability, a turnaround marker, an EVA time budget, and
+   cells that exceed planning limits hatched red.
+3. The profile strip under the map shows elevation, slope at a 1 m and a 5 m
+   baseline, the terrain-source ladder along the track, and cumulative EVA
+   time. Drag a vertex: everything updates.
+4. Toggle GROUND TRUTH. Curiosity's real drives appear. The VALIDATION card
+   reads, for example: "Rover-measured tilt vs our 3 m slope: Spearman ρ = …,
+   n = 1,386. MOLA-only slope underestimates the 90th percentile by …×"
+   (real numbers, generated by the suite).
+5. Switch the terrain source to "MOLA only" and watch the route straighten and
+   the hazards disappear. This is the "why metre-scale matters" shot.
+6. CONDITIONS strip: latest archived RAD dose rate (sol N, archive lag D days),
+   the EVA dose estimate with its band, the REMS outreach weather line, and the
+   modeled dust. Each one is labelled.
+7. Export the EVA BRIEF (JSON plus a printable page) with full provenance.
+
+------------------------------------------------------------------------------
+4. JUDGING ALIGNMENT  [VERIFY the 2026 criteria and submission format]
+------------------------------------------------------------------------------
+Recent Space Apps judging used Impact, Creativity, Validity, Relevance and
+Presentation. Confirm the 2026 wording in the official Judging & Awards Guide
+and Participant FAQ before writing the submission. Also check two rules there:
+(a) how work done before the event weekend is treated, and (b) any required
+disclosure of AI assistance.
+Published 2026 dates: event Nov 14-15, 2026; judging from Nov 16; Global
+Nominees and Finalists in Dec 2026 [VERIFY].
+- Impact: an EVA decision aid at footstep scale, with a turnaround and a
+  time budget.
+- Creativity: rover-as-ground-truth validation, plus a resolution ladder that
+  tells you where the map can be trusted.
+- Validity: generated validation report, uncertainty bands, citations,
+  limitations page.
+- Relevance: at least four NASA missions integrated (MRO HiRISE/CTX, MGS MOLA,
+  MSL, Mars 2020; plus Mars Odyssey THEMIS and the Ames GCM already present).
+- Presentation: one 90-second story (Section 3), a 30-second video
+  storyboard, at most 7 slides.
+
+------------------------------------------------------------------------------
+5. DATA SOURCES: VERIFIED FACTS (re-check at runtime, record what you find)
+------------------------------------------------------------------------------
+Host allowlist for every outbound fetch (anti-SSRF; reject anything else):
+  stac.astrogeology.usgs.gov, astrogeo-ard.s3-us-west-2.amazonaws.com,
+  planetarymaps.usgs.gov, asc-pds-services.s3.us-west-2.amazonaws.com,
+  astrogeology.usgs.gov, mars.nasa.gov, pds-geosciences.wustl.edu,
+  pds-ppi.igpp.ucla.edu, pds.nasa.gov, pds-imaging.jpl.nasa.gov,
+  pds-atmospheres.nmsu.edu, hirise-pds.lpl.arizona.edu
+
+5.1 USGS Astrogeology STAC API (primary source for HiRISE and CTX DTMs)
+  [VERIFIED 2026-10-20]
+  - Root: https://stac.astrogeology.usgs.gov/api
+    Search: POST /api/search with {"collections":[...],"bbox":[...] or
+    "intersects":{GeoJSON},"limit":N}. Longitudes are -180..180.
+  - Collection mro_hirise_socet_dtms ("analysis ready" HiRISE DTMs from the
+    PDS, licence CC0-1.0, gsd 0.25-2.15 m).
+    Item assets: "dtm" (COG), "hillshade" (COG), orthoimage COGs (asset keys
+    vary: "ortho_0" or "<PRODUCT>_ORTHO"), thumbnails, "provenance".
+  - Over Gale bbox [137.0,-5.2,137.8,-4.3]: 16 HiRISE DTM items. 13 opened and
+    read fine with rasterio over HTTP range requests. 3 "dtm" hrefs returned
+    HTTP 404: DTEEC_040770_1755_039280_1755_A01,
+    DTEEC_018788_1755_018287_1755_A01, DTEEC_008147_1750_007356_1750_H01.
+    So never trust an asset href blindly: HEAD or open it, cache the result,
+    mark it UNAVAILABLE(404).
+  - HiRISE COG facts: float32; nodata = -3.4028226550889045e+38; pixel about
+    1.0117 m; internal overviews 2/4/8/16; CRS "Mars (2015) - Sphere / Ocentric
+    / Equirectangular, clon = 0" (IAU:49910), sphere R = 3,396,190 m,
+    standard_parallel_1 = 0 (checked on DTEEC_024234_1755_024300_1755_U01).
+  - Over Jezero bbox [77.0,18.0,78.0,19.0]: 12 HiRISE DTM items.
+  - Collection mro_ctx_controlled_usgs_dtms (Ames Stereo Pipeline CTX DTMs,
+    absolutely aligned to MOLA with pc_align, CC0, gsd 20-36 m). The
+    collection's own note says some DTMs are jittery or have large gaps and
+    "are not an improvement over ... MOLA", so QA-gate them.
+    Two asset families exist:
+      a) items like T01_000815_1749_XN_05S222W__P22_... (dated 2024): assets
+         "dem", "geoid_adjusted_dem", "hillshade", "orthoimage",
+         "intersection_error";
+      b) items like P18_007925_1987_XN_18N282W__P19_... (dated 2023): assets
+         "dtm", "image" (hillshade), "orthoimage", "qa_metrics" (text),
+         "mola_csv" (MOLA shots: latitude, longitude, radius in metres),
+         "intersection_error".
+    CTX COG facts: nodata -32767, about 20 m pixels, same Mars 2015 eqc
+    CRS with standard_parallel_1 = 0 and central_meridian = 0.
+    Example qa_metrics.txt (Jezero item above): difference to MOLA
+    mean 27.37 m, median 26.78 m, std 10.93 m.
+    A point query at Curiosity (137.42E, -4.70) matches about 3,698 CTX items
+    (many overlapping stereo-pair combinations). A point query at Jezero
+    (77.45E, 18.45N) matches 21. So you need a deterministic
+    best-product selector (WS1).
+  - Vertical datum [VERIFY per family]: "geoid_adjusted_dem" and the Jezero
+    "dtm" values look areoid-referenced (Jezero floor about -2,540 m);
+    "dem" may be height relative to the 3,396,190 m sphere. Decide
+    empirically against MOLA (WS1.4). Never assume.
+
+5.2 1 m DTM mosaics (seamless coverage of both rover traverses)
+  [VERIFIED 2026-10-20]
+  - Gale: "MSL Gale Merged DEM 1m" (Parker & Calef, USGS Astrogeology,
+    2016-10-20).
+    https://planetarymaps.usgs.gov/mosaic/Mars/MSL/MSL_Gale_DEM_Mosaic_1m_v3.tif
+    32,980 x 57,440 px, float32, nodata -32767, 1.0 m. STRIPED (not tiled),
+    NO overviews, about 7.6 GB. Bounds about 137.124-137.681E,
+    -5.099 to -4.130N. Mars 2000 sphere, equirectangular, clon 0.
+    Built from HRSC, CTX and HiRISE DEMs tied to MOLA.
+  - Jezero: "Mars 2020 Terrain Relative Navigation HiRISE DTM Mosaic"
+    (Fergason et al. 2020, DOI 10.5066/P9REJ9JN, CC0).
+    https://planetarymaps.usgs.gov/mosaic/mars2020_trn/HiRISE/JEZ_hirise_soc_006_DTM_MOLAtopography_DeltaGeoid_1m_Eqc_latTs0_lon0_blend40.tif
+    21,400 x 21,488 px, float32, nodata -3.4028e38, 1.0 m, STRIPED, no
+    overviews, about 1.8 GB. Bounds about 77.223-77.584E, 18.307-18.669N.
+    The orthomosaic is DOI 10.5066/P9QJDP48.
+  - Because both mosaics are striped, NEVER read them remotely inside a request.
+    Build local corridor subsets offline as COGs (tools/build_corridors.py,
+    WS9). Default corridor: the bounding box of the full traverse plus a
+    3 km buffer, stored in data/derived/corridors/ (gitignored), with a
+    manifest and sha256. Where possible use GDAL (/vsicurl/ plus -projwin) so
+    you do not download the whole file.
+
+5.3 Rover traverses and waypoints (NASA MMGIS)  [VERIFIED 2026-10-20]
+  - https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_traverse.json
+    1,314 line features; properties carry only "Length".
+  - https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_traverse.json
+    558 line features; properties: sol, fromRMC, toRMC, length, SCLK_START,
+    SCLK_END.
+  - https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json
+    1,386 points. Properties: RMC, site, drive, sol, easting, northing,
+    elev_geoid, lon, lat, roll, pitch, yaw, yaw_rad, tilt, dist_m,
+    dist_total_m, dist_km, dist_mi, drive_type.
+  - https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json
+    706 points. Same properties plus elev_radii, radius, final, Note.
+    -9999 is a missing-value sentinel; treat it as missing, never as a number.
+  - *_waypoints_current.json: the latest position.
+  - Snapshot at writing time: Curiosity sol 5045, 38.48 km total.
+    Perseverance sol 2009, 45.22 km total.
+  - Rover tilt (vehicle attitude from the IMU, independent of orbital data):
+      MSL  median 7.68°, p90 14.65°, max 29.12°
+      M20  median 7.01°, p90 14.67°, max 20.68°
+  - Archival counterpart (lags operations; use for provenance and
+    cross-checks): the PDS PLACES bundles.
+      Mars 2020: https://pds.nasa.gov/data/pds4/releases/geo/mars2020_rover_places-20260811/
+      MSL:       https://pds.nasa.gov/data/pds4/releases/img/msl_places-20260317/
+    Pick the newest release directory at runtime.
+  - MMGIS is an operations/outreach product. Label it "NASA MMGIS (operations
+    localization)". Record retrieved_at. Store a dated snapshot under
+    data/snapshots/rovers/ (small: under 2 MB; commit it as the offline
+    fallback, with checksum).
+
+5.4 MSL RAD (radiation)  [VERIFIED 2026-10-20 unless marked]
+  - PDS PPI: https://pds-ppi.igpp.ucla.edu/data/MSL-M-RAD-3-RDR-V1.0/
+    DATA/SOL_04710_04843/RAD_RDR_2026_080_17_18_4843_V00.TXT (+ .LBL).
+    One ASCII file per sol, about 70 MB each. Latest folder at writing time ends
+    at sol 4843 (UTC 2026-080, i.e. 2026-03-21), updated 2026-07-29. That is an
+    archive lag of roughly four months: show it, never call it "live".
+  - Each observation (about every 17 minutes; START_OBS_UTC lines) has blocks
+    "[DOSIMETRY_TOTAL_DOSE_B: nn]" and "[DOSIMETRY_TOTAL_DOSE_E: nn]", each
+    followed by one value.
+    [VERIFY] the units and the integration interval from the RDR SIS in
+    DOCUMENT/ before computing a rate.
+    E is the tissue-like detector; B is silicon.
+  - Stream-parse: read line by line and keep only the dosimetry blocks and
+    timestamps. Never hold a 70 MB file in memory. Never commit raw files.
+    Output: data/derived/rad/rad_dose_rates.parquet with columns
+    (sol, obs_start_utc, dose_E, dose_B, interval_s, dose_rate_E_uGy_per_day,
+    source_file, sha256).
+  - Published context [VERIFY exact values before quoting]: Hassler et al. 2014
+    (Science) surface dose rate about 0.21 ± 0.04 mGy/day; Rafkin et al. 2014
+    (JGR Planets) diurnal dose anticorrelated with pressure; Guo et al. 2015
+    (arXiv 1507.03473) empirical model of dose vs pressure and solar modulation;
+    Guo et al. 2018 (arXiv 1712.06987) atmospheric-depth dependence modelled
+    with HZETRN2015, where shielding weakens as solar modulation strengthens.
+    Gale column mass varies about ±5% diurnally and about 25% seasonally.
+
+5.5 Weather ("current conditions")  [VERIFIED 2026-10-20]
+  - Curiosity REMS outreach feed:
+    https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json
+    4,745 sols, latest sol 4995 (2026-08-25). Fields: min/max air temp, pressure
+    (Pa), min/max ground temp, UV index, atmo_opacity, sunrise/sunset.
+    Its disclaimer: data "provided by Centro de Astrobiologia (CAB) ... intended
+    for outreach purposes only. Any other use is discouraged." Display it as
+    "OUTREACH FEED (CAB/NASA), not for operations", with that text.
+    For any quantitative fit (WS6) prefer PDS REMS data from the PDS
+    Atmospheres Node if reachable [VERIFY]; otherwise state that the fit uses
+    the outreach feed.
+  - Perseverance MEDA outreach feed (category=mars2020): latest entry
+    2024-04, with "--" values. Show "NO RECENT DATA" and do not hide it.
+
+5.6 MOLA (global base layer, and the fix for the LFS problem)  [VERIFIED]
+  - PDS Geosciences, MEGDR 128 ppd:
+    https://pds-geosciences.wustl.edu/mgs/mgs-m-mola-5-megdr-l3-v1/mgsl_300x/meg128/
+    megt*.img (topography) and megr*.img (planetary radius): 16 tiles each,
+    129,761,280 bytes per tile, with .lbl labels. megc*.img (counts) are
+    64,880,640 bytes.
+    Areoid radius = megr - megt [VERIFY in the labels: units, offsets,
+    scaling]. You need this to turn MOLA shot radii (CTX "mola_csv") into
+    elevations for independent vertical validation.
+  - In this clone all meg128 and polar512 files are 134-byte LFS pointer stubs.
+
+5.7 Already in the repo (keep it, re-label where needed)
+  - USGS/IAU gazetteer (2,052 features), USGS SIM 3292 geology via ArcGIS,
+    THEMIS IR-PBT index, Ames MGCM MY34 dust, NASA/JPL close approaches.
+
+------------------------------------------------------------------------------
+6. TARGET ARCHITECTURE (new pieces; match the existing code style)
+------------------------------------------------------------------------------
+Backend packages to add (all routers mounted in
+science/weather/api/environment.py):
+  science/hires/
+    stac.py          STAC client: search, item cache (24 h on disk), asset
+                     probing (HEAD/open), 404 bookkeeping, host allowlist.
+    catalog.py       Footprint index of HiRISE and CTX items for the hero
+                     sites (Parquet), QA fields, datum family, selection.
+    reader.py        Windowed COG reads (rasterio over /vsicurl/; local
+                     corridor COGs first), nodata masks, overviews for coarse
+                     zooms.
+    datum.py         Vertical datum normalisation and empirical checks
+                     against MOLA.
+    grid.py          LocalGrid: reprojects or scale-corrects to a local
+                     metric frame centred on the site.
+    ladder.py        Terrain resolution ladder: per-pixel priority mosaic,
+                     source raster, seam flags, provenance table.
+    derivatives.py   Multi-baseline slope, detrended roughness, curvature,
+                     hazard masks.
+    api.py           /terrain/sources, /terrain/hires/window,
+                     /terrain/hires/image.
+  science/marswalk/
+    config.py        ONE place for every limit, weight and speed parameter,
+                     each with {value, unit, kind:"published"|"planning
+                     choice", citation, note}.
+    eva_model.py     Slope-dependent walking speed, metabolic proxy, time
+                     budget, turnaround.
+    planner.py       Multi-resolution corridor planner (coarse, then fine) on
+                     LocalGrid.
+    evaluate.py      Along-track metrics for any polyline at metre scale.
+    brief.py         EVA brief assembly (JSON schema v1) and printable HTML.
+    api.py           POST /marswalk/plan, POST /marswalk/evaluate,
+                     GET /marswalk/config, GET /marswalk/brief/{id}.
+  science/rovers/
+    traverses.py     MMGIS ingest and normalisation (lon -180..180 and
+                     0..360), sentinel handling, dated snapshot fallback.
+    places.py        Optional PDS PLACES cross-check (P2).
+    api.py           /rovers/{rover}/waypoints, /rovers/{rover}/traverse,
+                     /rovers/{rover}/latest.
+  science/validation/   (package exists but is empty; fill it)
+    elevation.py     V1/V2. slope.py: V3. routes.py: V4.
+    seams.py         V6. stats.py: bootstrap CIs, NMAD, Spearman,
+                     Hausdorff, discrete Fréchet.
+    run.py           CLI: python -m science.validation.run --site gale|jezero|all
+                     Writes validation/reports/<site>/<run_id>/report.json,
+                     report.md and figures, and updates
+                     validation/reports/latest.json.
+    api.py           GET /validation/latest, GET /validation/{site}/{run_id}.
+  science/conditions/
+    rad.py           RDR stream parser, dose-rate series, latest-window
+                     summary, lag.
+    rems.py          Outreach feed client (plus PDS REMS if reachable),
+                     labelled.
+    api.py           GET /conditions?site=gale|jezero
+                     (RAD, REMS/MEDA, modeled dust, Ls/season, each with
+                     evidence class and lag).
+  science/ops/
+    status.py        GET /data/status (each source: status, version,
+                     retrieved_at, lag, checksum), GET /health,
+                     GET /ready (data present?).
+Tools:
+  tools/fetch_mola.py       Download only the MOLA tiles you need from PDS
+                            Geosciences, verify the byte size and a sha256
+                            manifest, resume. Make every terrain loader
+                            prefer real files, fall back to this fetch, and
+                            otherwise return an honest 503.
+  tools/build_corridors.py  Build local COG corridor subsets from the 5.2
+                            mosaics plus the best HiRISE/CTX items.
+  tools/build_demo_pack.py  Pre-fetch everything the 90-second demo needs
+                            into data/demo_pack/ with manifest.json
+                            (sources, retrieved_at, sha256). The UI shows a
+                            banner when serving from the pack.
+Frontend modules (new folder frontend/src/marswalk/):
+  MarswalkView.jsx, SiteMap.jsx (Leaflet, local metric CRS), ProfileStrip.jsx,
+  DecisionCard.jsx, TerrainLadder.jsx, ValidationPanel.jsx,
+  ConditionsStrip.jsx, RoverReplay.jsx, evaBrief.js, marswalkApi.js,
+  walkabilityRamp.js, plus tests. Register every new action in
+  features/commands.json and registry.js (the registry-coverage test must pass).
+
+Data contracts. Use pydantic models; every value object looks like:
+  {"value": 12.3, "unit": "deg",
+   "evidence": "DERIVED",
+   "basis": {"baseline_m": 5, "samples": 412},
+   "source": {"product_id": "DTEEC_024234_1755_024300_1755_U01",
+              "family": "HiRISE", "gsd_m": 1.01,
+              "url": "...", "retrieved_at": "..."}}
+UNAVAILABLE values look like:
+  {"value": null, "status": "UNAVAILABLE", "reason": "outside HiRISE coverage"}
+
+------------------------------------------------------------------------------
+7. WORKSTREAMS (in priority order). Each has tasks and acceptance criteria (AC).
+------------------------------------------------------------------------------
+Priority key: P0 = demo-critical, must ship. P1 = ship if P0 is green.
+P2 = stretch. CUT = do not build.
+
+=== WS0 · Baseline, hygiene, CI (P0) =========================================
+T0.1 Create branch feature/marswalk-hires. Record a baseline before any change:
+     run the backend tests, frontend tests, lint and build, and save the
+     outputs to docs/baseline-2026-10.md.
+T0.2 Fix the MOLA availability problem without Git LFS: add tools/fetch_mola.py
+     (PDS direct download of only the tiles a site needs) and make the loaders
+     use it. Test: with LFS stubs present, the Gale terrain window works after
+     the fetch; with no network, you get the honest 503 path.
+T0.3 Pin dependencies. Python: requirements.in plus a pinned requirements.txt
+     (pip-tools), or pinned versions in place; keep rasterio, pyproj,
+     scikit-image and scipy. Node: keep package-lock and use npm ci.
+T0.4 Add .github/workflows/ci.yml: Python 3.12 pytest (network tests marked
+     @pytest.mark.network and skipped in CI), ruff; Node 22 npm ci, lint,
+     test, build. CI must pass on the branch.
+T0.5 Hygiene: the moves listed in Section 2, README branch references, the
+     unified Mars radius (3,396,190 m via one constant,
+     science/constants.py; keep the old names as aliases).
+AC: CI green; the baseline file exists; Gale terrain works from PDS-fetched
+    MOLA; no LFS required.
+
+=== WS1 · Terrain resolution ladder (P0) =====================================
+T1.1 STAC client with a disk cache, retries with backoff, timeouts (connect 10
+     s, read 30 s), the host allowlist, and a 404/unreadable ledger
+     (data/cache/stac/asset_status.json).
+T1.2 Catalogue builder for Gale and Jezero (and any requested bbox): footprints
+     (from the bbox and, where available, the valid-data footprint), gsd,
+     family, datum family, QA (CTX qa_metrics parsed: MOLA diff
+     mean/median/std; valid fraction measured from overviews), and asset
+     probe status.
+T1.3 Deterministic selector. For a window, rank products by
+     (family priority HiRISE > CTX > MOLA, QA pass, valid coverage of the
+     window, finer gsd, lower |MOLA offset|, newer product id), with stable
+     tie-breaks by id. The same inputs always pick the same products.
+T1.4 Datum normalisation. All elevations are reported as "metres above MOLA
+     areoid".
+     For every product, sample at least 200 valid pixels, compare with MOLA,
+     and record median, NMAD, offset and the inferred datum family.
+     Rules (configurable):
+       |median| <= 30 m (HiRISE) or <= 60 m (CTX): accept; record the residual
+       offset (do not silently apply it).
+       Otherwise, if the offset is about R_sphere - R_areoid (a datum family
+       mismatch), convert using the MOLA areoid; else mark DATUM MISMATCH and
+       exclude.
+     Unit-test with synthetic rasters.
+T1.5 Projection and scale. The COGs are Equirectangular with
+     standard_parallel = 0, so the east-west ground distance of one pixel is
+     res_x * cos(latitude). At Jezero (18.4°N) ignoring this inflates E-W
+     distances by about 5% and biases slopes. Implement LocalGrid: either
+     reproject the window to "+proj=eqc +lat_ts=<site_lat> +lon_0=<site_lon>
+     +R=3396190 +units=m" (bilinear for elevation) or carry per-row
+     dx = res_x*cos(lat). Test: a synthetic 10° plane at 18.4°N gives
+     10.0 ± 0.1° in every direction.
+T1.6 Ladder mosaic: a per-pixel priority mosaic on the LocalGrid with a source
+     raster (uint8: 1 HiRISE, 2 CTX, 3 MOLA, 0 none), a product lookup table,
+     seam flags and a no-blending rule for analytics (feathering is allowed only
+     for display).
+T1.7 Endpoints:
+     GET /terrain/sources?lat&lon&radius_km
+     GET /terrain/hires/window?lat&lon&half_width_m(<=5000)&res_m(>=1)
+         &layers=elev,slope_1,slope_5,rough_5,source
+         Returns compact JSON (or float32 base64 plus metadata), capped
+         at 4 M cells.
+     GET /terrain/hires/image?layer=hillshade|ortho|walkability|slope|source
+         &bounds...&px...
+         Returns a PNG with bounds for a Leaflet ImageOverlay.
+     Strict bounds validation (no unbounded reads: half_width <= 5 km,
+     res >= 1 m, output <= 2048x2048).
+T1.8 evidence.py: move CTX and HiRISE from NOT_INGESTED to collectors (as
+     terrain evidence, not science-target evidence).
+AC: for 10 fixed test points (5 Gale, 5 Jezero, including 2 outside HiRISE),
+    the window returns the expected source family and product id, with zero
+    fabricated cells. Golden-file tests pass offline using small fixtures
+    (<= 2 MB of real cropped COG data under tests/fixtures/, with a
+    provenance note).
+
+=== WS2 · Metre-scale hazard derivatives (P0) ================================
+T2.1 Slope at a stated baseline b in {1(native), 2, 3, 5, 10, 20, 100, 463} m:
+     resample the DTM to spacing b (block mean, or Gaussian with sigma ≈ b/2
+     then decimate), then Horn's method with true ground spacing. Every slope
+     value carries its baseline. Never mix baselines in one statistic.
+T2.2 Roughness: detrended RMS height (subtract the best-fit plane) in a w x w
+     window, w in {5, 25} m. Keep the old 3x3 elevation range under its honest
+     name "local relief (3x3 range)". Do not call it TRI.
+T2.3 Optional: curvature (profile and plan) for ridge and gully cues;
+     step/edge detection (max height change over 1 m) as a trip-hazard proxy.
+     Label it DERIVED and "not a rock map".
+T2.4 GPU path (optional; science/gpu/terrain_gpu.py exists): reuse it when
+     available, with CPU as the reference. Keep the existing CPU-vs-GPU
+     equivalence test style.
+T2.5 Explicit "unresolved below DTM resolution" note on every hi-res product:
+     rocks smaller than about 1-2 m, ripples and loose regolith are NOT
+     represented. If a rock-abundance product is not ingested, list it as
+     NOT INGESTED.
+AC: unit tests against analytic surfaces (plane, cone, sinusoid) at several
+    latitudes; a performance budget of a 4 km x 4 km window at 2 m (4 M cells),
+    all derivatives in under 1.5 s on CPU (record actual timings).
+
+=== WS3 · Marswalk planner and EVA model (P0) ================================
+T3.1 marswalk/config.py. Each parameter is
+     {value, unit, kind, citation, note}. Defaults:
+       eva_pace_kmh 2.5 (continuity with engine.DEFAULT_EVA_PACE_KMH;
+         planning choice)
+       ascent_allowance_m_per_h 600 (continuity; planning choice)
+       slope_review_deg 15 at a 3 m baseline (planning choice)
+       slope_limit_deg 25 at a 3 m baseline (planning choice; matches the
+         existing 25° burden reference)
+       roughness_review_m 0.3 at a 5 m window (planning choice)
+       eva_duration_h options 4 or 8; reserve_fraction 0.3 (planning choice)
+     Before shipping, search NASA NTRS for citable suited-mobility values
+     (for example Norcross et al., NASA/TP-2009-214796, incline/gravity
+     metabolic tests) [VERIFY]. Where a published value exists, cite it and
+     set kind="published"; otherwise keep "planning choice".
+     Expose every parameter in the UI with a sensitivity control.
+T3.2 Speed model (pick one and document it): Tobler's hiking function
+     normalised so v(0°) = eva_pace_kmh:
+       v(θ) = pace * exp(-3.5*|tan θ + 0.05|) / exp(-3.5*0.05)
+     with θ signed along the direction of travel. Earth-derived; label it
+     "Earth heuristic, not validated for suited Mars EVA".
+     Keep the Naismith option for continuity with saved routes.
+T3.3 Planner: multi-resolution corridor search.
+     (a) coarse path on the CTX/MOLA ladder at about 20-50 m;
+     (b) buffer the coarse path by 300 m (configurable);
+     (c) fine search on the HiRISE ladder at res_m (default 2 m, 1 m allowed
+         for under 1.5 km) with skimage.graph.MCP_Geometric or scipy csgraph;
+     (d) cells over slope_limit or nodata are impassable; review cells cost
+         more;
+     (e) where HiRISE ends, the path continues on CTX/MOLA and the segment is
+         flagged with its source.
+     Deterministic tie-breaking. Return a simplified geometry (RDP at
+     res/2) plus the full-resolution profile (capped at 2,000 rows).
+T3.4 EVA budget: outbound time plus return time (return along the same path by
+     default, or to the nearest declared Safe Haven), with reserve. Compute the
+     turnaround point where the elapsed outbound time plus the return time to
+     base reaches (1 - reserve) * duration. If the target is beyond the
+     turnaround, say so and show how far you can get.
+T3.5 Decision summary (no "safe"): counts and lengths of route sections that
+     are WITHIN / REVIEW / EXCEED; max slope at 1 m and 3 m baselines; %
+     length per terrain source; time budget and margin; walk-back margin;
+     science stops reached; dose estimate (from WS6 if present, else
+     UNAVAILABLE).
+     An overall status is derived only by an explicit rule that is shown in
+     the UI.
+T3.6 POST /marswalk/evaluate takes any user-drawn polyline (drag-to-edit).
+     Same metrics. Under 500 ms warm for 3 km.
+T3.7 Reproducibility: a plan id is the hash of request, config, data versions
+     and engine version. Extend saved routes to schema v4 with
+     {resolution_ladder, data_versions, config_hash}. Write a v3-to-v4
+     migration and test it. The existing VERIFY replays the plan and reports
+     REPRODUCED or DIFFERS.
+AC: on synthetic terrain the planner avoids a wall steeper than the limit and
+    stays out of nodata. At Gale, a 1.5 km plan from Curiosity's latest
+    position to a fixed test target returns in under 4 s cold (corridor cache
+    warm) and under 1.5 s warm. Results are byte-identical across two runs.
+
+=== WS4 · Rover traverses: layers, replay, ground truth (P0 layers, P1 replay)
+T4.1 Ingest MMGIS traverse and waypoint files for both rovers. Normalise
+     longitudes, drop the -9999 sentinels, and keep the full resolution for
+     validation (decimate only for rendering). Use the dated snapshot fallback.
+T4.2 2D site map layers: traverse line in the existing rover colours
+     (#ffd166 Curiosity, #ff8fa3 Perseverance; add tokens), waypoint dots
+     sized by tilt, a sol range filter, and a latest-position marker.
+     The 3D view keeps its existing traverse layer.
+T4.3 "Use latest rover position as habitat" button. Label it "rover position
+     used as a stand-in habitat location".
+T4.4 (P1) ROVER REPLAY. Pick a rover and a sol range, then step through the
+     drives. At each drive end show rover tilt vs DTM slope at a 3 m
+     baseline. "PLAN THIS LEG" runs the Marswalk planner between two
+     consecutive waypoints and overlays it on the actual drive (feeds V4).
+AC: both rovers render at Gale and Jezero. Waypoint count and latest sol
+    match the source file. The offline snapshot works with the network
+    disabled.
+
+=== WS5 · Validation suite: the scientific kill test (P0) ====================
+Write the methodology first (docs/VALIDATION.md), then the code. Every metric
+gets n, a point estimate, a 95% bootstrap CI (1,000 resamples, fixed seed), and
+stratification by terrain source. Run it for gale and jezero. Never tune
+parameters on Jezero (it is the holdout).
+
+V1 ELEVATION CONSISTENCY: rover elev_geoid vs DTM at each waypoint.
+   Report bias, RMSE and NMAD for HiRISE, CTX and MOLA.
+   CAVEAT, shown in the UI and the docs: rover localisations are registered to
+   HiRISE-based base maps, so agreement with HiRISE is a consistency check,
+   not independent accuracy.
+V2 INDEPENDENT VERTICAL CHECK: MOLA shot elevations (CTX "mola_csv"
+   radius minus MOLA areoid, from 5.6) vs CTX and HiRISE DTMs at the shot
+   locations. Report bias and NMAD.
+V3 SLOPE SCALE-DEPENDENCE (the headline chart): rover IMU tilt (independent of
+   orbital data) vs DTM slope at baselines 1, 3, 5, 10, 20, 100 and 463 m.
+   Report Spearman ρ, bias, and the ratio of p90 DTM slope to p90 rover tilt
+   per baseline.
+   Expected story [VERIFY with real numbers]: correlation and p90 agreement
+   peak near the rover wheelbase scale (about 3 m) [VERIFY wheelbase for both
+   rovers] and collapse at MOLA scale.
+   CAVEATS: tilt includes rocks under the wheels and yaw-dependent geometry;
+   the rover parks deliberately; selection bias toward drivable ground.
+V4 ROUTE PLAUSIBILITY: for N consecutive-waypoint legs of 100-800 m (choose a
+   fixed rule; for example every leg with 200 <= dist_m <= 800, capped at 200
+   legs per rover), plan with (a) a straight line, (b) the MOLA-only planner
+   and (c) the ladder planner. Compare each with the actual traverse geometry
+   using discrete Fréchet, Hausdorff, length ratio and % of planned length
+   within 10 m of the actual path.
+   CAVEATS: rover drive planning also considered wheel safety on sand, science
+   stops and communications. A rover is not an astronaut. This tests
+   plausibility, not optimality.
+V5 REPRODUCIBILITY: 20 fixed plans run twice, byte-identical, plus VERIFY
+   round-trips.
+V6 SEAMS AND CROSS-PRODUCT: HiRISE vs CTX vs MOLA differences in overlaps;
+   seam steps over 2 m are flagged on the map.
+V7 (P1, with WS6) RADIATION SANITY: reproduce the sign, and the magnitude
+   within the published range, of the RAD dose-rate vs surface-pressure
+   anticorrelation at Gale (Rafkin 2014 / Guo 2015). If you cannot reproduce
+   it, report that.
+Outputs: report.json (schema-versioned), report.md and PNG/SVG figures,
+validation/reports/latest.json, GET /validation/latest. The README
+"What's validated" table and the UI ValidationPanel read ONLY from this file.
+A pytest test asserts that the README numbers match latest.json (add a
+generator script that rewrites the README table between markers).
+AC: the suite runs offline from the demo pack in under 10 minutes for both
+    sites; all figures render; the headline numbers appear in the UI with n
+    and CI.
+
+=== WS6 · Current conditions and radiation screening (P1) ====================
+T6.1 RAD: stream-parse recent RDR files (the latest 120 sols, plus a long
+     history in decimated form if time allows) into the Parquet in 5.4.
+     Summary for the conditions strip: latest archived sol, archive lag in
+     days, median dose rate E over the last 30 archived sols with an IQR band.
+     The B detector is shown only as context.
+T6.2 EVA dose screening: dose_EVA = rate_E(window) * t_EVA * A(Δz), where
+     A(Δz) is a parameterised altitude/pressure adjustment
+     (column depth ~ exp(-Δz/H); H = scale height [VERIFY value]; sensitivity
+     coefficient from V7, else from the literature with a citation). Show the
+     band from the rate IQR and the coefficient uncertainty.
+     HONEST FINDING TO SURFACE: over a 4-8 h EVA with tens of metres of
+     relief, the altitude term changes dose by well under 1%. Radiation is
+     therefore a TIME-BUDGET and SOL-SELECTION variable, not a per-segment
+     route colour. Display it that way and explain why in METHODOLOGY. Do not
+     colour route segments by dose.
+T6.3 REMS outreach weather line (labelled), MEDA "NO RECENT DATA", modeled
+     dust for the console sol (existing), Ls/season (existing mars_calculator).
+T6.4 Insufficient-data rules: RAD gap over 30 sols, parse failure, or missing
+     units give "INSUFFICIENT DATA FOR AN ESTIMATE", never a number.
+T6.5 (P2) Statistical anomaly flag on the RAD dose-rate series (for example
+     isolation forest or a robust z-score on de-seasonalised data) with
+     confidence bounds and the text "statistical flag, requires human
+     interpretation". This is not a forecast.
+AC: GET /conditions?site=gale returns every block with its evidence class,
+    lag and source. The UI strip shows them without any "live" wording.
+
+=== WS7 · UI: MARSWALK mode, same theme with sharper hierarchy (P0) ==========
+Principles: the existing §2 "flight-controller bar" (no orphan numbers,
+separated data classes, MIN·MEAN·MAX order, nominal recedes and off-nominal
+stands out, one truth across views, designed degraded states, keyboard
+reachable, reproducible).
+T7.1 Top-level mode switch in the top bar: GLOBAL CONSOLE (today's screen,
+     unchanged) | MARSWALK (new). Persist it. Add it to the Command Index
+     (shortcut M).
+T7.2 MARSWALK layout at 1280x720 minimum (projector-safe) up to 2560x1440:
+       LEFT 320 px  EVA SETUP: site (Gale/Jezero/custom), base (rover latest
+                    or a click), targets (multi-stop), EVA 4 h / 8 h / custom,
+                    pace and limits (sensitivity sliders showing each
+                    parameter's "kind"), terrain source mode
+                    (Ladder / CTX+MOLA / MOLA only), PLAN, EXPORT BRIEF.
+       CENTRE       SiteMap: Leaflet with a local metric CRS (CRS.Simple,
+                    1 unit = 1 m, origin at site centre); server-rendered
+                    ImageOverlays: hillshade, HiRISE ortho (toggle),
+                    walkability, slope@baseline, source raster; the route
+                    coloured by walkability class; hatched EXCEED cells;
+                    turnaround marker; rover traverse and waypoints; scale
+                    bar in metres; a north arrow; and the cursor readout
+                    "lat, lon · elev (source, gsd) · slope@3 m".
+       BOTTOM 180 px ProfileStrip, distance-aligned rows: elevation, slope
+                    (two baselines), walkability band, a TERRAIN LADDER
+                    ribbon (HiRISE/CTX/MOLA), cumulative EVA time with the
+                    turnaround line. Hover syncs with the map.
+       RIGHT 340 px DecisionCard (status by an explicit rule, with the rule
+                    shown), CONDITIONS strip, VALIDATION card (headline
+                    numbers with n and CI, a link to the full report), SCIENCE
+                    STOPS (catalogued features and rover-visited locations
+                    within reach, with evidence class).
+T7.3 Tokens to add in tokens.css (derived from the existing palette):
+       --nn-walk-within: var(--nn-green)   --nn-walk-review: var(--nn-amber)
+       --nn-walk-exceed: var(--nn-red)     --nn-walk-unavail: var(--nn-text-dim)
+       --nn-src-hirise: var(--nn-series-4) --nn-src-ctx: var(--nn-series-2)
+       --nn-src-mola: #6f858d (already used in App.css; promote it to a token)
+       --nn-rover-msl: #ffd166             --nn-rover-m2020: #ff8fa3
+     Walkability raster: a continuous ramp from --nn-cyan through
+     --nn-amber to --nn-red, with luminance stepping so it reads in
+     greyscale. EXCEED also gets a hatch pattern (never colour alone).
+     Keep the cyan glow for nominal chrome only. Amber and red are reserved
+     for threshold crossings that come from backend config.
+T7.4 Designed states for every new component: loading (skeleton plus the
+     source being fetched), empty, partial coverage (for example "62% of
+     route on HiRISE"), error (with the reason), offline (demo-pack banner:
+     "Serving pre-fetched NASA/USGS data retrieved <date>").
+T7.5 Accessibility: all controls keyboard-operable; aria labels; text contrast
+     at least 4.5:1 on surfaces; respect prefers-reduced-motion (disable
+     nn-pulse); tooltips also reachable on focus.
+T7.6 Performance: lazy-load MARSWALK and the 3D view. Bundle budget: initial
+     JS no larger than today's +10%; image overlays decoded off the main
+     thread when possible.
+T7.7 App.jsx debt: while wiring the mode switch, extract the left column and
+     RouteConsole into modules (target under 2,500 lines this round; do not
+     refactor beyond what you touch).
+T7.8 EVA BRIEF export: JSON (schema v1, includes plan id, config, data
+     versions, all metrics with provenance, validation summary, limitations)
+     plus a printable HTML page (print-to-PDF), styled in the same theme
+     with a print-friendly light variant.
+T7.9 Playwright e2e (Chromium is preinstalled; do not run
+     "playwright install"): start the backend and a preview build, open
+     MARSWALK at Gale from the demo pack, plan, toggle GROUND TRUTH, switch
+     terrain mode, export the brief. Capture screenshots to
+     assets/screenshots/v3/ (these become README images).
+AC: the 90-second story in Section 3 runs end to end in e2e and by hand; there
+    are no console errors; the lint warnings count does not increase.
+
+=== WS8 · Mars Intelligence integration (P1) =================================
+T8.1 New server-side tools: get_marswalk_plan(plan_id),
+     get_terrain_sources(lat, lon), get_validation_summary(site),
+     get_conditions(site), get_rover_position(rover). Each returns structured
+     data with evidence classes.
+T8.2 Knowledge: add science/ai/knowledge/terrain_and_validation.md, generated
+     from METHODOLOGY.md and VALIDATION.md, so the assistant can explain the
+     ladder, the baselines and the caveats.
+T8.3 Tests: the assistant cannot alter numbers. The existing scope-rule test
+     still passes.
+
+=== WS9 · Production readiness (P0 for items a-f, P1 for g-i) ================
+a) Config through environment variables with defaults (science/settings.py):
+   cache dirs, cache size caps (default 5 GB terrain, LRU eviction), host
+   allowlist, timeouts, demo-pack mode.
+b) Input validation on every endpoint (lat/lon ranges, window caps, polyline
+   vertex cap of 500, EVA hours from 0.5 to 12). Uniform error JSON
+   {error, reason, hint}.
+c) Resilience: retries with jitter for STAC/S3/PDS, circuit breaker per host,
+   stale-while-revalidate caches, and never block a request on a slow
+   external host for more than 30 s.
+d) Observability: structured JSON logs with a request id, timings per stage
+   (fetch/read/derive/plan), GET /health, GET /ready, and GET /data/status
+   powering a small "DATA STATUS" panel in the Command Index.
+e) Security: CORS allowlist; the SSRF allowlist; no path traversal in file
+   endpoints; never echo raw upstream errors containing URLs with tokens;
+   dependency audit (pip-audit, npm audit) recorded in the final report.
+f) Offline demo pack: tools/build_demo_pack.py and a DEMO_PACK=1 mode.
+   The 90-second story runs with the network disabled.
+g) Docker: make docker-compose actually work (backend and frontend images,
+   healthchecks, demo pack volume). Test it if Docker is available; otherwise
+   say so explicitly.
+h) Performance report: docs/PERFORMANCE.md with measured cold and warm
+   timings for each Marswalk and terrain endpoint.
+i) Data licensing and attribution: docs/DATA_SOURCES.md listing each product,
+   its DOI or URL, its licence (CC0 where stated), retrieved_at and how it is
+   used. The UI footer links to it.
+
+=== WS10 · Docs and Space Apps submission kit (P0) ===========================
+- README rewrite (keep the existing tour, moved to docs/TOUR.md and linked).
+  Top of the README: the one-sentence thesis, a GIF of the demo moment, the
+  "What's validated" table (generated), a 3-command quickstart (with the demo
+  pack), the data-source table, links to METHODOLOGY, VALIDATION and
+  LIMITATIONS, then the team.
+- docs/METHODOLOGY.md: every formula (Appendix A), every parameter with its
+  kind and citation, the resolution ladder and the datum handling.
+- docs/LIMITATIONS.md: sub-DTM hazards, Earth-derived speed model, rovers
+  are not astronauts, RAD archive lag and a single site, outreach feed
+  limits, modeled dust, and "planning limits are not safety limits".
+- docs/submission/: PROJECT_SUMMARY.md, DEMO_SCRIPT.md (the 90 s story),
+  VIDEO_30S_STORYBOARD.md, SLIDES_OUTLINE.md (at most 7 slides),
+  NASA_DATA_USED.md, JUDGE_FAQ.md (the 15 hardest questions a NASA radiation
+  or terrain scientist would ask, with honest answers),
+  AI_USE_DISCLOSURE.md [VERIFY whether 2026 requires it].
+  Never use the NASA insignia or logo; keep the non-endorsement line.
+
+------------------------------------------------------------------------------
+8. EXECUTION ORDER, GATES AND TIME BOXES
+------------------------------------------------------------------------------
+Phase A (gate: baseline recorded, CI green)            WS0
+Phase B (gate: Gale 1 m window plus source raster correct; tests green)
+                                                       WS1, WS2
+Phase C (gate: Gale plan in under 4 s cold, deterministic) WS3 plus WS4 T4.1-4.3
+Phase D (gate: Marswalk UI end to end at Gale)         WS7 T7.1-7.4, T7.8
+Phase E (gate: validation report generated for both sites)
+                                                       WS5 V1-V6
+Phase F (P1)  WS6, WS4 T4.4, WS8, WS9 g-i, V7
+Phase G (gate: Definition of Done)  WS9 a-f, WS10, T7.5-7.9, final report
+Rules:
+- Commit at every gate. If a gate fails after two honest attempts, write down
+  why in docs/OPEN_ISSUES.md, use the documented fallback, and move on.
+  Fallbacks: CTX+MOLA only for that site; the Jezero mosaic instead of
+  STAC strips; the MMGIS snapshot instead of live data.
+- P1 work starts only after Phases A-E are green.
+- Never leave the branch red at a commit you push.
+
+------------------------------------------------------------------------------
+9. VERIFICATION COMMANDS (run all of them before declaring done)
+------------------------------------------------------------------------------
+  python -m pytest tests -q                       # all green (network tests skipped)
+  python -m pytest tests -q -m network            # run once; report the results
+  python -m science.validation.run --site all     # writes reports, prints the headline
+  cd frontend && npm ci && npm run lint && npm test && npm run build
+  npx playwright test (or node e2e script)        # screenshots in assets/screenshots/v3/
+  DEMO_PACK=1 plus the network disabled: rerun the e2e story
+  curl localhost:8002/health; /ready; /data/status; /validation/latest;
+  /terrain/sources?lat=-4.7&lon=137.42&radius_km=3; /conditions?site=gale
+
+------------------------------------------------------------------------------
+10. DEFINITION OF DONE
+------------------------------------------------------------------------------
+[ ] The 90-second demo moment works online AND offline (demo pack).
+[ ] Every map value shows unit, source product, gsd or baseline, and evidence
+    class. There are no bare "—" values.
+[ ] HiRISE, CTX and MOLA ladder in place with a per-pixel source raster;
+    datum checks recorded per product; 404 assets handled.
+[ ] Marswalk plan and evaluate are deterministic. Saved routes v4 have a
+    tested migration. VERIFY replays work.
+[ ] Validation report (V1-V6) generated for Gale and Jezero with n and CIs.
+    The UI and README read from it; a test enforces that they match.
+[ ] Conditions strip with RAD (archive lag shown), REMS outreach label,
+    MEDA stale label and modeled dust (or P1 items listed as not done).
+[ ] All pre-existing tests pass. New tests cover each formula, the
+    contracts, migration, datum and scale correction, the planner, the
+    parsers and the validation stats. CI is green.
+[ ] README, METHODOLOGY, VALIDATION, LIMITATIONS, DATA_SOURCES, PERFORMANCE
+    and the submission kit are written. New screenshots are captured.
+[ ] No secrets, no large binaries, no LFS pointer drift committed. The branch
+    is pushed.
+
+------------------------------------------------------------------------------
+11. FINAL REPORT (print in chat at the end, and save as
+    docs/REPORT_marswalk_hires.md)
+------------------------------------------------------------------------------
+1. What shipped, by workstream: DONE / PARTIAL / NOT DONE, with the reason.
+2. Headline validation numbers (copied from latest.json) and what they mean
+   in one sentence each.
+3. Test results: counts before and after, CI link or status, e2e result.
+4. Measured performance table.
+5. Data verification log: every [VERIFY] item, what you found, and the source.
+6. Known limitations and open issues.
+7. Decisions needed from the team (see Appendix E).
+8. Exact commands to run the demo.
+
+------------------------------------------------------------------------------
+12. DO NOT
+------------------------------------------------------------------------------
+- Do not call anything safe, certified, live, real-time or a forecast unless
+  it is. RAD is archived with a lag, REMS is an outreach feed, dust is a
+  modeled scenario.
+- Do not colour route segments by radiation dose (see T6.2).
+- Do not add datasets beyond this prompt (no CRISM, SHARAD or HRSC ingestion
+  this round). A layered view means layers of decision-relevant information,
+  not many datasets.
+- CUT: user accounts, multi-user sync, 3D flythroughs, LLM-generated plans,
+  ML "prediction" of future radiation.
+- Do not read the striped 1 m mosaics remotely inside request handlers.
+- Do not commit raw RAD files, COG caches or corridor rasters.
+- Do not tune on Jezero.
+- Do not delete user notes; move them.
+- Do not change the colour theme. Extend the tokens.
+
+------------------------------------------------------------------------------
+APPENDIX A · FORMULAS (implement exactly; document in METHODOLOGY.md)
+------------------------------------------------------------------------------
+A1  Ground spacing in an eqc (lat_ts = 0) grid at latitude φ:
+      dx_ground = res_x * cos φ ;  dy_ground = res_y
+A2  Slope at baseline b (Horn) on DTM Z_b resampled to spacing b:
+      p = ((z3+2z6+z9)-(z1+2z4+z7)) / (8 dx) ;
+      q = ((z7+2z8+z9)-(z1+2z2+z3)) / (8 dy)
+      slope_b = atan(sqrt(p² + q²))   [deg]
+A3  Directional slope along travel azimuth α: θ = atan(p sin α + q cos α)
+    (signed; uphill positive)
+A4  Detrended roughness in a w x w window: RMS(z - plane_fit(z))
+A5  Walkability per cell (0-100, higher is easier):
+      cost = Σ_i weight_i * min(metric_i / reference_i, 1)
+      walk = 100 * (1 - min(cost, 1))
+      impassable if slope_3m > slope_limit or nodata
+    Weights and references come from marswalk/config.py (default to the
+    existing WALKABILITY weights 0.55/0.30/0.15 for slope, roughness and
+    relief, rescaled to the metre-scale references).
+A6  Speed (Tobler, normalised): v(θ) = pace * exp(-3.5|tanθ + 0.05|) / exp(-0.175)
+    Segment time = length / v(θ_segment). The Naismith alternative is kept.
+A7  Turnaround: the first point s* where t_out(s) + t_back(s) >= (1 - reserve) * T_EVA
+A8  Dose screening: D = r_E * t * A(Δz),  A(Δz) = 1 + k * (exp(-Δz/H) - 1),
+    with k (fractional dose change per fractional column change) from V7 or
+    the literature, ± its uncertainty. Report D as a median with a band.
+A9  Validation stats: bias = mean(d); RMSE; NMAD = 1.4826 * median(|d - median(d)|);
+    Spearman ρ; bootstrap 95% CI (1,000 resamples, seed 2026);
+    discrete Fréchet and Hausdorff distances in a local metric CRS.
+
+------------------------------------------------------------------------------
+APPENDIX B · KEY API CONTRACTS (abbreviated)
+------------------------------------------------------------------------------
+POST /marswalk/plan
+  request:  {site:"gale", base:{lat,lon} | {rover:"msl"}, targets:[{lat,lon,name?}],
+             eva_hours:4, terrain_mode:"ladder"|"ctx_mola"|"mola",
+             res_m:2, overrides:{param:value}}
+  response: {plan_id, engine_version, config_hash, data_versions:[...],
+             geometry:{type:"LineString",coordinates:[[lon,lat],...]},
+             segments:[{from_m,to_m,class:"WITHIN"|"REVIEW"|"EXCEED"|"UNAVAILABLE",
+                        source:"HiRISE"|"CTX"|"MOLA", product_id, max_slope_3m, ...}],
+             profile:{columns:[...], rows:[...]},
+             turnaround:{distance_m, lat, lon, reached_target:false},
+             budget:{outbound_h, return_h, reserve_h, margin_h},
+             summary:{...value objects...}, dose:{...}|UNAVAILABLE,
+             science_stops:[...], warnings:[...], limitations:[...],
+             status:{value, rule_text}}
+GET /terrain/sources?lat&lon&radius_km
+  -> {products:[{product_id, family, gsd_m, coverage_fraction, qa:{...},
+                 datum:{family, median_offset_m, nmad_m, status}, asset_status}],
+      selected:[...], unavailable:[...]}
+GET /validation/latest -> {schema_version, run_id, generated_at, data_versions,
+      sites:{gale:{V1:{...},V2:{...},V3:{baselines:[...]},V4:{...},V5:{...},V6:{...}},
+             jezero:{...}}, caveats:[...]}
+GET /conditions?site=gale -> {rad:{latest_sol, lag_days, rate_E_median, iqr, unit,
+      evidence:"OBSERVED (archived)"}, weather:{..., evidence:"OUTREACH FEED"},
+      dust:{..., evidence:"MODELED"}, season:{ls, mars_year}}
+
+------------------------------------------------------------------------------
+APPENDIX C · TESTS TO ADD (minimum)
+------------------------------------------------------------------------------
+tests/test_hires_grid.py        scale correction, LocalGrid reprojection, nodata masks
+tests/test_hires_datum.py       datum family detection, mismatch exclusion
+tests/test_hires_selector.py    deterministic product ranking, 404 handling (mocked)
+tests/test_derivatives_multi.py analytic plane/cone/sinusoid at 0°, 18°, 60° lat
+tests/test_marswalk_planner.py  wall avoidance, nodata, determinism, turnaround
+tests/test_marswalk_contracts.py pydantic schemas, input caps, error JSON
+tests/test_rovers_ingest.py     MMGIS parsing, -9999 sentinels, lon normalisation
+tests/test_validation_stats.py  NMAD, Fréchet, Hausdorff, bootstrap with known answers
+tests/test_rad_parser.py        a small real RDR excerpt fixture (< 200 KB) with provenance
+tests/test_readme_numbers.py    README table == validation/reports/latest.json
+frontend: walkabilityRamp, evaBrief schema, savedRoutes v3->v4 migration,
+          the command registry covering new actions, ProfileStrip hover sync
+
+------------------------------------------------------------------------------
+APPENDIX D · THE 15 QUESTIONS THE JUDGE_FAQ MUST ANSWER HONESTLY
+------------------------------------------------------------------------------
+1 Where does this slope number come from? (product, baseline, method)
+2 Why should I trust HiRISE here? (QA, datum check, V2)
+3 What can't the 1 m DTM see? (rocks, ripples, regolith strength)
+4 Isn't rover-vs-HiRISE elevation circular? (yes; V1 is consistency only, see V2 and V3)
+5 Rovers aren't humans; why compare routes? (plausibility, caveats)
+6 Where do the walking limits come from? (published vs planning choice)
+7 Is the speed model valid on Mars? (Earth heuristic; sensitivity shown)
+8 Is the radiation number live? (no; archived with a lag; it is a screening estimate)
+9 Why isn't the route coloured by dose? (altitude term < 1% at EVA scale)
+10 What happens outside HiRISE coverage? (ladder fallback, labelled)
+11 How do you know results are reproducible? (plan_id, data versions, V5)
+12 What did the AI do? (interpretation only; tools; no geometry or numbers)
+13 What breaks offline? (nothing in the demo path; demo pack)
+14 What would you do with another month? (rock abundance, a 3D local mesh,
+   PDS REMS fit, more sites)
+15 Why Gale and Jezero? (co-located ground truth: 1 m mosaics + traverses + RAD/REMS)
+
+------------------------------------------------------------------------------
+APPENDIX E · DECISIONS FOR THE HUMAN TEAM (use these defaults; list them in the report)
+------------------------------------------------------------------------------
+E1 Licence: currently "All rights reserved" (the MIT file was deleted).
+   Default: no change. Flag it; an open licence usually helps judging.
+E2 Hero site: default Gale; Jezero is the holdout.
+E3 Submission branch name: default "feature/marswalk-hires", to be merged into
+   the team's chosen submission branch by a human.
+E4 Planning-limit defaults (slope 15°/25° at 3 m, reserve 30%) remain
+   "planning choices" unless a citable source is found.
+E5 Whether to keep the 58 MB root DustScenario_MY34.nc (it is the documented
+   fallback; default: keep).
+
+================================================================================
+END PROMPT
+================================================================================
+
+SOURCES CHECKED WHILE WRITING (2026-10-20)
+- USGS STAC: https://stac.astrogeology.usgs.gov/api/collections (live queries
+  over Gale and Jezero; COG reads tested with rasterio 1.5.2 / GDAL 3.12.2)
+- CTX DTM docs: https://stac.astrogeology.usgs.gov/docs/data/mars/ctxdtms/
+- MSL Gale Merged DEM 1m: https://astrogeology.usgs.gov/search/map/mars_msl_gale_merged_dem_1m
+- Mars 2020 TRN HiRISE DTM mosaic: https://astrogeology.usgs.gov/search/map/mars_2020_terrain_relative_navigation_hirise_dtm_mosaic
+  and https://www.usgs.gov/data/mars-2020-terrain-relative-navigation-hirise-dtm-mosaic
+- HiRISE DTM precision: https://www.uahirise.org/dtm/about.php ;
+  https://www.usgs.gov/publications/revealing-active-mars-hirise-digital-terrain-models
+- MMGIS layers: https://mars.nasa.gov/mmgis-maps/{MSL,M20}/Layers/json/*.json
+- PDS PLACES: https://pds-geosciences.wustl.edu/missions/mars2020/places.htm ;
+  https://pds.nasa.gov/data/pds4/releases/img/msl_places-20260317/
+- MSL RAD RDR: https://pds-ppi.igpp.ucla.edu/data/MSL-M-RAD-3-RDR-V1.0/
+- RAD literature: https://arxiv.org/abs/1712.06987 ; https://arxiv.org/abs/1507.03473 ;
+  https://angeo.copernicus.org/articles/34/133/2016/angeo-34-133-2016.pdf
+- REMS outreach feed: https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json
+- MOLA MEGDR: https://pds-geosciences.wustl.edu/mgs/mgs-m-mola-5-megdr-l3-v1/mgsl_300x/meg128/
+- EVA metabolics (to verify values): https://ntrs.nasa.gov/citations/20080013604 ;
+  https://bhp.engr.tamu.edu/wp-content/uploads/sites/212/2022/02/Kluis-et-al.-2022-A-METHODOLOGY-FOR-ANALYZING-AND-IMPROVING-EVA-PERFORMANCE.pdf
+- Space Apps 2026 dates: https://astrobiology.com/2026/09/04/registration-is-now-open-for-the-2026-nasa-space-apps-challenge/ ;
+  guide: https://spaceappschallenge.org/resources/judging-awards-guide
