@@ -24,7 +24,7 @@ frontend/
     main.js                     landing entry
     tutorials.js                gallery entry
     styles/landing.css          all landing styles (tokens, layout, motion, reduced motion)
-    data/tutorials.json         the 12 tutorials: steps, focus regions, cursor taps, captions
+    data/tutorials.json         the 13 tutorials: steps, focus regions, cursor taps, captions
     data/glossary.json          landing glossary terms (hover, focus or tap)
     data/site.json              links, challenge title, team list
     data/headline.json          GENERATED: validation numbers from validation/reports/latest.json

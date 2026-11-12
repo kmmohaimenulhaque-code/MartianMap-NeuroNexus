@@ -23,9 +23,9 @@ const walk = (dir) =>
 const COPY_FILES = [join(FRONTEND, "index.html"), join(FRONTEND, "tutorials/index.html"), ...walk(join(FRONTEND, "landing"))];
 
 describe("tutorials.json", () => {
-  it("has twelve tutorials with unique ids", () => {
+  it("has thirteen tutorials with unique ids", () => {
     const ids = spec.tutorials.map((t) => t.id);
-    expect(ids.length).toBe(12);
+    expect(ids.length).toBe(13);
     expect(new Set(ids).size).toBe(ids.length);
   });
 

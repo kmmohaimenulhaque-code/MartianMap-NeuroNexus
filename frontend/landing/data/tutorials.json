@@ -65,57 +65,112 @@
     "tablet": {
       "src": "assets/screenshots/v3/tablet-cockpit-ipad-air.png",
       "w": 1100
+    },
+    "radiation": {
+      "src": "assets/screenshots/v3/landing-radiation-4h.png",
+      "w": 1600
+    },
+    "radiation8": {
+      "src": "assets/screenshots/v3/landing-radiation-8h.png",
+      "w": 1600
     }
   },
   "tutorials": [
     {
-      "id": "terrain-ladder",
-      "title": "Terrain Resolution Ladder",
+      "id": "route-design",
+      "title": "Route Design and Comparison",
       "tags": [
-        "HiRISE",
-        "CTX",
-        "MOLA"
+        "Optimizer",
+        "Compare",
+        "Export"
       ],
-      "summary": "The sharpest NASA terrain at every spot, and a switch that shows what the global map alone would miss.",
+      "summary": "A deterministic optimizer proposes routes. Save them, compare them along the whole path, fly them in 3D, export them.",
       "glossary": [
-        "ladder",
-        "hirise",
-        "mola"
+        "candidate",
+        "pareto"
       ],
       "steps": [
         {
-          "media": "marswalk",
+          "media": "designer",
           "focus": [
-            0.005,
-            0.34,
-            0.165,
-            0.13
-          ],
-          "caption": "The ladder picks the sharpest NASA terrain at each spot: HiRISE 1 m, CTX 20 m, then MOLA 463 m."
-        },
-        {
-          "media": "marswalk",
-          "focus": [
-            0.005,
-            0.455,
-            0.165,
-            0.045
+            0.085,
+            0.43,
+            0.17,
+            0.14
           ],
           "cursor": [
-            0.138,
-            0.476
+            0.2,
+            0.48
           ],
-          "caption": "Tap MOLA ONLY to see what the global map alone would show."
+          "caption": "Weight your goals: EVA time, terrain, science and operations."
         },
         {
-          "media": "marswalk",
+          "media": "designer",
           "focus": [
-            0.33,
-            0.13,
-            0.33,
-            0.58
+            0.27,
+            0.28,
+            0.65,
+            0.6
           ],
-          "caption": "At 1 m the short, steep pitches along the walk become visible. At 463 m they average away."
+          "cursor": [
+            0.445,
+            0.556
+          ],
+          "caption": "Six deterministic route candidates appear. Save any of them as a named, reproducible route."
+        },
+        {
+          "media": "designer",
+          "focus": [
+            0.27,
+            0.22,
+            0.22,
+            0.05
+          ],
+          "cursor": [
+            0.34,
+            0.248
+          ],
+          "caption": "Save every candidate as a named, reproducible route in one tap."
+        },
+        {
+          "media": "compare",
+          "focus": [
+            0.075,
+            0.15,
+            0.6,
+            0.47
+          ],
+          "caption": "Compare up to four routes with statistics sampled along the whole path."
+        },
+        {
+          "media": "compare",
+          "focus": [
+            0.075,
+            0.68,
+            0.85,
+            0.28
+          ],
+          "caption": "Each route also gets its own USGS geology snapshot."
+        },
+        {
+          "media": "projection",
+          "focus": [
+            0.0,
+            0.53,
+            0.77,
+            0.46
+          ],
+          "caption": "Project the saved routes onto the 3D globe and see them over real terrain."
+        },
+        {
+          "media": "snapshot",
+          "focus": [
+            0.13,
+            0.1,
+            0.74,
+            0.86
+          ],
+          "caption": "Export a USGS geologic map snapshot with the route record and its provenance."
         }
       ]
     },
@@ -250,113 +305,113 @@
       ]
     },
     {
-      "id": "validation",
-      "title": "Rover Ground-Truth Validation",
+      "id": "radiation",
+      "title": "Radiation Dose Screening",
       "tags": [
-        "Curiosity",
-        "Perseverance",
-        "Proof"
+        "RAD",
+        "Dose",
+        "EVA"
       ],
-      "summary": "The map is checked against the tilt that NASA's rovers actually recorded on Mars.",
+      "summary": "Curiosity's RAD archive sets the dose rate. The EVA dose band scales with time outside, with every assumption labeled.",
       "glossary": [
-        "ground-truth",
-        "p90-ratio",
-        "imu-tilt"
+        "eva",
+        "source-tag"
       ],
       "steps": [
         {
-          "media": "validation",
+          "media": "radiation",
           "focus": [
-            0.86,
-            0.06,
-            0.13,
-            0.24
+            0.818,
+            0.275,
+            0.18,
+            0.11
           ],
-          "caption": "With MOLA at 463 m, Curiosity's steepest tilts were {GALE_MOLA} times steeper than the map showed."
+          "caption": "Dose rate from Curiosity's RAD detector: 156 µGy per day in tissue, archived, with its lag shown."
         },
         {
-          "media": "validation",
+          "media": "radiation",
           "focus": [
-            0.08,
-            0.6,
-            0.34,
-            0.2
+            0.818,
+            0.375,
+            0.18,
+            0.1
           ],
-          "caption": "With HiRISE at 3 m the ratio is {GALE_HIRISE}. The map now matches the steep ground the rover felt."
+          "caption": "A 4-hour walk screens at 26 µGy: the daily rate times the hours outside."
         },
         {
-          "media": "validation",
+          "media": "radiation8",
           "focus": [
-            0.06,
-            0.06,
-            0.9,
-            0.82
+            0.005,
+            0.36,
+            0.17,
+            0.06
           ],
-          "caption": "Same code at Jezero, no retuning: {JEZERO_MOLA} with MOLA, {JEZERO_HIRISE} with HiRISE."
+          "cursor": [
+            0.046,
+            0.397
+          ],
+          "caption": "Switch the EVA to 8 hours."
+        },
+        {
+          "media": "radiation8",
+          "focus": [
+            0.818,
+            0.375,
+            0.18,
+            0.1
+          ],
+          "caption": "The band doubles to 52 µGy. A screening estimate, not a dose limit or a forecast."
         }
       ]
     },
     {
-      "id": "route-design",
-      "title": "Route Design and Comparison",
+      "id": "terrain-ladder",
+      "title": "Terrain Resolution Ladder",
       "tags": [
-        "Optimizer",
-        "Compare",
-        "Export"
+        "HiRISE",
+        "CTX",
+        "MOLA"
       ],
-      "summary": "A deterministic multi-objective optimizer proposes routes. Save them, compare them, verify them.",
+      "summary": "The sharpest NASA terrain at every spot, and a switch that shows what the global map alone would miss.",
       "glossary": [
-        "candidate",
-        "pareto"
+        "ladder",
+        "hirise",
+        "mola"
       ],
       "steps": [
         {
-          "media": "designer",
+          "media": "marswalk",
           "focus": [
-            0.085,
-            0.43,
-            0.17,
-            0.14
+            0.005,
+            0.34,
+            0.165,
+            0.13
+          ],
+          "caption": "The ladder picks the sharpest NASA terrain at each spot: HiRISE 1 m, CTX 20 m, then MOLA 463 m."
+        },
+        {
+          "media": "marswalk",
+          "focus": [
+            0.005,
+            0.455,
+            0.165,
+            0.045
           ],
           "cursor": [
-            0.2,
-            0.48
+            0.138,
+            0.476
           ],
-          "caption": "Weight your goals: EVA time, terrain, science and operations."
+          "caption": "Tap MOLA ONLY to see what the global map alone would show."
         },
         {
-          "media": "designer",
+          "media": "marswalk",
           "focus": [
-            0.27,
-            0.28,
-            0.65,
-            0.6
+            0.33,
+            0.13,
+            0.33,
+            0.58
           ],
-          "cursor": [
-            0.445,
-            0.556
-          ],
-          "caption": "Six deterministic route candidates appear. Save any of them as a named, reproducible route."
-        },
-        {
-          "media": "compare",
-          "focus": [
-            0.075,
-            0.15,
-            0.6,
-            0.47
-          ],
-          "caption": "Compare up to four routes with statistics sampled along the whole path."
-        },
-        {
-          "media": "compare",
-          "focus": [
-            0.075,
-            0.68,
-            0.85,
-            0.28
-          ],
-          "caption": "Each route also gets its own USGS geology snapshot."
+          "caption": "At 1 m the short, steep pitches along the walk become visible. At 463 m they average away."
         }
       ]
     },
@@ -514,6 +569,53 @@
             0.5
           ],
           "caption": "The same active sol drives the modeled dust panel beside it."
+        }
+      ]
+    },
+    {
+      "id": "validation",
+      "title": "Rover Ground-Truth Validation",
+      "tags": [
+        "Curiosity",
+        "Perseverance",
+        "Proof"
+      ],
+      "summary": "The map is checked against the tilt that NASA's rovers actually recorded on Mars.",
+      "glossary": [
+        "ground-truth",
+        "p90-ratio",
+        "imu-tilt"
+      ],
+      "steps": [
+        {
+          "media": "validation",
+          "focus": [
+            0.86,
+            0.06,
+            0.13,
+            0.24
+          ],
+          "caption": "With MOLA at 463 m, Curiosity's steepest tilts were {GALE_MOLA} times steeper than the map showed."
+        },
+        {
+          "media": "validation",
+          "focus": [
+            0.08,
+            0.6,
+            0.34,
+            0.2
+          ],
+          "caption": "With HiRISE at 3 m the ratio is {GALE_HIRISE}. The map now matches the steep ground the rover felt."
+        },
+        {
+          "media": "validation",
+          "focus": [
+            0.06,
+            0.06,
+            0.9,
+            0.82
+          ],
+          "caption": "Same code at Jezero, no retuning: {JEZERO_MOLA} with MOLA, {JEZERO_HIRISE} with HiRISE."
         }
       ]
     },
