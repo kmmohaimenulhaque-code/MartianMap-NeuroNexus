@@ -49,7 +49,7 @@ def test_tool_results_are_size_bounded():
 
 def test_model_is_configurable_with_a_gemini_default(monkeypatch):
     monkeypatch.delenv(ENV_MODEL, raising=False)
-    assert model_name() == DEFAULT_MODEL == "gemini-3.5-flash"
+    assert model_name() == DEFAULT_MODEL == "gemini-3.6-flash"
     monkeypatch.setenv(ENV_MODEL, "gemini-2.5-pro")
     assert model_name() == "gemini-2.5-pro"
 
@@ -131,6 +131,7 @@ def _resolve(monkeypatch, names, configured=None):
     else:
         monkeypatch.delenv(ENV_MODEL, raising=False)
     config._cache.update(at=0.0, models=None)
+    config._health.update(working=None, working_at=0.0, cooldown={})
     return config.resolve_model(_FakeClient(names))
 
 
@@ -154,3 +155,97 @@ def test_non_text_models_are_never_chosen(monkeypatch):
 def test_unknown_future_flash_model_is_picked_by_version(monkeypatch):
     info = _resolve(monkeypatch, ["gemini-4.2-flash", "gemini-4.0-pro"], configured="gemini-9-flash")
     assert info["model"] == "gemini-4.2-flash"
+
+
+
+def _reset_health():
+    import science.ai.config as config
+
+    config._health.update(working=None, working_at=0.0, cooldown={})
+    config._cache.update(at=0.0, models=None)
+
+
+class _Resp:
+    def __init__(self, text):
+        self.text = text
+
+        class _Part:
+            function_call = None
+
+        class _Content:
+            parts = [_Part()]
+
+        class _Candidate:
+            content = _Content()
+            grounding_metadata = None
+
+        self.candidates = [_Candidate()]
+
+
+class _ScriptedClient:
+    """Models API lists everything; generate_content fails per model as scripted."""
+
+    def __init__(self, listed, outcomes):
+        self.calls = []
+        outer = self
+
+        class _Models:
+            @staticmethod
+            def list():
+                return [_FakeModel(n) for n in listed]
+
+            @staticmethod
+            def generate_content(model, **_):
+                outer.calls.append(model)
+                outcome = outcomes.get(model, "ok")
+                if outcome != "ok":
+                    raise RuntimeError(outcome)
+                return _Resp('{"summary": "s", "selected_candidate": "a", "tradeoffs": [], "evidence": [], '
+                             '"uncertainties": [], "recommendation_basis": "b", "confidence": "low", "sources": []}')
+
+        self.models = _Models()
+
+
+def test_overloaded_and_retired_models_fail_over_to_a_working_one(monkeypatch):
+    _reset_health()
+    monkeypatch.setenv(ENV_KEY, "k-failover")
+    monkeypatch.delenv(ENV_MODEL, raising=False)
+    client = _ScriptedClient(
+        ["gemini-2.5-flash", "gemini-3.6-flash", "gemini-3-flash-preview", "gemini-3.1-flash-lite"],
+        {"gemini-3.6-flash": "503 UNAVAILABLE. This model is currently experiencing high demand.",
+         "gemini-3-flash-preview": "404 NOT_FOUND. This model is no longer available to new users."},
+    )
+    monkeypatch.setattr("science.ai.gemini._client", lambda: client)
+    reply = chat([{"role": "user", "content": "hello"}], STATE)
+    assert reply["status"] == "ok" and reply["model"] == "gemini-3.1-flash-lite"
+    assert client.calls[:3] == ["gemini-3.6-flash", "gemini-3-flash-preview", "gemini-3.1-flash-lite"]
+    assert "503 overloaded" in reply["model_notice"] and "404 retired" in reply["model_notice"]
+
+    # The working model is remembered: the next call goes straight to it.
+    client.calls.clear()
+    analysis = analyse_routes({"candidates": []})
+    assert analysis["status"] == "ok" and client.calls == ["gemini-3.1-flash-lite"]
+
+
+def test_rejected_key_does_not_fail_over(monkeypatch):
+    _reset_health()
+    monkeypatch.setenv(ENV_KEY, "k-bad")
+    monkeypatch.delenv(ENV_MODEL, raising=False)
+    client = _ScriptedClient(["gemini-3.6-flash", "gemini-3.1-flash-lite"],
+                             {"gemini-3.6-flash": "403 PERMISSION_DENIED. API key not valid."})
+    monkeypatch.setattr("science.ai.gemini._client", lambda: client)
+    reply = chat([{"role": "user", "content": "hello"}], STATE)
+    assert reply["status"] == "unavailable" and "key was rejected" in reply["reason"]
+    assert client.calls == ["gemini-3.6-flash"]
+
+
+def test_every_model_failing_reports_what_was_tried(monkeypatch):
+    _reset_health()
+    monkeypatch.setenv(ENV_KEY, "k-down")
+    monkeypatch.delenv(ENV_MODEL, raising=False)
+    names = ["gemini-3.6-flash", "gemini-3-flash-preview"]
+    client = _ScriptedClient(names, {n: "503 UNAVAILABLE high demand" for n in names})
+    monkeypatch.setattr("science.ai.gemini._client", lambda: client)
+    reply = chat([{"role": "user", "content": "hello"}], STATE)
+    assert reply["status"] == "unavailable"
+    assert "gemini-3.6-flash (503 overloaded)" in reply["reason"] and "gemini-3-flash-preview (503 overloaded)" in reply["reason"]
