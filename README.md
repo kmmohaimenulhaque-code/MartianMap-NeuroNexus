@@ -1,6 +1,6 @@
 ## Team NeuroNexus - Interplanetary Survival Guide: Martian Map
 
-# NASA Space Apps Challenge 2026 · branch ```Master-Ai```
+NASA Space Apps Challenge 2026 · branch ```Master-Ai```
 
 ## 🎬 Demo Video
 
