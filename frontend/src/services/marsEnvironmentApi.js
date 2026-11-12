@@ -1,28 +1,35 @@
 const API_BASE = '/api'
 
+
 async function fetchJson(
   url,
   options = {},
 ) {
-  const response = await fetch(
-    url,
-    options,
-  )
+  const response =
+    await fetch(
+      url,
+      options,
+    )
 
   if (!response.ok) {
-    let message = `Request failed: ${response.status}`
+    let message =
+      `Request failed: ${response.status}`
 
     try {
-      const body = await response.json()
+      const body =
+        await response.json()
 
       if (body?.detail) {
-        message = body.detail
+        message =
+          body.detail
       }
     } catch {
       // Keep the HTTP status message.
     }
 
-    throw new Error(message)
+    throw new Error(
+      message,
+    )
   }
 
   return response.json()
@@ -47,7 +54,9 @@ export async function fetchPlaceSuggestions(
   const params =
     new URLSearchParams({
       q: query,
-      limit: String(limit),
+      limit: String(
+        limit,
+      ),
     })
 
   return fetchJson(
@@ -63,7 +72,9 @@ export async function fetchEnvironmentByPlace(
   const params =
     new URLSearchParams({
       name,
-      sol: String(sol),
+      sol: String(
+        sol,
+      ),
     })
 
   return fetchJson(
@@ -72,55 +83,66 @@ export async function fetchEnvironmentByPlace(
 }
 
 
-export async function fetchTerrainWindow(
-  latitude,
-  longitude,
-  widthKm = 40,
-  heightKm = 40,
-) {
-  const params =
-    new URLSearchParams({
-      latitude: String(latitude),
-      longitude: String(longitude),
-      width_km: String(widthKm),
-      height_km: String(heightKm),
-    })
-
+export async function fetchTerrainMetadata() {
   return fetchJson(
-    `/terrain/window?${params}`,
+    `${API_BASE}/terrain/metadata`,
   )
 }
 
 
-export async function fetchTerrainRoute(
-  start,
-  end,
-  corridorWidthKm = 20,
-  corridorHeightKm = 20,
+export async function fetchRoutePlan(
+  points,
+) {
+  return fetchJson(
+    `${API_BASE}/terrain/route-plan`,
+    {
+      method: 'POST',
+
+      headers: {
+        'Content-Type':
+          'application/json',
+      },
+
+      body: JSON.stringify({
+        points:
+          points.map(
+            (
+              point,
+            ) => ({
+              latitude_deg:
+                Number(
+                  point.latitude_deg,
+                ),
+
+              longitude_deg:
+                Number(
+                  point.longitude_deg,
+                ) % 360,
+
+              label:
+                point.label ??
+                'WAYPOINT',
+            }),
+          ),
+      }),
+    },
+  )
+}
+
+
+export async function fetchRoverPhotos(
+  name,
+  limit = 8,
 ) {
   const params =
     new URLSearchParams({
-      start_latitude: String(
-        start.latitude_deg,
-      ),
-      start_longitude: String(
-        start.longitude_deg,
-      ),
-      end_latitude: String(
-        end.latitude_deg,
-      ),
-      end_longitude: String(
-        end.longitude_deg,
-      ),
-      corridor_width_km: String(
-        corridorWidthKm,
-      ),
-      corridor_height_km: String(
-        corridorHeightKm,
+      name,
+      limit: String(
+        limit,
       ),
     })
 
   return fetchJson(
-    `/terrain/route?${params}`,
+    `${API_BASE}/media/rover-photos?${params}`,
   )
 }

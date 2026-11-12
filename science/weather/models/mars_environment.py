@@ -2,13 +2,29 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from science.gazetteer.usgs import USGSMarsGazetteer
-from science.thermal.engine.thermal_engine import NeuroNexusThermalEngine
-from science.weather.models.mars_weather import MarsWeatherModel
-from science.weather.models.terrain_assessment import MarsTerrainAssessment
+from science.gazetteer.usgs import (
+    USGSMarsGazetteer,
+)
+
+from science.thermal.engine.thermal_engine import (
+    NeuroNexusThermalEngine,
+)
+
+from science.weather.models.mars_weather import (
+    MarsWeatherModel,
+)
+
+from science.weather.models.terrain_assessment import (
+    MarsTerrainAssessment,
+)
 
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = (
+    Path(__file__)
+    .resolve()
+    .parents[3]
+)
+
 
 THEMIS_DATASET = (
     ROOT
@@ -20,6 +36,7 @@ THEMIS_DATASET = (
     / "neuronexus_thermal_observations.parquet"
 )
 
+
 DUST_DATASET = (
     ROOT
     / "external"
@@ -27,6 +44,7 @@ DUST_DATASET = (
     / "data"
     / "DustScenario_MY34.nc"
 )
+
 
 GAZETTEER_DATASET = (
     ROOT
@@ -38,7 +56,9 @@ GAZETTEER_DATASET = (
 
 
 class MarsEnvironmentEngine:
-    """Unified Mars environmental context engine."""
+    """
+    Unified Mars environmental context engine.
+    """
 
     def __init__(
         self,
@@ -46,10 +66,27 @@ class MarsEnvironmentEngine:
         dust_path: str | Path = DUST_DATASET,
         gazetteer_path: str | Path = GAZETTEER_DATASET,
     ) -> None:
-        self.thermal = NeuroNexusThermalEngine(themis_path)
-        self.weather = MarsWeatherModel(dust_path)
-        self.terrain = MarsTerrainAssessment()
-        self.gazetteer = USGSMarsGazetteer(gazetteer_path)
+        self.thermal = (
+            NeuroNexusThermalEngine(
+                themis_path
+            )
+        )
+
+        self.weather = (
+            MarsWeatherModel(
+                dust_path
+            )
+        )
+
+        self.terrain = (
+            MarsTerrainAssessment()
+        )
+
+        self.gazetteer = (
+            USGSMarsGazetteer(
+                gazetteer_path
+            )
+        )
 
     def get_environment(
         self,
@@ -58,29 +95,39 @@ class MarsEnvironmentEngine:
         sol: int,
         solar_longitude: float | None = None,
     ) -> dict:
-        """Return a unified environmental context for a Mars coordinate."""
+        """
+        Return a unified Mars environmental context.
+        """
 
-        gazetteer_feature = self.gazetteer.nearest(
-            latitude=latitude,
-            longitude=longitude,
+        gazetteer_feature = (
+            self.gazetteer.nearest(
+                latitude=latitude,
+                longitude=longitude,
+            )
         )
 
-        thermal = self.thermal.nearest(
-            latitude_deg=latitude,
-            longitude_deg=longitude,
-            solar_longitude_deg=solar_longitude,
-            limit=1,
+        thermal = (
+            self.thermal.nearest(
+                latitude_deg=latitude,
+                longitude_deg=longitude,
+                solar_longitude_deg=solar_longitude,
+                limit=1,
+            )
         )
 
-        dust = self.weather.get_conditions(
-            sol_index=sol,
-            latitude=latitude,
-            longitude=longitude,
+        dust = (
+            self.weather.get_conditions(
+                sol_index=sol,
+                latitude=latitude,
+                longitude=longitude,
+            )
         )
 
-        terrain = self.terrain.assess(
-            latitude=latitude,
-            longitude=longitude,
+        terrain = (
+            self.terrain.assess(
+                latitude=latitude,
+                longitude=longitude,
+            )
         )
 
         return {
@@ -89,17 +136,28 @@ class MarsEnvironmentEngine:
                 "longitude_deg": longitude,
             },
             "gazetteer": {
-                "source": "USGS Gazetteer of Planetary Nomenclature",
-                "nearest_feature": gazetteer_feature,
+                "source": (
+                    "USGS Gazetteer of "
+                    "Planetary Nomenclature"
+                ),
+                "nearest_feature": (
+                    gazetteer_feature
+                ),
             },
             "thermal": {
-                "source": "NASA THEMIS IR-PBT",
-                "measurement": "brightness_temperature",
-                "observations": thermal,
+                "source":
+                    "NASA THEMIS IR-PBT",
+                "measurement":
+                    "brightness_temperature",
+                "observations":
+                    thermal,
             },
             "dust": {
                 **dust["dust"],
-                "source": "NASA Ames Mars GCM dust scenario MY34",
+                "source": (
+                    "NASA Ames Mars GCM "
+                    "dust scenario MY34"
+                ),
             },
             "solar": dust["solar"],
             "terrain": terrain,

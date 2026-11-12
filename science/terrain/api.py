@@ -1,15 +1,34 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException, Query
+from typing import Any
+
+from fastapi import (
+    APIRouter,
+    HTTPException,
+    Query,
+)
+
 from fastapi.responses import Response
 
-from science.terrain.derivatives import MOLA128Derivatives
+from pydantic import BaseModel, Field
+
+from science.terrain.derivatives import (
+    MOLA128Derivatives,
+)
+
+from science.terrain.local_waypoint_analysis import (
+    sample_waypoint,
+)
+
 from science.terrain.mola128_window import (
     MOLA128WindowExtractor,
 )
-from science.terrain.route_planner import (
-    MarsRoutePlanner,
+
+from science.terrain.route_geometry import (
+    RoutePoint,
+    build_route_plan,
 )
+
 from science.terrain.tile_renderer import (
     MOLA128TileRenderer,
 )
@@ -20,20 +39,43 @@ router = APIRouter(
     tags=["terrain"],
 )
 
+
 renderer = MOLA128TileRenderer()
-
 window_extractor = MOLA128WindowExtractor()
-
 derivative_engine = MOLA128Derivatives()
 
-route_planner = MarsRoutePlanner(
-    extractor=window_extractor,
-    derivatives=derivative_engine,
-)
+
+class RoutePointInput(BaseModel):
+    latitude_deg: float = Field(
+        ge=-88.0,
+        le=88.0,
+        description="Mars latitude in degrees.",
+    )
+
+    longitude_deg: float = Field(
+        ge=0.0,
+        lt=360.0,
+        description="Mars longitude in degrees [0, 360).",
+    )
+
+    label: str | None = Field(
+        default=None,
+        max_length=120,
+    )
+
+
+class RoutePlanRequest(BaseModel):
+    points: list[RoutePointInput] = Field(
+        min_length=2,
+        max_length=32,
+        description=(
+            "User-defined route waypoints in traversal order."
+        ),
+    )
 
 
 @router.get("/metadata")
-def terrain_metadata():
+def terrain_metadata() -> dict:
     return renderer.metadata()
 
 
@@ -82,24 +124,22 @@ def terrain_window(
         le=360,
     ),
     width_km: float = Query(
-        40.0,
+        4.0,
         gt=0,
-        le=500,
+        le=20,
     ),
     height_km: float = Query(
-        40.0,
+        4.0,
         gt=0,
-        le=500,
+        le=20,
     ),
-):
+) -> dict[str, Any]:
     """
-    Return a local high-resolution MOLA terrain window.
+    Return a small local high-resolution MOLA terrain window.
 
-    The elevation grid comes directly from the NASA MOLA
-    MEGDR 128 pixels/degree products.
-
-    Derivatives are calculated server-side so the frontend
-    never invents or approximates terrain science.
+    This endpoint is for local terrain inspection only.
+    It is deliberately bounded so it cannot become a route-sized
+    raster operation.
     """
 
     try:
@@ -123,38 +163,9 @@ def terrain_window(
             detail=str(exc),
         ) from exc
 
-    elevations = (
-        window.elevations_m
-        .astype(float)
-        .tolist()
-    )
-
-    slope = (
-        derivatives.slope_deg
-        .astype(float)
-        .tolist()
-    )
-
-    aspect = (
-        derivatives.aspect_deg
-        .astype(float)
-        .tolist()
-    )
-
-    roughness = (
-        derivatives.roughness_m
-        .astype(float)
-        .tolist()
-    )
-
     return {
-        "source": (
-            "NASA MOLA MEGDR "
-            "128 pixels/degree"
-        ),
-        "dataset": (
-            "MGS-M-MOLA-5-MEGDR-L3-V1.0"
-        ),
+        "source": "NASA MOLA MEGDR 128 pixels/degree",
+        "dataset": "MGS-M-MOLA-5-MEGDR-L3-V1.0",
         "center": {
             "latitude_deg": (
                 window.center_latitude_deg
@@ -171,7 +182,8 @@ def terrain_window(
             window.pixels_per_degree
         ),
         "sample_spacing_deg": (
-            1.0 / window.pixels_per_degree
+            1.0 /
+            window.pixels_per_degree
         ),
         "latitudes_deg": (
             window.latitudes_deg.tolist()
@@ -179,10 +191,26 @@ def terrain_window(
         "longitudes_deg": (
             window.longitudes_deg.tolist()
         ),
-        "elevations_m": elevations,
-        "slope_deg": slope,
-        "aspect_deg": aspect,
-        "roughness_m": roughness,
+        "elevations_m": (
+            window.elevations_m
+            .astype(float)
+            .tolist()
+        ),
+        "slope_deg": (
+            derivatives.slope_deg
+            .astype(float)
+            .tolist()
+        ),
+        "aspect_deg": (
+            derivatives.aspect_deg
+            .astype(float)
+            .tolist()
+        ),
+        "roughness_m": (
+            derivatives.roughness_m
+            .astype(float)
+            .tolist()
+        ),
         "summary": {
             "elevation_min_m": float(
                 window.elevations_m.min()
@@ -206,131 +234,191 @@ def terrain_window(
     }
 
 
-@router.get("/route")
-def terrain_route(
-    start_latitude: float = Query(
-        ...,
-        ge=-88,
-        le=88,
-    ),
-    start_longitude: float = Query(
-        ...,
-        ge=0,
-        le=360,
-    ),
-    end_latitude: float = Query(
-        ...,
-        ge=-88,
-        le=88,
-    ),
-    end_longitude: float = Query(
-        ...,
-        ge=0,
-        le=360,
-    ),
-    corridor_width_km: float = Query(
-        20.0,
-        gt=0,
-        le=500,
-    ),
-    corridor_height_km: float = Query(
-        20.0,
-        gt=0,
-        le=500,
-    ),
-):
-    """
-    Compute a terrain-aware A* route between two
-    Mars surface coordinates.
-
-    IMPORTANT:
-    The terrain cost is a NeuroNexus research heuristic.
-    It is not a NASA-certified mission safety score.
-    """
-
+def _analyze_waypoint(
+    point: RoutePoint,
+) -> dict[str, Any]:
     try:
-        route = route_planner.plan(
-            start_latitude=(
-                start_latitude
-            ),
-            start_longitude=(
-                start_longitude
-            ),
-            end_latitude=end_latitude,
-            end_longitude=end_longitude,
-            corridor_width_km=(
-                corridor_width_km
-            ),
-            corridor_height_km=(
-                corridor_height_km
-            ),
+        terrain = sample_waypoint(
+            latitude_deg=point.latitude_deg,
+            longitude_deg=point.longitude_deg,
         )
+
     except (
         ValueError,
         FileNotFoundError,
-        RuntimeError,
     ) as exc:
+        return {
+            "label": point.label,
+            "latitude_deg": point.latitude_deg,
+            "longitude_deg": point.longitude_deg,
+            "status": "unavailable",
+            "message": str(exc),
+        }
+
+    return {
+        "label": point.label,
+        "latitude_deg": point.latitude_deg,
+        "longitude_deg": point.longitude_deg,
+        "status": "available",
+        "source": "NASA MOLA MEGDR 128 pixels/degree",
+        "sample_grid": (
+            f"{terrain.sample_grid_size}x"
+            f"{terrain.sample_grid_size} pixels"
+        ),
+        "elevation_m": terrain.elevation_m,
+        "slope_deg": terrain.slope_deg,
+        "aspect_deg": terrain.aspect_deg,
+        "roughness_m": terrain.roughness_m,
+        "local_elevation_min_m": (
+            terrain.local_min_m
+        ),
+        "local_elevation_max_m": (
+            terrain.local_max_m
+        ),
+    }
+
+
+def _build_guidance(
+    analysis: list[dict[str, Any]],
+) -> dict[str, Any]:
+    notes: list[str] = []
+
+    available = [
+        item
+        for item in analysis
+        if item.get("status") == "available"
+    ]
+
+    unavailable = [
+        item
+        for item in analysis
+        if item.get("status") != "available"
+    ]
+
+    if any(
+        float(item["slope_deg"]) >= 25.0
+        for item in available
+    ):
+        notes.append(
+            "One or more selected waypoints have a local slope of "
+            "25° or greater. Manually review the planned path."
+        )
+    elif any(
+        float(item["slope_deg"]) >= 15.0
+        for item in available
+    ):
+        notes.append(
+            "One or more selected waypoints have a local slope of "
+            "15° or greater. Manually review the planned path."
+        )
+
+    if any(
+        float(item["roughness_m"]) >= 100.0
+        for item in available
+    ):
+        notes.append(
+            "At least one waypoint has relatively high local MOLA "
+            "roughness. Consider rover mobility constraints."
+        )
+
+    if unavailable:
+        notes.append(
+            f"Local MOLA analysis was unavailable at "
+            f"{len(unavailable)} waypoint(s). Those locations "
+            "must not be treated as analyzed."
+        )
+
+    if not notes:
+        notes.append(
+            "No threshold-based terrain warning was triggered "
+            "at the selected waypoint samples."
+        )
+
+    return {
+        "engine": (
+            "NeuroNexus waypoint terrain guidance v0.1"
+        ),
+        "ai_context_ready": True,
+        "ai_model_connected": False,
+        "notes": notes,
+        "disclaimer": (
+            "Guidance is a NeuroNexus research aid, not a "
+            "NASA-certified mission safety assessment."
+        ),
+    }
+
+
+@router.post("/route-plan")
+def route_plan(
+    request: RoutePlanRequest,
+) -> dict[str, Any]:
+    """
+    Build a user-defined multi-point Mars route.
+
+    Distance is pure Haversine geometry over the selected
+    waypoints. No corridor, A*, or route-wide MOLA search occurs.
+    """
+
+    points = [
+        RoutePoint(
+            latitude_deg=float(
+                item.latitude_deg
+            ),
+            longitude_deg=float(
+                item.longitude_deg
+            ),
+            label=(
+                item.label
+                or f"WP {index}"
+            ).strip()[:120],
+        )
+        for index, item in enumerate(
+            request.points,
+            start=1,
+        )
+    ]
+
+    try:
+        geometry = build_route_plan(
+            points
+        )
+    except ValueError as exc:
         raise HTTPException(
             status_code=400,
             detail=str(exc),
         ) from exc
 
+    waypoint_analysis = [
+        _analyze_waypoint(point)
+        for point in points
+    ]
+
     return {
         "source": (
-            "NeuroNexus terrain-aware "
-            "A* planner using NASA MOLA"
+            "NeuroNexus user-defined route geometry"
         ),
         "model": {
-            "type": "A*",
-            "terrain_cost": (
-                "research heuristic"
+            "distance": (
+                "Haversine great-circle surface distance "
+                "on spherical Mars"
             ),
-            "certification": (
-                "not mission-certified"
+            "routing": "user_defined_waypoints",
+            "terrain_search": "none",
+            "waypoint_terrain": (
+                "small local 3x3 MOLA sample per waypoint"
             ),
+            "certification": "not mission-certified",
         },
-        "start": {
-            "latitude_deg": (
-                start_latitude
+        "displacement": {
+            "distance_km": (
+                geometry["displacement_km"]
             ),
-            "longitude_deg": (
-                start_longitude % 360.0
-            ),
+            "start": geometry["waypoints"][0],
+            "end": geometry["waypoints"][-1],
         },
-        "end": {
-            "latitude_deg": (
-                end_latitude
-            ),
-            "longitude_deg": (
-                end_longitude % 360.0
-            ),
-        },
-        "route": {
-            "coordinates": [
-                [
-                    float(latitude),
-                    float(longitude),
-                ]
-                for latitude, longitude
-                in route.coordinates
-            ],
-            "point_count": len(
-                route.coordinates
-            ),
-            "distance_km": float(
-                route.distance_km
-            ),
-            "terrain_cost": float(
-                route.terrain_cost
-            ),
-            "max_slope_deg": float(
-                route.max_slope_deg
-            ),
-            "mean_slope_deg": float(
-                route.mean_slope_deg
-            ),
-            "mean_roughness_m": float(
-                route.mean_roughness_m
-            ),
-        },
+        "planned_route": geometry,
+        "waypoint_analysis": waypoint_analysis,
+        "guidance": _build_guidance(
+            waypoint_analysis
+        ),
     }

@@ -1,16 +1,17 @@
-import {
-  useEffect,
-  useState,
-} from 'react'
+
+import { useEffect, useState } from 'react'
 
 import MarsMap from './components/mars/MarsMap'
-import MarsTacticalMap from './components/mars/MarsTacticalMap'
+import MarsTopographicMap from './components/mars/MarsTopographicMap'
+import MarsBriefingPanel from './components/mars/MarsBriefingPanel'
+import RoverPhotosPanel from './components/mars/RoverPhotosPanel'
+import SiteSciencePanel from './components/mars/SiteSciencePanel'
 
 import {
   fetchEnvironmentByPlace,
   fetchPlaceSuggestions,
   fetchPlaces,
-  fetchTerrainRoute,
+  fetchRoutePlan,
 } from './services/marsEnvironmentApi'
 
 import './App.css'
@@ -18,33 +19,18 @@ import './App.css'
 
 const DEFAULT_PLACE = 'Gale'
 const DEFAULT_SOL = 100
-const TACTICAL_WINDOW_KM = 40
+const MAX_ROUTE_POINTS = 32
 
 
-function Panel({
-  eyebrow,
-  title,
-  children,
-  className = '',
-}) {
+function Panel({ eyebrow, title, children, className = '' }) {
   return (
-    <section
-      className={`panel ${className}`}
-    >
+    <section className={`panel ${className}`}>
       <div className="panel-heading">
         <div>
-          {eyebrow && (
-            <div className="eyebrow">
-              {eyebrow}
-            </div>
-          )}
-
+          {eyebrow && <div className="eyebrow">{eyebrow}</div>}
           <h2>{title}</h2>
         </div>
-
-        <span className="panel-mark">
-          +
-        </span>
+        <span className="panel-mark">+</span>
       </div>
 
       <div className="panel-body">
@@ -55,11 +41,7 @@ function Panel({
 }
 
 
-function Metric({
-  label,
-  value,
-  detail,
-}) {
+function Metric({ label, value, detail }) {
   return (
     <div className="metric">
       <span>{label}</span>
@@ -145,12 +127,11 @@ function SearchBar({
                 </span>
 
                 <span className="suggestion-meta">
-                  {Number(
-                    suggestion.diameter_km ??
-                      0,
-                  ).toFixed(2)}
-                  {' '}
-                  km
+                  {suggestion.diameter_km == null
+                    ? '—'
+                    : `${Number(
+                        suggestion.diameter_km,
+                      ).toFixed(2)} km`}
                 </span>
               </button>
             ),
@@ -202,8 +183,8 @@ function MissionSystemsPanel() {
         <span>DATA CLASS</span>
 
         <strong>
-          Simulation layer reserved
-          for mission-state models.
+          Simulation layer reserved for
+          mission-state models.
         </strong>
       </div>
     </Panel>
@@ -211,165 +192,150 @@ function MissionSystemsPanel() {
 }
 
 
-function RoutePlannerPanel({
-  routeMode,
-  routeStart,
-  routeEnd,
-  route,
+function RouteSummary({
+  routePlan,
+  routePoints,
   loading,
-  selectedPlace,
-  onToggleMode,
-  onSetStart,
-  onSetEnd,
   onClear,
 }) {
-  const startLabel =
-    routeStart?.label ??
-    'UNSET'
+  if (!routePoints.length) {
+    return (
+      <div className="route-empty">
+        <span>ROUTE STATE</span>
 
-  const endLabel =
-    routeEnd?.label ??
-    'UNSET'
+        <strong>
+          Enter PLAN ROUTE mode on the
+          topographic map and click at least
+          two points.
+        </strong>
+      </div>
+    )
+  }
+
+  const displacement =
+    routePlan?.displacement
+      ?.distance_km
+
+  const planned =
+    routePlan?.planned_route
+      ?.planned_route_km
+
+  const extension =
+    routePlan?.planned_route
+      ?.extension_km
+
+  const extensionPercent =
+    routePlan?.planned_route
+      ?.extension_percent
 
   return (
-    <Panel
-      eyebrow="NAVIGATION / MARS DIRECTIONS"
-      title="A → B terrain route"
-      className="route-panel"
-    >
-      <div className="route-controls">
-        <button
-          type="button"
-          className={
-            routeMode
-              ? 'route-button active'
-              : 'route-button'
+    <div className="route-summary-body">
+      <div className="route-kpis">
+        <Metric
+          label="Straight-line displacement"
+          value={
+            displacement == null
+              ? 'PENDING'
+              : `${Number(
+                  displacement,
+                ).toFixed(2)} km`
           }
-          onClick={
-            onToggleMode
+          detail="Haversine · first point → last point"
+        />
+
+        <Metric
+          label="Planned route"
+          value={
+            planned == null
+              ? 'PENDING'
+              : `${Number(
+                  planned,
+                ).toFixed(2)} km`
           }
-        >
-          {routeMode
-            ? 'EXIT MAP ROUTE MODE'
-            : 'SELECT A → B ON MAP'}
-        </button>
+          detail="Haversine sum of user waypoints"
+        />
 
-        <button
-          type="button"
-          className="route-button"
-          disabled={!selectedPlace}
-          onClick={onSetStart}
-        >
-          USE SELECTED AS A
-        </button>
-
-        <button
-          type="button"
-          className="route-button"
-          disabled={!selectedPlace}
-          onClick={onSetEnd}
-        >
-          USE SELECTED AS B
-        </button>
-
-        <button
-          type="button"
-          className="route-button danger"
-          onClick={onClear}
-        >
-          CLEAR ROUTE
-        </button>
+        <Metric
+          label="Route extension"
+          value={
+            extension == null
+              ? 'PENDING'
+              : `${Number(
+                  extension,
+                ).toFixed(2)} km`
+          }
+          detail={
+            extensionPercent == null
+              ? '—'
+              : `${Number(
+                  extensionPercent,
+                ).toFixed(1)}% longer than displacement`
+          }
+        />
       </div>
 
-      <div className="route-points">
-        <div className="route-point">
-          <span className="route-point-marker start" />
-          <div>
-            <span>START / A</span>
-            <strong>
-              {startLabel}
-            </strong>
+      <div className="route-meta-grid">
+        <Metric
+          label="Waypoints"
+          value={routePoints.length}
+        />
+
+        <Metric
+          label="Legs"
+          value={
+            routePlan?.planned_route
+              ?.leg_count ?? '—'
+          }
+        />
+
+        <Metric
+          label="Terrain search"
+          value="NONE"
+          detail="No corridor / no A*"
+        />
+
+        <Metric
+          label="MOLA guidance"
+          value={
+            loading
+              ? 'ANALYZING'
+              : routePlan
+                ? 'LOCAL SAMPLES'
+                : 'PENDING'
+          }
+          detail="Only selected waypoint neighborhoods"
+        />
+      </div>
+
+      {routePlan?.guidance?.notes?.map(
+        (note) => (
+          <div
+            className="route-guidance"
+            key={note}
+          >
+            {note}
           </div>
-        </div>
+        ),
+      )}
 
-        <div className="route-point">
-          <span className="route-point-marker end" />
-          <div>
-            <span>DESTINATION / B</span>
-            <strong>
-              {endLabel}
-            </strong>
-          </div>
-        </div>
-      </div>
-
-      <div className="route-instruction">
-        {routeMode
-          ? 'CLICK THE MAP: FIRST CLICK = A, SECOND CLICK = B.'
-          : 'ENABLE MAP ROUTE MODE OR USE THE SELECTED USGS SITE.'}
-      </div>
-
-      {loading && (
-        <div className="route-status">
-          COMPUTING TERRAIN ROUTE...
+      {routePlan?.guidance
+        ?.disclaimer && (
+        <div className="route-disclaimer">
+          {
+            routePlan.guidance
+              .disclaimer
+          }
         </div>
       )}
 
-      {route?.route && (
-        <>
-          <div className="route-result-grid">
-            <Metric
-              label="Route distance"
-              value={`${Number(
-                route.route.distance_km,
-              ).toFixed(2)} km`}
-            />
-
-            <Metric
-              label="Terrain cost"
-              value={Number(
-                route.route.terrain_cost,
-              ).toFixed(2)}
-              detail="NeuroNexus research heuristic"
-            />
-
-            <Metric
-              label="Max slope"
-              value={`${Number(
-                route.route.max_slope_deg,
-              ).toFixed(2)}°`}
-            />
-
-            <Metric
-              label="Mean slope"
-              value={`${Number(
-                route.route.mean_slope_deg,
-              ).toFixed(2)}°`}
-            />
-
-            <Metric
-              label="Mean roughness"
-              value={`${Number(
-                route.route.mean_roughness_m,
-              ).toFixed(2)} m`}
-            />
-
-            <Metric
-              label="Path points"
-              value={route.route.point_count}
-            />
-          </div>
-
-          <div className="route-disclaimer">
-            Terrain cost is a NeuroNexus research
-            heuristic based on MOLA-derived slope,
-            roughness, and local elevation change;
-            it is not a NASA-certified mission safety
-            assessment.
-          </div>
-        </>
-      )}
-    </Panel>
+      <button
+        type="button"
+        className="clear-route-button"
+        onClick={onClear}
+      >
+        CLEAR ROUTE
+      </button>
+    </div>
   )
 }
 
@@ -401,26 +367,18 @@ export default function App() {
   const [error, setError] =
     useState('')
 
-
   const [routeMode, setRouteMode] =
     useState(false)
 
-  const [routeStart, setRouteStart] =
-    useState(null)
+  const [routePoints, setRoutePoints] =
+    useState([])
 
-  const [routeEnd, setRouteEnd] =
-    useState(null)
-
-  const [route, setRoute] =
+  const [routePlan, setRoutePlan] =
     useState(null)
 
   const [routeLoading, setRouteLoading] =
     useState(false)
-  const [showTacticalMap, setShowTacticalMap] =
-  useState(false)
 
-const [showRoutePlanner, setShowRoutePlanner] =
-  useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -468,13 +426,11 @@ const [showRoutePlanner, setShowRoutePlanner] =
             DEFAULT_PLACE,
         )
       } catch (err) {
-        if (cancelled) {
-          return
+        if (!cancelled) {
+          setError(
+            err.message,
+          )
         }
-
-        setError(
-          err.message,
-        )
       } finally {
         if (!cancelled) {
           setLoading(false)
@@ -494,10 +450,10 @@ const [showRoutePlanner, setShowRoutePlanner] =
     const value =
       query.trim()
 
-    if (value.length === 0) {
+    if (!value.length) {
       setSuggestions([])
       setSearching(false)
-      return
+      return undefined
     }
 
     if (
@@ -572,7 +528,11 @@ const [showRoutePlanner, setShowRoutePlanner] =
       )
 
       setSuggestions([])
-      setSelectedFeature(feature)
+
+      setSelectedFeature(
+        feature,
+      )
+
       setLoading(true)
       setError('')
 
@@ -603,6 +563,7 @@ const [showRoutePlanner, setShowRoutePlanner] =
 
   function normalizeRoutePoint(
     point,
+    fallbackLabel = null,
   ) {
     return {
       latitude_deg:
@@ -611,22 +572,76 @@ const [showRoutePlanner, setShowRoutePlanner] =
         ),
 
       longitude_deg:
-        Number(
-          point.longitude_deg,
+        (
+          Number(
+            point.longitude_deg,
+          ) % 360 +
+          360
         ) % 360,
 
       label:
-        point.label ??
-        'COORDINATE',
+        point.label ||
+        fallbackLabel ||
+        null,
     }
   }
 
 
-  async function planRoute(
-    start,
-    end,
+  function handleRoutePointAdd(
+    point,
   ) {
-    if (!start || !end) {
+    setError('')
+    setRoutePlan(null)
+
+    setRoutePoints(
+      (current) => {
+        if (
+          current.length >=
+          MAX_ROUTE_POINTS
+        ) {
+          return current
+        }
+
+        const label =
+          point.label ||
+          `WP ${current.length + 1}`
+
+        return [
+          ...current,
+          normalizeRoutePoint(
+            point,
+            label,
+          ),
+        ]
+      },
+    )
+  }
+
+
+  function handleAddSelected() {
+    if (
+      !place ||
+      routePoints.length >=
+        MAX_ROUTE_POINTS
+    ) {
+      return
+    }
+
+    handleRoutePointAdd({
+      latitude_deg:
+        place.latitude_deg,
+      longitude_deg:
+        place.longitude_deg,
+      label:
+        place.feature_name,
+    })
+  }
+
+
+  async function handleAnalyzeRoute() {
+    if (
+      routePoints.length < 2
+    ) {
       return
     }
 
@@ -635,16 +650,16 @@ const [showRoutePlanner, setShowRoutePlanner] =
       setError('')
 
       const response =
-        await fetchTerrainRoute(
-          start,
-          end,
-          80,
-          80,
+        await fetchRoutePlan(
+          routePoints,
         )
 
-      setRoute(response)
+      setRoutePlan(
+        response,
+      )
     } catch (err) {
-      setRoute(null)
+      setRoutePlan(null)
+
       setError(
         err.message,
       )
@@ -654,90 +669,16 @@ const [showRoutePlanner, setShowRoutePlanner] =
   }
 
 
-  function handleMapLocationSelect(
-    point,
-  ) {
-    const normalized =
-      normalizeRoutePoint(
-        point,
-      )
-
-    if (!routeStart) {
-      setRouteStart(
-        normalized,
-      )
-      setRouteEnd(null)
-      setRoute(null)
-      return
-    }
-
-    if (!routeEnd) {
-      setRouteEnd(
-        normalized,
-      )
-      void planRoute(
-        routeStart,
-        normalized,
-      )
-      return
-    }
-
-    setRouteStart(
-      normalized,
+  function toggleRouteMode() {
+    setRouteMode(
+      (active) => !active,
     )
-
-    setRouteEnd(null)
-    setRoute(null)
-  }
-
-
-  function useSelectedAsStart() {
-    if (!place) return
-
-    const start =
-      normalizeRoutePoint({
-        latitude_deg:
-          place.latitude_deg,
-        longitude_deg:
-          place.longitude_deg,
-        label:
-          place.feature_name,
-      })
-
-    setRouteStart(start)
-    setRouteEnd(null)
-    setRoute(null)
-  }
-
-
-  function useSelectedAsEnd() {
-    if (!place) return
-
-    const end =
-      normalizeRoutePoint({
-        latitude_deg:
-          place.latitude_deg,
-        longitude_deg:
-          place.longitude_deg,
-        label:
-          place.feature_name,
-      })
-
-    setRouteEnd(end)
-
-    if (routeStart) {
-      void planRoute(
-        routeStart,
-        end,
-      )
-    }
   }
 
 
   function clearRoute() {
-    setRouteStart(null)
-    setRouteEnd(null)
-    setRoute(null)
+    setRoutePoints([])
+    setRoutePlan(null)
     setRouteMode(false)
   }
 
@@ -748,7 +689,6 @@ const [showRoutePlanner, setShowRoutePlanner] =
     environment?.gazetteer
       ?.nearest_feature ??
     selectedFeature
-
 
   const thermal =
     environment?.thermal
@@ -766,42 +706,8 @@ const [showRoutePlanner, setShowRoutePlanner] =
   const solar =
     environment?.solar
 
-
-  const nearbyFeatures =
-    places.filter(
-      (candidate) => {
-        if (!place) {
-          return false
-        }
-
-        const latDistance =
-          Math.abs(
-            Number(
-              candidate.latitude_deg,
-            ) -
-              Number(
-                place.latitude_deg,
-              ),
-          )
-
-        const lonDistance =
-          Math.abs(
-            Number(
-              candidate.longitude_deg,
-            ) -
-              Number(
-                place.longitude_deg,
-              ),
-          )
-
-        return (
-          latDistance <=
-            0.18 &&
-          lonDistance <=
-            0.18
-        )
-      },
-    )
+  const siteScience =
+    environment?.site_science
 
 
   return (
@@ -883,13 +789,19 @@ const [showRoutePlanner, setShowRoutePlanner] =
 
               <div>
                 <h3>
-                  {place?.feature_name ??
-                    'Loading'}
+                  {
+                    place
+                      ?.feature_name ??
+                    'Loading'
+                  }
                 </h3>
 
                 <p>
-                  {place?.feature_type ??
-                    'USGS feature'}
+                  {
+                    place
+                      ?.feature_type ??
+                    'USGS feature'
+                  }
                 </p>
               </div>
             </div>
@@ -925,12 +837,12 @@ const [showRoutePlanner, setShowRoutePlanner] =
             <Metric
               label="Diameter"
               value={
-                place?.diameter_km !=
+                place?.diameter_km ==
                 null
-                  ? `${Number(
+                  ? '—'
+                  : `${Number(
                       place.diameter_km,
                     ).toFixed(2)} km`
-                  : '—'
               }
               detail="USGS / IAU nomenclature"
             />
@@ -950,6 +862,16 @@ const [showRoutePlanner, setShowRoutePlanner] =
               detail={
                 place?.quadrangle_code
               }
+            />
+          </Panel>
+
+
+          <Panel
+            eyebrow="IMAGERY / ROVER"
+            title="Applicable rover photos"
+          >
+            <RoverPhotosPanel
+              feature={place}
             />
           </Panel>
 
@@ -982,26 +904,29 @@ const [showRoutePlanner, setShowRoutePlanner] =
               <Metric
                 label="Evidence"
                 value={
-                  thermalEvidence?.label
+                  thermalEvidence
+                    ?.label
                 }
               />
 
               <Metric
                 label="Score"
                 value={
-                  thermalEvidence?.score !=
-                  null
-                    ? Number(
+                  thermalEvidence
+                    ?.score ==
+                    null
+                    ? '—'
+                    : Number(
                         thermalEvidence.score,
                       ).toFixed(1)
-                    : '—'
                 }
               />
 
               <Metric
                 label="Observations"
                 value={
-                  thermalEvidence?.observation_count
+                  thermalEvidence
+                    ?.observation_count
                 }
               />
 
@@ -1019,8 +944,10 @@ const [showRoutePlanner, setShowRoutePlanner] =
               </span>
 
               <strong>
-                {thermal?.product_id ??
-                  'NASA THEMIS IR-PBT'}
+                {
+                  thermal?.product_id ??
+                  'NASA THEMIS IR-PBT'
+                }
               </strong>
             </div>
           </Panel>
@@ -1057,47 +984,119 @@ const [showRoutePlanner, setShowRoutePlanner] =
 
 
         <section className="site-field">
-          <div className="field-label">
-            GLOBAL MARTIAN SITE PLAN
+          <div className="field-header">
+            <div>
+              <span className="field-label-inline">
+                MARTIAN SITE / 2D NAVIGATION
+              </span>
+
+              <strong>
+                {
+                  place?.feature_name ??
+                  'MARS'
+                }
+              </strong>
+            </div>
+
+            <div className="map-status-inline">
+              <span>
+                {
+                  places.length.toLocaleString()
+                }{' '}
+                USGS FEATURES
+              </span>
+
+              <span>
+                MOLA 128 PX/DEG
+              </span>
+            </div>
           </div>
 
-          <div className="map-status">
-            <span>
-              {places.length.toLocaleString()}
-              {' '}
-              USGS FEATURES
-            </span>
 
-            <span>
-              MOLA 128 PX/DEG TERRAIN
-            </span>
+          <div className="maps-grid">
+            <div className="map-panel">
+              <div className="map-panel-title">
+                <span>
+                  COLORED GLOBAL MAP
+                </span>
+
+                <small>
+                  USGS FEATURE NAVIGATION
+                </small>
+              </div>
+
+              <div className="map-panel-body">
+                <MarsMap
+                  features={
+                    places
+                  }
+                  selectedFeature={
+                    selectedFeature
+                  }
+                  onSelect={
+                    handleSelectPlace
+                  }
+                />
+              </div>
+            </div>
+
+
+            <div className="map-panel">
+              <div className="map-panel-title topo-title">
+                <span>
+                  2D TOPOGRAPHIC MAP
+                </span>
+
+                <small>
+                  MOLA / HILLSHADE / ELEVATION
+                </small>
+              </div>
+
+              <div className="map-panel-body">
+                <MarsTopographicMap
+                  features={
+                    places
+                  }
+                  selectedFeature={
+                    selectedFeature
+                  }
+                  routeMode={
+                    routeMode
+                  }
+                  routePoints={
+                    routePoints
+                  }
+                  routePlan={
+                    routePlan
+                  }
+                  routeLoading={
+                    routeLoading
+                  }
+                  terrain={
+                    terrain
+                  }
+                  onSelect={
+                    handleSelectPlace
+                  }
+                  onRoutePointAdd={
+                    handleRoutePointAdd
+                  }
+                  onToggleRouteMode={
+                    toggleRouteMode
+                  }
+                  onAddSelected={
+                    handleAddSelected
+                  }
+                  onAnalyzeRoute={
+                    handleAnalyzeRoute
+                  }
+                  onClear={
+                    clearRoute
+                  }
+                />
+              </div>
+            </div>
           </div>
-
-
-          <MarsMap
-            features={places}
-            selectedFeature={
-              selectedFeature
-            }
-            onSelect={
-              handleSelectPlace
-            }
-            routeMode={
-              routeMode
-            }
-            routeStart={
-              routeStart
-            }
-            routeEnd={
-              routeEnd
-            }
-            route={
-              route
-            }
-            onMapLocationSelect={
-              handleMapLocationSelect
-            }
-          />
 
 
           <div className="map-legend">
@@ -1108,172 +1107,41 @@ const [showRoutePlanner, setShowRoutePlanner] =
 
             <div>
               <span className="legend-mark valley" />
-              Vallis
+              Vallis / Chasma
             </div>
 
             <div>
               <span className="legend-mark mountain" />
-              Mons
+              Mons / highland
             </div>
 
             <div>
               <span className="legend-mark feature" />
-              Other feature
+              Other USGS feature
             </div>
-          </div>            
-
-<div className="map-feature-dock">
-
-  <button
-    type="button"
-    className={
-      showTacticalMap
-        ? 'map-feature-button active'
-        : 'map-feature-button'
-    }
-    onClick={() =>
-      setShowTacticalMap(
-        (visible) => !visible,
-      )
-    }
-  >
-    <span className="dock-icon">
-      ◫
-    </span>
-
-    <span>
-      TACTICAL MAP
-    </span>
-
-    <small>
-      MOLA / SVG
-    </small>
-  </button>
-
-
-  <button
-    type="button"
-    className={
-      showRoutePlanner
-        ? 'map-feature-button active'
-        : 'map-feature-button'
-    }
-    onClick={() =>
-      setShowRoutePlanner(
-        (visible) => !visible,
-      )
-    }
-  >
-    <span className="dock-icon">
-      ⇄
-    </span>
-
-    <span>
-      PLAN ROUTE
-    </span>
-
-    <small>
-      A → B / TERRAIN
-    </small>
-  </button>
-
-</div>
-
-
-{showTacticalMap && (
-  <div className="feature-drawer">
-    <div className="feature-drawer-header">
-      <div>
-        <span className="eyebrow">
-          TERRAIN / VECTOR
-        </span>
-
-        <strong>
-          LOCAL MARS TACTICAL MAP
-        </strong>
-      </div>
-
-      <button
-        type="button"
-        onClick={() =>
-          setShowTacticalMap(false)
-        }
-      >
-        ×
-      </button>
-    </div>
-
-    <MarsTacticalMap
-      feature={place}
-      nearbyFeatures={
-        nearbyFeatures
-      }
-      route={route}
-      widthKm={40}
-      heightKm={40}
-    />
-  </div>
-)}
-
-
-{showRoutePlanner && (
-  <div className="feature-drawer route-drawer">
-    <div className="feature-drawer-header">
-      <div>
-        <span className="eyebrow">
-          NAVIGATION / TERRAIN
-        </span>
-
-        <strong>
-          MARS DIRECTIONS
-        </strong>
-      </div>
-
-      <button
-        type="button"
-        onClick={() =>
-          setShowRoutePlanner(false)
-        }
-      >
-        ×
-      </button>
-    </div>
-
-    <RoutePlannerPanel
-      routeMode={routeMode}
-      routeStart={routeStart}
-      routeEnd={routeEnd}
-      route={route}
-      loading={routeLoading}
-      selectedPlace={place}
-      onToggleMode={() =>
-        setRouteMode(
-          (active) => !active,
-        )
-      }
-      onSetStart={
-        useSelectedAsStart
-      }
-      onSetEnd={
-        useSelectedAsEnd
-      }
-      onClear={
-        clearRoute
-      }
-    />
-  </div>
-)}
-
-          <div className="site-caption">
-            <strong>
-              {place?.feature_name ??
-                'MARS'}
-            </strong>
-
-            <span>
-              COLORED NAVIGATION + VECTOR TACTICAL TERRAIN
-            </span>
           </div>
+
+
+          <Panel
+            eyebrow="NAVIGATION / GEOMETRY"
+            title="Route analysis"
+            className="route-analysis-panel"
+          >
+            <RouteSummary
+              routePlan={
+                routePlan
+              }
+              routePoints={
+                routePoints
+              }
+              loading={
+                routeLoading
+              }
+              onClear={
+                clearRoute
+              }
+            />
+          </Panel>
         </section>
 
 
@@ -1369,6 +1237,18 @@ const [showRoutePlanner, setShowRoutePlanner] =
 
 
           <Panel
+            eyebrow="SITE SCIENCE / SURVIVAL"
+            title="Material + habitability context"
+          >
+            <SiteSciencePanel
+              science={
+                siteScience
+              }
+            />
+          </Panel>
+
+
+          <Panel
             eyebrow="ASSESSMENT / EVIDENCE"
             title="Interpretation"
           >
@@ -1378,9 +1258,12 @@ const [showRoutePlanner, setShowRoutePlanner] =
               </span>
 
               <strong>
-                {environment?.assessment
-                  ?.assessment_status ??
-                  '—'}
+                {
+                  environment
+                    ?.assessment
+                    ?.assessment_status ??
+                  '—'
+                }
               </strong>
             </div>
 
@@ -1414,21 +1297,24 @@ const [showRoutePlanner, setShowRoutePlanner] =
               </strong>
             </div>
 
-            {environment?.assessment
-              ?.warnings?.length >
-              0 && (
+            {
+              environment
+                ?.assessment
+                ?.warnings
+                ?.length > 0 && (
               <div className="warning-box">
-                {environment.assessment.warnings.map(
-                  (warning) => (
-                    <p
-                      key={
-                        warning
-                      }
-                    >
-                      {warning}
-                    </p>
-                  ),
-                )}
+                {
+                  environment.assessment
+                    .warnings.map(
+                      (warning) => (
+                        <p
+                          key={warning}
+                        >
+                          {warning}
+                        </p>
+                      ),
+                    )
+                }
               </div>
             )}
           </Panel>
@@ -1438,54 +1324,10 @@ const [showRoutePlanner, setShowRoutePlanner] =
 
 
           <Panel
-            eyebrow="NAVIGATION / ROUTE"
-            title="Current route"
+            eyebrow="BRIEFING / LIVE WEB"
+            title="Mars reference feed"
           >
-            {route?.route ? (
-              <div className="metric-grid">
-                <Metric
-                  label="Distance"
-                  value={`${Number(
-                    route.route
-                      .distance_km,
-                  ).toFixed(2)} km`}
-                />
-
-                <Metric
-                  label="Max slope"
-                  value={`${Number(
-                    route.route
-                      .max_slope_deg,
-                  ).toFixed(2)}°`}
-                />
-
-                <Metric
-                  label="Roughness"
-                  value={`${Number(
-                    route.route
-                      .mean_roughness_m,
-                  ).toFixed(2)} m`}
-                />
-
-                <Metric
-                  label="Points"
-                  value={
-                    route.route
-                      .point_count
-                  }
-                />
-              </div>
-            ) : (
-              <div className="simulation-note">
-                <span>
-                  ROUTE STATE
-                </span>
-
-                <strong>
-                  No route currently planned.
-                </strong>
-              </div>
-            )}
+            <MarsBriefingPanel />
           </Panel>
         </aside>
       </div>
@@ -1493,49 +1335,42 @@ const [showRoutePlanner, setShowRoutePlanner] =
 
       <footer className="evidence-bar">
         <div>
-          <span>
-            USGS
-          </span>
-
+          <span>USGS</span>
           <strong>
             2,052 REGISTERED FEATURES
           </strong>
         </div>
 
         <div>
-          <span>
-            THEMIS
-          </span>
-
+          <span>THEMIS</span>
           <strong>
             HISTORICAL IR-PBT
           </strong>
         </div>
 
         <div>
-          <span>
-            GCM
-          </span>
-
+          <span>GCM</span>
           <strong>
             AMES MY34
           </strong>
         </div>
 
         <div>
-          <span>
-            MOLA
-          </span>
-
+          <span>MOLA</span>
           <strong>
             128 PX / DEG
           </strong>
         </div>
 
+        <div>
+          <span>MEDIA</span>
+          <strong>
+            NASA IMAGE LIBRARY
+          </strong>
+        </div>
+
         <div className="evidence-warning">
-          <span>
-            DATA MODEL
-          </span>
+          <span>DATA MODEL</span>
 
           <strong>
             Observed · Modeled · Derived · Simulated
