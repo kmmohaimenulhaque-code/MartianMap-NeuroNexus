@@ -2636,6 +2636,7 @@ export default function App() {
     "ai-route-design": { run: () => setDesignerOpen(true) },
     "compare-routes": { run: handleOpenComparison, available: () => (savedRoutes.length >= 2 ? true : "Save at least 2 routes") },
     "routes-3d": { run: () => open3dPanel("routes") },
+    "route-projection": { run: () => open3dPanel("projection"), available: () => (savedRoutes.length ? true : "Save a route first") },
     "route-snapshot": {
       run: handleOpenSnapshot,
       available: () => (comparedRoutes.length >= 2 || routePoints.length >= 2 || selectedCandidateId ? true : "Plan, apply or select routes for comparison first"),

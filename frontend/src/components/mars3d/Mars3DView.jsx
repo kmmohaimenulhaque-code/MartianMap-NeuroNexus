@@ -234,11 +234,21 @@ export default function Mars3DView({
   const [height, setHeight] = useState(() => Math.round(Math.min(560, window.innerHeight * 0.58)));
   const [sidePanel, setSidePanel] = useState(null); // "layers" | "legend" | "pez" | "routes" | null
   const [hiddenRoutes, setHiddenRoutes] = useState(() => new Set());
+  // ROUTE PROJECTION: the ticked routes are lifted above the terrain, drawn bold with
+  // name labels, and the camera reframes to all of them whenever the selection changes.
+  const [projection, setProjection] = useState(false);
+  const [projectedIds, setProjectedIds] = useState(() => new Set());
   // Another part of the console can ask for a side panel (e.g. "routes").
   const [seenPanelRequest, setSeenPanelRequest] = useState(null);
   if (requestedPanel && requestedPanel !== seenPanelRequest) {
     setSeenPanelRequest(requestedPanel);
-    setSidePanel(requestedPanel.name);
+    if (requestedPanel.name === "projection") {
+      setProjection(true);
+      setProjectedIds(new Set(compareRouteIds.length ? compareRouteIds : savedRoutes.map((r) => r.id)));
+      setSidePanel("routes");
+    } else {
+      setSidePanel(requestedPanel.name);
+    }
   }
   const [showScience, setShowScience] = useState(true);
   const [mapMode, setMapMode] = useState(false);
@@ -294,6 +304,8 @@ export default function Mars3DView({
           traverses: draped(),
           themis: draped(),
           savedRoutes: draped(),
+          // Lifted slightly above the surface so projected routes are never hidden by relief.
+          projection: new GraphicsLayer({ elevationInfo: { mode: "relative-to-ground", offset: 80 } }),
           route: draped(),
           candidates: draped(),
           selection: draped(),
@@ -325,8 +337,10 @@ export default function Mars3DView({
             L.zoneAreas,
             L.traverses,
             L.themis,
+            L.savedRoutes,
             L.route,
             L.candidates,
+            L.projection,
             L.selection,
             L.features,
             L.landing,
@@ -675,18 +689,81 @@ export default function Mars3DView({
   useEffect(() => {
     if (!ready) return;
     const comparing = compareRouteIds.length >= 2;
+    const bright = (r) => (projection ? false : !comparing || compareRouteIds.includes(r.id));
     rebuild(
       "savedRoutes",
       savedRoutes
-        .filter((r) => !hiddenRoutes.has(r.id) && r.points?.length > 1)
+        .filter((r) => !hiddenRoutes.has(r.id) && r.points?.length > 1 && !(projection && projectedIds.has(r.id)))
         .flatMap((r) =>
           glowLine(line(r.points), r.colour ?? "#75e6ff", comparing && compareRouteIds.includes(r.id) ? 4 : 3, {
             savedRouteId: r.id,
-            opacity: comparing && !compareRouteIds.includes(r.id) ? 0.25 : 1,
+            opacity: bright(r) ? 1 : projection ? 0.15 : 0.25,
           }),
         ),
     );
-  }, [ready, savedRoutes, compareRouteIds, hiddenRoutes]);
+  }, [ready, savedRoutes, compareRouteIds, hiddenRoutes, projection, projectedIds]);
+
+  const projectedRoutes = useMemo(
+    () => (projection ? savedRoutes.filter((r) => projectedIds.has(r.id) && r.points?.length > 1) : []),
+    [projection, savedRoutes, projectedIds],
+  );
+
+  useEffect(() => {
+    if (!ready) return;
+    rebuild(
+      "projection",
+      projectedRoutes.flatMap((r) => {
+        const rgb = hexToRgb(r.colour ?? "#75e6ff");
+        const first = r.points[0];
+        const last = r.points[r.points.length - 1];
+        // Label at the route's middle vertex so routes sharing a start keep separate labels.
+        const middle = r.points.length > 2 ? r.points[Math.floor(r.points.length / 2)] : {
+          latitude_deg: (Number(first.latitude_deg) + Number(last.latitude_deg)) / 2,
+          longitude_deg: (Number(first.longitude_deg) + Number(last.longitude_deg)) / 2,
+        };
+        const marker = (p, fill) => ({
+          geometry: pt(Number(p.latitude_deg), Number(p.longitude_deg)),
+          symbol: {
+            type: "point-3d",
+            symbolLayers: [{ type: "icon", resource: { primitive: "circle" }, size: 10, material: { color: fill }, outline: { color: [...rgb, 1], size: 2 } }],
+          },
+          attributes: { savedRouteId: r.id },
+        });
+        return [
+          ...glowLine(line(r.points), rgb, 6, { savedRouteId: r.id }),
+          marker(first, [98, 245, 154, 1]),
+          marker(last, [255, 100, 124, 1]),
+          {
+            geometry: pt(Number(middle.latitude_deg), Number(middle.longitude_deg)),
+            symbol: {
+              type: "point-3d",
+              verticalOffset: { screenLength: 46, maxWorldLength: 400000, minWorldLength: 0 },
+              callout: { type: "line", size: 1, color: [...rgb, 0.9] },
+              symbolLayers: [
+                {
+                  type: "text",
+                  text: r.name,
+                  size: 11,
+                  material: { color: [...rgb, 1] },
+                  halo: { color: [4, 8, 11, 0.92], size: 1.6 },
+                  font: { family: "monospace", weight: "bold" },
+                },
+              ],
+            },
+            attributes: { savedRouteId: r.id },
+          },
+        ];
+      }),
+    );
+  }, [ready, projectedRoutes]);
+
+  // Reframe the camera to every projected route as the selection changes.
+  const projectionKey = projectedRoutes.map((r) => `${r.id}:${r.geometryHash}`).join("|");
+  useEffect(() => {
+    if (!ready || !projectedRoutes.length) return;
+    flyToRoutes(projectedRoutes);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready, projectionKey]);
 
 
   useEffect(() => {
@@ -892,13 +969,39 @@ export default function Mars3DView({
   }
 
   function flyToRoute(route) {
-    const pts = route.points ?? [];
+    flyToRoutes([route]);
+  }
+
+  function toggleProjection() {
+    if (!projection) {
+      // Start from the comparison selection, or every saved route when nothing is selected.
+      setProjectedIds(new Set(compareRouteIds.length ? compareRouteIds : savedRoutes.map((r) => r.id)));
+      setSidePanel("routes");
+    }
+    setProjection(!projection);
+  }
+
+  function toggleProjected(id) {
+    setProjectedIds((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function flyToRoutes(routes) {
+    const pts = routes.flatMap((route) => route.points ?? []);
     if (!pts.length) return;
-    const lat = pts.reduce((sum, p) => sum + Number(p.latitude_deg), 0) / pts.length;
+    // Frame the bounding box of every route, not the vertex average.
+    const lats = pts.map((p) => Number(p.latitude_deg));
     const lons = pts.map((p) => lon180(p.longitude_deg));
-    const lon = lons.reduce((a, b) => a + b, 0) / lons.length;
+    const lat = (Math.min(...lats) + Math.max(...lats)) / 2;
+    const lon = (Math.min(...lons) + Math.max(...lons)) / 2;
     const span = Math.max(...pts.map((p) => haversineKm({ latitude_deg: lat, longitude_deg: lon }, p)));
-    flyTo(lat, lon, Math.max(120, span * 3));
+    // A flatter, wider view than a single-site fly-to so every route fits in frame.
+    const view = viewRef.current;
+    if (view) view.goTo(cameraFor(view, lat, lon, Math.max(160, span * 6.5), 20), { duration: 1400 }).catch(() => {});
   }
 
   function toggleRouteVisibility(id) {
@@ -1001,6 +1104,16 @@ export default function Mars3DView({
             title="Saved routes on the 3D globe"
           >
             ⌁ ROUTES ({savedRoutes.length})
+          </button>
+          <button
+            type="button"
+            className={`m3d-btn m3d-projection${projection ? " active" : ""}`}
+            aria-pressed={projection}
+            onClick={toggleProjection}
+            disabled={!savedRoutes.length}
+            title={savedRoutes.length ? "Project the selected saved routes on the globe" : "Save a route first"}
+          >
+            ◎ ROUTE PROJECTION{projection ? ` (${projectedRoutes.length})` : ""}
           </button>
           <button
             type="button"
@@ -1141,6 +1254,20 @@ export default function Mars3DView({
               <p className="m3d-routes-empty">No saved routes yet. Plan a route in the 2D map's route editor and press SAVE ROUTE.</p>
             ) : (
               <>
+                {projection && (
+                  <div className="m3d-projection-bar">
+                    <span>◎ ROUTE PROJECTION ON · tick routes to project them</span>
+                    <button type="button" onClick={() => setProjectedIds(new Set(savedRoutes.map((r) => r.id)))}>
+                      PROJECT ALL
+                    </button>
+                    <button type="button" onClick={() => setProjectedIds(new Set())}>
+                      CLEAR
+                    </button>
+                    <button type="button" onClick={() => flyToRoutes(projectedRoutes)} disabled={!projectedRoutes.length}>
+                      REFRAME
+                    </button>
+                  </div>
+                )}
                 <div className="m3d-routes-bulk">
                   <button type="button" onClick={() => setHiddenRoutes(new Set())}>
                     SHOW ALL
@@ -1158,6 +1285,16 @@ export default function Mars3DView({
                     return (
                       <li key={route.id} className={hidden ? "is-hidden" : ""}>
                         <div className="m3d-route-name">
+                          {projection && (
+                            <input
+                              type="checkbox"
+                              className="m3d-project-check"
+                              checked={projectedIds.has(route.id)}
+                              onChange={() => toggleProjected(route.id)}
+                              aria-label={`Project ${route.name}`}
+                              style={{ accentColor: route.colour }}
+                            />
+                          )}
                           <span className="m3d-route-swatch" style={{ background: route.colour }} />
                           <strong>{route.name}</strong>
                           {route.generation?.source === "ai-route-designer" && <em className="m3d-route-ai">AI</em>}

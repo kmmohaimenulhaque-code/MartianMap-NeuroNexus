@@ -1361,3 +1361,49 @@ kbd {
   color: var(--nn-text-dim);
   font-size: 9.5px;
 }
+
+/* ---------------------------------------------------- 3D route projection */
+
+.m3d-btn.m3d-projection.active {
+  border-color: var(--nn-cyan);
+  color: var(--nn-cyan);
+  box-shadow: var(--nn-glow);
+  text-shadow: 0 0 8px rgba(117, 230, 255, 0.6);
+}
+
+.m3d-projection-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 6px;
+  padding: 6px;
+  border: 1px solid var(--nn-cyan-dim);
+  background: rgba(117, 230, 255, 0.05);
+  box-shadow: var(--nn-glow-soft);
+}
+
+.m3d-projection-bar span {
+  flex-basis: 100%;
+  color: var(--nn-cyan);
+  font-family: var(--nn-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.08em;
+}
+
+.m3d-projection-bar button {
+  padding: 3px 6px;
+  border: 1px solid var(--nn-border);
+  background: var(--nn-surface);
+  color: var(--nn-text);
+  font-family: var(--nn-mono);
+  font-size: 8.5px;
+  cursor: pointer;
+}
+
+.m3d-project-check {
+  width: 13px;
+  height: 13px;
+  margin: 0;
+  cursor: pointer;
+}
