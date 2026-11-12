@@ -1,0 +1,47 @@
+cat > requirements.txt <<'EOF'
+# NeuroNexus Python dependencies
+
+# Scientific / data core
+numpy
+scipy
+pandas
+polars
+pyarrow
+xarray
+h5py
+numba
+
+# NASA / PDS / HTTP
+pds4-tools
+requests
+httpx
+python-dotenv
+
+# Geospatial / projections
+rasterio
+geopandas
+shapely
+pyproj
+
+# Raster / RGB texture generation
+Pillow
+imageio
+tifffile
+
+# 3D terrain / mesh processing
+vtk
+pyvista
+trimesh
+
+# Backend
+fastapi
+uvicorn[standard]
+pydantic
+
+# Gemini
+google-genai
+
+# PyTorch is intentionally NOT pinned here.
+# NeuroNexus targets AMD Instinct MI300X + ROCm.
+# Install/use the PyTorch build matching the ROCm environment.
+EOF
