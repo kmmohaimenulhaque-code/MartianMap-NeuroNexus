@@ -227,16 +227,29 @@ def test_overloaded_and_retired_models_fail_over_to_a_working_one(monkeypatch):
     assert analysis["status"] == "ok" and client.calls == ["gemini-3.1-flash-lite"]
 
 
-def test_rejected_key_does_not_fail_over(monkeypatch):
+def test_key_refused_by_one_model_fails_over_to_one_that_accepts_it(monkeypatch):
+    _reset_health()
+    monkeypatch.setenv(ENV_KEY, "AQ.scoped-key")
+    monkeypatch.delenv(ENV_MODEL, raising=False)
+    client = _ScriptedClient(["gemini-3.6-flash", "gemini-3.1-flash-lite"],
+                             {"gemini-3.6-flash": "401 UNAUTHENTICATED. API key not valid."})
+    monkeypatch.setattr("science.ai.gemini._client", lambda: client)
+    reply = chat([{"role": "user", "content": "hello"}], STATE)
+    assert reply["status"] == "ok" and reply["model"] == "gemini-3.1-flash-lite"
+    assert client.calls[:2] == ["gemini-3.6-flash", "gemini-3.1-flash-lite"]
+    assert "401 key refused" in reply["model_notice"]
+
+
+def test_key_refused_by_every_model_is_reported_as_rejected(monkeypatch):
     _reset_health()
     monkeypatch.setenv(ENV_KEY, "k-bad")
     monkeypatch.delenv(ENV_MODEL, raising=False)
-    client = _ScriptedClient(["gemini-3.6-flash", "gemini-3.1-flash-lite"],
-                             {"gemini-3.6-flash": "403 PERMISSION_DENIED. API key not valid."})
+    names = ["gemini-3.6-flash", "gemini-3.1-flash-lite"]
+    client = _ScriptedClient(names, {n: "403 PERMISSION_DENIED. API key not valid." for n in names})
     monkeypatch.setattr("science.ai.gemini._client", lambda: client)
     reply = chat([{"role": "user", "content": "hello"}], STATE)
-    assert reply["status"] == "unavailable" and "key was rejected" in reply["reason"]
-    assert client.calls == ["gemini-3.6-flash"]
+    assert reply["status"] == "unavailable" and "key was rejected by every model tried" in reply["reason"]
+    assert client.calls == names
 
 
 def test_every_model_failing_reports_what_was_tried(monkeypatch):

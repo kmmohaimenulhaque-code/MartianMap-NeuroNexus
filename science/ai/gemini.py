@@ -130,13 +130,32 @@ def _error_code(exc: Exception) -> int | None:
     return None
 
 
-def _should_fail_over(exc: Exception) -> bool:
-    """Model-specific problems move on to the next model; key problems do not."""
-    code = _error_code(exc)
+def _key_refused(exc: Exception) -> bool:
     lowered = str(exc).lower()
-    if code in (401, 403) or "api key not valid" in lowered:
-        return False
-    return code in (404, 429, 500, 502, 503, 504) or "no longer available" in lowered or "high demand" in lowered or "overloaded" in lowered
+    return _error_code(exc) in (401, 403) or "api key not valid" in lowered or "permission_denied" in lowered
+
+
+def _should_fail_over(exc: Exception) -> bool:
+    """Try the next model on model-specific problems. A 401/403 counts too: scoped keys (for example
+    Google Cloud keys starting "AQ.") can be refused by one model and accepted by another. Only when
+    every model refuses the key is it reported as rejected."""
+    lowered = str(exc).lower()
+    return (_key_refused(exc) or _error_code(exc) in (404, 429, 500, 502, 503, 504)
+            or "no longer available" in lowered or "high demand" in lowered or "overloaded" in lowered)
+
+
+def _exhausted(last_exc: Exception | None, failures: list[dict[str, Any]], model: str) -> dict[str, Any]:
+    """The response once every model failed; a key every model refused is reported as rejected."""
+    if last_exc is None:
+        return {"status": "unavailable", "reason": "No model could be tried.", "model": model}
+    failure = _failure(last_exc, model)
+    tried = ", ".join(f"{f['model']} ({f['reason']})" for f in failures)
+    if failures and all(f.get("key_refused") for f in failures):
+        failure["reason"] = (f"The Gemini API key was rejected by every model tried ({tried}). "
+                             "Check GEMINI_API_KEY on the server, or set GEMINI_MODEL to a model this key allows.")
+    else:
+        failure["reason"] = f"No Gemini model answered. Tried: {tried}. Try again shortly or set GEMINI_MODEL."
+    return {**failure, "models_tried": failures}
 
 
 def _substitution_notice(model: str, resolution: dict[str, Any], failures: list[dict[str, Any]]) -> str | None:
@@ -156,6 +175,8 @@ def _short_reason(exc: Exception) -> str:
         return "503 overloaded"
     if code == 429:
         return "429 quota/rate limit"
+    if _key_refused(exc):
+        return f"{code or 401} key refused"
     return f"{code or 'error'}"
 
 
@@ -273,12 +294,9 @@ def chat(messages: list[dict[str, str]], mission_state: dict[str, Any] | None = 
             if not _should_fail_over(exc):
                 return {**_failure(exc, model), "tool_calls": tool_log}
             mark_model_failed(model, _error_code(exc))
-            failures.append({"model": model, "reason": _short_reason(exc)})
+            failures.append({"model": model, "reason": _short_reason(exc), "key_refused": _key_refused(exc)})
             index += 1
-    failure = _failure(last_exc, resolution["attempt_order"][-1]) if last_exc else {"status": "unavailable", "reason": "No model could be tried."}
-    tried = ", ".join(f"{f['model']} ({f['reason']})" for f in failures)
-    failure["reason"] = f"No Gemini model answered. Tried: {tried}. Try again shortly or set GEMINI_MODEL."
-    return {**failure, "tool_calls": tool_log, "models_tried": failures}
+    return {**_exhausted(last_exc, failures, resolution["attempt_order"][-1]), "tool_calls": tool_log}
 
 
 def analyse_routes(payload: dict[str, Any]) -> dict[str, Any]:
@@ -306,6 +324,7 @@ def analyse_routes(payload: dict[str, Any]) -> dict[str, Any]:
         return {"status": "unavailable", "reason": resolution["notice"], "model": resolution["requested"],
                 "available_models": resolution["available"]}
     failures: list[dict[str, Any]] = []
+    last_exc: Exception | None = None
     for model in resolution["attempt_order"]:
         try:
             response = client.models.generate_content(model=model, contents=prompt, config=config)
@@ -313,10 +332,11 @@ def analyse_routes(payload: dict[str, Any]) -> dict[str, Any]:
         except json.JSONDecodeError as exc:
             return {"status": "error", "reason": "Gemini returned invalid JSON.", "error": str(exc)[:200], "model": model}
         except Exception as exc:
+            last_exc = exc
             if not _should_fail_over(exc):
                 return _failure(exc, model)
             mark_model_failed(model, _error_code(exc))
-            failures.append({"model": model, "reason": _short_reason(exc)})
+            failures.append({"model": model, "reason": _short_reason(exc), "key_refused": _key_refused(exc)})
             continue
         mark_model_ok(model)
         return {"status": "ok", "model": model, "model_notice": _substitution_notice(model, resolution, failures),
@@ -324,9 +344,7 @@ def analyse_routes(payload: dict[str, Any]) -> dict[str, Any]:
                 "elapsed_ms": round((time.perf_counter() - started) * 1000, 1),
                 "evidence_note": "AI INTERPRETATION. Numerical values remain those computed by the deterministic engine.",
                 "schema": "neuronexus.route-analysis.v1"}
-    tried = ", ".join(f"{f['model']} ({f['reason']})" for f in failures)
-    return {"status": "unavailable", "reason": f"No Gemini model answered. Tried: {tried}. Try again shortly or set GEMINI_MODEL.",
-            "models_tried": failures, "model": resolution["requested"]}
+    return _exhausted(last_exc, failures, resolution["requested"])
 
 
 def service_status() -> dict[str, Any]:

@@ -40,8 +40,8 @@ PREFERRED_MODELS = [
     "gemini-2.5-flash-lite",
 ]
 
-# How long a model that returned 404 / 429 / 5xx is skipped before being retried.
-FAILED_MODEL_COOLDOWN_S = {404: 6 * 3600, 429: 300, 500: 120, 503: 180}
+# How long a model that returned 401/403 (key refused) / 404 / 429 / 5xx is skipped before being retried.
+FAILED_MODEL_COOLDOWN_S = {401: 3600, 403: 3600, 404: 6 * 3600, 429: 300, 500: 120, 503: 180}
 MAX_MODEL_ATTEMPTS = 5
 
 _EXCLUDED = ("image", "audio", "live", "tts", "embedding", "embed", "veo", "imagen", "lyria", "robotics", "aqa", "computer-use")
