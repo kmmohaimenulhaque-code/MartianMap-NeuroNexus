@@ -4,7 +4,7 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException, Query
 
-from science.mars3d.layers import exploration_context, local_terrain_grid, rover_traverses
+from science.mars3d.layers import exploration_context, exploration_zones, local_terrain_grid, rover_traverses
 
 router = APIRouter(prefix="/mars3d", tags=["mars3d"])
 
@@ -32,3 +32,12 @@ def terrain_grid(
 @router.get("/context")
 def context() -> dict[str, Any]:
     return exploration_context()
+
+
+@router.get("/exploration-zones")
+def potential_exploration_zones(
+    latitude: float | None = Query(None, ge=-88.0, le=88.0),
+    longitude: float | None = Query(None),
+) -> dict[str, Any]:
+    site = {"latitude_deg": latitude, "longitude_deg": longitude % 360.0} if latitude is not None and longitude is not None else None
+    return exploration_zones(site)
