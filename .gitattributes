@@ -1,1 +1,2 @@
+data/raw/mola/ filter=lfs diff=lfs merge=lfs -text
 data/raw/mola/** filter=lfs diff=lfs merge=lfs -text
