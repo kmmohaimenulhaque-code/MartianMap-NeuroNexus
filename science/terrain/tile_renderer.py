@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from functools import lru_cache
 from io import BytesIO
-from pathlib import Path
 
 import numpy as np
 from PIL import Image
@@ -12,6 +11,7 @@ from science.terrain.mola128_resolver import MOLA128Resolver
 
 MOLA_PPD = 128
 MOLA_TILE_SIZE = 180
+MARS_RADIUS_M = 3_396_000.0
 
 MIN_ELEVATION_M = -8208.0
 MAX_ELEVATION_M = 21249.0
@@ -21,16 +21,10 @@ LAT_LIMIT = 88.0
 
 class MOLA128TileRenderer:
     """
-    Server-side renderer for the global 128 px/degree MOLA MEGDR dataset.
+    Render map tiles directly from the NASA MOLA MEGDR 128 ppd dataset.
 
-    The Leaflet map uses a custom 180 px tile size:
-
-        zoom 0 = 1 px/degree
-        zoom 1 = 2 px/degree
-        ...
-        zoom 7 = 128 px/degree
-
-    Therefore zoom 7 corresponds directly to the native MOLA grid.
+    z=7 is the native MOLA resolution:
+        2^7 = 128 pixels/degree
     """
 
     def __init__(
@@ -59,6 +53,7 @@ class MOLA128TileRenderer:
             "longitude_range_deg": [0.0, 360.0],
             "elevation_min_m": int(MIN_ELEVATION_M),
             "elevation_max_m": int(MAX_ELEVATION_M),
+            "rendering": "elevation tint + hillshade",
         }
 
     def _validate_tile(
@@ -91,50 +86,39 @@ class MOLA128TileRenderer:
         z: int,
         x: int,
         y: int,
+        *,
+        halo: int = 0,
     ) -> tuple[np.ndarray, np.ndarray]:
-        """
-        Return pixel-center latitude/longitude arrays.
-
-        Leaflet rows increase southward, so latitude decreases
-        as image row increases.
-        """
-
         degrees_per_pixel = 1.0 / (2 ** z)
 
-        tile_lat_span = self.tile_size * degrees_per_pixel
-        tile_lon_span = self.tile_size * degrees_per_pixel
+        row_indices = (
+            np.arange(
+                -halo,
+                self.tile_size + halo,
+                dtype=np.float64,
+            )
+            + 0.5
+            + y * self.tile_size
+        )
 
-        north_map_y = y * tile_lat_span
-        west_lon = x * tile_lon_span
+        col_indices = (
+            np.arange(
+                -halo,
+                self.tile_size + halo,
+                dtype=np.float64,
+            )
+            + 0.5
+            + x * self.tile_size
+        )
 
         latitudes = (
             90.0
-            - (
-                north_map_y
-                + (
-                    np.arange(
-                        self.tile_size,
-                        dtype=np.float64,
-                    )
-                    + 0.5
-                )
-                * degrees_per_pixel
-            )
+            - row_indices * degrees_per_pixel
         )
 
         longitudes = (
-            west_lon
-            + (
-                np.arange(
-                    self.tile_size,
-                    dtype=np.float64,
-                )
-                + 0.5
-            )
-            * degrees_per_pixel
-        )
-
-        longitudes %= 360.0
+            col_indices * degrees_per_pixel
+        ) % 360.0
 
         return latitudes, longitudes
 
@@ -194,15 +178,7 @@ class MOLA128TileRenderer:
             & (latitudes <= LAT_LIMIT)
         )
 
-        lat_indices = np.flatnonzero(valid_lat)
-
-        if lat_indices.size == 0:
-            return elevation, np.zeros_like(
-                elevation,
-                dtype=bool,
-            )
-
-        valid_longitudes = np.mod(
+        normalized_longitudes = np.mod(
             longitudes,
             360.0,
         )
@@ -210,40 +186,38 @@ class MOLA128TileRenderer:
         for lat_min, lat_max, _ in (
             self._latitude_bands()
         ):
-            band_mask = (
+            lat_mask = (
                 (latitudes >= lat_min)
                 & (latitudes <= lat_max)
                 & valid_lat
             )
 
-            selected_lat_indices = np.flatnonzero(
-                band_mask
-            )
+            lat_indices = np.flatnonzero(lat_mask)
 
-            if selected_lat_indices.size == 0:
+            if lat_indices.size == 0:
                 continue
 
             for lon_min, lon_max, _ in (
                 self._longitude_bands()
             ):
                 lon_mask = (
-                    (valid_longitudes >= lon_min)
-                    & (valid_longitudes < lon_max)
+                    (normalized_longitudes >= lon_min)
+                    & (normalized_longitudes < lon_max)
                 )
 
-                selected_lon_indices = np.flatnonzero(
+                lon_indices = np.flatnonzero(
                     lon_mask
                 )
 
-                if selected_lon_indices.size == 0:
+                if lon_indices.size == 0:
                     continue
 
                 representative_lat = float(
-                    latitudes[selected_lat_indices[0]]
+                    latitudes[lat_indices[0]]
                 )
 
                 representative_lon = float(
-                    valid_longitudes[selected_lon_indices[0]]
+                    normalized_longitudes[lon_indices[0]]
                 )
 
                 tile = self.resolver.tile_for(
@@ -251,30 +225,20 @@ class MOLA128TileRenderer:
                     representative_lon,
                 )
 
-                selected_latitudes = latitudes[
-                    selected_lat_indices
-                ]
-
-                selected_longitudes = valid_longitudes[
-                    selected_lon_indices
-                ]
-
                 block = self._tile_read(
                     tile,
-                    selected_latitudes,
-                    selected_longitudes,
+                    latitudes[lat_indices],
+                    normalized_longitudes[lon_indices],
                 )
 
                 elevation[
                     np.ix_(
-                        selected_lat_indices,
-                        selected_lon_indices,
+                        lat_indices,
+                        lon_indices,
                     )
                 ] = block
 
-        valid = np.isfinite(elevation)
-
-        return elevation, valid
+        return elevation, np.isfinite(elevation)
 
     @staticmethod
     def _latitude_bands():
@@ -294,10 +258,81 @@ class MOLA128TileRenderer:
             (270.0, 360.0, "270"),
         )
 
+    def _hillshade(
+        self,
+        elevation: np.ndarray,
+        latitudes: np.ndarray,
+        z: int,
+    ) -> np.ndarray:
+        degrees_per_pixel = 1.0 / (2 ** z)
+
+        lat_rad = np.radians(latitudes)
+
+        north_m = (
+            MARS_RADIUS_M * lat_rad
+        )
+
+        east_spacing_m = (
+            MARS_RADIUS_M
+            * np.cos(lat_rad)
+            * np.radians(degrees_per_pixel)
+        )
+
+        north_spacing_m = (
+            MARS_RADIUS_M
+            * np.radians(degrees_per_pixel)
+        )
+
+        # Because image rows move southward, using the latitude
+        # coordinate directly preserves the correct north/south sign.
+        dz_d_north = np.gradient(
+            elevation,
+            north_m,
+            axis=0,
+        )
+
+        dz_d_east = (
+            np.gradient(
+                elevation,
+                axis=1,
+            )
+            / east_spacing_m[:, None]
+        )
+
+        # Sun from northwest at 315° azimuth and 45° altitude.
+        altitude = np.radians(45.0)
+        azimuth = np.radians(315.0)
+
+        slope = np.arctan(
+            np.hypot(
+                dz_d_north,
+                dz_d_east,
+            )
+        )
+
+        aspect = np.arctan2(
+            -dz_d_east,
+            dz_d_north,
+        )
+
+        illumination = (
+            np.sin(altitude) * np.cos(slope)
+            + np.cos(altitude)
+            * np.sin(slope)
+            * np.cos(azimuth - aspect)
+        )
+
+        return np.clip(
+            illumination,
+            0.0,
+            1.0,
+        )
+
     def _colorize(
         self,
         elevation: np.ndarray,
         valid: np.ndarray,
+        hillshade: np.ndarray,
     ) -> np.ndarray:
         normalized = (
             elevation - MIN_ELEVATION_M
@@ -311,29 +346,47 @@ class MOLA128TileRenderer:
             1.0,
         )
 
-        # Mars-toned grayscale/elevation rendering.
-        # The existing global map remains underneath this layer.
-        value = (
+        base = (
             35.0
             + normalized * 190.0
-        ).astype(np.uint8)
+        ).astype(np.float32)
+
+        # Keep the existing Mars color family, but modulate
+        # brightness with terrain illumination.
+        light = (
+            0.52
+            + 0.48 * hillshade
+        )
+
+        red = np.clip(
+            base * light,
+            0,
+            255,
+        )
+
+        green = np.clip(
+            base * 0.90 * light,
+            0,
+            255,
+        )
+
+        blue = np.clip(
+            base * 0.78 * light,
+            0,
+            255,
+        )
 
         rgba = np.empty(
-            (*value.shape, 4),
+            (*base.shape, 4),
             dtype=np.uint8,
         )
 
-        rgba[..., 0] = value
-        rgba[..., 1] = (
-            value.astype(np.float32) * 0.90
-        ).clip(0, 255).astype(np.uint8)
-        rgba[..., 2] = (
-            value.astype(np.float32) * 0.78
-        ).clip(0, 255).astype(np.uint8)
-
+        rgba[..., 0] = red.astype(np.uint8)
+        rgba[..., 1] = green.astype(np.uint8)
+        rgba[..., 2] = blue.astype(np.uint8)
         rgba[..., 3] = np.where(
             valid,
-            210,
+            225,
             0,
         ).astype(np.uint8)
 
@@ -348,11 +401,14 @@ class MOLA128TileRenderer:
     ) -> bytes:
         self._validate_tile(z, x, y)
 
+        halo = 1
+
         latitudes, longitudes = (
             self._tile_coordinates(
                 z,
                 x,
                 y,
+                halo=halo,
             )
         )
 
@@ -361,9 +417,38 @@ class MOLA128TileRenderer:
             longitudes,
         )
 
-        rgba = self._colorize(
-            elevation,
+        # Fill only invalid edge cells temporarily so numerical
+        # gradients remain finite; they stay transparent in output.
+        finite_values = elevation[valid]
+
+        if finite_values.size:
+            fill_value = float(
+                np.median(finite_values)
+            )
+        else:
+            fill_value = 0.0
+
+        gradient_elevation = np.where(
             valid,
+            elevation,
+            fill_value,
+        )
+
+        hillshade = self._hillshade(
+            gradient_elevation,
+            latitudes,
+            z,
+        )
+
+        crop = slice(
+            halo,
+            -halo,
+        )
+
+        rgba = self._colorize(
+            elevation[crop, crop],
+            valid[crop, crop],
+            hillshade[crop, crop],
         )
 
         image = Image.fromarray(

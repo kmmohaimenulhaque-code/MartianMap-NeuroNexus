@@ -3,49 +3,45 @@ import {
   CircleMarker,
   ImageOverlay,
   MapContainer,
+  Polyline,
   TileLayer,
   Tooltip,
   useMap,
+  useMapEvents,
 } from 'react-leaflet'
-import { CRS, Transformation } from 'leaflet'
+import {
+  CRS,
+  Transformation,
+} from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+
 
 const MARS_BOUNDS = [
   [-90, 0],
   [90, 360],
 ]
 
-/*
- * Mars CRS
- *
- * One map unit = one degree.
- *
- * At zoom 0:
- *   360 px across Mars
- *
- * At zoom 7:
- *   360 × 2^7 = 46,080 px
- *   = 128 px / degree
- *
- * This exactly matches the native MOLA 128 ppd grid.
- */
+
 const MARS_CRS = {
   ...CRS.Simple,
 
-  transformation: new Transformation(
-    1,
-    0,
-    -1,
-    90,
-  ),
+  transformation:
+    new Transformation(
+      1,
+      0,
+      -1,
+      90,
+    ),
 
   scale(zoom) {
     return Math.pow(2, zoom)
   },
 }
 
+
 const MOLA_TILE_URL =
   '/terrain/tile/{z}/{x}/{y}.png'
+
 
 function marsPosition(feature) {
   return [
@@ -54,7 +50,10 @@ function marsPosition(feature) {
   ]
 }
 
-function featureColor(featureType = '') {
+
+function featureColor(
+  featureType = '',
+) {
   const type = featureType
     .split(',')[0]
     .trim()
@@ -75,10 +74,16 @@ function featureColor(featureType = '') {
     Planitia: '#9cc2b5',
   }
 
-  return colors[type] ?? '#d5d9dc'
+  return (
+    colors[type] ??
+    '#d5d9dc'
+  )
 }
 
-function MapFocus({ feature }) {
+
+function MapFocus({
+  feature,
+}) {
   const map = useMap()
 
   useEffect(() => {
@@ -91,16 +96,105 @@ function MapFocus({ feature }) {
         duration: 0.8,
       },
     )
-  }, [feature, map])
+  }, [
+    feature,
+    map,
+  ])
 
   return null
 }
+
+
+function RouteClickCapture({
+  enabled,
+  onSelect,
+}) {
+  useMapEvents({
+    click(event) {
+      if (!enabled) return
+
+      onSelect({
+        latitude_deg:
+          event.latlng.lat,
+        longitude_deg:
+          event.latlng.lng,
+      })
+    },
+  })
+
+  return null
+}
+
+
+function RoutePointMarker({
+  point,
+  label,
+  type,
+}) {
+  if (!point) return null
+
+  const color =
+    type === 'start'
+      ? '#62f59a'
+      : '#ff647c'
+
+  return (
+    <CircleMarker
+      center={[
+        point.latitude_deg,
+        point.longitude_deg,
+      ]}
+      radius={7}
+      pathOptions={{
+        color,
+        weight: 2,
+        fillColor: color,
+        fillOpacity: 1,
+      }}
+    >
+      <Tooltip
+        direction="top"
+        offset={[0, -7]}
+      >
+        <strong>
+          {label}
+        </strong>
+
+        <br />
+
+        {Number(
+          point.latitude_deg,
+        ).toFixed(4)}
+        °,
+
+        {' '}
+
+        {Number(
+          point.longitude_deg,
+        ).toFixed(4)}
+        °E
+      </Tooltip>
+    </CircleMarker>
+  )
+}
+
 
 export default function MarsMap({
   features,
   selectedFeature,
   onSelect,
+
+  routeMode = false,
+  routeStart = null,
+  routeEnd = null,
+  route = null,
+  onMapLocationSelect =
+    () => {},
 }) {
+  const routeCoordinates =
+    route?.route?.coordinates ??
+    []
+
   return (
     <MapContainer
       center={[0, 180]}
@@ -115,79 +209,150 @@ export default function MarsMap({
       style={{
         width: '100%',
         height: '100%',
-        background: '#090c0f',
+        background:
+          '#090c0f',
       }}
     >
-      {/* Existing global overview remains intact */}
       <ImageOverlay
         url="/mars-mola-global.jpg"
         bounds={MARS_BOUNDS}
-        opacity={0.92}
+        opacity={0.35}
       />
 
-      {/* Native-resolution NASA MOLA terrain pyramid */}
       <TileLayer
         url={MOLA_TILE_URL}
         tileSize={180}
         minZoom={0}
         maxZoom={7}
-        opacity={0.72}
+        opacity={1}
         bounds={MARS_BOUNDS}
         noWrap
         updateWhenZooming
         keepBuffer={2}
       />
 
-      <MapFocus feature={selectedFeature} />
+      <MapFocus
+        feature={selectedFeature}
+      />
 
-      {features.map((feature) => {
-        const position = marsPosition(feature)
+      <RouteClickCapture
+        enabled={routeMode}
+        onSelect={
+          onMapLocationSelect
+        }
+      />
 
-        const selected =
-          selectedFeature &&
-          String(
-            selectedFeature.feature_name,
-          ) ===
-            String(feature.feature_name)
+      {routeCoordinates.length > 1 && (
+        <Polyline
+          positions={routeCoordinates}
+          pathOptions={{
+            color: '#75e6ff',
+            weight: 4,
+            opacity: 0.95,
+          }}
+        />
+      )}
 
-        const markerColor =
-          featureColor(feature.feature_type)
+      <RoutePointMarker
+        point={routeStart}
+        label="ROUTE START"
+        type="start"
+      />
 
-        return (
-          <CircleMarker
-            key={[
-              feature.feature_name,
-              feature.latitude_deg,
-              feature.longitude_deg,
-            ].join(':')}
-            center={position}
-            radius={selected ? 5 : 2.2}
-            pathOptions={{
-              color: selected
-                ? '#75e6ff'
-                : markerColor,
-              weight: selected ? 2 : 0.7,
-              opacity: selected ? 1 : 0.78,
-              fillColor: markerColor,
-              fillOpacity: selected ? 1 : 0.72,
-            }}
-            eventHandlers={{
-              click: () => onSelect(feature),
-            }}
-          >
-            <Tooltip
-              direction="top"
-              offset={[0, -4]}
+      <RoutePointMarker
+        point={routeEnd}
+        label="DESTINATION"
+        type="end"
+      />
+
+      {features.map(
+        (feature) => {
+          const position =
+            marsPosition(
+              feature,
+            )
+
+          const selected =
+            selectedFeature &&
+            String(
+              selectedFeature.feature_name,
+            ) ===
+              String(
+                feature.feature_name,
+              )
+
+          const markerColor =
+            featureColor(
+              feature.feature_type,
+            )
+
+          return (
+            <CircleMarker
+              key={[
+                feature.feature_name,
+                feature.latitude_deg,
+                feature.longitude_deg,
+              ].join(':')}
+              center={position}
+              radius={
+                selected
+                  ? 5
+                  : 2.2
+              }
+              pathOptions={{
+                color:
+                  selected
+                    ? '#75e6ff'
+                    : markerColor,
+                weight:
+                  selected
+                    ? 2
+                    : 0.7,
+                opacity:
+                  selected
+                    ? 1
+                    : 0.78,
+                fillColor:
+                  markerColor,
+                fillOpacity:
+                  selected
+                    ? 1
+                    : 0.72,
+              }}
+              eventHandlers={{
+                click: (
+                  event,
+                ) => {
+                  event
+                    .originalEvent
+                    ?.stopPropagation()
+
+                  onSelect(
+                    feature,
+                  )
+                },
+              }}
             >
-              <strong>
-                {feature.feature_name}
-              </strong>
-              <br />
-              {feature.feature_type}
-            </Tooltip>
-          </CircleMarker>
-        )
-      })}
+              <Tooltip
+                direction="top"
+                offset={[0, -4]}
+              >
+                <strong>
+                  {
+                    feature.feature_name
+                  }
+                </strong>
+
+                <br />
+
+                {
+                  feature.feature_type
+                }
+              </Tooltip>
+            </CircleMarker>
+          )
+        },
+      )}
     </MapContainer>
   )
 }
