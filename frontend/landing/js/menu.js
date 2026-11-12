@@ -83,7 +83,7 @@ export function initStatus() {
         set("waking", "Science servers: waking up, about 30 to 60 seconds");
         setTimeout(() => probe(attempt + 1), 10000);
       } else if (!done) {
-        set("", "Science servers: unreachable. The offline demo still works.");
+        set("", "Science servers: unreachable. Try again in a minute.");
       }
     } finally {
       clearTimeout(timer);

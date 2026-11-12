@@ -125,6 +125,22 @@
     "qgglobe": {
       "src": "assets/screenshots/v3/landing-qg-globe.png",
       "w": 1600
+    },
+    "qg3a": {
+      "src": "assets/screenshots/v3/landing-qg-g3-a.png",
+      "w": 1600
+    },
+    "qg3d1": {
+      "src": "assets/screenshots/v3/landing-qg-g3-d1.png",
+      "w": 1600
+    },
+    "qg3b": {
+      "src": "assets/screenshots/v3/landing-qg-g3-b.png",
+      "w": 1600
+    },
+    "qg3d2": {
+      "src": "assets/screenshots/v3/landing-qg-g3-d2.png",
+      "w": 1600
     }
   },
   "tutorials": [
@@ -1155,23 +1171,55 @@
         "caption": "Conditions follow the sol: dust, RAD dose and weather update every map."
       },
       {
-        "media": "qgroute1",
+        "media": "qg3a",
         "focus": [
-          0.13,
-          0.18,
-          0.3,
-          0.26
+          0.0,
+          0.56,
+          1.0,
+          0.44
         ],
-        "caption": "Route Design: set START and DESTINATION, generate, save, APPLY a route, draped on the 3D globe (Viking MDIM color).",
+        "caption": "Route Design: pick START and DESTINATION on the 3D globe, generate, save, APPLY, and see the route draped (Viking MDIM).",
         "taps": [
           {
             "cursor": [
-              0.213,
-              0.258
+              0.42,
+              0.8063
             ]
           },
           {
-            "media": "qgroute2",
+            "cursor": [
+              0.0352,
+              0.55
+            ]
+          },
+          {
+            "media": "qg3d1",
+            "focus": [
+              0.13,
+              0.18,
+              0.3,
+              0.26
+            ],
+            "cursor": [
+              0.2133,
+              0.2578
+            ]
+          },
+          {
+            "media": "qg3b",
+            "focus": [
+              0.0,
+              0.56,
+              1.0,
+              0.44
+            ],
+            "cursor": [
+              0.58,
+              0.7417
+            ]
+          },
+          {
+            "media": "qg3d2",
             "focus": [
               0.13,
               0.25,
@@ -1179,8 +1227,8 @@
               0.2
             ],
             "cursor": [
-              0.213,
-              0.374
+              0.2133,
+              0.3687
             ]
           },
           {
