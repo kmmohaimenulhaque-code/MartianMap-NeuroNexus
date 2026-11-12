@@ -16,6 +16,8 @@ export function initApolloStory(root = document) {
     card.classList.add("is-fallback");
   }, { once: true });
 
+  if (image?.complete && image.naturalWidth === 0) image.dispatchEvent(new Event("error"));
+
   const selectView = (view) => {
     views.forEach((button) => {
       const active = button.dataset.apolloView === view;

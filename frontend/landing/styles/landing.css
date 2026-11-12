@@ -803,6 +803,24 @@ main > section {
   text-transform: uppercase;
 }
 
+.lp-story__hint {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  z-index: 2;
+  padding: 5px 7px;
+  color: #eef6f7;
+  background: rgba(3, 7, 12, 0.72);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.lp-story.is-fallback .lp-story__hint {
+  color: var(--rust);
+}
+
 .lp-story__scale {
   right: 8px;
   bottom: 8px;
