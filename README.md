@@ -2,6 +2,10 @@
 
 NASA Space Apps Challenge 2026 · branch Master-Ai
 
+## Demo video
+
+<a href="https://youtu.be/0MLtYKHewcA"><img src="https://img.youtube.com/vi/0MLtYKHewcA/maxresdefault.jpg" alt="NeuroNexus: Interplanetary Survival Guide: Martian Map" width="100%" /></a>
+
 Setup first: SETUP_INSTRUCTIONS.md contains the complete installation, NASA data, Gemini API-key, backend/frontend startup, troubleshooting, and demo instructions.
 
 Setup instructions:
@@ -10,18 +14,18 @@ https://github.com/kmmohaimenulhaque-code/martian-map/blob/Master-Ai/SETUP_INSTR
 OUR CHALLENGE:
 
 NASA has explored Mars robotically for decades, studying its extreme environment, mapping its surface, and collecting many types of data.
-Far from home, the first astronauts to set foot on Mars will want the best map possible, with information on the details of their routes and destinations, updates on current conditions, and the data needed to complete their mission quickly and safely. Your challenge is to create a layered, integrated view of a location or route on the Martian surface that pulls together data from multiple NASA science missions and could help a human explorer plan and carry out a successful Marswalk while conducting new and exciting science along the way.
+Far from home, the first astronauts to set foot on Mars will want the best map possible, with information on the details of their routes and destinations, updates on current conditions, and the data necessary to make safe and scientifically meaningful decisions.
 
 Project Description 
 
-NeuroNexus is an interactive planetary mission-planning and scientific intelligence system for Mars. It combines authoritative Mars datasets, deterministic terrain analysis, multi-objective route planning, environmental context, USGS geology and nomenclature, rover and landing-site information, orbital awareness, and an on-demand 3D Mars view into one mission console.
+NeuroNexus is an interactive planetary mission-planning and scientific intelligence system for Mars. It combines authoritative Mars datasets, deterministic terrain analysis, multi-objective route generation, and transparent AI interpretation to support mission planning and exploration decisions.
 
-The goal is not to declare a universally “safe” place on Mars. NeuroNexus provides transparent evidence and derived planning aids so explorers can compare terrain, environment, science opportunity, operational burden, and exploration context while seeing where each piece of information comes from.
+The goal is not to declare a universally “safe” place on Mars. NeuroNexus provides transparent evidence and derived planning aids so explorers can compare terrain, environment, science opportunities, and operational constraints before deciding on a route or site.
 
 What it does
 
 * 2D Mars map + USGS scientific map: synchronized exploration views with 2,052 USGS/IAU named Martian features.
-* Interactive 3D Mars: ArcGIS Maps SDK SceneView using Mars 2000 coordinates, public Mars terrain/imagery services, persistent annotations, USGS feature classes, geology, landing sites, rover locations and traverses, routes, AI candidates, and exploration layers.
+* Interactive 3D Mars: ArcGIS Maps SDK SceneView using Mars 2000 coordinates, public Mars terrain/imagery services, persistent annotations, USGS feature classes, geology, landing sites, rover locations, and terrain overlays.
 * AI Route Designer: deterministic multi-objective route generation over bounded NASA MOLA terrain, with candidates for EVA, terrain, science, operational, distance, and terrain-risk objectives.
 * Terrain intelligence: NASA MOLA elevation with derived slope, roughness, local relief, terrain burden, and a clearly labelled NeuroNexus walkability score.
 * Environmental context: Mars weather/environment assessment, NASA Ames MY34 dust modelling, historical THEMIS thermal observations, and site-science provenance.
@@ -32,43 +36,43 @@ What it does
 
 ## Screenshots : the mission console in action
 
-The screenshots below show the Master-Ai interface, including Gale site context, historical thermal evidence, route comparison, and the interactive 3D workspace. Displayed values belong to the captured selection and configuration; historical observations, modelled scenarios, and derived planning aids are not live measurements or safety guarantees.
+The screenshots below show the Master-Ai interface, including Gale site context, historical thermal evidence, route comparison, and the interactive 3D workspace. Displayed values belong to the captured application state used in this project.
 
 ### Site selection and synchronized maps
 
 ![NeuroNexus mission console showing Gale site details, the coloured 2D Mars map, the synchronized USGS scientific map, and the 3D Mars view](assets/screenshots/mission-console.png)
 
-The main console brings USGS/IAU site identity and coordinates, applicable rover imagery, NASA Ames dust-model context, and NASA MOLA terrain metrics alongside the 2D, USGS geology, and 3D views. Gale and the Curiosity marker are visible in this example.
+The main console brings USGS/IAU site identity and coordinates, applicable rover imagery, NASA Ames dust-model context, and NASA MOLA terrain metrics alongside the 2D, USGS geology, and 3D views.
 
 ### Historical THEMIS thermal evidence
 
-![Gale thermal panel showing nearest historical brightness temperature, minimum, maximum, mean, sample counts, search radius, observation years, and seasonal coverage](assets/screenshots/historical-thermal-context.png)
+![Gale thermal panel showing nearest historical brightness temperature, minimum, maximum, mean, sample counts, search radius, observation years, and seasonal coverage](assets/screenshots/historical-themis-thermal.png)
 
-The THEMIS panel keeps the nearest historical brightness temperature separate from the minimum, maximum, and mean shown directly beneath it in Kelvin and Celsius. Historical sample counts, the 50 km search radius, observation years, seasonal coverage, and evidence strength make the scope of the archive data explicit. These observations are not current Martian weather or exact-coordinate measurements.
+The THEMIS panel keeps the nearest historical brightness temperature separate from the minimum, maximum, and mean shown directly beneath it in Kelvin and Celsius. Historical sample counts, the 50 km search radius, observation years, and seasonal coverage are available beside the thermal series.
 
 ### AI Route Designer : deterministic candidates
 
 ![AI Route Designer showing start and destination coordinates, mission-objective weights, EVA settings, and multiple terrain-aware route candidates](assets/screenshots/ai-route-design.png)
 
-The route-design workspace lets users set start and destination coordinates, adjust mission-objective weights, and configure EVA pace and ascent allowance. Candidate cards compare distance, estimated EVA duration, terrain burden, slope, risk proxies, data support, and uncertainties, with highlight and apply controls. Route geometry comes from the deterministic NASA MOLA-based engine, not the language model; unavailable science evidence remains explicitly labelled.
+The route-design workspace lets users set start and destination coordinates, adjust mission-objective weights, and configure EVA pace and ascent allowance. Candidate cards compare distance, estimated travel time, terrain burden, roughness, and route suitability.
 
 ### Saved-route comparison
 
 ![Saved Marswalk routes plotted together with comparison cards for distance, waypoints, slope, roughness, MOLA coverage, and elevation range](assets/screenshots/route-comparison.png)
 
-Colour-coded saved routes remain visible together while comparison cards show distance, waypoint counts, slope, roughness, MOLA coverage, elevation range, and review notes. The displayed routes illustrate comparison tools, not validated or recommended EVA plans.
+Colour-coded saved routes remain visible together while comparison cards show distance, waypoint counts, slope, roughness, MOLA coverage, elevation range, and review notes.
 
 ### Mars Intelligence : tool-grounded interpretation
 
 ![Mars Intelligence assistant discussing saved-route trade-offs while explicitly marking unavailable deterministic metrics and distinguishing project data from AI interpretation](assets/screenshots/mars-intelligence.png)
 
-Mars Intelligence uses structured mission context and application tools to explain evidence and route trade-offs. This captured response lists saved routes but marks their quantitative comparison metrics as unavailable, then outlines an evaluation framework rather than inventing measurements or rankings. AI interpretation is kept distinct from NASA observations and deterministic calculations.
+Mars Intelligence uses structured mission context and application tools to explain evidence and route trade-offs. This captured response lists saved routes but marks their quantitative comparison as unavailable when the deterministic metric is not present.
 
 ### Interactive 3D layers
 
 ![Interactive 3D Mars globe with terrain, imagery, colourised MOLA elevation, USGS named features, rover markers, and layer controls](assets/screenshots/mars-3d-layers.png)
 
-The 3D layer panel groups terrain, imagery, colourised elevation, USGS/IAU named features, geology, and landing-site overlays. Observed and derived labels distinguish source data from NeuroNexus calculations, while rover markers and persistent feature labels help orient the view.
+The 3D layer panel groups terrain, imagery, colourised elevation, USGS/IAU named features, geology, and landing-site overlays. Observed and derived labels distinguish source data from NeuroNexus computed values.
 
 ### Map legend and rover context
 
@@ -80,13 +84,13 @@ The legend explains named-feature colours, geologic symbols, landing sites, and 
 
 ![Potential exploration-zone panel and 3D markers for documented study regions including Arcadia Planitia and Utopia Planitia](assets/screenshots/potential-exploration-zones.png)
 
-The exploration-zone view connects derived candidate areas to documented study-region context and terrain summaries, with controls to fly to a region. These zones are NeuroNexus planning aids—not official NASA zones, certified-safe locations, or confirmations of accessible resources or habitability.
+The exploration-zone view connects derived candidate areas to documented study-region context and terrain summaries, with controls to fly to a region. These zones are NeuroNexus planning aids—no single zone is declared “safe” or habitable.
 
 ### Field notes and mission checklist
 
 ![Field Notes and Checklist workspace with a mission-objective text area, tickable mission actions, local-save information, and JSON, CSV, and print or PDF export controls](assets/screenshots/field-notes-checklist.png)
 
-The mission workspace keeps field notes and tickable checklist actions alongside the planning workflow. The captured empty state shows the 150-word note limit, checklist capacity, local persistence, and JSON, CSV, and print/PDF export controls. User-entered notes and actions are planning records, not scientific observations.
+The mission workspace keeps field notes and tickable checklist actions alongside the planning workflow. It supports local-save persistence and export to JSON, CSV, and printable or PDF formats.
 
 Scientific data and external sources
 
@@ -101,7 +105,7 @@ NASA
 * NASA MMGIS: real Curiosity and Perseverance traverse layers used by the 3D rover-path visualisation.
 * NASA Image and Video Library: mission and rover imagery metadata.
 * NASA human-exploration references: EVA, Mars mission, radiation, Martian dust, life-support and mobility context.
-* NASA SWIM / NASA Mars Water Maps: accessible-ice exploration context. The full SWIM ice-consensus raster is explicitly marked UNAVAILABLE in NeuroNexus; documented study regions are not presented as the actual ice map.
+* NASA SWIM / NASA Mars Water Maps: accessible-ice exploration context. The full SWIM ice-consensus raster is explicitly marked UNAVAILABLE in NeuroNexus; documented study regions are not presented as a substitute.
 
 USGS / IAU
 
