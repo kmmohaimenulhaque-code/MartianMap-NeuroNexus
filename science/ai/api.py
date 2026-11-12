@@ -5,7 +5,7 @@ from typing import Any
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
-from science.ai.gemini import analyse_routes, chat, service_status
+from science.ai.provider import analyse_routes, chat, service_status
 from science.provenance import source_ledger
 
 router = APIRouter(prefix="/ai", tags=["ai"])

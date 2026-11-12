@@ -3,21 +3,15 @@ from __future__ import annotations
 from dataclasses import asdict
 from pathlib import Path
 
+from science.weather.config import dust_file
 from science.weather.ingestion.dust import DustDataset
 
 
-DEFAULT_DUST_DATASET = (
-    Path(__file__).resolve().parents[3]
-    / "external"
-    / "mars-gcm"
-    / "data"
-    / "DustScenario_MY34.nc"
-)
 
 
 class MarsWeatherModel:
-    def __init__(self, dust_path: str | Path = DEFAULT_DUST_DATASET):
-        self.dust = DustDataset(str(dust_path))
+    def __init__(self, dust_path: str | Path | None = None):
+        self.dust = DustDataset(str(dust_path or dust_file()))
 
     def get_conditions(
         self,

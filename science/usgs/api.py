@@ -16,10 +16,19 @@ class Coordinate(BaseModel):
     label: str | None = None
 
 
+class OverlayRoute(BaseModel):
+    route_id: str | None = None
+    name: str | None = None
+    colour: str | None = Field(default=None, max_length=32)
+    coordinates: list[Coordinate] = Field(min_length=2, max_length=64)
+
+
 class SnapshotRequest(BaseModel):
     route_id: str | None = None
     name: str | None = None
-    coordinates: list[Coordinate] = Field(min_length=2, max_length=64)
+    # Either one route (`coordinates`) or several routes in a shared frame (`routes`).
+    coordinates: list[Coordinate] | None = Field(default=None, min_length=2, max_length=64)
+    routes: list[OverlayRoute] = Field(default_factory=list, max_length=8)
     metrics: dict[str, Any] | None = None
     objective_weights: dict[str, Any] | None = None
     generation_method: str | None = None

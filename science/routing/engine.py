@@ -56,6 +56,7 @@ MAX_WINDOW_KM = 120.0
 SEGMENT_TARGET_KM = 60.0
 MAX_SEGMENTS = 80
 MAX_ROUTE_VERTICES = 32
+MAX_PROFILE_ROWS = 256
 DEFAULT_MAX_CELLS = 140
 DEFAULT_EVA_PACE_KMH = 2.5
 DEFAULT_ASCENT_M_PER_H = 600.0
@@ -384,6 +385,7 @@ def evaluate_polyline(
     ascent_m_per_h: float,
     havens: list[dict[str, Any]],
     evidence: list[EvidenceItem] | None,
+    include_profile: bool = False,
 ) -> dict[str, Any]:
     """Deterministic metrics for an exact polyline (candidate or manual route)."""
     distance = polyline_distance_km(coordinates)
@@ -431,7 +433,9 @@ def evaluate_polyline(
         **{k: summary[k] for k in (
             "mean_slope_deg", "max_slope_deg", "p90_slope_deg", "mean_roughness_m", "max_roughness_m",
             "elevation_min_m", "elevation_max_m", "elevation_gain_m", "elevation_loss_m", "terrain_burden_score",
+            "min_slope_deg", "min_roughness_m", "mean_elevation_m",
         )},
+        **({"profile": elevation_profile(lat, lon, elev, slope, valid)} if include_profile else {}),
         "terrain_risk_proxy": risk,
         "terrain_risk_components": risk_components,
         "operational_burden_score": round(100.0 * float(np.mean(ops)), 3),
@@ -445,6 +449,34 @@ def evaluate_polyline(
         "sample_count": summary["sample_count"],
         "sample_spacing_km": round(spacing, 4),
     }
+
+
+def elevation_profile(lat: np.ndarray, lon: np.ndarray, elev: np.ndarray, slope: np.ndarray, valid: np.ndarray,
+                      limit: int = MAX_PROFILE_ROWS) -> list[list[float | None]]:
+    """Along-track [distance_km, elevation_m, slope_deg] rows, decimated to at most `limit` rows."""
+    if lat.size == 0:
+        return []
+    steps = haversine_km(lat[:-1], lon[:-1], lat[1:], lon[1:]) if lat.size > 1 else np.zeros(0)
+    distance = np.concatenate([[0.0], np.cumsum(steps)])
+    index = np.unique(np.linspace(0, lat.size - 1, min(limit, lat.size)).round().astype(int))
+    return [[round(float(distance[i]), 3),
+             round(float(elev[i]), 1) if valid[i] else None,
+             round(float(slope[i]), 2) if valid[i] else None] for i in index]
+
+
+def merge_profiles(profiles: list[list[list[float | None]]], limit: int = MAX_PROFILE_ROWS) -> list[list[float | None]]:
+    """Join per-leg profiles end to end (distances offset by the preceding legs) and re-decimate."""
+    rows: list[list[float | None]] = []
+    offset = 0.0
+    for profile in profiles:
+        if not profile:
+            continue
+        rows.extend([round(offset + row[0], 3), row[1], row[2]] for row in (profile[1:] if rows else profile))
+        offset += profile[-1][0]
+    if len(rows) <= limit:
+        return rows
+    index = np.unique(np.linspace(0, len(rows) - 1, limit).round().astype(int))
+    return [rows[i] for i in index]
 
 
 def _point(value: dict[str, Any] | Sequence[float]) -> tuple[float, float]:
@@ -641,6 +673,7 @@ def _evaluate_single_window(
     include_science: bool = True,
     grid: TerrainGrid | None = None,
     evidence: list[EvidenceItem] | None = None,
+    include_profile: bool = False,
 ) -> dict[str, Any]:
     t0 = time.perf_counter()
     points = [_point(c) for c in coordinates]
@@ -653,7 +686,7 @@ def _evaluate_single_window(
         fine, status, error = None, "terrain_unavailable", str(exc)
     items, evidence_status = _collect(window, include_science, evidence)
     metrics = evaluate_polyline(points, fine, pace_kmh=eva_pace_kmh, ascent_m_per_h=ascent_allowance_m_per_h,
-                                havens=list(safe_havens or []), evidence=items)
+                                havens=list(safe_havens or []), evidence=items, include_profile=include_profile)
     metrics["route_generation_time_ms"] = round((time.perf_counter() - t0) * 1000, 2)
     return {"status": status, "error": error, "algorithm_version": ALGORITHM_VERSION, "window": window,
             "metrics": metrics, "evidence_status": evidence_status,
@@ -754,6 +787,9 @@ def aggregate_leg_metrics(legs: list[dict[str, Any]], coordinates: list[tuple[fl
         "elevation_gain_m": gain,
         "elevation_loss_m": loss,
         "terrain_burden_score": _weighted_mean([m.get("terrain_burden_score") for m in legs], d),
+        "min_slope_deg": _min_or_none([m.get("min_slope_deg") for m in legs]),
+        "min_roughness_m": _min_or_none([m.get("min_roughness_m") for m in legs]),
+        "mean_elevation_m": _weighted_mean([m.get("mean_elevation_m") for m in legs], d),
     }
     risk, components = terrain_risk_proxy(
         max_slope_deg=summary["max_slope_deg"], p90_slope_deg=summary["p90_slope_deg"],
@@ -795,6 +831,7 @@ def aggregate_leg_metrics(legs: list[dict[str, Any]], coordinates: list[tuple[fl
         "sample_spacing_km": _max_or_none([m.get("sample_spacing_km") for m in legs]),
         "segment_count": len(legs),
         "segment_distances_km": [round(x, 3) for x in d],
+        **({"profile": merge_profiles([m["profile"] for m in legs])} if all("profile" in m for m in legs) else {}),
     }
 
 

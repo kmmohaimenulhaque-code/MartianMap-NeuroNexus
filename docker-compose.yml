@@ -1,0 +1,26 @@
+# NeuroNexus — one-command deployment.
+#   cp .env.example .env   # add GEMINI_API_KEY
+#   git lfs pull           # real MOLA terrain files
+#   docker compose up --build -d
+# Console: http://localhost:8080   API docs: http://localhost:8002/docs
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.backend
+    env_file:
+      - path: .env
+        required: false
+    ports:
+      - "8002:8002"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    restart: unless-stopped

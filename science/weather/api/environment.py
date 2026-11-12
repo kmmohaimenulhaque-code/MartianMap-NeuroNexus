@@ -62,6 +62,10 @@ from science.mars3d.api import (
     router as mars3d_router,
 )
 
+from science.weather.api.dust import (
+    router as dust_router,
+)
+
 
 app = FastAPI(
     title=(
@@ -607,3 +611,4 @@ app.include_router(usgs_router)
 app.include_router(orbital_router)
 app.include_router(ai_router)
 app.include_router(mars3d_router)
+app.include_router(dust_router)

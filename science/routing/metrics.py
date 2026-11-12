@@ -216,6 +216,7 @@ def summarise_samples(
     keys = [
         "mean_slope_deg", "max_slope_deg", "p90_slope_deg", "mean_roughness_m", "max_roughness_m",
         "elevation_min_m", "elevation_max_m", "elevation_gain_m", "elevation_loss_m", "terrain_burden_score",
+        "min_slope_deg", "min_roughness_m", "mean_elevation_m",
     ]
     if valid_count < 2:
         out.update({key: None for key in keys})
@@ -236,6 +237,9 @@ def summarise_samples(
             "elevation_gain_m": round(float(np.sum(diffs[diffs > 0])), 1),
             "elevation_loss_m": round(float(-np.sum(diffs[diffs < 0])), 1),
             "terrain_burden_score": round(100.0 * float(np.mean(burden_density(s, r))), 3),
+            "min_slope_deg": round(float(np.min(s)), 3),
+            "min_roughness_m": round(float(np.min(r)), 3),
+            "mean_elevation_m": round(float(np.mean(e)), 1),
         }
     )
     return out

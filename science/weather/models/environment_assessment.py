@@ -1,14 +1,21 @@
 from __future__ import annotations
 
 
+# Dust opacity classes: the single source of truth for the assessment,
+# the /dust endpoints and the frontend threshold bands.
+DUST_LEVELS = [
+    {"level": "low", "min": 0.0, "max": 0.2},
+    {"level": "moderate", "min": 0.2, "max": 0.5},
+    {"level": "high", "min": 0.5, "max": 1.0},
+    {"level": "very_high", "min": 1.0, "max": None},
+]
+
+
 def classify_dust(opacity: float) -> str:
-    if opacity < 0.2:
-        return "low"
-    if opacity < 0.5:
-        return "moderate"
-    if opacity < 1.0:
-        return "high"
-    return "very_high"
+    for band in DUST_LEVELS:
+        if band["max"] is None or opacity < band["max"]:
+            return band["level"]
+    return DUST_LEVELS[-1]["level"]
 
 
 def assess_environment(environment: dict) -> dict:

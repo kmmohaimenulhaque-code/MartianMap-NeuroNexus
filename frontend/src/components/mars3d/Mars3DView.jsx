@@ -204,6 +204,12 @@ export default function Mars3DView({
   snapshotAvailable = false,
   onOpenCompare,
   compareAvailable = false,
+  savedRoutes = [],
+  compareRouteIds = [],
+  onToggleCompareRoute,
+  onSnapshotRoute,
+  routeStatsFor = () => null,
+  requestedPanel = null,
 }) {
   const containerRef = useRef(null);
   const viewRef = useRef(null);
@@ -225,7 +231,14 @@ export default function Mars3DView({
   const [loadError, setLoadError] = useState("");
   const [fullscreen, setFullscreen] = useState(false);
   const [height, setHeight] = useState(() => Math.round(Math.min(560, window.innerHeight * 0.58)));
-  const [sidePanel, setSidePanel] = useState(null); // "layers" | "legend" | "pez" | null
+  const [sidePanel, setSidePanel] = useState(null); // "layers" | "legend" | "pez" | "routes" | null
+  const [hiddenRoutes, setHiddenRoutes] = useState(() => new Set());
+  // Another part of the console can ask for a side panel (e.g. "routes").
+  const [seenPanelRequest, setSeenPanelRequest] = useState(null);
+  if (requestedPanel && requestedPanel !== seenPanelRequest) {
+    setSeenPanelRequest(requestedPanel);
+    setSidePanel(requestedPanel.name);
+  }
   const [showScience, setShowScience] = useState(true);
   const [mapMode, setMapMode] = useState(false);
   const [visible, setVisible] = useState(() => Object.fromEntries(LAYERS.map((l) => [l.key, l.on])));
@@ -279,6 +292,7 @@ export default function Mars3DView({
           zoneAreas: draped(),
           traverses: draped(),
           themis: draped(),
+          savedRoutes: draped(),
           route: draped(),
           candidates: draped(),
           selection: draped(),
@@ -595,9 +609,10 @@ export default function Mars3DView({
   });
   const glowLine = (geometry, colour, width, extra = {}) => {
     const rgb = Array.isArray(colour) ? colour : hexToRgb(colour);
+    const opacity = extra.opacity ?? 1;
     return [
-      { geometry, symbol: { type: "simple-line", color: [...rgb, 0.22], width: width * 3 }, attributes: extra },
-      { geometry, symbol: { type: "simple-line", color: [...rgb, 1], width, style: extra.dashed ? "dash" : "solid" }, attributes: extra },
+      { geometry, symbol: { type: "simple-line", color: [...rgb, 0.22 * opacity], width: width * 3 }, attributes: extra },
+      { geometry, symbol: { type: "simple-line", color: [...rgb, opacity], width, style: extra.dashed ? "dash" : "solid" }, attributes: extra },
     ];
   };
 
@@ -652,6 +667,26 @@ export default function Mars3DView({
       })),
     );
   }, [ready, routePoints]);
+
+  /* Saved routes: same colours as 2D and the comparison workspace. In compare
+   * mode (two or more routes selected) the compared routes stay bright and the
+   * rest dim to 25%. */
+  useEffect(() => {
+    if (!ready) return;
+    const comparing = compareRouteIds.length >= 2;
+    rebuild(
+      "savedRoutes",
+      savedRoutes
+        .filter((r) => !hiddenRoutes.has(r.id) && r.points?.length > 1)
+        .flatMap((r) =>
+          glowLine(line(r.points), r.colour ?? "#75e6ff", comparing && compareRouteIds.includes(r.id) ? 4 : 3, {
+            savedRouteId: r.id,
+            opacity: comparing && !compareRouteIds.includes(r.id) ? 0.25 : 1,
+          }),
+        ),
+    );
+  }, [ready, savedRoutes, compareRouteIds, hiddenRoutes]);
+
 
   useEffect(() => {
     if (!ready) return;
@@ -855,6 +890,25 @@ export default function Mars3DView({
     if (view) view.goTo(cameraFor(view, lat, lon, distanceKm), { duration: 1400 }).catch(() => {});
   }
 
+  function flyToRoute(route) {
+    const pts = route.points ?? [];
+    if (!pts.length) return;
+    const lat = pts.reduce((sum, p) => sum + Number(p.latitude_deg), 0) / pts.length;
+    const lons = pts.map((p) => lon180(p.longitude_deg));
+    const lon = lons.reduce((a, b) => a + b, 0) / lons.length;
+    const span = Math.max(...pts.map((p) => haversineKm({ latitude_deg: lat, longitude_deg: lon }, p)));
+    flyTo(lat, lon, Math.max(120, span * 3));
+  }
+
+  function toggleRouteVisibility(id) {
+    setHiddenRoutes((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
   function handleCompare() {
     if (!compareAvailable) {
       setToast("COMPARE needs at least two saved routes — save routes from the route editor first.");
@@ -937,6 +991,15 @@ export default function Mars3DView({
             onClick={() => togglePanel("pez")}
           >
             ◇ POTENTIAL EXPLORATION ZONE
+          </button>
+          <button
+            type="button"
+            className={`m3d-btn${sidePanel === "routes" ? " active" : ""}`}
+            aria-pressed={sidePanel === "routes"}
+            onClick={() => togglePanel("routes")}
+            title="Saved routes on the 3D globe"
+          >
+            ⌁ ROUTES ({savedRoutes.length})
           </button>
           <button
             type="button"
@@ -1062,6 +1125,70 @@ export default function Mars3DView({
               </button>
             </header>
             <Mars3DLegend visible={visible} traverses={traverses} candidateRoutes={candidateRoutes} onFlyTo={flyTo} />
+          </aside>
+        )}
+
+        {sidePanel === "routes" && (
+          <aside className="m3d-panel m3d-routes" aria-label="Saved routes">
+            <header>
+              <span>SAVED ROUTES ({savedRoutes.length})</span>
+              <button type="button" onClick={() => setSidePanel(null)} aria-label="Close saved routes">
+                ×
+              </button>
+            </header>
+            {savedRoutes.length === 0 ? (
+              <p className="m3d-routes-empty">No saved routes yet. Plan a route in the 2D map's route editor and press SAVE ROUTE.</p>
+            ) : (
+              <>
+                <div className="m3d-routes-bulk">
+                  <button type="button" onClick={() => setHiddenRoutes(new Set())}>
+                    SHOW ALL
+                  </button>
+                  <button type="button" onClick={() => setHiddenRoutes(new Set(savedRoutes.map((r) => r.id)))}>
+                    HIDE ALL
+                  </button>
+                </div>
+                <ul>
+                  {savedRoutes.map((route) => {
+                    const stats = routeStatsFor(route) ?? {};
+                    const inCompare = compareRouteIds.includes(route.id);
+                    const hidden = hiddenRoutes.has(route.id);
+                    const n = (v, d = 0) => (Number.isFinite(Number(v)) ? Number(v).toFixed(d) : "–");
+                    return (
+                      <li key={route.id} className={hidden ? "is-hidden" : ""}>
+                        <div className="m3d-route-name">
+                          <span className="m3d-route-swatch" style={{ background: route.colour }} />
+                          <strong>{route.name}</strong>
+                          <small>{n(stats.distanceKm, 1)} km</small>
+                        </div>
+                        <div className="m3d-route-stats">
+                          ELEV {n(stats.elevation_m?.min)}/{n(stats.elevation_m?.mean)}/{n(stats.elevation_m?.max)} m · SLOPE {n(stats.slope_deg?.min, 1)}/
+                          {n(stats.slope_deg?.mean, 1)}/{n(stats.slope_deg?.max, 1)}° · ROUGH {n(stats.roughness_m?.mean, 1)} m mean
+                          {stats.status === "waypoints-only" ? " · waypoints only" : ""}
+                        </div>
+                        <div className="m3d-route-actions">
+                          <button type="button" onClick={() => toggleRouteVisibility(route.id)} aria-pressed={!hidden} title="Show / hide">
+                            {hidden ? "◌ SHOW" : "◉ HIDE"}
+                          </button>
+                          <button type="button" onClick={() => flyToRoute(route)} title="Fly to route">
+                            ✈ FLY
+                          </button>
+                          <button type="button" className={inCompare ? "active" : ""} onClick={() => onToggleCompareRoute?.(route.id)} title="Add to / remove from comparison">
+                            ⇄ {inCompare ? "IN COMPARE" : "COMPARE"}
+                          </button>
+                          <button type="button" onClick={() => onSnapshotRoute?.(route.id)} title="USGS snapshot of this route">
+                            ▣ USGS
+                          </button>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+                <button type="button" className="m3d-btn m3d-primary m3d-compare-go" onClick={handleCompare} disabled={compareRouteIds.length < 2}>
+                  ⇄ COMPARE SELECTED ({compareRouteIds.length}/4)
+                </button>
+              </>
+            )}
           </aside>
         )}
 

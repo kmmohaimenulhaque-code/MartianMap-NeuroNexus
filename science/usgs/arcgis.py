@@ -231,14 +231,50 @@ _CACHE: dict[str, Any] = {}
 _CACHE_LOCK = threading.Lock()
 
 
+def _units_crossed(coords: list[tuple[float, float]], cached: dict[str, Any]) -> list[dict[str, Any]]:
+    """Geologic units a route crosses, as fractions of its densified (0.25 km) samples."""
+    from science.routing.metrics import densify
+
+    lat_s, lon_s = densify(coords, 0.25)
+    samples = [project(a, b) for a, b in zip(lat_s, lon_s)]
+    counts: dict[str, int] = {}
+    unit_info: dict[str, dict[str, Any]] = {}
+    for feature in cached["units"]:
+        attrs = feature.get("attributes", {})
+        rings = (feature.get("geometry") or {}).get("rings") or []
+        unit = str(attrs.get("Unit"))
+        unit_info.setdefault(unit, attrs)
+        hits = sum(1 for x, y in samples if _point_in_polygon(x, y, rings)) if rings else 0
+        if hits:
+            counts[unit] = counts.get(unit, 0) + hits
+    total = max(len(samples), 1)
+    return [
+        {"unit": unit, "fraction_of_route": round(n / total, 4), "color": cached["colors"].get(unit, "#8a8a8a"),
+         "description": unit_info[unit].get("UnitDesc"), "group": unit_info[unit].get("UnitGroup"),
+         "interpretation": unit_info[unit].get("Interpretation"),
+         "primary_characteristics": unit_info[unit].get("PrimaryCharacteristics"),
+         "status": "USGS MAPPED (1:20M)"}
+        for unit, n in sorted(counts.items(), key=lambda kv: -kv[1])
+    ]
+
+
 def build_route_snapshot(route: dict[str, Any]) -> dict[str, Any]:
+    """Snapshot one route, or several (`routes`) drawn together in one shared frame."""
     t0 = time.perf_counter()
-    coords = [(float(c["latitude_deg"]), float(c["longitude_deg"])) for c in route["coordinates"]]
-    key = json.dumps([[round(a, 6), round(b, 6)] for a, b in coords])
+    overlays = [
+        {**item, "coords": [(float(c["latitude_deg"]), float(c["longitude_deg"])) for c in item["coordinates"]]}
+        for item in (route.get("routes") or [])
+    ]
+    primary = route.get("coordinates") or (overlays[0]["coordinates"] if overlays else [])
+    coords = [(float(c["latitude_deg"]), float(c["longitude_deg"])) for c in primary]
+    if len(coords) < 2:
+        raise ValueError("A snapshot needs at least two coordinates.")
+    all_coords = coords + [point for item in overlays for point in item["coords"]]
+    key = json.dumps([[round(a, 6), round(b, 6)] for a, b in all_coords])
     with _CACHE_LOCK:
         cached = _CACHE.get(key)
     errors: list[str] = []
-    extent = extent_for(coords, min_half_m=8000.0, margin=0.25)
+    extent = extent_for(all_coords, min_half_m=8000.0, margin=0.25)
     level = _choose_level(extent["xmax"] - extent["xmin"], extent["ymax"] - extent["ymin"])
     res = LOD_RESOLUTIONS[level]
 
@@ -268,30 +304,19 @@ def build_route_snapshot(route: dict[str, Any]) -> dict[str, Any]:
                     _CACHE.clear()
                 _CACHE[key] = cached
 
-    from science.routing.metrics import densify
-
-    lat_s, lon_s = densify(coords, 0.25)
-    samples = [project(a, b) for a, b in zip(lat_s, lon_s)]
     polygons = []
-    counts: dict[str, int] = {}
     for feature in cached["units"]:
         attrs = feature.get("attributes", {})
         rings = (feature.get("geometry") or {}).get("rings") or []
         unit = str(attrs.get("Unit"))
-        hits = sum(1 for x, y in samples if _point_in_polygon(x, y, rings)) if rings else 0
-        if hits:
-            counts[unit] = counts.get(unit, 0) + hits
         polygons.append({"unit": unit, "color": cached["colors"].get(unit, "#8a8a8a"),
                          "rings_px": [[px(x, y) for x, y in ring] for ring in rings]})
-    unit_info = {str(f["attributes"].get("Unit")): f["attributes"] for f in cached["units"]}
-    total = max(len(samples), 1)
-    crossed = [
-        {"unit": unit, "fraction_of_route": round(n / total, 4), "color": cached["colors"].get(unit, "#8a8a8a"),
-         "description": unit_info[unit].get("UnitDesc"), "group": unit_info[unit].get("UnitGroup"),
-         "interpretation": unit_info[unit].get("Interpretation"),
-         "primary_characteristics": unit_info[unit].get("PrimaryCharacteristics"),
-         "status": "USGS MAPPED (1:20M)"}
-        for unit, n in sorted(counts.items(), key=lambda kv: -kv[1])
+    crossed = _units_crossed(coords, cached)
+    overlay_routes = [
+        {"route_id": item.get("route_id"), "name": item.get("name"), "colour": item.get("colour"),
+         "route_px": [px(*project(lat, lon)) for lat, lon in item["coords"]],
+         "units_crossed": _units_crossed(item["coords"], cached)}
+        for item in overlays
     ]
 
     def lines(features):
@@ -323,6 +348,7 @@ def build_route_snapshot(route: dict[str, Any]) -> dict[str, Any]:
         "resolution_note": NATIVE_LIMIT_NOTE,
         "image": cached["image"],
         "route_px": [px(x, y) for x, y in route_xy],
+        "routes": overlay_routes,
         "geology": {"units_crossed": crossed, "polygons": polygons, "contacts": lines(cached["contacts"]),
                     "structures": lines(cached["structures"]), "landing_sites": landing,
                     "note": "SIM 3292 is a 1:20,000,000 global map; unit boundaries are generalised at km scale."},

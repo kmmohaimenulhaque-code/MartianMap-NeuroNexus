@@ -194,6 +194,8 @@ def latest_mars_news(limit: int = 8, days: int = 30, *, now: datetime | None = N
         chosen.extend(extras[: limit - len(chosen)])
         chosen.sort(key=lambda item: item["published_ts"] or 0.0, reverse=True)
 
+    # Work on copies: `items` is the shared feed cache and must keep its sort key.
+    chosen = [dict(item) for item in chosen]
     for item in chosen:
         item.pop("published_ts", None)
         age = (now - datetime.fromisoformat(item["published"])).days if item["published"] else None

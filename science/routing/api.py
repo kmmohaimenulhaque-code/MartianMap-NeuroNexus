@@ -41,6 +41,7 @@ class EvaluateRequest(BaseModel):
     ascent_allowance_m_per_h: float = Field(DEFAULT_ASCENT_M_PER_H, ge=0.0, le=5000.0)
     safe_havens: list[HavenIn] = Field(default_factory=list, max_length=64)
     include_science: bool = True
+    include_profile: bool = False
 
 
 def _dump(items) -> list[dict[str, Any]]:
@@ -87,6 +88,7 @@ def evaluate(request: EvaluateRequest) -> dict[str, Any]:
             ascent_allowance_m_per_h=request.ascent_allowance_m_per_h,
             safe_havens=_dump(request.safe_havens),
             include_science=request.include_science,
+            include_profile=request.include_profile,
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc

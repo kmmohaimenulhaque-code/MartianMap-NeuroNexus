@@ -1,0 +1,12 @@
+.git
+.github
+external
+notebooks
+assets
+martian-map-readme-screenshots
+**/node_modules
+frontend/dist
+**/__pycache__
+**/.pytest_cache
+.env
+*.patch

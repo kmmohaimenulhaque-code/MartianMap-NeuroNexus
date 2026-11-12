@@ -1,0 +1,70 @@
+{
+  "schema": "neuronexus.ui-commands.v1",
+  "note": "Single source of truth for the ☰ Command Index and Mars Intelligence's UI guide. Every entry needs a handler in features/registry.js (enforced by a unit test).",
+  "categories": [
+    { "id": "site", "label": "Site & Navigation", "icon": "⌖" },
+    { "id": "route", "label": "Route Planning", "icon": "⟡" },
+    { "id": "saved", "label": "Saved Routes & Comparison", "icon": "⇄" },
+    { "id": "analysis", "label": "Analysis & Intelligence", "icon": "◈" },
+    { "id": "environment", "label": "Environment", "icon": "☼" },
+    { "id": "views", "label": "Views", "icon": "◉" },
+    { "id": "ops", "label": "Mission Operations", "icon": "◎" },
+    { "id": "data", "label": "Data & Export", "icon": "⇩" },
+    { "id": "workspace", "label": "Workspace", "icon": "✎" },
+    { "id": "system", "label": "System & Team", "icon": "✦" }
+  ],
+  "commands": [
+    { "id": "search-place", "category": "site", "label": "Search Mars place", "shortcut": "/", "description": "Search the 2,052 USGS/IAU named features.", "how": "Type in the search box at the top centre and pick a suggestion.", "where": "Top bar search box" },
+    { "id": "select-coordinate", "category": "site", "label": "Select any coordinate", "description": "Select an exact latitude/longitude by clicking the 2D map, the 3D globe or the global dust map.", "how": "Click anywhere on the coloured global map (outside route mode).", "where": "2D map, 3D view, dust map" },
+    { "id": "save-place", "category": "site", "label": "Save current place", "description": "Store the selected location as a custom place.", "how": "Select a site, then choose Save current place.", "where": "Route console under the 2D map" },
+    { "id": "add-safe-haven", "category": "site", "label": "Add Safe Haven", "description": "Mark the selected location as a user-defined Safe Haven (planning retreat point, not certified safe).", "how": "Select a site, then choose Add Safe Haven.", "where": "Route console under the 2D map" },
+    { "id": "sync-usgs", "category": "site", "label": "Sync USGS scientific map", "description": "Centre the USGS SIM 3292 scientific map on the selected site.", "how": "Select a site; the USGS map syncs automatically, or run this command to re-sync.", "where": "USGS scientific map panel" },
+
+    { "id": "route-mode", "category": "route", "label": "Toggle route mode", "shortcut": "R", "description": "When on, clicks on the 2D map or 3D globe add waypoints instead of selecting sites.", "how": "Turn on route mode, click waypoints, then Analyze.", "where": "Route console under the 2D map" },
+    { "id": "add-selected-waypoint", "category": "route", "label": "Add selected site as waypoint", "description": "Append the currently selected site to the route.", "where": "Route console" },
+    { "id": "analyze-route", "category": "route", "label": "Analyze route", "description": "Compute the haversine distance and the MOLA terrain at each waypoint.", "where": "Route console" },
+    { "id": "remove-last-waypoint", "category": "route", "label": "Remove last waypoint", "where": "Route console" },
+    { "id": "clear-route", "category": "route", "label": "Clear route", "where": "Route console" },
+    { "id": "save-route", "category": "route", "label": "Save route", "shortcut": "S", "description": "Save the analysed route. Saving starts an along-track MOLA evaluation (MIN/MEAN/MAX elevation, slope, roughness, profile).", "how": "Analyze a route with at least two waypoints, then Save route and name it.", "where": "Route console" },
+    { "id": "ai-route-design", "category": "route", "label": "AI Route Designer", "shortcut": "A", "description": "Deterministic multi-objective route candidates (EVA, terrain, science, operational) over NASA MOLA terrain.", "how": "Set a start and a destination, adjust objective weights, Generate, then Apply a candidate.", "where": "Top bar, 2D map, 3D toolbar" },
+
+    { "id": "compare-routes", "category": "saved", "label": "Compare saved routes", "shortcut": "C", "description": "Side-by-side comparison of up to four saved routes: map, elevation profiles, along-track MIN/MEAN/MAX table with best and worst marked, per-route and combined USGS snapshots, CSV/JSON export.", "how": "Save at least two routes, then Compare saved routes (also available from the 3D toolbar).", "where": "Route console, 3D toolbar, Command Index" },
+    { "id": "routes-3d", "category": "saved", "label": "Show saved routes on 3D globe", "description": "Open the 3D view with the ROUTES panel: every saved route drawn in its colour, with show/hide, fly-to, add-to-compare and USGS snapshot.", "where": "3D view → ⌁ ROUTES" },
+    { "id": "route-snapshot", "category": "saved", "label": "USGS route snapshot", "description": "The active route or candidate drawn on USGS SIM 3292 geology over MOLA hillshade, with the geologic units it crosses.", "where": "Top bar, USGS map panel, 3D toolbar" },
+    { "id": "reevaluate-routes", "category": "saved", "label": "Re-evaluate saved routes", "description": "Re-run the along-track MOLA evaluation for every saved route (for example after the backend was offline).", "where": "Command Index" },
+
+    { "id": "mars-intelligence", "category": "analysis", "label": "Mars Intelligence assistant", "shortcut": "I", "description": "AI assistant for this mission, Mars science, missions and history, and how to use NeuroNexus. Shows the tools it used and its sources; optional web search.", "where": "Top bar" },
+    { "id": "hazard-overview", "category": "analysis", "label": "Site hazard & evidence assessment", "description": "Environment assessment status, warnings and data links for the selected site.", "where": "Right column → Interpretation" },
+    { "id": "site-science", "category": "analysis", "label": "Site science & habitability", "description": "Material and habitability context for the selected site.", "where": "Right column → Material + habitability context" },
+
+    { "id": "dust-panel", "category": "environment", "label": "Dust scenario graphs", "description": "Modeled NASA Ames MY34 dust: opacity over all 668 sols, dust-top height, global dust map and the sol scrubber.", "where": "Right column → Dust scenario" },
+    { "id": "dust-play", "category": "environment", "label": "Play / pause sol animation", "description": "Animate the console sol through Mars Year 34.", "where": "Dust scenario panel" },
+    { "id": "sol-next", "category": "environment", "label": "Next sol", "shortcut": "]", "where": "Dust scenario panel" },
+    { "id": "sol-prev", "category": "environment", "label": "Previous sol", "shortcut": "[", "where": "Dust scenario panel" },
+    { "id": "sol-peak", "category": "environment", "label": "Jump to the site's dustiest sol", "description": "Set the sol to this site's MY34 opacity peak (the 2018 global dust storm).", "where": "Command Index" },
+    { "id": "morphology", "category": "environment", "label": "Site morphology statistics", "description": "Elevation, slope and roughness AT SITE plus MIN/MEAN/MAX over a 2, 4, 10 or 20 km MOLA window.", "where": "Right column → Site morphology" },
+    { "id": "thermal", "category": "environment", "label": "THEMIS thermal evidence", "description": "Historical NASA THEMIS brightness temperatures near the site (nearest value, min/max/mean, seasonal coverage).", "where": "Left column → Historical evidence" },
+
+    { "id": "map-3d", "category": "views", "label": "3D Mars globe", "shortcut": "3", "description": "ArcGIS SceneView in Mars 2000 coordinates with terrain, geology, landing sites, rover traverses, exploration zones, overlays and saved routes.", "where": "2D map → 3D MAP" },
+    { "id": "exploration-zones", "category": "views", "label": "Potential exploration zones", "description": "Candidate human exploration zones and regions of interest in the 3D view.", "where": "3D toolbar → ◇" },
+    { "id": "focus-usgs", "category": "views", "label": "USGS scientific map", "description": "Scroll to the USGS SIM 3292 scientific map panel.", "where": "Centre, right map panel" },
+
+    { "id": "crew-console", "category": "ops", "label": "Crewed Mars console", "description": "Mission profile, crew, EVA, life support and resources (derived and simulated planning state).", "where": "Right column → Crewed Mars console" },
+    { "id": "orbital-tracking", "category": "ops", "label": "Orbital tracking", "shortcut": "O", "description": "Live NASA/JPL near-Mars small-body close approaches. Awareness only, not impact predictions.", "where": "Top bar" },
+    { "id": "nasa-feed", "category": "ops", "label": "NASA Mars reference feed", "description": "Recent NASA Science Mars items.", "where": "Right column → Mars reference feed" },
+
+    { "id": "export-json", "category": "data", "label": "Export mission JSON", "description": "Everything: selection, environment, routes, candidates, console state, provenance." },
+    { "id": "export-csv", "category": "data", "label": "Export complete CSV" },
+    { "id": "export-route-csv", "category": "data", "label": "Export route CSV", "description": "Per-waypoint table of the active or saved route." },
+    { "id": "export-comparison", "category": "data", "label": "Export route comparison CSV", "description": "Every saved route's along-track statistics." },
+    { "id": "print", "category": "data", "label": "Print / save as PDF", "shortcut": "P" },
+    { "id": "provenance", "category": "data", "label": "Data provenance ledger", "description": "Every dataset NeuroNexus uses, with its source and evidence class (download as JSON)." },
+
+    { "id": "field-notes", "category": "workspace", "label": "Field notes & checklist", "shortcut": "N", "description": "Persistent mission objective notes and a ten-item checklist (stored in this browser)." },
+
+    { "id": "shortcuts", "category": "system", "label": "Keyboard shortcuts", "shortcut": "?", "description": "Ctrl/⌘+K opens the Command Index anywhere. Single-key shortcuts work when no text field is focused." },
+    { "id": "backend-status", "category": "system", "label": "Backend status", "description": "Whether the NeuroNexus backend (FastAPI, port 8002) is reachable." },
+    { "id": "about", "category": "system", "label": "About NeuroNexus", "description": "Project purpose, data sources and the NASA Space Apps Challenge 2026 context." },
+    { "id": "meet-the-team", "category": "system", "label": "Meet the Team", "description": "Team NeuroNexus on the NASA Space Apps Challenge 2026 site.", "url": "https://www.spaceappschallenge.org/2026/find-a-team/neuronexus1/" }
+  ]
+}

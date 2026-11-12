@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from science.weather.config import dust_file
+
 ROOT = (
     Path(__file__)
     .resolve()
@@ -20,13 +22,7 @@ THEMIS_DATASET = (
 )
 
 
-DUST_DATASET = (
-    ROOT
-    / "external"
-    / "mars-gcm"
-    / "data"
-    / "DustScenario_MY34.nc"
-)
+DUST_DATASET: Path | None = None  # resolved by science.weather.config.dust_file()
 
 
 GAZETTEER_DATASET = (
@@ -46,7 +42,7 @@ class MarsEnvironmentEngine:
     def __init__(
         self,
         themis_path: str | Path = THEMIS_DATASET,
-        dust_path: str | Path = DUST_DATASET,
+        dust_path: str | Path | None = DUST_DATASET,
         gazetteer_path: str | Path = GAZETTEER_DATASET,
     ) -> None:
         from science.gazetteer.usgs import USGSMarsGazetteer
@@ -66,7 +62,7 @@ class MarsEnvironmentEngine:
 
         self.weather = (
             MarsWeatherModel(
-                dust_path
+                dust_path or dust_file()
             )
         )
 

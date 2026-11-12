@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import MarsMap from "./components/mars/MarsMap";
 import MarsTopographicMap from "./components/mars/MarsTopographicMap";
@@ -13,9 +13,27 @@ import UsgsRouteSnapshot from "./components/mars/UsgsRouteSnapshot";
 import OrbitalTrackingPanel from "./components/mission/OrbitalTrackingPanel";
 import MarsIntelligence from "./components/mission/MarsIntelligence";
 
+import DustScenarioPanel from "./panels/DustScenarioPanel";
+import SiteMorphologyPanel from "./panels/SiteMorphologyPanel";
+import RouteComparisonWorkspace, { MAX_COMPARE_ROUTES } from "./route/RouteComparisonWorkspace";
+import CommandIndex from "./command/CommandIndex";
+import { SHORTCUTS, TEAM_URL, buildRegistry } from "./features/registry";
+import {
+  STORAGE_KEY_V3,
+  comparisonToCsv,
+  evaluationFromResponse,
+  geometryHash,
+  loadSavedRoutes,
+  nextColourIndex,
+  routeColour,
+  routeStats,
+} from "./utils/savedRoutes";
+
 import {
   askMarsIntelligence,
   evaluateRoute,
+  fetchDustSeries,
+  fetchProvenanceLedger,
   fetchAiStatus,
   fetchEnvironmentByCoordinate,
   fetchEnvironmentByPlace,
@@ -34,20 +52,24 @@ import { CANDIDATE_COLOURS } from "./utils/routeObjectives";
 import { EXPORT_SCHEMA, exportFilename, missionToCsv, routeToCsv } from "./utils/missionExport";
 import { buildThermalPanel } from "./utils/thermalPanel";
 
+import "./ui/tokens.css";
 import "./App.css";
+import "./ui/ui.css";
 
 const DEFAULT_PLACE = "Gale";
 const DEFAULT_SOL = 100;
+const MAX_SOL = 668;
 
 const MAX_ROUTE_POINTS = 32;
-const MAX_COMPARE_ROUTES = 4;
 
 const MAX_TODO_WORDS = 150;
 const MAX_CHECKLIST_POINTS = 10;
 const MAX_CHECKLIST_WORDS = 150;
 
 const STORAGE_KEYS = {
-  routes: "neuronexus.savedRoutes.v2",
+  routes: STORAGE_KEY_V3,
+
+  sol: "neuronexus.consoleSol.v1",
 
   customPlaces: "neuronexus.customPlaces.v2",
 
@@ -74,7 +96,6 @@ const DEFAULT_ASCENT_ALLOWANCE_M_PER_H = 600;
 const APP_VERSION = "2.0.0";
 const USGS_SYNC_HALF_WIDTH_KM = 40;
 
-const COMPARISON_COLOURS = ["#75e6ff", "#ff9f68", "#8cf0b1", "#c99bff"];
 
 function readStorage(key, fallback) {
   try {
@@ -166,9 +187,9 @@ function downloadTextFile(filename, content, mimeType) {
   URL.revokeObjectURL(url);
 }
 
-function Panel({ eyebrow, title, children, className = "" }) {
+function Panel({ eyebrow, title, children, className = "", id }) {
   return (
-    <section className={`panel ${className}`}>
+    <section className={`panel ${className}`} id={id}>
       <div className="panel-heading">
         <div>
           {eyebrow && <div className="eyebrow">{eyebrow}</div>}
@@ -274,8 +295,9 @@ function MissionMenu({
   onExportRouteCsv,
   routeExportAvailable = true,
   onPrint,
+  embedded = false,
 }) {
-  if (!open) {
+  if (!open && !embedded) {
     return null;
   }
 
@@ -283,142 +305,7 @@ function MissionMenu({
 
   const checklistWords = countWords(checklist.map((item) => item.text).join(" "));
 
-  return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label="NeuroNexus mission workspace"
-      style={{
-        position: "fixed",
-
-        inset: 0,
-
-        zIndex: 5000,
-
-        display: "flex",
-
-        alignItems: "center",
-
-        justifyContent: "center",
-
-        padding: "24px",
-
-        background: "rgba(2,7,10,0.72)",
-
-        backdropFilter: "blur(22px) saturate(120%)",
-
-        WebkitBackdropFilter: "blur(22px) saturate(120%)",
-      }}
-    >
-      <div
-        style={{
-          width: "min(1180px, 100%)",
-
-          height: "min(820px, calc(100vh - 48px))",
-
-          overflow: "auto",
-
-          border: "1px solid rgba(117,230,255,0.25)",
-
-          background: "linear-gradient(180deg, rgba(11,21,27,0.9), rgba(4,10,13,0.92))",
-
-          boxShadow: "0 30px 120px rgba(0,0,0,0.65)",
-
-          backdropFilter: "blur(28px)",
-
-          WebkitBackdropFilter: "blur(28px)",
-        }}
-      >
-        <header
-          style={{
-            position: "sticky",
-
-            top: 0,
-
-            zIndex: 2,
-
-            display: "flex",
-
-            justifyContent: "space-between",
-
-            alignItems: "center",
-
-            gap: "16px",
-
-            padding: "16px 18px",
-
-            borderBottom: "1px solid rgba(117,230,255,0.13)",
-
-            background: "rgba(5,12,16,0.82)",
-
-            backdropFilter: "blur(18px)",
-
-            WebkitBackdropFilter: "blur(18px)",
-          }}
-        >
-          <div>
-            <div
-              style={{
-                color: "#75e6ff",
-
-                fontSize: "10px",
-
-                letterSpacing: "0.16em",
-              }}
-            >
-              NEURONEXUS / MISSION WORKSPACE
-            </div>
-
-            <h2
-              style={{
-                margin: "5px 0 0",
-
-                fontSize: "18px",
-
-                letterSpacing: "0.06em",
-              }}
-            >
-              FIELD NOTES + CHECKLIST
-            </h2>
-
-            <small
-              style={{
-                display: "block",
-
-                marginTop: "5px",
-
-                color: "#74868e",
-
-                fontSize: "10px",
-              }}
-            >
-              Persistent local mission planning workspace.
-            </small>
-          </div>
-
-          <button
-            type="button"
-            onClick={onClose}
-            style={{
-              minWidth: "38px",
-
-              minHeight: "38px",
-
-              border: "1px solid #29414b",
-
-              background: "#091115",
-
-              color: "#75e6ff",
-
-              fontSize: "20px",
-
-              cursor: "pointer",
-            }}
-          >
-            ×
-          </button>
-        </header>
-
+  const body = (
         <div
           style={{
             display: "grid",
@@ -840,6 +727,149 @@ function MissionMenu({
             </div>
           </section>
         </div>
+  );
+
+  if (embedded) {
+    return body;
+  }
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="NeuroNexus mission workspace"
+      style={{
+        position: "fixed",
+
+        inset: 0,
+
+        zIndex: 5000,
+
+        display: "flex",
+
+        alignItems: "center",
+
+        justifyContent: "center",
+
+        padding: "24px",
+
+        background: "rgba(2,7,10,0.72)",
+
+        backdropFilter: "blur(22px) saturate(120%)",
+
+        WebkitBackdropFilter: "blur(22px) saturate(120%)",
+      }}
+    >
+      <div
+        style={{
+          width: "min(1180px, 100%)",
+
+          height: "min(820px, calc(100vh - 48px))",
+
+          overflow: "auto",
+
+          border: "1px solid rgba(117,230,255,0.25)",
+
+          background: "linear-gradient(180deg, rgba(11,21,27,0.9), rgba(4,10,13,0.92))",
+
+          boxShadow: "0 30px 120px rgba(0,0,0,0.65)",
+
+          backdropFilter: "blur(28px)",
+
+          WebkitBackdropFilter: "blur(28px)",
+        }}
+      >
+        <header
+          style={{
+            position: "sticky",
+
+            top: 0,
+
+            zIndex: 2,
+
+            display: "flex",
+
+            justifyContent: "space-between",
+
+            alignItems: "center",
+
+            gap: "16px",
+
+            padding: "16px 18px",
+
+            borderBottom: "1px solid rgba(117,230,255,0.13)",
+
+            background: "rgba(5,12,16,0.82)",
+
+            backdropFilter: "blur(18px)",
+
+            WebkitBackdropFilter: "blur(18px)",
+          }}
+        >
+          <div>
+            <div
+              style={{
+                color: "#75e6ff",
+
+                fontSize: "10px",
+
+                letterSpacing: "0.16em",
+              }}
+            >
+              NEURONEXUS / MISSION WORKSPACE
+            </div>
+
+            <h2
+              style={{
+                margin: "5px 0 0",
+
+                fontSize: "18px",
+
+                letterSpacing: "0.06em",
+              }}
+            >
+              FIELD NOTES + CHECKLIST
+            </h2>
+
+            <small
+              style={{
+                display: "block",
+
+                marginTop: "5px",
+
+                color: "#74868e",
+
+                fontSize: "10px",
+              }}
+            >
+              Persistent local mission planning workspace.
+            </small>
+          </div>
+
+          <button
+            type="button"
+            onClick={onClose}
+            style={{
+              minWidth: "38px",
+
+              minHeight: "38px",
+
+              border: "1px solid #29414b",
+
+              background: "#091115",
+
+              color: "#75e6ff",
+
+              fontSize: "20px",
+
+              cursor: "pointer",
+            }}
+          >
+            ×
+          </button>
+        </header>
+
+        {body}
       </div>
     </div>
   );
@@ -1060,648 +1090,6 @@ function RouteConsole({
   );
 }
 
-function buildRouteMetrics(savedRoute) {
-  const analysis = savedRoute?.plan?.waypoint_analysis ?? [];
-
-  const available = analysis.filter((item) => item?.status === "available");
-
-  const slopes = available.map((item) => Number(item.slope_deg)).filter(Number.isFinite);
-
-  const roughness = available.map((item) => Number(item.roughness_m)).filter(Number.isFinite);
-
-  const elevations = available.map((item) => Number(item.elevation_m)).filter(Number.isFinite);
-
-  const maxSlope = slopes.length ? Math.max(...slopes) : null;
-
-  const meanSlope = slopes.length ? slopes.reduce((sum, value) => sum + value, 0) / slopes.length : null;
-
-  const maxRoughness = roughness.length ? Math.max(...roughness) : null;
-
-  const meanRoughness = roughness.length ? roughness.reduce((sum, value) => sum + value, 0) / roughness.length : null;
-
-  const elevationMin = elevations.length ? Math.min(...elevations) : null;
-
-  const elevationMax = elevations.length ? Math.max(...elevations) : null;
-
-  const coverage = analysis.length ? available.length / analysis.length : 0;
-
-  return {
-    distanceKm: savedRoute?.plan?.planned_route?.planned_route_km ?? null,
-
-    displacementKm: savedRoute?.plan?.displacement?.distance_km ?? null,
-
-    waypointCount: analysis.length,
-
-    availableWaypoints: available.length,
-
-    coverage,
-
-    maxSlope,
-
-    meanSlope,
-
-    maxRoughness,
-
-    meanRoughness,
-
-    elevationMin,
-
-    elevationMax,
-
-    warnings: savedRoute?.plan?.guidance?.notes ?? [],
-  };
-}
-
-function getRouteProsCons(metrics) {
-  const pros = [];
-  const cons = [];
-
-  if (metrics.coverage === 1 && metrics.waypointCount > 0) {
-    pros.push("NASA MOLA local analysis is available at every sampled waypoint.");
-  }
-
-  if (metrics.maxSlope != null && metrics.maxSlope < 15) {
-    pros.push("No sampled waypoint reaches the 15° terrain-guidance threshold.");
-  }
-
-  if (metrics.maxRoughness != null && metrics.maxRoughness < 100) {
-    pros.push("No sampled waypoint reaches the 100 m roughness guidance threshold.");
-  }
-
-  if (metrics.maxSlope != null && metrics.maxSlope >= 25) {
-    cons.push("At least one sampled waypoint reaches 25° or greater local slope and requires manual review.");
-  } else if (metrics.maxSlope != null && metrics.maxSlope >= 15) {
-    cons.push("At least one sampled waypoint reaches 15° or greater local slope and requires manual review.");
-  }
-
-  if (metrics.maxRoughness != null && metrics.maxRoughness >= 100) {
-    cons.push("At least one sampled waypoint reaches 100 m or greater local MOLA roughness.");
-  }
-
-  if (metrics.coverage < 1) {
-    cons.push(`${metrics.waypointCount - metrics.availableWaypoints} waypoint(s) have unavailable local MOLA analysis.`);
-  }
-
-  if (!pros.length) {
-    pros.push("No additional positive threshold signal was derived from the sampled terrain.");
-  }
-
-  if (!cons.length) {
-    cons.push("No threshold-based terrain warning was triggered at the sampled waypoints.");
-  }
-
-  return {
-    pros,
-    cons,
-  };
-}
-
-function ComparisonMap({ routes }) {
-  const colouredRoutes = routes.map((route, index) => ({
-    ...route,
-
-    colour: COMPARISON_COLOURS[index % COMPARISON_COLOURS.length],
-  }));
-
-  return (
-    <div
-      style={{
-        position: "relative",
-
-        width: "100%",
-
-        height: "520px",
-
-        border: "1px solid rgba(117,230,255,0.18)",
-
-        background: "#060b0f",
-
-        overflow: "hidden",
-      }}
-    >
-      <MarsMap
-        features={[]}
-
-        selectedFeature={null}
-
-        selectedLocation={null}
-
-        customPlaces={[]}
-
-        safeHavens={[]}
-
-        routeMode={false}
-
-        routePoints={[]}
-
-        routePlan={null}
-
-        comparisonMode={true}
-
-        comparisonRoutes={colouredRoutes}
-
-        interactive={true}
-      />
-    </div>
-  );
-}
-
-function RouteComparisonWorkspace({ routes, compareRouteIds, onToggleRoute, onClose, onDeleteRoute }) {
-  const selectedRoutes = routes.filter((route) => compareRouteIds.includes(route.id));
-
-  return (
-    <div
-      style={{
-        position: "fixed",
-
-        inset: 0,
-
-        zIndex: 4000,
-
-        display: "flex",
-
-        alignItems: "center",
-
-        justifyContent: "center",
-
-        padding: "24px",
-
-        background: "rgba(3,7,9,0.78)",
-
-        backdropFilter: "blur(14px)",
-
-        WebkitBackdropFilter: "blur(14px)",
-      }}
-    >
-      <div
-        style={{
-          width: "min(1450px, 100%)",
-
-          height: "min(920px, calc(100vh - 48px))",
-
-          overflow: "auto",
-
-          border: "1px solid rgba(117,230,255,0.24)",
-
-          background: "linear-gradient(180deg, rgba(10,17,22,0.96), rgba(5,10,13,0.97))",
-
-          boxShadow: "0 30px 100px rgba(0,0,0,0.65)",
-
-          backdropFilter: "blur(18px)",
-
-          WebkitBackdropFilter: "blur(18px)",
-        }}
-      >
-        <div
-          style={{
-            position: "sticky",
-
-            top: 0,
-
-            zIndex: 3,
-
-            display: "flex",
-
-            justifyContent: "space-between",
-
-            alignItems: "center",
-
-            gap: "16px",
-
-            padding: "14px 16px",
-
-            borderBottom: "1px solid rgba(117,230,255,0.13)",
-
-            background: "rgba(7,13,17,0.96)",
-
-            backdropFilter: "blur(16px)",
-
-            WebkitBackdropFilter: "blur(16px)",
-          }}
-        >
-          <div>
-            <div
-              style={{
-                color: "#75e6ff",
-
-                fontSize: "10px",
-
-                letterSpacing: "0.14em",
-              }}
-            >
-              ROUTE ANALYSIS / LIQUID GLASS
-            </div>
-
-            <h2
-              style={{
-                margin: "5px 0 0",
-
-                fontSize: "18px",
-
-                letterSpacing: "0.06em",
-              }}
-            >
-              COMPARE MARSWALK ROUTES
-            </h2>
-
-            <small
-              style={{
-                color: "#687b83",
-
-                fontSize: "10px",
-              }}
-            >
-              Select up to four independent saved routes. All plotted routes remain visible simultaneously.
-            </small>
-          </div>
-
-          <button
-            type="button"
-            onClick={onClose}
-            style={{
-              minWidth: "38px",
-
-              minHeight: "38px",
-
-              border: "1px solid #29414b",
-
-              background: "#091115",
-
-              color: "#a2b3b9",
-
-              cursor: "pointer",
-
-              fontSize: "20px",
-            }}
-          >
-            ×
-          </button>
-        </div>
-
-        <div
-          style={{
-            padding: "14px 16px 20px",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-
-              flexWrap: "wrap",
-
-              gap: "6px",
-
-              marginBottom: "12px",
-            }}
-          >
-            {routes.map((route, index) => {
-              const active = compareRouteIds.includes(route.id);
-
-              const colour = COMPARISON_COLOURS[index % COMPARISON_COLOURS.length];
-
-              return (
-                <button
-                  key={route.id}
-                  type="button"
-                  onClick={() => onToggleRoute(route.id)}
-                  style={{
-                    minHeight: "34px",
-
-                    padding: "0 10px",
-
-                    border: `1px solid ${active ? colour : "#29414b"}`,
-
-                    background: active ? "#0d2028" : "#0a1318",
-
-                    color: active ? colour : "#879aa2",
-
-                    fontFamily: "monospace",
-
-                    fontSize: "10px",
-
-                    cursor: "pointer",
-
-                    boxShadow: active ? `0 0 12px ${colour}18` : "none",
-                  }}
-                >
-                  <span
-                    style={{
-                      display: "inline-block",
-
-                      width: "15px",
-
-                      height: "3px",
-
-                      marginRight: "7px",
-
-                      verticalAlign: "middle",
-
-                      background: colour,
-                    }}
-                  />
-
-                  {active ? "✓ " : ""}
-
-                  {route.name}
-                </button>
-              );
-            })}
-          </div>
-
-          {selectedRoutes.length >= 2 ? (
-            <>
-              <ComparisonMap routes={selectedRoutes} />
-
-              <div
-                style={{
-                  display: "grid",
-
-                  gridTemplateColumns: `repeat(${Math.min(selectedRoutes.length, 4)}, minmax(0,1fr))`,
-
-                  gap: "10px",
-
-                  marginTop: "12px",
-
-                  overflowX: "auto",
-                }}
-              >
-                {selectedRoutes.map((route, index) => {
-                  const metrics = buildRouteMetrics(route);
-
-                  const { pros, cons } = getRouteProsCons(metrics);
-
-                  const colour = COMPARISON_COLOURS[index % COMPARISON_COLOURS.length];
-
-                  return (
-                    <div
-                      key={route.id}
-                      style={{
-                        minWidth: "250px",
-
-                        padding: "12px",
-
-                        border: `1px solid ${colour}44`,
-
-                        background: "#091216",
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-
-                          alignItems: "center",
-
-                          gap: "7px",
-
-                          color: colour,
-
-                          fontSize: "8px",
-
-                          letterSpacing: "0.1em",
-                        }}
-                      >
-                        <span
-                          style={{
-                            width: "18px",
-
-                            height: "3px",
-
-                            background: colour,
-                          }}
-                        />
-                        SAVED ROUTE
-                      </div>
-
-                      <strong
-                        style={{
-                          display: "block",
-
-                          marginTop: "5px",
-
-                          fontSize: "13px",
-                        }}
-                      >
-                        {route.name}
-                      </strong>
-
-                      <div
-                        style={{
-                          display: "grid",
-
-                          gridTemplateColumns: "1fr 1fr",
-
-                          gap: "8px",
-
-                          marginTop: "12px",
-                        }}
-                      >
-                        <Metric label="Distance" value={metrics.distanceKm == null ? "—" : `${Number(metrics.distanceKm).toFixed(2)} km`} />
-
-                        <Metric label="Waypoints" value={metrics.waypointCount} />
-
-                        <Metric label="Max slope" value={metrics.maxSlope == null ? "—" : `${Number(metrics.maxSlope).toFixed(2)}°`} />
-
-                        <Metric label="Mean slope" value={metrics.meanSlope == null ? "—" : `${Number(metrics.meanSlope).toFixed(2)}°`} />
-
-                        <Metric label="Max roughness" value={metrics.maxRoughness == null ? "—" : `${Number(metrics.maxRoughness).toFixed(1)} m`} />
-
-                        <Metric
-                          label="Mean roughness"
-                          value={metrics.meanRoughness == null ? "—" : `${Number(metrics.meanRoughness).toFixed(1)} m`}
-                        />
-
-                        <Metric label="MOLA coverage" value={`${(metrics.coverage * 100).toFixed(0)}%`} />
-
-                        <Metric
-                          label="Elevation range"
-                          value={
-                            metrics.elevationMin == null || metrics.elevationMax == null
-                              ? "—"
-                              : `${Number(metrics.elevationMin).toFixed(0)} → ${Number(metrics.elevationMax).toFixed(0)} m`
-                          }
-                        />
-                      </div>
-
-                      <div
-                        style={{
-                          marginTop: "10px",
-
-                          padding: "9px",
-
-                          border: "1px solid rgba(140,240,177,0.1)",
-
-                          background: "#081014",
-                        }}
-                      >
-                        <div
-                          style={{
-                            color: "#8cf0b1",
-
-                            fontSize: "8px",
-
-                            letterSpacing: "0.1em",
-                          }}
-                        >
-                          PROS
-                        </div>
-
-                        {pros.map((item) => (
-                          <p
-                            key={item}
-                            style={{
-                              margin: "6px 0 0",
-
-                              color: "#9fb5bc",
-
-                              fontSize: "10px",
-
-                              lineHeight: 1.45,
-                            }}
-                          >
-                            + {item}
-                          </p>
-                        ))}
-                      </div>
-
-                      <div
-                        style={{
-                          marginTop: "8px",
-
-                          padding: "9px",
-
-                          border: "1px solid rgba(255,159,104,0.12)",
-
-                          background: "#100e0b",
-                        }}
-                      >
-                        <div
-                          style={{
-                            color: "#ffb48b",
-
-                            fontSize: "8px",
-
-                            letterSpacing: "0.1em",
-                          }}
-                        >
-                          CONS / REVIEW
-                        </div>
-
-                        {cons.map((item) => (
-                          <p
-                            key={item}
-                            style={{
-                              margin: "6px 0 0",
-
-                              color: "#a99d91",
-
-                              fontSize: "10px",
-
-                              lineHeight: 1.45,
-                            }}
-                          >
-                            − {item}
-                          </p>
-                        ))}
-                      </div>
-
-                      {metrics.warnings.length > 0 && (
-                        <div
-                          style={{
-                            marginTop: "9px",
-
-                            color: "#8f9ba0",
-
-                            fontSize: "9px",
-
-                            lineHeight: 1.45,
-                          }}
-                        >
-                          <span
-                            style={{
-                              color: "#75e6ff",
-                            }}
-                          >
-                            GUIDANCE
-                          </span>
-
-                          {metrics.warnings.map((warning) => (
-                            <p
-                              key={warning}
-                              style={{
-                                margin: "5px 0 0",
-                              }}
-                            >
-                              {warning}
-                            </p>
-                          ))}
-                        </div>
-                      )}
-
-                      <button
-                        type="button"
-                        onClick={() => onDeleteRoute(route.id)}
-                        style={{
-                          width: "100%",
-
-                          marginTop: "10px",
-
-                          minHeight: "30px",
-
-                          border: "1px solid #5b3037",
-
-                          background: "transparent",
-
-                          color: "#ff9aa9",
-
-                          fontFamily: "monospace",
-
-                          fontSize: "8px",
-
-                          cursor: "pointer",
-                        }}
-                      >
-                        DELETE SAVED ROUTE
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            </>
-          ) : (
-            <div
-              style={{
-                minHeight: "320px",
-
-                display: "grid",
-
-                placeItems: "center",
-
-                border: "1px dashed #29414b",
-
-                background: "#081014",
-
-                color: "#71848c",
-
-                fontSize: "10px",
-
-                letterSpacing: "0.08em",
-
-                textAlign: "center",
-
-                padding: "20px",
-              }}
-            >
-              SELECT AT LEAST TWO SAVED ROUTES
-              <br />
-              MAXIMUM COMPARISON: FOUR
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function App() {
   const [places, setPlaces] = useState([]);
 
@@ -1735,13 +1123,25 @@ export default function App() {
 
   const [safeHavens, setSafeHavens] = useState(() => readStorage(STORAGE_KEYS.safeHavens, []));
 
-  const [savedRoutes, setSavedRoutes] = useState(() => readStorage(STORAGE_KEYS.routes, []));
+  const [savedRoutes, setSavedRoutes] = useState(() => loadSavedRoutes());
+
+  const [sol, setSolState] = useState(() => {
+    const stored = Number(readStorage(STORAGE_KEYS.sol, DEFAULT_SOL));
+    return Number.isInteger(stored) && stored >= 1 && stored <= MAX_SOL ? stored : DEFAULT_SOL;
+  });
+
+  const [dustPlaying, setDustPlaying] = useState(false);
+
+  const [commandIndex, setCommandIndex] = useState({ open: false, tab: "commands" });
+
+  const [requested3dPanel, setRequested3dPanel] = useState(null);
+
+  const [notice, setNotice] = useState("");
 
   const [compareRouteIds, setCompareRouteIds] = useState([]);
 
   const [comparisonOpen, setComparisonOpen] = useState(false);
 
-  const [missionMenuOpen, setMissionMenuOpen] = useState(false);
 
   const [todoText, setTodoText] = useState(() => readStorage(STORAGE_KEYS.todo, ""));
 
@@ -1821,6 +1221,94 @@ export default function App() {
   useEffect(() => {
     writeStorage(STORAGE_KEYS.routes, savedRoutes);
   }, [savedRoutes]);
+
+  /* ---------------------------------------------------------------- CONSOLE SOL */
+
+  const setSol = useCallback(
+    (value) =>
+      setSolState((current) => {
+        const next = typeof value === "function" ? value(current) : value;
+        return Math.min(MAX_SOL, Math.max(1, Math.round(Number(next) || 1)));
+      }),
+    [],
+  );
+
+  const selectionKeyRef = useRef(null);
+  const selectionKey = selectedLocation ? `${selectedLocation.latitude_deg},${selectedLocation.longitude_deg}` : null;
+
+  useEffect(() => {
+    selectionKeyRef.current = selectionKey;
+  }, [selectionKey]);
+  const solInitialised = useRef(false);
+
+  /*
+   * The sol drives the environment (dust, solar geometry, assessment). The
+   * dust panel updates instantly from its cached series; the full
+   * environment is refetched once the sol settles.
+   */
+  useEffect(() => {
+    writeStorage(STORAGE_KEYS.sol, sol);
+    if (!solInitialised.current) {
+      solInitialised.current = true;
+      return undefined;
+    }
+    if (!selectedLocation) return undefined;
+    const key = selectionKey;
+    const feature = selectedFeature;
+    const location = selectedLocation;
+    const timer = window.setTimeout(
+      async () => {
+        try {
+          const response = feature
+            ? await fetchEnvironmentByPlace(feature.feature_name, sol)
+            : await fetchEnvironmentByCoordinate(location.latitude_deg, location.longitude_deg, sol);
+          if (selectionKeyRef.current === key) setEnvironment(response);
+        } catch (err) {
+          setError(err.message);
+        }
+      },
+      dustPlaying ? 1500 : 350,
+    );
+    return () => window.clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sol]);
+
+  /* ---------------------------------------------------------------- SAVED ROUTE EVALUATION */
+
+  /*
+   * Every saved route gets one deterministic along-track evaluation
+   * (POST /routes/evaluate with an elevation profile), one route at a time.
+   */
+  const evaluatingRef = useRef(false);
+
+  useEffect(() => {
+    if (evaluatingRef.current) return;
+    const next = savedRoutes.find((route) => route.evaluation?.status === "pending");
+    if (!next) return;
+    evaluatingRef.current = true;
+    const patch = (evaluation) => setSavedRoutes((current) => current.map((route) => (route.id === next.id ? { ...route, evaluation } : route)));
+    patch({ status: "running" });
+    evaluateRoute({
+      coordinates: next.points,
+      evaPaceKmh,
+      ascentAllowanceMPerH: ascentAllowance,
+      safeHavens,
+      includeScience: false,
+      includeProfile: true,
+    })
+      .then((response) => patch(evaluationFromResponse(response)))
+      .catch((err) => patch({ status: "error", error: err.message }))
+      .finally(() => {
+        evaluatingRef.current = false;
+        setSavedRoutes((current) => [...current]);
+      });
+  }, [savedRoutes, evaPaceKmh, ascentAllowance, safeHavens]);
+
+  useEffect(() => {
+    if (!notice) return undefined;
+    const timer = window.setTimeout(() => setNotice(""), 6000);
+    return () => window.clearTimeout(timer);
+  }, [notice]);
 
   useEffect(() => {
     writeStorage(STORAGE_KEYS.todo, todoText);
@@ -1980,7 +1468,7 @@ export default function App() {
     () =>
       buildMissionConsoleState({
         profile: missionProfile,
-        sol: DEFAULT_SOL,
+        sol,
         selection: selectedLocation ? { ...selectedLocation, label: displayName, feature_name: namedFeature?.feature_name ?? null } : null,
         environment,
         route: activeRoute,
@@ -1993,6 +1481,7 @@ export default function App() {
         backendConnected,
       }),
     [
+      sol,
       missionProfile,
       selectedLocation,
       displayName,
@@ -2018,7 +1507,7 @@ export default function App() {
 
         setError("");
 
-        const [placesResponse, marsResponse] = await Promise.all([fetchPlaces(2052), fetchEnvironmentByPlace(DEFAULT_PLACE, DEFAULT_SOL)]);
+        const [placesResponse, marsResponse] = await Promise.all([fetchPlaces(2052), fetchEnvironmentByPlace(DEFAULT_PLACE, sol)]);
 
         if (cancelled) {
           return;
@@ -2059,6 +1548,8 @@ export default function App() {
     return () => {
       cancelled = true;
     };
+    // The initial load uses the stored sol; later sol changes refetch separately.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -2117,7 +1608,7 @@ export default function App() {
 
       setError("");
 
-      const response = await fetchEnvironmentByPlace(feature.feature_name, DEFAULT_SOL);
+      const response = await fetchEnvironmentByPlace(feature.feature_name, sol);
 
       setEnvironment(response);
 
@@ -2159,7 +1650,7 @@ export default function App() {
 
       setError("");
 
-      const response = await fetchEnvironmentByCoordinate(location.latitude_deg, location.longitude_deg, DEFAULT_SOL);
+      const response = await fetchEnvironmentByCoordinate(location.latitude_deg, location.longitude_deg, sol);
 
       /*
        * Do NOT promote nearest_feature.
@@ -2200,7 +1691,7 @@ export default function App() {
 
       setError("");
 
-      const response = await fetchEnvironmentByCoordinate(location.latitude_deg, location.longitude_deg, DEFAULT_SOL);
+      const response = await fetchEnvironmentByCoordinate(location.latitude_deg, location.longitude_deg, sol);
 
       setEnvironment(response);
 
@@ -2236,7 +1727,7 @@ export default function App() {
 
       setError("");
 
-      const response = await fetchEnvironmentByCoordinate(location.latitude_deg, location.longitude_deg, DEFAULT_SOL);
+      const response = await fetchEnvironmentByCoordinate(location.latitude_deg, location.longitude_deg, sol);
 
       setEnvironment(response);
 
@@ -2523,18 +2014,29 @@ export default function App() {
      * Deep-copy the route plan so the saved route can never
      * be mutated by the next route being created.
      */
+    const points = routePoints.map((point) => ({
+      ...point,
+    }));
+
     const savedRoute = {
       id: createId("route"),
+
+      schema: 3,
 
       name: name.trim(),
 
       createdAt: new Date().toISOString(),
 
-      points: routePoints.map((point) => ({
-        ...point,
-      })),
+      colourIndex: nextColourIndex(savedRoutes),
+
+      points,
+
+      geometryHash: geometryHash(points),
 
       plan: JSON.parse(JSON.stringify(routePlan)),
+
+      // Filled by the along-track evaluation effect.
+      evaluation: { status: "pending" },
     };
 
     setSavedRoutes((current) => [...current, savedRoute]);
@@ -2890,12 +2392,33 @@ export default function App() {
       media: { photos: [] },
       route: activeRoute,
       route_candidates: routeCandidates ? { ...routeCandidates, selected_id: selectedCandidateId, evidence_items: undefined } : null,
-      saved_routes: savedRoutes.map((route) => ({
-        id: route.id,
-        name: route.name,
-        metrics: route.metrics ?? null,
-        coordinates: route.points,
-      })),
+      sol,
+      saved_routes: savedRoutes.map((route) => {
+        const stats = routeStats(route);
+        return {
+          id: route.id,
+          name: route.name,
+          coordinates: route.points,
+          statistics_basis: stats.status === "waypoints-only" ? "waypoints only" : "along-track NASA MOLA sampling",
+          metrics: {
+            distance_km: stats.distanceKm,
+            estimated_eva_hours: stats.evaHours,
+            elevation_min_m: stats.elevation_m?.min,
+            mean_elevation_m: stats.elevation_m?.mean,
+            elevation_max_m: stats.elevation_m?.max,
+            elevation_gain_m: stats.elevation_m?.gain,
+            elevation_loss_m: stats.elevation_m?.loss,
+            min_slope_deg: stats.slope_deg?.min,
+            mean_slope_deg: stats.slope_deg?.mean,
+            max_slope_deg: stats.slope_deg?.max,
+            min_roughness_m: stats.roughness_m?.min,
+            mean_roughness_m: stats.roughness_m?.mean,
+            max_roughness_m: stats.roughness_m?.max,
+            terrain_risk_proxy: stats.terrainRisk,
+            data_support_score: stats.dataSupportPct,
+          },
+        };
+      }),
       safe_havens: safeHavens,
       custom_places: customPlaces,
       mission_console: missionConsoleState,
@@ -2903,9 +2426,158 @@ export default function App() {
     };
   }
 
-  async function handleAskIntelligence(messages) {
-    return askMarsIntelligence({ messages, missionState: buildAiMissionState() });
+  async function handleAskIntelligence(messages, options = {}) {
+    return askMarsIntelligence({ messages, missionState: buildAiMissionState(), enableSearch: Boolean(options.enableSearch) });
   }
+
+  /* ---------------------------------------------------------------- COMMAND INDEX */
+
+  function scrollToPanel(id) {
+    const element = document.getElementById(id);
+    if (!element) return;
+    element.scrollIntoView({ behavior: "smooth", block: "start" });
+    element.classList.add("nn-flash");
+    window.setTimeout(() => element.classList.remove("nn-flash"), 1600);
+  }
+
+  function requestUsgsSync() {
+    if (!selectedLocation) return;
+    fetchUsgsSync(selectedLocation.latitude_deg, selectedLocation.longitude_deg, USGS_SYNC_HALF_WIDTH_KM)
+      .then((response) => setUsgsSync({ key: usgsSyncKey, url: `${response.url}&t=${Date.now()}`, extent: response.extent, error: "" }))
+      .catch((err) => setUsgsSync({ key: usgsSyncKey, url: null, extent: null, error: err.message }));
+  }
+
+  function open3dPanel(name) {
+    setMap3dOpen(true);
+    setRequested3dPanel((current) => ({ name, seq: (current?.seq ?? 0) + 1 }));
+  }
+
+  async function handleSnapshotSavedRoute(routeId) {
+    const route = savedRoutes.find((item) => item.id === routeId);
+    if (!route) return;
+    setSnapshotOpen(true);
+    setSnapshotLoading(true);
+    setSnapshotError("");
+    try {
+      setSnapshot(await fetchUsgsRouteSnapshot({ id: route.id, name: route.name, coordinates: route.points }));
+    } catch (err) {
+      setSnapshot(null);
+      setSnapshotError(err.message);
+    } finally {
+      setSnapshotLoading(false);
+    }
+  }
+
+  function reevaluateRoutes(ids = null) {
+    setSavedRoutes((current) => current.map((route) => (!ids || ids.includes(route.id) ? { ...route, evaluation: { status: "pending" } } : route)));
+  }
+
+  async function jumpToPeakDust() {
+    if (!selectedLocation) return;
+    try {
+      const series = await fetchDustSeries(selectedLocation.latitude_deg, selectedLocation.longitude_deg);
+      setSol(series.stats.peak_sol);
+      setNotice(`Sol ${series.stats.peak_sol}: this site's modeled MY34 dust peak (τ ${series.stats.tau.max}).`);
+      scrollToPanel("panel-dust");
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  async function downloadProvenance() {
+    try {
+      const ledger = await fetchProvenanceLedger();
+      downloadTextFile(exportFilename("data-provenance", "json"), JSON.stringify(ledger, null, 2), "application/json");
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  const needSite = () => (selectedLocation ? true : "Select a site first");
+  const savedWithColour = savedRoutes.map((route) => ({ ...route, colour: routeColour(route) }));
+
+  const commandHandlers = {
+    "search-place": { run: () => document.querySelector(".search-box input")?.focus() },
+    "select-coordinate": { run: () => setNotice("Click any point on the 2D map, the 3D globe or the global dust map to select it.") },
+    "save-place": { run: handleSavePlace, available: needSite },
+    "add-safe-haven": { run: handleAddSafeHaven, available: needSite },
+    "sync-usgs": { run: requestUsgsSync, available: needSite },
+    "route-mode": { run: toggleRouteMode },
+    "add-selected-waypoint": { run: handleAddSelected, available: needSite },
+    "analyze-route": { run: handleAnalyzeRoute, available: () => (routePoints.length >= 2 ? true : "Needs at least 2 waypoints") },
+    "remove-last-waypoint": { run: removeLastWaypoint, available: () => (routePoints.length ? true : "No waypoints yet") },
+    "clear-route": { run: clearRoute, available: () => (routePoints.length || routePlan ? true : "No route to clear") },
+    "save-route": { run: handleSaveRoute, available: () => (routePlan && routePoints.length >= 2 ? true : "Analyze a route with at least 2 waypoints first") },
+    "ai-route-design": { run: () => setDesignerOpen(true) },
+    "compare-routes": { run: handleOpenComparison, available: () => (savedRoutes.length >= 2 ? true : "Save at least 2 routes") },
+    "routes-3d": { run: () => open3dPanel("routes") },
+    "route-snapshot": { run: handleOpenSnapshot, available: () => (routePoints.length >= 2 || selectedCandidateId ? true : "Plan or apply a route first") },
+    "reevaluate-routes": { run: () => reevaluateRoutes(), available: () => (savedRoutes.length ? true : "No saved routes") },
+    "mars-intelligence": { run: () => setIntelligenceOpen(true) },
+    "hazard-overview": { run: () => scrollToPanel("panel-interpretation") },
+    "site-science": { run: () => scrollToPanel("panel-site-science") },
+    "dust-panel": { run: () => scrollToPanel("panel-dust") },
+    "dust-play": { run: () => setDustPlaying((value) => !value) },
+    "sol-next": { run: () => setSol((value) => value + 1) },
+    "sol-prev": { run: () => setSol((value) => value - 1) },
+    "sol-peak": { run: jumpToPeakDust, available: needSite },
+    morphology: { run: () => scrollToPanel("panel-morphology") },
+    thermal: { run: () => scrollToPanel("panel-thermal") },
+    "map-3d": { run: () => setMap3dOpen(true) },
+    "exploration-zones": { run: () => open3dPanel("pez") },
+    "focus-usgs": { run: () => scrollToPanel("panel-usgs-map") },
+    "crew-console": { run: () => scrollToPanel("panel-crew") },
+    "orbital-tracking": { run: handleOpenOrbital },
+    "nasa-feed": { run: () => scrollToPanel("panel-feed") },
+    "export-json": { run: handleExportJson },
+    "export-csv": { run: handleExportCsv },
+    "export-route-csv": {
+      run: handleExportRouteCsv,
+      available: () => (routePoints.length >= 2 || selectedCandidateId || savedRoutes.length ? true : "Plan, apply or save a route first"),
+    },
+    "export-comparison": {
+      run: () => downloadTextFile(exportFilename("route-comparison", "csv"), comparisonToCsv(savedRoutes), "text/csv;charset=utf-8"),
+      available: () => (savedRoutes.length ? true : "No saved routes"),
+    },
+    print: { run: handlePrint },
+    provenance: { run: downloadProvenance },
+    "field-notes": { run: () => setCommandIndex({ open: true, tab: "notes" }) },
+    shortcuts: {
+      run: () =>
+        setNotice("Ctrl/⌘+K command index · / search · R route mode · S save route · A route designer · C compare · I intelligence · 3 3D · O orbital · P print · N notes · [ ] sol"),
+    },
+    "backend-status": { run: () => setNotice(backendConnected ? "Backend online (FastAPI, port 8002)." : "Backend unreachable — start uvicorn on port 8002.") },
+    about: { run: () => setCommandIndex({ open: true, tab: "team" }) },
+    "meet-the-team": { run: () => window.open(TEAM_URL, "_blank", "noopener,noreferrer") },
+  };
+
+  const commandRegistry = buildRegistry(commandHandlers);
+  const commandRegistryRef = useRef(commandRegistry);
+
+  useEffect(() => {
+    commandRegistryRef.current = commandRegistry;
+  });
+
+  useEffect(() => {
+    function onKeyDown(event) {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setCommandIndex((state) => ({ open: !state.open, tab: "commands" }));
+        return;
+      }
+      if (event.ctrlKey || event.metaKey || event.altKey) return;
+      const target = event.target;
+      if (target?.closest?.("input, textarea, select, [contenteditable='true'], [role='dialog'], .m3d-shell")) return;
+      const id = SHORTCUTS[event.key.toLowerCase()];
+      const command = id && commandRegistryRef.current.find((c) => c.id === id);
+      if (command?.ok) {
+        event.preventDefault();
+        command.run();
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   /*
    * COMPLETE MISSION STATE
@@ -2924,7 +2596,7 @@ export default function App() {
         project: "NeuroNexus — Interplanetary Survival Guide: Martian Map",
         event: "NASA Space Apps Challenge 2026",
         exported_at: new Date().toISOString(),
-        sol: DEFAULT_SOL,
+        sol,
         backend_connected: backendConnected,
       },
 
@@ -3083,7 +2755,7 @@ export default function App() {
   }
 
   function handlePrint() {
-    setMissionMenuOpen(false);
+    setCommandIndex((state) => ({ ...state, open: false }));
 
     window.setTimeout(() => window.print(), 60);
   }
@@ -3092,6 +2764,8 @@ export default function App() {
     <main className="mission-shell">
       <header className="topbar">
         <div className="brand-block">
+          <img className="brand-logo" src="/team-neuronexus-logo.png" alt="Team NeuroNexus" width="40" height="40" />
+
           <div className="brand-kicker">NASA SPACE APPS 2026</div>
 
           <h1>NEURONEXUS</h1>
@@ -3125,7 +2799,7 @@ export default function App() {
             <div>
               <span className="state-label">SOL</span>
 
-              <strong>{DEFAULT_SOL}</strong>
+              <strong>{sol}</strong>
             </div>
 
             <div>
@@ -3194,9 +2868,10 @@ export default function App() {
 
             <button
               type="button"
-              aria-label="Open mission workspace"
-              aria-expanded={missionMenuOpen}
-              onClick={() => setMissionMenuOpen((open) => !open)}
+              aria-label="Open mission command index"
+              aria-expanded={commandIndex.open}
+              title="Mission Command Index (Ctrl/⌘+K)"
+              onClick={() => setCommandIndex((state) => ({ open: !state.open, tab: "commands" }))}
               style={{
                 minWidth: "42px",
 
@@ -3225,22 +2900,41 @@ export default function App() {
         </div>
       </header>
 
-      <MissionMenu
-        open={missionMenuOpen}
-        onClose={() => setMissionMenuOpen(false)}
-        todoText={todoText}
-        setTodoText={setTodoText}
-        checklist={checklist}
-        onChecklistTextChange={handleChecklistTextChange}
-        onChecklistToggle={handleChecklistToggle}
-        onAddChecklistItem={handleAddChecklistItem}
-        onRemoveChecklistItem={handleRemoveChecklistItem}
-        onExportJson={handleExportJson}
-        onExportCsv={handleExportCsv}
-        onExportRouteCsv={handleExportRouteCsv}
-        routeExportAvailable={routePoints.length >= 2 || Boolean(selectedCandidateId) || savedRoutes.length > 0}
-        onPrint={handlePrint}
+      <CommandIndex
+        key={commandIndex.open ? `open-${commandIndex.tab}` : "closed"}
+        open={commandIndex.open}
+        initialTab={commandIndex.tab}
+        onClose={() => setCommandIndex((state) => ({ ...state, open: false }))}
+        registry={commandRegistry}
+        appVersion={APP_VERSION}
+        notesPanel={
+            <MissionMenu
+                    embedded
+                    open
+              todoText={todoText}
+              setTodoText={setTodoText}
+              checklist={checklist}
+              onChecklistTextChange={handleChecklistTextChange}
+              onChecklistToggle={handleChecklistToggle}
+              onAddChecklistItem={handleAddChecklistItem}
+              onRemoveChecklistItem={handleRemoveChecklistItem}
+              onExportJson={handleExportJson}
+              onExportCsv={handleExportCsv}
+              onExportRouteCsv={handleExportRouteCsv}
+              routeExportAvailable={routePoints.length >= 2 || Boolean(selectedCandidateId) || savedRoutes.length > 0}
+              onPrint={handlePrint}
+            />
+        }
       />
+
+      {notice && (
+        <div className="nn-notice" role="status">
+          <span>{notice}</span>
+          <button type="button" onClick={() => setNotice("")} aria-label="Dismiss">
+            ×
+          </button>
+        </div>
+      )}
 
       {/*
        * Request errors are shown as a floating notice. As an in-flow element the
@@ -3374,7 +3068,7 @@ export default function App() {
             <RoverPhotosPanel feature={namedFeature} />
           </Panel>
 
-          <Panel eyebrow="THERMAL / NASA THEMIS" title="Historical evidence">
+          <Panel eyebrow="THERMAL / NASA THEMIS" title="Historical evidence" id="panel-thermal">
             {!thermalPanel.hasHistorical && (
               <div className="thermal-note" role="status">
                 <strong>THERMAL DATA UNAVAILABLE</strong>
@@ -3579,7 +3273,7 @@ export default function App() {
               />
             </div>
 
-            <div className="map-panel">
+            <div className="map-panel" id="panel-usgs-map">
               <div className="map-panel-title">
                 <span>USGS SCIENTIFIC MAP</span>
 
@@ -3595,14 +3289,7 @@ export default function App() {
                   halfWidthKm={USGS_SYNC_HALF_WIDTH_KM}
                   snapshotAvailable={routePoints.length >= 2 || Boolean(selectedCandidateId)}
                   onOpenSnapshot={handleOpenSnapshot}
-                  onRequestSync={() =>
-                    selectedLocation &&
-                    fetchUsgsSync(selectedLocation.latitude_deg, selectedLocation.longitude_deg, USGS_SYNC_HALF_WIDTH_KM)
-                      .then((response) =>
-                        setUsgsSync({ key: usgsSyncKey, url: `${response.url}&t=${Date.now()}`, extent: response.extent, error: "" }),
-                      )
-                      .catch((err) => setUsgsSync({ key: usgsSyncKey, url: null, extent: null, error: err.message }))
-                  }
+                  onRequestSync={requestUsgsSync}
                 />
               </div>
             </div>
@@ -3642,45 +3329,27 @@ export default function App() {
         </section>
 
         <aside className="right-column">
-          <Panel eyebrow="ATMOSPHERE / NASA AMES" title="Dust scenario">
-            <Metric label="Opacity" value={dust ? Number(dust.opacity).toFixed(3) : "—"} detail="MY34 modeled scenario" />
-
-            <Metric label="Classification" value={environment?.assessment?.dust?.level?.toUpperCase()} />
-
-            <Metric label="Modeled height" value={dust ? `${Number(dust.height_km).toFixed(2)} km` : "—"} />
+          <Panel eyebrow="ATMOSPHERE / NASA AMES" title="Dust scenario" id="panel-dust">
+            <DustScenarioPanel
+              location={selectedLocation}
+              sol={sol}
+              onSolChange={setSol}
+              onSelectCoordinate={handleSelectCoordinate}
+              fallbackDust={dust}
+              playing={dustPlaying}
+              onPlayingChange={setDustPlaying}
+            />
           </Panel>
 
-          <Panel eyebrow="TERRAIN / NASA MOLA" title="Site morphology">
-            <div className="metric-grid">
-              <Metric label="Elevation" value={terrain ? `${Number(terrain.elevation_m).toFixed(0)} m` : "—"} />
-
-              <Metric label="Slope" value={terrain ? `${Number(terrain.slope_deg).toFixed(2)}°` : "—"} />
-
-              <Metric label="Aspect" value={terrain ? `${Number(terrain.aspect_deg).toFixed(1)}°` : "—"} />
-
-              <Metric label="Roughness" value={terrain ? `${Number(terrain.roughness_m).toFixed(1)} m` : "—"} />
-            </div>
-
-            <div className="source-note">
-              <span>DATA LINK</span>
-
-              <strong>{terrain?.source ?? "NASA MOLA MEGDR"}</strong>
-            </div>
-
-            {terrain?.pixels_per_degree && (
-              <div className="source-note">
-                <span>SAMPLING</span>
-
-                <strong>{terrain.pixels_per_degree} PX / DEG</strong>
-              </div>
-            )}
+          <Panel eyebrow="TERRAIN / NASA MOLA" title="Site morphology" id="panel-morphology">
+            <SiteMorphologyPanel location={selectedLocation} terrain={terrain} />
           </Panel>
 
-          <Panel eyebrow="SITE SCIENCE / SURVIVAL" title="Material + habitability context">
+          <Panel eyebrow="SITE SCIENCE / SURVIVAL" title="Material + habitability context" id="panel-site-science">
             <SiteSciencePanel science={siteScience} />
           </Panel>
 
-          <Panel eyebrow="ASSESSMENT / EVIDENCE" title="Interpretation">
+          <Panel eyebrow="ASSESSMENT / EVIDENCE" title="Interpretation" id="panel-interpretation">
             <div className="assessment-status">
               <span>STATUS</span>
 
@@ -3756,7 +3425,7 @@ export default function App() {
             )}
           </Panel>
 
-          <Panel eyebrow="MISSION / OPERATIONS" title="Crewed Mars console">
+          <Panel eyebrow="MISSION / OPERATIONS" title="Crewed Mars console" id="panel-crew">
             <MissionOpsPanel
               consoleState={missionConsoleState}
               profile={missionProfile}
@@ -3765,7 +3434,7 @@ export default function App() {
             />
           </Panel>
 
-          <Panel eyebrow="BRIEFING / NASA FEED" title="Mars reference feed">
+          <Panel eyebrow="BRIEFING / NASA FEED" title="Mars reference feed" id="panel-feed">
             <MarsBriefingPanel />
           </Panel>
         </aside>
@@ -3807,6 +3476,14 @@ export default function App() {
 
           <strong>Observed · Modeled · Derived · Simulated</strong>
         </div>
+
+        <div className="team-credit">
+          <img src="/team-neuronexus-icon.png" alt="" width="18" height="18" />
+          <span>© {new Date().getFullYear()} TEAM NEURONEXUS · NASA SPACE APPS CHALLENGE 2026</span>
+          <a href={TEAM_URL} target="_blank" rel="noreferrer">
+            MEET THE TEAM ↗
+          </a>
+        </div>
       </footer>
 
       <Mars3DView
@@ -3833,6 +3510,12 @@ export default function App() {
         snapshotAvailable={routePoints.length >= 2 || Boolean(selectedCandidateId)}
         onOpenCompare={handleOpenComparison}
         compareAvailable={savedRoutes.length >= 2 || compareRouteIds.length >= 2}
+        savedRoutes={savedWithColour}
+        compareRouteIds={compareRouteIds}
+        onToggleCompareRoute={handleToggleCompareRoute}
+        onSnapshotRoute={handleSnapshotSavedRoute}
+        routeStatsFor={routeStats}
+        requestedPanel={requested3dPanel}
       />
 
       <AiRouteDesigner
@@ -3892,6 +3575,7 @@ export default function App() {
         onAsk={handleAskIntelligence}
         missionSummary={[
           { label: "SITE", value: displayName },
+          { label: "SOL", value: String(sol) },
           { label: "ROUTE", value: routePoints.length ? `${routePoints.length} waypoints` : "none" },
           { label: "CANDIDATES", value: String(candidateRoutes.length) },
           { label: "SAVED", value: String(savedRoutes.length) },
@@ -3906,6 +3590,12 @@ export default function App() {
           onToggleRoute={handleToggleCompareRoute}
           onClose={() => setComparisonOpen(false)}
           onDeleteRoute={handleDeleteSavedRoute}
+          onReevaluate={(id) => reevaluateRoutes([id])}
+          onShowIn3D={() => {
+            setComparisonOpen(false);
+            open3dPanel("routes");
+          }}
+          onExportFile={(base, extension, content, mime) => downloadTextFile(exportFilename(base, extension), content, mime)}
         />
       )}
     </main>

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
+import numpy as np
+
 from fastapi import (
     APIRouter,
     HTTPException,
@@ -189,6 +191,63 @@ def terrain_contours(
     )
 
 
+def _triplet(values: np.ndarray, digits: int) -> dict[str, float | None]:
+    finite = values[np.isfinite(values)]
+    if finite.size == 0:
+        return {"min": None, "mean": None, "max": None}
+    return {
+        "min": round(float(finite.min()), digits),
+        "mean": round(float(finite.mean()), digits),
+        "max": round(float(finite.max()), digits),
+    }
+
+
+def _window_summary(
+    elevation: np.ndarray,
+    slope: np.ndarray,
+    roughness: np.ndarray,
+) -> dict[str, Any]:
+    """
+    MIN / MEAN / MAX over the valid pixels of a
+    terrain window, plus the legacy flat keys.
+    """
+
+    elevation = np.asarray(elevation, dtype=float)
+    slope = np.asarray(slope, dtype=float)
+    roughness = np.asarray(roughness, dtype=float)
+
+    valid = (
+        np.isfinite(elevation)
+        & np.isfinite(slope)
+        & np.isfinite(roughness)
+    )
+
+    elevation_stats = _triplet(elevation[valid], 1)
+    slope_stats = _triplet(slope[valid], 3)
+    roughness_stats = _triplet(roughness[valid], 3)
+
+    p90 = (
+        round(float(np.percentile(slope[valid], 90)), 3)
+        if valid.any()
+        else None
+    )
+
+    return {
+        "elevation_m": elevation_stats,
+        "slope_deg": {**slope_stats, "p90": p90},
+        "roughness_m": roughness_stats,
+        "valid_pixels": int(np.count_nonzero(valid)),
+        "total_pixels": int(valid.size),
+        # Legacy keys (pre mission-console-v2 clients).
+        "elevation_min_m": elevation_stats["min"],
+        "elevation_max_m": elevation_stats["max"],
+        "slope_max_deg": slope_stats["max"],
+        "slope_mean_deg": slope_stats["mean"],
+        "roughness_max_m": roughness_stats["max"],
+        "roughness_mean_m": roughness_stats["mean"],
+    }
+
+
 @router.get("/window")
 def terrain_window(
     latitude: float = Query(
@@ -305,26 +364,11 @@ def terrain_window(
             .astype(float)
             .tolist()
         ),
-        "summary": {
-            "elevation_min_m": float(
-                window.elevations_m.min()
-            ),
-            "elevation_max_m": float(
-                window.elevations_m.max()
-            ),
-            "slope_max_deg": float(
-                derivatives.slope_deg.max()
-            ),
-            "slope_mean_deg": float(
-                derivatives.slope_deg.mean()
-            ),
-            "roughness_max_m": float(
-                derivatives.roughness_m.max()
-            ),
-            "roughness_mean_m": float(
-                derivatives.roughness_m.mean()
-            ),
-        },
+        "summary": _window_summary(
+            window.elevations_m,
+            derivatives.slope_deg,
+            derivatives.roughness_m,
+        ),
     }
 
 

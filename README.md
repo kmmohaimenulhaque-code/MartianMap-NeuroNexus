@@ -42,6 +42,16 @@ The goal is not to declare a universally "safe" place on Mars. NeuroNexus provid
 * USGS route snapshot + exports: route visualisation against USGS SIM 3292 geology plus JSON/CSV exports.
 * Mars Intelligence: Google Gemini interprets structured NeuroNexus results and explains trade-offs; Gemini does not generate route geometry or alter deterministic numerical results.
 
+## Mission Console v2
+
+* **Dust scenario graphics:** opacity across all 668 sols of NASA Ames MY34, dust-top height, a clickable global dust map and a sol scrubber with playback. The console sol is now adjustable.
+* **Site morphology statistics:** elevation, slope and roughness AT SITE plus MIN / MEAN / MAX over a 2, 4, 10 or 20 km NASA MOLA window.
+* **Saved routes everywhere:** every saved route gets along-track MIN / MEAN / MAX statistics and an elevation profile. Routes are drawn on the 3D globe (⌁ ROUTES panel) and compared side by side with best and worst marked per metric, per-route and combined USGS snapshots, and CSV/JSON export.
+* **☰ Mission Command Index:** every console feature by category, with search, keyboard shortcuts (Ctrl/⌘+K) and a reason shown when an action is unavailable. It also holds field notes, the checklist and **Meet the Team**.
+* **Mars Intelligence v2:** answers about this mission, Mars science, missions and history, and how to use NeuroNexus. It draws on 26 tools, a cited knowledge base and optional web search.
+
+Design: [docs/architecture/mission-console-v2.md](docs/architecture/mission-console-v2.md) · Deployment: [DEPLOYMENT.md](DEPLOYMENT.md)
+
 ## Screenshots : the mission console in action
 
 The screenshots below show the Master-Ai interface, including Gale site context, historical thermal evidence, route comparison, and the interactive 3D workspace. Displayed values belong to the captured application state used in this project.
@@ -435,3 +445,9 @@ https://github.com/kmmohaimenulhaque-code/martian-map/tree/Master-Ai
 
 # Source ledger:
 https://github.com/kmmohaimenulhaque-code/martian-map/blob/Master-Ai/data/manifests/updated_source_ledger.json
+
+# Team
+
+**Team NeuroNexus** · NASA International Space Apps Challenge 2026 · [Meet the Team](https://www.spaceappschallenge.org/2026/find-a-team/neuronexus1/)
+
+© 2026 Team NeuroNexus. All rights reserved. Mars data courtesy of NASA, USGS and their partners. NASA does not endorse any non-U.S. Government entity and is not responsible for information contained on non-U.S. Government websites.

@@ -1,0 +1,28 @@
+# NeuroNexus API (FastAPI). Build from the repository root:
+#   docker build -f deploy/Dockerfile.backend -t neuronexus-api .
+# Requires the real MOLA files in the build context (run `git lfs pull` first).
+FROM python:3.14-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+WORKDIR /app
+
+COPY deploy/requirements-api.txt ./requirements-api.txt
+RUN pip install -r requirements-api.txt
+
+COPY science ./science
+COPY data ./data
+COPY docs ./docs
+# The repository-root dust scenario is used when the mars-gcm submodule is absent.
+COPY DustScenario_MY34.nc README.md SETUP_INSTRUCTIONS.md DEPLOYMENT.md SOURCES_MLA.md RESULTS.md ./
+# Shared with Mars Intelligence's UI guide.
+COPY frontend/src/features/commands.json ./frontend/src/features/commands.json
+
+RUN useradd --create-home neuronexus && chown -R neuronexus /app
+USER neuronexus
+
+EXPOSE 8002
+HEALTHCHECK --interval=30s --timeout=5s --start-period=40s CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8002/dust/meta', timeout=4)"
+CMD ["uvicorn", "science.weather.api.environment:app", "--host", "0.0.0.0", "--port", "8002", "--workers", "2"]

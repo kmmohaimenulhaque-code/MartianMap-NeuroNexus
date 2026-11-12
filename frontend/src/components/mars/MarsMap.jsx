@@ -434,6 +434,25 @@ function CoordinateCreator({ draftLocation, setDraftLocation, onCreateUserPlace,
   );
 }
 
+/* Frame every compared route once the comparison map has its real size. */
+function FitComparisonRoutes({ routes }) {
+  const map = useMap();
+  const key = (routes ?? []).map((route) => route.id ?? route.name).join("|");
+
+  useEffect(() => {
+    const points = (routes ?? []).flatMap((route) => routeCoordinates(route));
+    if (points.length < 2) return undefined;
+    const timer = window.setTimeout(() => {
+      map.invalidateSize();
+      map.fitBounds(points, { padding: [40, 40], maxZoom: 9 });
+    }, 80);
+    return () => window.clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [map, key]);
+
+  return null;
+}
+
 function ComparisonRoutesLayer({ routes }) {
   if (!Array.isArray(routes) || !routes.length) {
     return null;
@@ -872,6 +891,8 @@ export default function MarsMap({
         {!comparisonMode && effectiveEnd && routePoints.length === 0 && <RoutePointMarker point={effectiveEnd} label="DESTINATION" color="#ff647c" />}
 
         {comparisonMode && <ComparisonRoutesLayer routes={comparisonRoutes} />}
+
+        {comparisonMode && <FitComparisonRoutes routes={comparisonRoutes} />}
 
         {effectiveInteractive && !comparisonMode && (
           <CustomPlacesLayer

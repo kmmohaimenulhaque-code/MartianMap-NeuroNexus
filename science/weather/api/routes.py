@@ -11,13 +11,7 @@ sys.path.insert(0, str(ROOT))
 from science.weather.models.mars_weather import MarsWeatherModel
 
 
-DATASET = (
-    ROOT
-    / "external/mars-gcm/data/"
-    / "DustScenario_MY34.nc"
-)
-
-model = MarsWeatherModel(DATASET)
+model = MarsWeatherModel()  # dataset resolved by science.weather.config.dust_file()
 
 app = FastAPI(
     title="NeuroNexus Mars Weather Engine",

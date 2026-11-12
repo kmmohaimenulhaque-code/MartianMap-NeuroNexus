@@ -141,13 +141,55 @@ export async function generateRouteCandidates({
   });
 }
 
-export async function evaluateRoute({ coordinates, evaPaceKmh, ascentAllowanceMPerH, safeHavens = [], includeScience = true }) {
+export async function evaluateRoute({
+  coordinates,
+  evaPaceKmh,
+  ascentAllowanceMPerH,
+  safeHavens = [],
+  includeScience = true,
+  includeProfile = false,
+}) {
   return postJson("/routes/evaluate", {
     coordinates: coordinates.map((point) => routePoint(point)),
     eva_pace_kmh: evaPaceKmh,
     ascent_allowance_m_per_h: ascentAllowanceMPerH,
     safe_havens: safeHavens.map((haven) => ({ ...routePoint(haven), id: haven.id, name: haven.name })),
     include_science: includeScience,
+    include_profile: includeProfile,
+  });
+}
+
+/* ---------------------------------------------------------------- dust scenario + terrain statistics */
+
+export async function fetchDustSeries(latitude, longitude, { signal } = {}) {
+  const params = new URLSearchParams({ latitude: String(Number(latitude)), longitude: String(normaliseLongitude(longitude)) });
+  return fetchJson(`${API_BASE}/dust/timeseries?${params}`, { signal });
+}
+
+export async function fetchDustMap(sol, { signal } = {}) {
+  return fetchJson(`${API_BASE}/dust/map?sol=${encodeURIComponent(sol)}`, { signal });
+}
+
+export async function fetchTerrainWindow(latitude, longitude, windowKm = 4, { signal } = {}) {
+  const params = new URLSearchParams({
+    latitude: String(Number(latitude)),
+    longitude: String(normaliseLongitude(longitude)),
+    width_km: String(windowKm),
+    height_km: String(windowKm),
+  });
+  return fetchJson(`${API_BASE}/terrain/window?${params}`, { signal });
+}
+
+/* One USGS frame with several routes drawn in their comparison colours. */
+export async function fetchUsgsMultiRouteSnapshot(routes) {
+  return postJson("/usgs/route-snapshot", {
+    name: "Route comparison",
+    routes: routes.map((route) => ({
+      route_id: route.id,
+      name: route.name,
+      colour: route.colour,
+      coordinates: route.points.map((point) => routePoint(point)),
+    })),
   });
 }
 

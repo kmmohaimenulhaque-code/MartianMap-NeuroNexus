@@ -296,3 +296,11 @@ def call_tool(name: str, arguments: dict[str, Any], state: dict[str, Any]) -> An
         return tool(state, **(arguments or {}))
     except Exception as exc:  # a failing tool must not break the conversation
         return {"status": "TOOL ERROR", "tool": name, "error": str(exc)[:300]}
+
+
+# Knowledge, reference and calculation tools (registered with @tool).
+from science.ai.knowledge_tools import REGISTRY as _KNOWLEDGE_TOOLS  # noqa: E402
+
+for _name, _entry in _KNOWLEDGE_TOOLS.items():
+    TOOLS[_name] = _entry["fn"]
+    DECLARATIONS.append(_entry["declaration"])

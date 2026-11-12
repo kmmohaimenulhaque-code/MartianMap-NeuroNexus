@@ -1,0 +1,34 @@
+/* NeuroNexus design tokens — extracted from the console's existing literals. */
+:root {
+  --nn-cyan: #75e6ff;
+  --nn-cyan-soft: rgba(117, 230, 255, 0.55);
+  --nn-cyan-dim: rgba(117, 230, 255, 0.22);
+  --nn-cyan-faint: rgba(117, 230, 255, 0.08);
+  --nn-glow: 0 0 6px rgba(117, 230, 255, 0.55), 0 0 18px rgba(117, 230, 255, 0.18);
+  --nn-glow-soft: 0 0 12px rgba(117, 230, 255, 0.12);
+  --nn-surface: #091115;
+  --nn-surface-2: #081014;
+  --nn-surface-glass: rgba(7, 15, 19, 0.76);
+  --nn-border: #29414b;
+  --nn-text: #a8bbc1;
+  --nn-text-strong: #d8e6ea;
+  --nn-text-dim: #71848c;
+  --nn-green: #8cf0b1;
+  --nn-amber: #ffc46b;
+  --nn-red: #ff647c;
+  --nn-series-1: #75e6ff;
+  --nn-series-2: #ff9f68;
+  --nn-series-3: #8cf0b1;
+  --nn-series-4: #c99bff;
+  --nn-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+@keyframes nn-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
