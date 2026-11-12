@@ -1,0 +1,3 @@
+[submodule "external/mars-gcm"]
+	path = external/mars-gcm
+	url = https://github.com/kmmohaimenulhaque-code/Mars-weather-
