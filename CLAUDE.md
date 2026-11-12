@@ -29,6 +29,14 @@ node frontend/e2e/devices.mjs                               # needs the server o
 - Never commit secrets, `.env`, rasters over 20 MB, caches or `build/`.
 - Do not upload to Hugging Face or re-record the demo pack unless explicitly asked.
 
+## Keeping the live link warm
+- Whenever the working (judging) link is updated, schedule an hourly visit to it as a Routine
+  (fresh session per fire) that runs `python tools/warm_link.py <link>`: it loads the page, wakes every Render
+  service behind it and precomputes the cores' rover lines. Point `LINK` in the script at the new link.
+- Current schedule: every hour on 2026-11-13 and 2026-11-14 (Asia/Dhaka); the Routine disables itself after that.
+- Free Render services still sleep 15 min after each visit, and 22 services x 48 h of hourly wakes use about
+  350 of the 750 free instance hours a month. Do not schedule visits more often than hourly without asking.
+
 ## UI conventions
 - Font: Switzer everywhere (`--nn-font`). Scale: 12 px labels, 13 px body, 14 px key figures.
 - One cyan: `#01FFFF` (`--nn-cyan`). Cyan text is regular weight (never bold). Labels are gray.
