@@ -1,548 +1,90 @@
 {
-“project”: “NeuroNexus”,
-“schema_version”: “3.0”,
-“purpose”: “External-source and provenance ledger for the NeuroNexus Mars mission-planning and scientific intelligence system.”,
-“provenance_boundary”: {
-“external_sources”: “Authoritative or external datasets, APIs, catalogues, models, imagery, and reference material used by NeuroNexus.”,
-“derived_outputs”: “Values and classifications calculated by NeuroNexus from external inputs.”,
-“team_methods”: “Algorithms, scoring methods, route objectives, and models implemented by the NeuroNexus team.”,
-“ai_interpretation”: “Google Gemini interpretation of structured NeuroNexus results; AI prose is never treated as a NASA observation.”,
-“unavailable”: “A source or dataset that is known/referenced but not ingested into the application is explicitly marked unavailable or not_ingested rather than replaced with invented data.”
-},
-“sources”: [
-{
-“id”: “NASA_PDS”,
-“organization”: “NASA Planetary Data System”,
-“role”: “primary_archive”,
-“status”: “USED”,
-“url”: “https://pds.nasa.gov/”,
-“used_for”: [
-“authoritative planetary-data archive”,
-“MOLA data provenance”,
-“Mars science dataset provenance”
-]
-},
-{
-“id”: “MOLA”,
-“organization”: “NASA / Mars Global Surveyor / MOLA”,
-“role”: “terrain”,
-“status”: “USED_AND_INGESTED”,
-“url”: “https://pds-geosciences.wustl.edu/missions/mgs/megdr.html”,
-“used_for”: [
-“global elevation”,
-“bounded local terrain windows”,
-“slope derivation”,
-“roughness derivation”,
-“local relief”,
-“deterministic route-planning terrain grids”,
-“waypoint terrain analysis”
-],
-“datasets”: [
-“MGS-M-MOLA-5-MEGDR-L3-V1.0 128 px/degree global topography”,
-“MOLA polar 512 px/degree topography”
-]
-},
-{
-“id”: “THEMIS”,
-“organization”: “NASA / Mars Odyssey / THEMIS / Arizona State University”,
-“role”: “visible_and_thermal_imagery”,
-“status”: “USED_AND_INGESTED”,
-“url”: “https://themis.asu.edu/”,
-“used_for”: [
-“historical thermal observations”,
-“IR predicted brightness-temperature context”,
-“site thermal evidence”,
-“THEMIS-derived scientific indexing”
-],
-“note”: “THEMIS values in NeuroNexus represent historical archived observations, not live measurements.”
-},
-{
-“id”: “NASA_AMES_MGCM”,
-“organization”: “NASA Ames Research Center”,
-“role”: “mars_climate_model”,
-“status”: “USED_AND_INGESTED”,
-“url”: “https://www.nasa.gov/ames/mars-climate-modeling-center/”,
-“used_for”: [
-“MY34 modelled dust opacity context”,
-“dust height/scenario information”
-],
-“evidence_class”: “MODELED”
-},
-{
-“id”: “USGS_IAU_GAZETTEER”,
-“organization”: “USGS Astrogeology / International Astronomical Union”,
-“role”: “named_features”,
-“status”: “USED_AND_INGESTED”,
-“url”: “https://planetarynames.wr.usgs.gov/”,
-“used_for”: [
-“2,052 Mars named features”,
-“feature names”,
-“feature classes”,
-“coordinates”,
-“diameters where available”,
-“site identity”,
-“named-feature search”,
-“nearest-feature context”
-]
-},
-{
-“id”: “USGS_SIM_3292”,
-“organization”: “USGS Astrogeology”,
-“role”: “geologic_map”,
-“status”: “USED”,
-“url”: “https://pubs.usgs.gov/sim/3292/”,
-“used_for”: [
-“global Mars geology”,
-“geologic units”,
-“geologic contacts”,
-“geologic structures”,
-“landing-site map layer”,
-“USGS route snapshot”,
-“scientific map synchronisation”
-],
-“citation”: “Tanaka et al., 2014, Geologic Map of Mars, USGS SIM 3292, 1:20,000,000.”
-},
-{
-“id”: “USGS_SIM_3292_ARCGIS”,
-“organization”: “USGS / ArcGIS”,
-“role”: “geology_feature_services”,
-“status”: “USED”,
-“url”: “https://services.arcgis.com/v01gqwM5QqNysAAi/arcgis/rest/services/Tanaka_et_al_2014_Mars_Global_Map_Features/FeatureServer”,
-“used_for”: [
-“3D-accessible geology feature queries”,
-“geologic units”,
-“contacts”,
-“structures”,
-“landing-site points”
-],
-“note”: “The ArcGIS FeatureServer is used as the delivery mechanism for USGS SIM 3292 map features.”
-},
-{
-“id”: “NASA_MMGIS”,
-“organization”: “NASA”,
-“role”: “rover_traverses”,
-“status”: “USED”,
-“url”: “https://mars.nasa.gov/mmgis/”,
-“used_for”: [
-“Curiosity traverse path”,
-“Perseverance traverse path”,
-“latest rover traverse position context”
-],
-“endpoints”: [
-“https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_traverse.json”,
-“https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_traverse.json”
-],
-“note”: “Traverse paths are fetched from NASA MMGIS and decimated only for browser rendering; coordinates are not fabricated.”
-},
-{
-“id”: “NASA_CURIOSITY”,
-“organization”: “NASA / Mars Science Laboratory”,
-“role”: “rover_and_science_context”,
-“status”: “USED_AS_REFERENCE”,
-“url”: “https://science.nasa.gov/mission/msl-curiosity/”,
-“used_for”: [
-“Curiosity mission context”,
-“Gale Crater ancient-habitability context”,
-“surface science interpretation”
-]
-},
-{
-“id”: “NASA_PERSEVERANCE”,
-“organization”: “NASA / Mars 2020”,
-“role”: “rover_and_science_context”,
-“status”: “USED_AS_REFERENCE”,
-“url”: “https://science.nasa.gov/mission/mars-2020-perseverance/”,
-“used_for”: [
-“Perseverance mission context”,
-“Jezero ancient-habitability context”,
-“rover exploration context”
-]
-},
-{
-“id”: “NASA_RAD”,
-“organization”: “NASA / Mars Science Laboratory / Radiation Assessment Detector”,
-“role”: “surface_radiation_reference”,
-“status”: “USED_AS_REFERENCE”,
-“url”: “https://science.nasa.gov/resource/radiation-measurements-on-mars/”,
-“used_for”: [
-“historical Gale Crater surface-radiation reference”
-],
-“note”: “Historical measurement context only; not presented as a live forecast.”
-},
-{
-“id”: “NASA_IMAGE_LIBRARY”,
-“organization”: “NASA”,
-“role”: “mission_imagery_metadata”,
-“status”: “USED_AS_REFERENCE”,
-“url”: “https://images.nasa.gov/”,
-“used_for”: [
-“rover and mission imagery metadata”
-]
-},
-{
-“id”: “NASA_MARS”,
-“organization”: “NASA”,
-“role”: “mars_reference”,
-“status”: “USED_AS_REFERENCE”,
-“url”: “https://science.nasa.gov/mars/”,
-“used_for”: [
-“Mars reference information”,
-“global atmospheric context”,
-“general Mars science context”
-]
-},
-{
-“id”: “NASA_HUMANS_TO_MARS”,
-“organization”: “NASA”,
-“role”: “human_exploration_context”,
-“status”: “USED_AS_REFERENCE”,
-“url”: “https://www.nasa.gov/humans-in-space/humans-to-mars/”,
-“used_for”: [
-“human Mars mission context”,
-“oxygen/water/food/power planning context”,
-“long-duration mission context”
-]
-},
-{
-“id”: “NASA_SPACE_RADIATION”,
-“organization”: “NASA Human Research Program”,
-“role”: “radiation_hazard_reference”,
-“status”: “USED_AS_REFERENCE”,
-“url”: “https://www.nasa.gov/hrp/hazard-space-radiation/”,
-“used_for”: [
-“galactic cosmic ray context”,
-“solar particle event context”,
-“radiation monitoring context”
-]
-},
-{
-“id”: “NASA_EVA”,
-“organization”: “NASA”,
-“role”: “surface_mobility_reference”,
-“status”: “USED_AS_REFERENCE”,
-“url”: “https://www.nasa.gov/suits-and-rovers/”,
-“used_for”: [
-“EVA terminology”,
-“surface mobility context”,
-“spacesuit context”
-]
-},
-{
-“id”: “NASA_MARS_EVA_TECHNOLOGY”,
-“organization”: “NASA Technical Reports Server”,
-“role”: “human_surface_mobility_reference”,
-“status”: “USED_AS_REFERENCE”,
-“url”: “https://ntrs.nasa.gov/api/citations/20260001086/downloads/20260001086.pdf?attachment=true”,
-“used_for”: [
-“surface mobility context”,
-“life-support/ECLSS context”
-]
-},
-{
-“id”: “NASA_MARTIAN_DUST”,
-“organization”: “NASA”,
-“role”: “dust_exposure_reference”,
-“status”: “USED_AS_REFERENCE”,
-“url”: “https://www.nasa.gov/general/establishing-crew-exposure-limits-of-martian-dust/”,
-“used_for”: [
-“crew dust exposure context”,
-“research uncertainty”
-]
-},
-{
-“id”: “NASA_SWIM”,
-“organization”: “NASA / SWIM research programme”,
-“role”: “accessible_water_ice_context”,
-“status”: “USED_AS_REFERENCE_ONLY”,
-“url”: “https://swim.psi.edu/SWIM4MIMProducts.php”,
-“used_for”: [
-“documented accessible-ice study regions”,
-“human exploration context”
-],
-“note”: “The full SWIM ice-consensus raster is not ingested by NeuroNexus and is explicitly reported as UNAVAILABLE. Region markers are context only and are not the SWIM raster.”
-},
-{
-“id”: “NASA_MARS_WATER_MAPS”,
-“organization”: “NASA / Mars Water Maps”,
-“role”: “water_ice_reference”,
-“status”: “USED_AS_REFERENCE_ONLY”,
-“url”: “https://ammos.nasa.gov/marswatermaps/?mission=MWR”,
-“used_for”: [
-“water-ice exploration context”
-],
-“note”: “Reference link only; no fabricated water-ice values are generated.”
-},
-{
-“id”: “NASA_JPL_CAD”,
-“organization”: “NASA / JPL Solar System Dynamics”,
-“role”: “orbital_tracking”,
-“status”: “USED”,
-“url”: “https://ssd-api.jpl.nasa.gov/doc/cad.html”,
-“used_for”: [
-“near-Mars small-body close approaches”,
-“distance information”,
-“uncertainty information”
-],
-“note”: “Close-approach data are for observation and awareness; they are not impact predictions.”
-},
-{
-“id”: “ESRI_MARS”,
-“organization”: “Esri / ArcGIS”,
-“role”: “3d_planetary_visualisation”,
-“status”: “USED”,
-“urls”: [
-“https://astro.arcgis.com/”,
-“https://js.arcgis.com/”
-],
-“services”: [
-“https://astro.arcgis.com/arcgis/rest/services/OnMars/MDIM/MapServer”,
-“https://astro.arcgis.com/arcgis/rest/services/OnMars/MColorDEM/MapServer”,
-“https://astro.arcgis.com/arcgis/rest/services/OnMars/MDEM200M/ImageServer”
-],
-“used_for”: [
-“on-demand interactive 3D Mars SceneView”,
-“public Mars elevation service”,
-“Viking MDIM imagery”,
-“colourised Mars elevation”,
-“Mars 2000 coordinate visualisation”
-],
-“note”: “These services provide the browser-facing 3D visualisation. They are distinct from NeuroNexus’s locally ingested NASA MOLA measurements used for deterministic analysis.”
-},
-{
-“id”: “ESA_MARS_EXPRESS”,
-“organization”: “European Space Agency”,
-“role”: “mars_news”,
-“status”: “USED”,
-“url”: “https://www.esa.int/rssfeed/Science_Exploration/Space_Science/Mars_Express”,
-“used_for”: [
-“recent Mars briefing/news feed”,
-“Mars Express updates”
-]
-},
-{
-“id”: “ESA_EXOMARS”,
-“organization”: “European Space Agency”,
-“role”: “mars_news”,
-“status”: “USED”,
-“url”: “https://www.esa.int/rssfeed/Science_Exploration/Human_and_Robotic_Exploration/Exploration/ExoMars”,
-“used_for”: [
-“recent Mars briefing/news feed”,
-“ExoMars updates”
-]
-},
-{
-“id”: “PLANETARY_SOCIETY”,
-“organization”: “The Planetary Society”,
-“role”: “mars_news”,
-“status”: “USED”,
-“url”: “https://www.planetary.org/rss/articles”,
-“used_for”: [
-“recent Mars briefing/news feed”
-]
-},
-{
-“id”: “CRISM”,
-“organization”: “NASA / Mars Reconnaissance Orbiter / CRISM”,
-“role”: “mineralogy”,
-“status”: “CATALOGUED_NOT_INGESTED”,
-“url”: “https://science.nasa.gov/mission/mars-reconnaissance-orbiter/crism/”,
-“used_for”: [
-“science catalogue/provenance roadmap”,
-“future mineralogy ingestion context”
-],
-“note”: “NeuroNexus does not currently present a complete site-specific CRISM mineralogy layer.”
-},
-{
-“id”: “APXS”,
-“organization”: “NASA / Mars Science Laboratory / APXS”,
-“role”: “elemental_soil_and_rock_chemistry”,
-“status”: “CATALOGUED_NOT_INGESTED”,
-“used_for”: [
-“science catalogue/provenance roadmap”
-]
-},
-{
-“id”: “CHEMCAM”,
-“organization”: “NASA / Mars Science Laboratory / ChemCam”,
-“role”: “geochemistry”,
-“status”: “CATALOGUED_NOT_INGESTED”,
-“used_for”: [
-“science catalogue/provenance roadmap”
-]
-},
-{
-“id”: “CHEMIN”,
-“organization”: “NASA / Mars Science Laboratory / CheMin”,
-“role”: “mineralogy”,
-“status”: “CATALOGUED_NOT_INGESTED”,
-“used_for”: [
-“science catalogue/provenance roadmap”
-]
-},
-{
-“id”: “GRS”,
-“organization”: “NASA / Mars Odyssey / GRS”,
-“role”: “regional_composition_and_hydrogen”,
-“status”: “CATALOGUED_NOT_INGESTED”,
-“used_for”: [
-“science catalogue/provenance roadmap”
-]
-},
-{
-“id”: “SHARAD”,
-“organization”: “NASA / Mars Reconnaissance Orbiter / SHARAD”,
-“role”: “subsurface”,
-“status”: “CATALOGUED_NOT_INGESTED”,
-“used_for”: [
-“science catalogue/provenance roadmap”
-]
-},
-{
-“id”: “MCS”,
-“organization”: “NASA / Mars Reconnaissance Orbiter / MCS”,
-“role”: “atmosphere”,
-“status”: “CATALOGUED_NOT_INGESTED”,
-“used_for”: [
-“science catalogue/provenance roadmap”
-]
-},
-{
-“id”: “MARCI”,
-“organization”: “NASA / Mars Reconnaissance Orbiter / MARCI”,
-“role”: “clouds_and_dust”,
-“status”: “CATALOGUED_NOT_INGESTED”,
-“used_for”: [
-“science catalogue/provenance roadmap”
-]
-},
-{
-“id”: “MAVEN”,
-“organization”: “NASA / MAVEN”,
-“role”: “upper_atmosphere_and_space_environment”,
-“status”: “CATALOGUED_NOT_INGESTED”,
-“used_for”: [
-“science catalogue/provenance roadmap”
-]
-},
-{
-“id”: “MSL_REMS”,
-“organization”: “NASA / Mars Science Laboratory / REMS”,
-“role”: “surface_weather”,
-“status”: “CATALOGUED_NOT_INGESTED”,
-“used_for”: [
-“science catalogue/provenance roadmap”
-]
-},
-{
-“id”: “MARS2020_MEDA”,
-“organization”: “NASA / Mars 2020 / MEDA”,
-“role”: “surface_environment”,
-“status”: “CATALOGUED_NOT_INGESTED”,
-“used_for”: [
-“science catalogue/provenance roadmap”
-]
-},
-{
-“id”: “CTX”,
-“organization”: “NASA / Mars Reconnaissance Orbiter / CTX”,
-“role”: “regional_imagery”,
-“status”: “CATALOGUED_NOT_INGESTED”,
-“used_for”: [
-“science catalogue/provenance roadmap”
-]
-},
-{
-“id”: “HIRISE”,
-“organization”: “NASA / Mars Reconnaissance Orbiter / HiRISE”,
-“role”: “high_resolution_imagery”,
-“status”: “CATALOGUED_NOT_INGESTED”,
-“used_for”: [
-“science catalogue/provenance roadmap”
-]
-},
-{
-“id”: “SPICE”,
-“organization”: “NASA / NAIF”,
-“role”: “observation_geometry”,
-“status”: “CATALOGUED_NOT_INGESTED”,
-“used_for”: [
-“science catalogue/provenance roadmap”
-]
-}
-],
-“team_outputs”: [
-{
-“id”: “NN_ROUTE_ENGINE”,
-“type”: “TEAM_METHOD”,
-“title”: “Deterministic multi-objective Mars route engine”,
-“status”: “IMPLEMENTED”,
-“description”: “Generates route candidates from bounded terrain planning grids using documented objectives and deterministic numerical calculations.”
-},
-{
-“id”: “NN_WALKABILITY”,
-“type”: “DERIVED_OUTPUT”,
-“title”: “NeuroNexus derived walkability score”,
-“status”: “IMPLEMENTED”,
-“description”: “Derived from NASA MOLA slope, roughness and local relief. Planning aid only.”
-},
-{
-“id”: “NN_TERRAIN_RISK_PROXY”,
-“type”: “DERIVED_OUTPUT”,
-“title”: “NeuroNexus terrain-risk proxy”,
-“status”: “IMPLEMENTED”,
-“description”: “Transparent terrain-burden proxy used for route comparison. Not a NASA-certified safety assessment.”
-},
-{
-“id”: “NN_EVA_MODEL”,
-“type”: “TEAM_METHOD”,
-“title”: “Estimated EVA time model”,
-“status”: “IMPLEMENTED”,
-“description”: “Configurable planning estimate based on route distance and ascent allowance. Not operational flight data.”
-},
-{
-“id”: “NN_EXPLORATION_ZONES”,
-“type”: “DERIVED_OUTPUT”,
-“title”: “Potential Exploration Zone”,
-“status”: “IMPLEMENTED”,
-“description”: “Bounded terrain-derived candidate zones using NeuroNexus criteria and exploration context. Not an official NASA landing or safety zone.”
-},
-{
-“id”: “NN_MISSION_SIM”,
-“type”: “TEAM_EXPERIMENT”,
-“title”: “Crewed Mars mission-console simulation profile”,
-“status”: “IMPLEMENTED”,
-“description”: “Configurable simulation values for mission-planning interface experiments; simulation values are not measurements.”
-},
-{
-“id”: “NN_SOURCE_PROVENANCE”,
-“type”: “TEAM_METHOD”,
-“title”: “Evidence/provenance classification system”,
-“status”: “IMPLEMENTED”,
-“description”: “Separates NASA observations, NASA references, model outputs, derived computations, simulations and unavailable evidence.”
-},
-{
-“id”: “GEMINI”,
-“type”: “AI_INTERPRETATION”,
-“title”: “Google Gemini interpretation layer”,
-“status”: “IMPLEMENTED”,
-“url”: “https://ai.google.dev/gemini-api/docs”,
-“description”: “Interprets structured NeuroNexus results, explains trade-offs and supports mission-console interaction. Gemini does not generate deterministic route geometry or alter computed numerical results.”
-}
-],
-“evidence_statuses”: {
-“USED”: “External source actively used by an application subsystem.”,
-“USED_AND_INGESTED”: “External source data are locally ingested/indexed and used by the scientific pipeline.”,
-“USED_AS_REFERENCE”: “External source supports scientific or mission context but is not necessarily a locally ingested measurement dataset.”,
-“USED_AS_REFERENCE_ONLY”: “External source is linked/referenced for context; the underlying full dataset is not ingested.”,
-“CATALOGUED_NOT_INGESTED”: “The source is registered in the science catalogue/provenance roadmap but its data are not currently ingested for site-specific calculations.”,
-“UNAVAILABLE”: “The source is known but unavailable in the current runtime; NeuroNexus does not fabricate a substitute.”
-},
-“project_boundary”: {
-“no_fake_data”: true,
-“no_nasa_certified_safety_claims”: true,
-“no_present_day_habitability_claim_from_ancient_evidence”: true,
-“no_resource_confirmation_from_context_layers”: true,
-“ai_is_not_presented_as_nasa_observation”: true,
-“unavailable_data_are_reported_explicitly”: true
-}
+  "project": "NeuroNexus",
+  "sources": [
+    {
+      "id": "NASA_PDS",
+      "organization": "NASA Planetary Data System",
+      "role": "primary_archive"
+    },
+    {
+      "id": "MOLA",
+      "organization": "NASA / MGS / MOLA",
+      "role": "terrain"
+    },
+    {
+      "id": "THEMIS",
+      "organization": "NASA / Mars Odyssey / THEMIS",
+      "role": "visible_and_thermal_imagery"
+    },
+    {
+      "id": "CRISM",
+      "organization": "NASA / Mars Reconnaissance Orbiter / CRISM",
+      "role": "mineralogy"
+    },
+    {
+      "id": "APXS",
+      "organization": "NASA / Mars Science Laboratory / APXS",
+      "role": "elemental_soil_and_rock_chemistry"
+    },
+    {
+      "id": "CHEMCAM",
+      "organization": "NASA / Mars Science Laboratory / ChemCam",
+      "role": "geochemistry"
+    },
+    {
+      "id": "CHEMIN",
+      "organization": "NASA / Mars Science Laboratory / CheMin",
+      "role": "mineralogy"
+    },
+    {
+      "id": "GRS",
+      "organization": "NASA / Mars Odyssey / GRS",
+      "role": "regional_composition_and_hydrogen"
+    },
+    {
+      "id": "SHARAD",
+      "organization": "NASA / Mars Reconnaissance Orbiter / SHARAD",
+      "role": "subsurface"
+    },
+    {
+      "id": "MCS",
+      "organization": "NASA / Mars Reconnaissance Orbiter / MCS",
+      "role": "atmosphere"
+    },
+    {
+      "id": "MARCI",
+      "organization": "NASA / Mars Reconnaissance Orbiter / MARCI",
+      "role": "clouds_and_dust"
+    },
+    {
+      "id": "MAVEN",
+      "organization": "NASA / MAVEN",
+      "role": "upper_atmosphere_and_space_environment"
+    },
+    {
+      "id": "MSL_REMS",
+      "organization": "NASA / Mars Science Laboratory / REMS",
+      "role": "surface_weather"
+    },
+    {
+      "id": "MARS2020_MEDA",
+      "organization": "NASA / Mars 2020 / MEDA",
+      "role": "surface_environment"
+    },
+    {
+      "id": "CTX",
+      "organization": "NASA / Mars Reconnaissance Orbiter / CTX",
+      "role": "regional_imagery"
+    },
+    {
+      "id": "HIRISE",
+      "organization": "NASA / Mars Reconnaissance Orbiter / HiRISE",
+      "role": "high_resolution_imagery"
+    },
+    {
+      "id": "SPICE",
+      "organization": "NASA / NAIF",
+      "role": "observation_geometry"
+    }
+  ]
 }
