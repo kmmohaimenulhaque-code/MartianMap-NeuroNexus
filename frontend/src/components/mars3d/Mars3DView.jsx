@@ -4,6 +4,8 @@ import "./mars3d.css";
 import { requireModules } from "./arcgisLoader";
 import { createLabelOverlay } from "./labelOverlay";
 import Mars3DLegend from "./Mars3DLegend";
+import SourceTag from "../../sources/SourceTag";
+import { cssVar, hexToRgb as tokenRgb, rampColor } from "../../marswalk/walkabilityRamp";
 import {
   ENTITY_STYLES,
   LABEL_TIERS,
@@ -43,6 +45,7 @@ const LAYERS = [
   { key: "terrain", group: "TERRAIN", label: "3D terrain — MOLA/HRSC blended DEM (200 m)", status: "OBSERVED", on: true },
   { key: "imagery", group: "TERRAIN", label: "Viking MDIM 2.1 imagery", status: "OBSERVED", on: true },
   { key: "colorDem", group: "TERRAIN", label: "Colourised MOLA elevation", status: "OBSERVED", on: false },
+  { key: "dtmFootprints", group: "TERRAIN", label: "HiRISE 1 m and CTX 20 m DTM footprints near the site (bounding boxes)", status: "OBSERVED", on: false },
   { key: "slope", group: "TERRAIN", label: "Slope — local MOLA 128 ppd grid", status: "DERIVED", on: false },
   { key: "roughness", group: "TERRAIN", label: "Roughness — local MOLA 128 ppd grid", status: "DERIVED", on: false },
   { key: "features", group: "USGS", label: "USGS/IAU named features (2,052, coloured-map classes)", status: "OBSERVED", on: true },
@@ -56,6 +59,7 @@ const LAYERS = [
   { key: "route", group: "MISSION", label: "Active route and waypoints", status: "DERIVED", on: true },
   { key: "candidates", group: "MISSION", label: "AI candidate routes", status: "DERIVED", on: true },
   { key: "places", group: "MISSION", label: "Safe Havens and custom places (user-defined)", status: "DERIVED", on: true },
+  { key: "dust", group: "ATMOSPHERE", label: "MY34 dust optical depth τ tint (modeled, follows the sol)", status: "MODELED", on: false },
   { key: "themis", group: "SCIENCE", label: "THEMIS thermal observations near the site", status: "OBSERVED", on: false },
   { key: "zones", group: "EXPLORATION", label: "Potential Exploration Zones — DERIVED — NEURONEXUS", status: "DERIVED", on: false },
   { key: "swim", group: "EXPLORATION", label: "NASA SWIM water-ice consensus map", status: "UNAVAILABLE", on: false, disabled: true },
@@ -64,7 +68,19 @@ const LAYERS = [
   { key: "walkability", group: "EXPLORATION", label: "Walkability — NeuroNexus-derived terrain score", status: "DERIVED", on: false },
 ];
 
-const MARS_RADIUS_KM = 3396.0;
+/* Canonical ledger id behind each 3D layer (rendered as a 🏷️ tag in the layer list). */
+const LAYER_LEDGER = {
+  terrain: "MOLA_MEGDR", imagery: "NASA_PDS", colorDem: "MOLA_MEGDR", dtmFootprints: "HIRISE_STAC_DTM", slope: "MOLA_MEGDR",
+  roughness: "MOLA_MEGDR", features: "USGS_IAU_GAZETTEER", labels: "USGS_IAU_GAZETTEER", units: "USGS_SIM_3292_ARCGIS",
+  contacts: "USGS_SIM_3292_ARCGIS", structures: "USGS_SIM_3292_ARCGIS", landing: "NASA_MARS", rovers: "NASA_MMGIS",
+  traverses: "NASA_MMGIS", route: "NN_ROUTE_ENGINE", candidates: "NN_ROUTE_ENGINE", places: "NN_MISSION_SIM", dust: "NASA_AMES_MGCM",
+  themis: "THEMIS", zones: "NN_EXPLORATION_ZONES", swim: "NASA_SWIM", iceRegions: "NASA_MARS_WATER_MAPS", ancient: "NASA_CURIOSITY",
+  walkability: "NN_WALKABILITY",
+};
+const FLY_TARGETS = { gale: { lat: -4.82, lon: 137.39, km: 60, label: "GALE" }, jezero: { lat: 18.44, lon: 77.45, km: 60, label: "JEZERO" } };
+const prefersReducedMotion = () => typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
+const MARS_RADIUS_KM = 3396.19;
 const lon180 = (lon) => ((((Number(lon) + 180) % 360) + 360) % 360) - 180;
 const lon360 = (lon) => ((Number(lon) % 360) + 360) % 360;
 const fmt = (v, d = 2, unit = "") => (v === null || v === undefined || Number.isNaN(Number(v)) ? "UNAVAILABLE" : `${Number(v).toFixed(d)}${unit}`);
@@ -183,6 +199,7 @@ const classColourOf = (cls) => USGS_CLASS_COLOURS[cls] ?? USGS_OTHER_COLOUR;
 export default function Mars3DView({
   open,
   onClose,
+  sol = 1,
   selectedLocation,
   selectedFeature,
   displayName,
@@ -302,6 +319,8 @@ export default function Mars3DView({
           walkability: draped(),
           zoneAreas: draped(),
           traverses: draped(),
+          dtmFootprints: draped(),
+          dust: new GraphicsLayer({ elevationInfo: { mode: "on-the-ground" }, opacity: 0.5 }),
           themis: draped(),
           savedRoutes: draped(),
           // Lifted slightly above the surface so projected routes are never hidden by relief.
@@ -335,6 +354,8 @@ export default function Mars3DView({
             L.roughness,
             L.walkability,
             L.zoneAreas,
+            L.dust,
+            L.dtmFootprints,
             L.traverses,
             L.themis,
             L.savedRoutes,
@@ -603,6 +624,81 @@ export default function Mars3DView({
     if (visible.terrain && !ground.includes(L.elevation)) ground.add(L.elevation);
     else if (!visible.terrain && ground.includes(L.elevation)) ground.remove(L.elevation);
   }, [ready, visible]);
+
+  /* ------------------------------------------------------------ DTM footprints and modeled dust */
+  const footLat = selectedLocation?.latitude_deg;
+  const footLon = selectedLocation?.longitude_deg;
+  useEffect(() => {
+    if (!ready || !visible.dtmFootprints || footLat == null) return undefined;
+    const controller = new AbortController();
+    const colors = { HIRISE: tokenRgb(cssVar("--nn-src-hirise") || "#c99bff"), CTX: tokenRgb(cssVar("--nn-src-ctx") || "#ff9f68") };
+    const draw = (products) =>
+      rebuild(
+        "dtmFootprints",
+        products.map((p) => {
+          const [x0, y0, x1, y1] = p.bbox;
+          const ok = p.asset_status?.status === "OK";
+          return {
+            geometry: { type: "polygon", rings: [[[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0, y0]]], spatialReference: MARS_SR },
+            symbol: { type: "simple-fill", color: [...colors[p.family], 0.06], outline: { color: [...colors[p.family], ok ? 0.95 : 0.5], width: 1.5, style: ok ? "solid" : "dash" } },
+            attributes: { name: p.product_id },
+          };
+        }),
+      );
+    const url = (families) => `/api/terrain/sources?lat=${footLat}&lon=${lon180(footLon)}&radius_km=10&families=${families}`;
+    const collected = [];
+    ["HIRISE", "CTX"].forEach((family) =>
+      fetch(url(family), { signal: controller.signal })
+        .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
+        .then((body) => {
+          collected.push(...body.products);
+          draw(collected);
+        })
+        .catch(() => {}),
+    );
+    return () => controller.abort();
+  }, [ready, visible.dtmFootprints, footLat, footLon]);
+
+  useEffect(() => {
+    if (!ready || !visible.dust) return undefined;
+    const controller = new AbortController();
+    const stops = ["--nn-surface-2", "--nn-cyan", "--nn-amber"].map((t) => cssVar(t) || "#808080");
+    fetch(`/api/dust/map?sol=${sol}`, { signal: controller.signal })
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
+      .then((d) => {
+        const graphics = [];
+        const dLat = Math.abs(d.lat[1] - d.lat[0]);
+        const dLon = Math.abs(d.lon[1] - d.lon[0]);
+        for (let r = 0; r < d.lat.length; r += 1) {
+          for (let c = 0; c < d.lon.length; c += 1) {
+            const tau = d.tau[r][c];
+            if (tau == null) continue;
+            const [rr, gg, bb] = rampColor((Math.log1p(tau) / Math.log1p(2)) * 100, stops).match(/\d+/g).map(Number);
+            const x0 = lon180(d.lon[c] - dLon / 2);
+            const y0 = d.lat[r] - dLat / 2;
+            graphics.push({
+              geometry: { type: "polygon", rings: [[[x0, y0], [x0 + dLon, y0], [x0 + dLon, y0 + dLat], [x0, y0 + dLat], [x0, y0]]], spatialReference: MARS_SR },
+              symbol: { type: "simple-fill", color: [rr, gg, bb, 0.55], outline: { width: 0 } },
+            });
+          }
+        }
+        rebuild("dust", graphics);
+      })
+      .catch(() => {});
+    return () => controller.abort();
+  }, [ready, visible.dust, sol]);
+
+  const smoothFlyTo = (lat, lon, km) => {
+    const view = viewRef.current;
+    if (view) view.goTo(cameraFor(view, lat, lon, km), { duration: prefersReducedMotion() ? 0 : 3200, easing: "in-out-cubic" }).catch(() => {});
+  };
+  const flyToCorridor = () => {
+    if (routePoints.length < 2) return;
+    const lats = routePoints.map((p) => Number(p.latitude_deg));
+    const lons = routePoints.map((p) => lon180(p.longitude_deg));
+    const spanKm = Math.max(5, haversineKm({ latitude_deg: Math.min(...lats), longitude_deg: Math.min(...lons) }, { latitude_deg: Math.max(...lats), longitude_deg: Math.max(...lons) }));
+    smoothFlyTo((Math.min(...lats) + Math.max(...lats)) / 2, (Math.min(...lons) + Math.max(...lons)) / 2, spanKm * 2.2);
+  };
 
   /* ------------------------------------------------------------ graphics builders */
   function rebuild(layerKey, graphics) {
@@ -1115,6 +1211,14 @@ export default function Mars3DView({
           >
             ◎ ROUTE PROJECTION{projection ? ` (${projectedRoutes.length})` : ""}
           </button>
+          {Object.entries(FLY_TARGETS).map(([key, t]) => (
+            <button key={key} type="button" className="m3d-btn" onClick={() => smoothFlyTo(t.lat, t.lon, t.km)} title={`Fly to ${t.label}`}>
+              ✈ {t.label}
+            </button>
+          ))}
+          <button type="button" className="m3d-btn" onClick={flyToCorridor} disabled={routePoints.length < 2} title={routePoints.length < 2 ? "Plan a route first" : "Fly along the route corridor"}>
+            ✈ ROUTE
+          </button>
           <button
             type="button"
             className={`m3d-btn${sidePanel === "layers" ? " active" : ""}`}
@@ -1385,6 +1489,7 @@ export default function Mars3DView({
                     />
                     <span>{l.label}</span>
                     <Tag status={l.status} />
+                    {LAYER_LEDGER[l.key] && <SourceTag ledgerId={LAYER_LEDGER[l.key]} compact />}
                   </label>
                 ))}
                 {group === "TERRAIN" && (visible.slope || visible.roughness) && (

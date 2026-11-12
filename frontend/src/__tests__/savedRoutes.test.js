@@ -15,7 +15,7 @@ describe("saved route schema v3", () => {
   it("migrates v2 records and keeps their data", () => {
     const storage = memoryStorage({ "neuronexus.savedRoutes.v2": JSON.stringify([{ id: "r1", name: "A", points }]) });
     const [route] = loadSavedRoutes(storage);
-    expect(route).toMatchObject({ id: "r1", name: "A", schema: 3, colourIndex: 0, evaluation: { status: "pending" } });
+    expect(route).toMatchObject({ id: "r1", name: "A", schema: 4, colourIndex: 0, evaluation: { status: "pending" } });
     expect(route.geometryHash).toBe(geometryHash(points));
   });
 

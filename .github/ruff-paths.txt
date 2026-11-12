@@ -23,3 +23,5 @@ tests/test_rovers_ingest.py
 tests/marswalk_fixtures.py
 tests/test_marswalk_planner.py
 tests/test_marswalk_contracts.py
+science/thermal/samples_api.py
+science/landing_sites/api.py

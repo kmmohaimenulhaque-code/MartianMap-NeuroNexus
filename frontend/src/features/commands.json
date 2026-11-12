@@ -68,6 +68,10 @@
     { "id": "shortcuts", "category": "system", "label": "Keyboard shortcuts", "shortcut": "?", "description": "Ctrl/⌘+K opens the Command Index anywhere. Single-key shortcuts work when no text field is focused." },
     { "id": "backend-status", "category": "system", "label": "Backend status", "description": "Whether the NeuroNexus backend (FastAPI, port 8002) is reachable." },
     { "id": "about", "category": "system", "label": "About NeuroNexus", "description": "Project purpose, data sources and the NASA Space Apps Challenge 2026 context." },
-    { "id": "meet-the-team", "category": "system", "label": "Meet the Team", "description": "Team NeuroNexus on the NASA Space Apps Challenge 2026 site.", "url": "https://www.spaceappschallenge.org/2026/find-a-team/neuronexus1/" }
+    { "id": "meet-the-team", "category": "system", "label": "Meet the Team", "description": "Team NeuroNexus on the NASA Space Apps Challenge 2026 site.", "url": "https://www.spaceappschallenge.org/2026/find-a-team/neuronexus1/" },
+    { "id": "marswalk-mode", "category": "views", "label": "Switch GLOBAL CONSOLE / MARSWALK", "shortcut": "M", "description": "Meter-scale EVA planning on the HiRISE → CTX → MOLA terrain ladder.", "how": "Press M or use the mode switch in the top bar.", "where": "Top bar mode switch" },
+    { "id": "marswalk-demo", "category": "views", "label": "Gale Crater Marswalk demo", "description": "Plan a 4-hour EVA from Curiosity's latest position to a target 1.2 km west, at 1 m.", "where": "🍔 → Quick start" },
+    { "id": "mission-manual", "category": "system", "label": "Mission Operations Manual", "description": "Quick starts, guides, live data status, the source ledger and Browser Optimization.", "where": "Top bar → 🍔" },
+    { "id": "sources-ledger", "category": "data", "label": "Source ledger (🏷️)", "description": "Browse, filter and export the canonical source ledger every 🏷️ tag resolves to.", "where": "Footer → SOURCE LEDGER, any tag → View in ledger" }
   ]
 }

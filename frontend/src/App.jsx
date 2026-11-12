@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import MarsMap from "./components/mars/MarsMap";
 import MarsTopographicMap from "./components/mars/MarsTopographicMap";
@@ -19,7 +19,7 @@ import RouteComparisonWorkspace, { MAX_COMPARE_ROUTES } from "./route/RouteCompa
 import CommandIndex from "./command/CommandIndex";
 import { SHORTCUTS, TEAM_URL, buildRegistry } from "./features/registry";
 import {
-  STORAGE_KEY_V3,
+  STORAGE_KEY_V4,
   comparisonToCsv,
   evaluationFromResponse,
   geometryHash,
@@ -52,10 +52,23 @@ import { DEFAULT_MISSION_PROFILE, buildMissionConsoleState, safeHavenRelationshi
 import { CANDIDATE_COLOURS } from "./utils/routeObjectives";
 import { EXPORT_SCHEMA, exportFilename, missionToCsv, routeToCsv } from "./utils/missionExport";
 import { buildThermalPanel } from "./utils/thermalPanel";
+import MissionManualDrawer from "./components/MissionManualDrawer";
+import ThermalHeatmapCard from "./components/ThermalHeatmapCard";
+import CategorizedLayersMenu from "./components/CategorizedLayersMenu";
+import DynamicMapLegend from "./components/DynamicMapLegend";
+import ContextLayers from "./components/mars/ContextLayers";
+import { useContextLayerData } from "./components/mars/useContextLayerData";
+import { DEFAULT_VISIBILITY } from "./components/layers/layerCatalog";
+import { DEMOS } from "./components/manualContent";
+import SourcesDrawer from "./sources/SourcesDrawer";
+import { SourcesContext } from "./sources/SourcesContext";
+import { SourceTags } from "./sources/SourceTag";
 
 import "./ui/tokens.css";
 import "./App.css";
 import "./ui/ui.css";
+
+const MarswalkView = lazy(() => import("./marswalk/MarswalkView"));
 
 const DEFAULT_PLACE = "Gale";
 const DEFAULT_SOL = 100;
@@ -68,7 +81,7 @@ const MAX_CHECKLIST_POINTS = 10;
 const MAX_CHECKLIST_WORDS = 150;
 
 const STORAGE_KEYS = {
-  routes: STORAGE_KEY_V3,
+  routes: STORAGE_KEY_V4,
 
   sol: "neuronexus.consoleSol.v1",
 
@@ -188,7 +201,7 @@ function downloadTextFile(filename, content, mimeType) {
   URL.revokeObjectURL(url);
 }
 
-function Panel({ eyebrow, title, children, className = "", id }) {
+function Panel({ eyebrow, title, children, className = "", id, sources }) {
   return (
     <section className={`panel ${className}`} id={id}>
       <div className="panel-heading">
@@ -196,6 +209,8 @@ function Panel({ eyebrow, title, children, className = "", id }) {
           {eyebrow && <div className="eyebrow">{eyebrow}</div>}
 
           <h2>{title}</h2>
+
+          {sources?.length > 0 && <SourceTags ids={sources} />}
         </div>
 
         <span className="panel-mark">+</span>
@@ -1092,6 +1107,30 @@ function RouteConsole({
 }
 
 export default function App() {
+  const [appMode, setAppMode] = useState(() => (readStorage("nn.appMode", "global") === "marswalk" ? "marswalk" : "global"));
+  const [marswalkDemo, setMarswalkDemo] = useState({ key: 0, demo: null });
+  const [manualOpen, setManualOpen] = useState(false);
+  const [legendOpen, setLegendOpen] = useState(false);
+  const [layerVisibility, setLayerVisibility] = useState(() => ({ ...DEFAULT_VISIBILITY, ...readStorage("nn.layers", {}) }));
+  const [sourcesDrawer, setSourcesDrawer] = useState({ open: false, focusId: null });
+  const sourcesContext = useMemo(() => ({ openSources: (focusId) => setSourcesDrawer({ open: true, focusId }) }), []);
+
+  useEffect(() => {
+    writeStorage("nn.appMode", appMode);
+  }, [appMode]);
+
+  useEffect(() => {
+    writeStorage("nn.layers", layerVisibility);
+  }, [layerVisibility]);
+
+  const startDemo = useCallback((demoId) => {
+    const demo = DEMOS[demoId];
+    if (!demo) return;
+    setManualOpen(false);
+    setAppMode("marswalk");
+    setMarswalkDemo((current) => ({ key: current.key + 1, demo }));
+  }, []);
+
   const [places, setPlaces] = useState([]);
 
   const [query, setQuery] = useState("");
@@ -2602,7 +2641,13 @@ export default function App() {
   const needSite = () => (selectedLocation ? true : "Select a site first");
   const savedWithColour = savedRoutes.map((route) => ({ ...route, colour: routeColour(route) }));
 
+  const contextLayers = useContextLayerData(appMode === "global" ? layerVisibility : {}, selectedLocation, sol);
+
   const commandHandlers = {
+    "marswalk-mode": { run: () => setAppMode((mode) => (mode === "marswalk" ? "global" : "marswalk")) },
+    "marswalk-demo": { run: () => startDemo("gale") },
+    "mission-manual": { run: () => setManualOpen(true) },
+    "sources-ledger": { run: () => setSourcesDrawer({ open: true, focusId: null }) },
     "search-place": { run: () => document.querySelector(".search-box input")?.focus() },
     "select-coordinate": { run: () => setNotice("Click any point on the 2D map, the 3D globe or the global dust map to select it.") },
     "save-place": { run: handleSavePlace, available: needSite },
@@ -2879,6 +2924,7 @@ export default function App() {
   }
 
   return (
+    <SourcesContext.Provider value={sourcesContext}>
     <main className="mission-shell">
       <header className="topbar">
         <div className="brand-block">
@@ -2938,82 +2984,99 @@ export default function App() {
               gap: "6px",
             }}
           >
-            <div
-              className="status-dot"
-              style={
-                backendConnected
-                  ? undefined
-                  : {
-                      color: "#ff647c",
-
-                      borderColor: "rgba(255,100,124,0.24)",
-                    }
-              }
-              title={backendConnected ? "NeuroNexus backend reachable" : "NeuroNexus backend unavailable"}
-            >
-              <span
+            <div className="topbar-row">
+              <div className="mode-switch" role="radiogroup" aria-label="Console mode (M)">
+                {[
+                  ["global", "GLOBAL CONSOLE"],
+                  ["marswalk", "MARSWALK"],
+                ].map(([key, label]) => (
+                  <button key={key} type="button" role="radio" aria-checked={appMode === key} className={appMode === key ? "active" : undefined} onClick={() => setAppMode(key)} title="Switch mode (M)">
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <div
+                className="status-dot"
                 style={
                   backendConnected
                     ? undefined
                     : {
-                        background: "#ff5267",
+                        color: "#ff647c",
 
-                        boxShadow: "0 0 12px rgba(255,82,103,0.75)",
+                        borderColor: "rgba(255,100,124,0.24)",
                       }
                 }
-              />
+                title={backendConnected ? "NeuroNexus backend reachable" : "NeuroNexus backend unavailable"}
+              >
+                <span
+                  style={
+                    backendConnected
+                      ? undefined
+                      : {
+                          background: "#ff5267",
 
-              {backendConnected ? "SYSTEM ONLINE" : "SYSTEM DEGRADED"}
+                          boxShadow: "0 0 12px rgba(255,82,103,0.75)",
+                        }
+                  }
+                />
+
+                {backendConnected ? "SYSTEM ONLINE" : "SYSTEM DEGRADED"}
+              </div>
             </div>
 
-            <div className="mission-actions">
-              <button type="button" className="mission-action" onClick={() => setDesignerOpen(true)}>
-                AI ROUTE DESIGN
+            <div className="topbar-row">
+              <div className="mission-actions">
+                <button type="button" className="mission-action" onClick={() => setDesignerOpen(true)}>
+                  AI ROUTE DESIGN
+                </button>
+
+                <button type="button" className="mission-action" onClick={() => setIntelligenceOpen(true)}>
+                  MARS INTELLIGENCE
+                </button>
+
+                <button type="button" className="mission-action" onClick={handleOpenSnapshot} disabled={comparedRoutes.length < 2 && routePoints.length < 2 && !selectedCandidateId}>
+                  USGS SNAPSHOT
+                </button>
+
+                <button type="button" className="mission-action" onClick={handleOpenOrbital}>
+                  ORBITAL TRACKING
+                </button>
+              </div>
+              <button
+                type="button"
+                aria-label="Open mission command index"
+                aria-expanded={commandIndex.open}
+                title="Mission Command Index (Ctrl/⌘+K)"
+                onClick={() => setCommandIndex((state) => ({ open: !state.open, tab: "commands" }))}
+                style={{
+                  minWidth: "42px",
+
+                  minHeight: "32px",
+
+                  border: "1px solid #29414b",
+
+                  background: "#091115",
+
+                  color: "#75e6ff",
+
+                  fontFamily: "monospace",
+
+                  fontSize: "18px",
+
+                  lineHeight: 1,
+
+                  cursor: "pointer",
+
+                  boxShadow: "0 0 16px rgba(117,230,255,0.06)",
+                }}
+              >
+                ☰
               </button>
 
-              <button type="button" className="mission-action" onClick={() => setIntelligenceOpen(true)}>
-                MARS INTELLIGENCE
-              </button>
-
-              <button type="button" className="mission-action" onClick={handleOpenSnapshot} disabled={comparedRoutes.length < 2 && routePoints.length < 2 && !selectedCandidateId}>
-                USGS SNAPSHOT
-              </button>
-
-              <button type="button" className="mission-action" onClick={handleOpenOrbital}>
-                ORBITAL TRACKING
+              <button type="button" className="burger-button" aria-label="Open Mission Operations Manual" aria-expanded={manualOpen} title="Mission Operations Manual" onClick={() => setManualOpen(true)}>
+                🍔
               </button>
             </div>
-
-            <button
-              type="button"
-              aria-label="Open mission command index"
-              aria-expanded={commandIndex.open}
-              title="Mission Command Index (Ctrl/⌘+K)"
-              onClick={() => setCommandIndex((state) => ({ open: !state.open, tab: "commands" }))}
-              style={{
-                minWidth: "42px",
-
-                minHeight: "32px",
-
-                border: "1px solid #29414b",
-
-                background: "#091115",
-
-                color: "#75e6ff",
-
-                fontFamily: "monospace",
-
-                fontSize: "18px",
-
-                lineHeight: 1,
-
-                cursor: "pointer",
-
-                boxShadow: "0 0 16px rgba(117,230,255,0.06)",
-              }}
-            >
-              ☰
-            </button>
           </div>
         </div>
       </header>
@@ -3117,9 +3180,14 @@ export default function App() {
         </div>
       )}
 
+      {appMode === "marswalk" ? (
+        <Suspense fallback={<div className="nn-loading">Loading MARSWALK…</div>}>
+          <MarswalkView key={marswalkDemo.key} demo={marswalkDemo.demo} onNotice={setNotice} />
+        </Suspense>
+      ) : (
       <div className="workspace">
         <aside className="left-column">
-          <Panel eyebrow="GEOGRAPHY / NOMENCLATURE" title="Selected site">
+          <Panel eyebrow="GEOGRAPHY / NOMENCLATURE" title="Selected site" sources={["USGS_IAU_GAZETTEER", "MOLA_MEGDR"]}>
             <div className="place-title">
               <span className="signal">●</span>
 
@@ -3182,11 +3250,11 @@ export default function App() {
             )}
           </Panel>
 
-          <Panel eyebrow="IMAGERY / ROVER" title="Applicable rover photos">
+          <Panel eyebrow="IMAGERY / ROVER" title="Applicable rover photos" sources={["NASA_IMAGE_LIBRARY"]}>
             <RoverPhotosPanel feature={namedFeature} />
           </Panel>
 
-          <Panel eyebrow="THERMAL / NASA THEMIS" title="Historical evidence" id="panel-thermal">
+          <Panel eyebrow="THERMAL / NASA THEMIS" title="Historical evidence" id="panel-thermal" sources={["THEMIS"]}>
             {!thermalPanel.hasHistorical && (
               <div className="thermal-note" role="status">
                 <strong>THERMAL DATA UNAVAILABLE</strong>
@@ -3249,6 +3317,8 @@ export default function App() {
               Aggregate statistics cover historical THEMIS brightness-temperature observations within the stated search radius. The nearest reference is shown separately; these are not exact-coordinate measurements or current Martian weather.
             </div>
 
+            <ThermalHeatmapCard location={selectedLocation} />
+
             <div className="source-note">
               <span>SOURCE</span>
 
@@ -3256,7 +3326,7 @@ export default function App() {
             </div>
           </Panel>
 
-          <Panel eyebrow="ENVIRONMENT / SOLAR" title="Solar geometry">
+          <Panel eyebrow="ENVIRONMENT / SOLAR" title="Solar geometry" id="panel-solar" sources={["NEURONEXUS_SOLAR_GEOMETRY"]}>
             <Metric label="Areocentric longitude" value={solar ? `${Number(solar.areocentric_longitude_deg).toFixed(2)}°` : "—"} detail="Ls" />
 
             <Metric label="Observation local solar time" value={thermal ? `${Number(thermal.local_solar_time_hours).toFixed(2)} h` : "—"} />
@@ -3309,7 +3379,24 @@ export default function App() {
                   </button>
                 </div>
 
+                <div className="map-layer-controls">
+                  <CategorizedLayersMenu
+                    visibility={layerVisibility}
+                    status={contextLayers.status}
+                    onToggle={(id) => setLayerVisibility((v) => ({ ...v, [id]: !v[id] }))}
+                    onLink={(action) => {
+                      if (action === "marswalk") setAppMode("marswalk");
+                      else document.getElementById({ usgs: "panel-usgs-map", thermal: "panel-thermal", solar: "panel-solar" }[action])?.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }}
+                  />
+                  <DynamicMapLegend visibility={layerVisibility} open={legendOpen} onToggle={() => setLegendOpen((v) => !v)} />
+                </div>
+
+                <DynamicMapLegend visibility={layerVisibility} open={legendOpen} docked />
+
                 <MarsMap
+                  showBasemap={layerVisibility.mola}
+                  showFeatures={layerVisibility.features}
                   features={places}
 
                   selectedFeature={namedFeature}
@@ -3338,16 +3425,18 @@ export default function App() {
 
                   routeEnd={routePoints[routePoints.length - 1] ?? null}
 
-                  routePlan={routePlan}
+                  routePlan={layerVisibility.routes ? routePlan : null}
 
-                  route={routePlan}
+                  route={layerVisibility.routes ? routePlan : null}
 
                   onMapLocationSelect={handleRoutePointAdd}
 
                   onMapCoordinateSelect={handleSelectCoordinate}
 
                   interactive={true}
-                />
+                >
+                  <ContextLayers visibility={layerVisibility} data={contextLayers.data} />
+                </MarsMap>
               </div>
 
               <RouteConsole
@@ -3447,7 +3536,7 @@ export default function App() {
         </section>
 
         <aside className="right-column">
-          <Panel eyebrow="ATMOSPHERE / NASA AMES" title="Dust scenario" id="panel-dust">
+          <Panel eyebrow="ATMOSPHERE / NASA AMES" title="Dust scenario" id="panel-dust" sources={["NASA_AMES_MGCM"]}>
             <DustScenarioPanel
               location={selectedLocation}
               sol={sol}
@@ -3459,15 +3548,15 @@ export default function App() {
             />
           </Panel>
 
-          <Panel eyebrow="TERRAIN / NASA MOLA" title="Site morphology" id="panel-morphology">
+          <Panel eyebrow="TERRAIN / NASA MOLA" title="Site morphology" id="panel-morphology" sources={["MOLA_MEGDR"]}>
             <SiteMorphologyPanel location={selectedLocation} terrain={terrain} />
           </Panel>
 
-          <Panel eyebrow="SITE SCIENCE / SURVIVAL" title="Material + habitability context" id="panel-site-science">
+          <Panel eyebrow="SITE SCIENCE / SURVIVAL" title="Material + habitability context" id="panel-site-science" sources={["USGS_SIM_3292", "NASA_CURIOSITY"]}>
             <SiteSciencePanel science={siteScience} />
           </Panel>
 
-          <Panel eyebrow="ASSESSMENT / EVIDENCE" title="Interpretation" id="panel-interpretation">
+          <Panel eyebrow="ASSESSMENT / EVIDENCE" title="Interpretation" id="panel-interpretation" sources={["NN_TERRAIN_RISK_PROXY"]}>
             <div className="assessment-status">
               <span>STATUS</span>
 
@@ -3543,7 +3632,7 @@ export default function App() {
             )}
           </Panel>
 
-          <Panel eyebrow="MISSION / OPERATIONS" title="Crewed Mars console" id="panel-crew">
+          <Panel eyebrow="MISSION / OPERATIONS" title="Crewed Mars console" id="panel-crew" sources={["NN_MISSION_SIM"]}>
             <MissionOpsPanel
               consoleState={missionConsoleState}
               profile={missionProfile}
@@ -3552,11 +3641,12 @@ export default function App() {
             />
           </Panel>
 
-          <Panel eyebrow="BRIEFING / NASA FEED" title="Mars reference feed" id="panel-feed">
+          <Panel eyebrow="BRIEFING / NASA FEED" title="Mars reference feed" id="panel-feed" sources={["NASA_MARS"]}>
             <MarsBriefingPanel />
           </Panel>
         </aside>
       </div>
+      )}
 
       <footer className="evidence-bar">
         <div>
@@ -3593,6 +3683,10 @@ export default function App() {
           <span>DATA MODEL</span>
 
           <strong>Observed · Modeled · Derived · Simulated</strong>
+
+          <button type="button" className="evidence-sources" onClick={() => setSourcesDrawer({ open: true, focusId: null })}>
+            🏷️ SOURCE LEDGER
+          </button>
         </div>
 
         <div className="team-credit">
@@ -3605,6 +3699,7 @@ export default function App() {
       </footer>
 
       <Mars3DView
+        sol={sol}
         open={map3dOpen}
         onClose={() => setMap3dOpen(false)}
         selectedLocation={selectedLocation}
@@ -3724,6 +3819,20 @@ export default function App() {
           onExportFile={(base, extension, content, mime) => downloadTextFile(exportFilename(base, extension), content, mime)}
         />
       )}
+
+      <MissionManualDrawer
+        open={manualOpen}
+        onClose={() => setManualOpen(false)}
+        onQuickStart={startDemo}
+        onOpenSources={(focusId) => setSourcesDrawer({ open: true, focusId })}
+        onOpenCommands={() => {
+          setManualOpen(false);
+          setCommandIndex({ open: true, tab: "commands" });
+        }}
+      />
+
+      <SourcesDrawer open={sourcesDrawer.open} focusId={sourcesDrawer.focusId} onClose={() => setSourcesDrawer({ open: false, focusId: null })} />
     </main>
+    </SourcesContext.Provider>
   );
 }

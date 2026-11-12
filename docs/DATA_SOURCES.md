@@ -2,7 +2,7 @@
 
 # Data sources
 
-Canonical ledger: `data/manifests/source_ledger.json` (`neuronexus.source-ledger.v3`, 74 entries). Every 🏷️ source tag in the console resolves to one of these ids (GET `/sources/{id}`, aliases accepted).
+Canonical ledger: `data/manifests/source_ledger.json` (`neuronexus.source-ledger.v3`, 75 entries). Every 🏷️ source tag in the console resolves to one of these ids (GET `/sources/{id}`, aliases accepted).
 
 Evidence classes: **OBSERVED**: A real instrument measurement from a mission archive.; **NASA REFERENCE**: A published NASA/USGS/partner reference value, catalog or map.; **MODELED**: Output of a physical model (e.g. NASA Ames Mars GCM).; **DERIVED**: Computed by NeuroNexus from observed or modeled inputs.; **COMPUTED**: Geometry or arithmetic computed by NeuroNexus.; **SIMULATED**: A configurable NeuroNexus simulation value, not a measurement.; **AI INTERPRETATION**: Language-model interpretation of structured results; never a NASA observation.
 
@@ -98,6 +98,7 @@ Evidence classes: **OBSERVED**: A real instrument measurement from a mission arc
 | `NEURONEXUS_PACE_MODEL` | NeuroNexus | Tobler pace normalized to the flat pace; Naismith option (Appendix A6) | INGESTED |  | 2026-10-20 |  |
 | `NEURONEXUS_PNR_MODEL` | NeuroNexus | Turnaround point (Point of No Return, Appendix A7) | INGESTED |  | 2026-10-20 |  |
 | `NEURONEXUS_SLOPE_MULTI_BASELINE` | NeuroNexus | Multi-baseline Horn slope and detrended roughness | INGESTED |  | 2026-10-20 |  |
+| `NEURONEXUS_SOLAR_GEOMETRY` | NeuroNexus | Solar geometry at the selected site (local solar time, solar elevation) | INGESTED |  | 2026-10-20 |  |
 | `NEURONEXUS_VALIDATION_SUITE` | NeuroNexus | Rover ground-truth validation suite V1-V6 | INGESTED |  | 2026-10-20 |  |
 | `NN_EVA_MODEL` | NeuroNexus | Estimated EVA time model | INGESTED |  | 2026-10-20 |  |
 | `NN_ROUTE_ENGINE` | NeuroNexus | Deterministic multi-objective Mars route engine | INGESTED |  | 2026-10-20 |  |

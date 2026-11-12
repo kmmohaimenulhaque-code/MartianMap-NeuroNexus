@@ -6,13 +6,13 @@ Sources whose data NeuroNexus actually reads (ingested or queried live), from th
 
 | id | mission / instrument | product | how it is used | status |
 | --- | --- | --- | --- | --- |
-| `CTX` | NASA / Mars Reconnaissance Orbiter / CTX | Ctx |  | INGESTED |
+| `CTX` | Mars Reconnaissance Orbiter / CTX | Ctx |  | INGESTED |
 | `CTX_MOLA_SHOTS` | Mars Global Surveyor / MOLA | mola_csv assets of 2023 CTX DTM items (latitude, longitude, radius in m) | validation V2 | INGESTED |
 | `CTX_STAC_DTM` | Mars Reconnaissance Orbiter / CTX | MRO CTX controlled USGS DTMs (collection mro_ctx_controlled_usgs_dtms, Ames Stereo Pipeline, pc_align to MOLA) | /terrain/hires/*; /marswalk/* | INGESTED |
 | `ESA_EXOMARS` | European Space Agency | Esa Exomars |  | QUERIED LIVE |
 | `ESA_MARS_EXPRESS` | European Space Agency | Esa Mars Express |  | QUERIED LIVE |
 | `ESRI_MARS` | Esri / ArcGIS | Esri Mars |  | QUERIED LIVE |
-| `HIRISE` | NASA / Mars Reconnaissance Orbiter / HiRISE | Hirise |  | INGESTED |
+| `HIRISE` | Mars Reconnaissance Orbiter / HiRISE | Hirise |  | INGESTED |
 | `HIRISE_STAC_DTM` | Mars Reconnaissance Orbiter / HiRISE | MRO HiRISE SOCET DTMs (collection mro_hirise_socet_dtms) | /terrain/hires/*; /marswalk/*; validation V1-V6 | INGESTED |
 | `HIRISE_STAC_ORTHO` | Mars Reconnaissance Orbiter / HiRISE | HiRISE orthoimages paired with the SOCET DTMs | GET /terrain/hires/image?layer=ortho | INGESTED |
 | `MMGIS_M2020_TRAVERSE` | Mars 2020 | Perseverance traverse (M20_traverse.json) | live GeoJSON with dated snapshot fallback | QUERIED LIVE |
@@ -25,7 +25,7 @@ Sources whose data NeuroNexus actually reads (ingested or queried live), from th
 | `NASA_MMGIS` | NASA | Nasa Mmgis |  | QUERIED LIVE |
 | `NASA_PDS` | NASA Planetary Data System | Nasa Pds |  | QUERIED LIVE |
 | `PLANETARY_SOCIETY` | The Planetary Society | Planetary Society |  | QUERIED LIVE |
-| `THEMIS` | NASA / Mars Odyssey / THEMIS / Arizona State University | THEMIS IR predicted brightness temperature observations |  | INGESTED |
+| `THEMIS` | 2001 Mars Odyssey / THEMIS | THEMIS IR predicted brightness temperature observations |  | INGESTED |
 | `USGS_ASTROGEOLOGY_STAC` | USGS Astrogeology Science Center | Astrogeology STAC API (analysis-ready planetary data) | GET /terrain/sources; science/hires/stac.py | QUERIED LIVE |
 | `USGS_IAU_GAZETTEER` | USGS Astrogeology / International Astronomical Union | Gazetteer of Planetary Nomenclature (Mars, 2,052 features) |  | INGESTED |
 | `USGS_SIM_3292` | USGS Astrogeology | SIM 3292 Geologic Map of Mars, 1:20M (Tanaka et al., 2014) |  | QUERIED LIVE |

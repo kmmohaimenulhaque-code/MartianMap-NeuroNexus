@@ -105,7 +105,7 @@ export default function DustScenarioPanel({ location, sol, onSolChange, onSelect
         <span>
           {series ? `CELL ${fmt(series.cell.latitude_deg, 1)}° ${fmt(series.cell.longitude_deg, 1)}°E · 3° GRID` : "SELECTED SITE"}
         </span>
-        <ProvenanceTag dataClass="MODELED" source="NASA Ames Mars GCM V3.2 · Montabone et al. (2015) MY34" />
+        <ProvenanceTag dataClass="MODELED" ledgerId="NASA_AMES_MGCM" source="NASA Ames Mars GCM V3.2 · Montabone et al. (2015) MY34" />
       </div>
 
       <div className="dust-kpis">

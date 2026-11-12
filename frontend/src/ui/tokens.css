@@ -48,6 +48,15 @@
   --nn-tag-ai: #9fb7ff;
   --nn-tag-unavailable: #71848c;
   --nn-tag-unregistered: #ff647c;
+  /* Global-map feature markers (promoted from MarsMap.jsx / App.css literals). */
+  --nn-feature-crater: #d9c2a5;
+  --nn-feature-valley: #72d9ff;
+  --nn-feature-mons: #ff9f68;
+  --nn-feature-other: #d5d9dc;
+  /* THEMIS brightness-temperature ramp: cold -> warm with rising luminance. */
+  --nn-thermal-cold: #16405a;
+  --nn-thermal-mid: #2f9fc0;
+  --nn-thermal-hot: #ffc46b;
 }
 
 @keyframes nn-pulse {

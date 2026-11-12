@@ -4,6 +4,7 @@
  * `flag` colours a cell amber/red only from backend thresholds.
  */
 
+import SourceTag from "../sources/SourceTag";
 import { fmt } from "./format";
 
 export function StatTable({ columns = ["AT SITE", "MIN", "MEAN", "MAX"], rows, basis, missingReason = "no data" }) {
@@ -43,10 +44,7 @@ export function StatTable({ columns = ["AT SITE", "MIN", "MEAN", "MAX"], rows, b
   );
 }
 
-export function ProvenanceTag({ dataClass, source }) {
-  return (
-    <span className={`nn-prov nn-prov-${String(dataClass).toLowerCase()}`} title={source}>
-      {dataClass}
-    </span>
-  );
+/* Kept for existing imports: now a visible 🏷️ SourceTag resolved from the canonical ledger. */
+export function ProvenanceTag({ dataClass, source, ledgerId }) {
+  return <SourceTag ledgerId={ledgerId ?? "UNREGISTERED"} evidence={dataClass} detail={ledgerId ? undefined : source} />;
 }

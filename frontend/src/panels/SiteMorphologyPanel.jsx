@@ -101,7 +101,7 @@ export default function SiteMorphologyPanel({ location, terrain }) {
             </button>
           ))}
         </div>
-        <ProvenanceTag dataClass="DERIVED" source="NASA MOLA MEGDR 128 px/deg" />
+        <ProvenanceTag dataClass="DERIVED" ledgerId="MOLA_MEGDR" source="NASA MOLA MEGDR 128 px/deg" />
       </div>
 
       <StatTable rows={rows} basis={basis} missingReason={status === "error" ? error : "not available"} />

@@ -44,7 +44,7 @@ def test_generated_files_have_not_drifted():
 
 def test_every_ledger_id_used_in_code_resolves():
     py = [p for p in (ROOT / "science").rglob("*.py")]
-    js = [p for ext in ("*.js", "*.jsx", "*.ts") for p in (ROOT / "frontend/src").rglob(ext)]
+    js = [p for ext in ("*.js", "*.jsx", "*.ts") for p in (ROOT / "frontend/src").rglob(ext) if "__tests__" not in p.parts]
     used = {**_scan(py, PY_PATTERNS), **_scan(js, JS_PATTERNS)}
     from science.hires.catalog import FAMILY_LEDGER
     from science.marswalk.config import PARAMETERS

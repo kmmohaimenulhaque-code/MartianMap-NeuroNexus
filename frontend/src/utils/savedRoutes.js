@@ -1,5 +1,6 @@
 /*
- * Saved route records (schema v3) and comparison metrics.
+ * Saved route records (schema v4) and comparison metrics.
+ * v4 adds resolution_ladder, data_versions, config_hash and source_ids (reproducibility, T3.7).
  *
  * A saved route has one colour, one name and one stats record shared by the
  * 2D map, the 3D globe, the comparison workspace, snapshots and exports.
@@ -11,6 +12,14 @@
 export const ROUTE_COLOURS = ["#75e6ff", "#ff9f68", "#8cf0b1", "#c99bff", "#ffe27a", "#ff7eb6", "#7ea8ff", "#b8f27a"];
 export const STORAGE_KEY_V2 = "neuronexus.savedRoutes.v2";
 export const STORAGE_KEY_V3 = "neuronexus.savedRoutes.v3";
+export const STORAGE_KEY_V4 = "neuronexus.savedRoutes.v4";
+
+/* Routes saved before v4 came from the global MOLA route engine. */
+const LEGACY_PROVENANCE = {
+  resolution_ladder: { mode: "mola", rungs: ["MOLA"], note: "global route engine on MOLA MEGDR 128 ppd" },
+  data_versions: [{ product_id: "MGS-M-MOLA-5-MEGDR-L3-V1.0 (128 ppd)", ledger_id: "MOLA_MEGDR" }],
+  source_ids: ["MOLA_MEGDR", "NN_ROUTE_ENGINE"],
+};
 
 export function geometryHash(points) {
   // FNV-1a over rounded coordinates: stable, fast, no crypto dependency.
@@ -31,16 +40,22 @@ export function upgradeRoute(route, index) {
   const points = route.points ?? [];
   return {
     ...route,
-    schema: 3,
+    schema: 4,
     colourIndex: route.colourIndex ?? index,
     geometryHash: route.geometryHash ?? geometryHash(points),
     // An evaluation interrupted by a reload is simply run again.
     evaluation: !route.evaluation || route.evaluation.status === "running" ? { status: "pending" } : route.evaluation,
+    resolution_ladder: route.resolution_ladder ?? LEGACY_PROVENANCE.resolution_ladder,
+    data_versions: route.data_versions ?? LEGACY_PROVENANCE.data_versions,
+    config_hash: route.config_hash ?? null,
+    source_ids: route.source_ids ?? LEGACY_PROVENANCE.source_ids,
   };
 }
 
 export function loadSavedRoutes(storage = globalThis.localStorage) {
   try {
+    const v4 = JSON.parse(storage.getItem(STORAGE_KEY_V4) ?? "null");
+    if (Array.isArray(v4)) return v4.map(upgradeRoute);
     const v3 = JSON.parse(storage.getItem(STORAGE_KEY_V3) ?? "null");
     if (Array.isArray(v3)) return v3.map(upgradeRoute);
     const v2 = JSON.parse(storage.getItem(STORAGE_KEY_V2) ?? "null");

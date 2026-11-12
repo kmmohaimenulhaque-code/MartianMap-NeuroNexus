@@ -709,6 +709,9 @@ function CandidateRoutesLayer({ candidates = [], selectedId = null, onSelect }) 
 
 export default function MarsMap({
   features = [],
+  showBasemap = true,
+  showFeatures = true,
+  children = null,
 
   selectedFeature = null,
 
@@ -850,7 +853,9 @@ export default function MarsMap({
       >
         <MapResizeHandler />
 
-        <ImageOverlay url="/mars-mola-global.jpg" bounds={MARS_BOUNDS} opacity={1} />
+        {showBasemap && <ImageOverlay url="/mars-mola-global.jpg" bounds={MARS_BOUNDS} opacity={1} />}
+
+        {children}
 
         <MapFocus selectedFeature={selectedFeature} selectedLocation={selectedLocation} />
 
@@ -907,7 +912,7 @@ export default function MarsMap({
           />
         )}
 
-        {features.map((feature, featureIndex) => {
+        {showFeatures && features.map((feature, featureIndex) => {
           const position = marsPosition(feature);
 
           if (!validPosition(position)) {

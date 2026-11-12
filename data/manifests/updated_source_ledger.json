@@ -769,6 +769,13 @@
       "title": "Browser Optimization client math (worker parity with the backend formulas)",
       "status": "IMPLEMENTED",
       "description": "frontend/src/workers/marswalkMath.worker.js"
+    },
+    {
+      "id": "NEURONEXUS_SOLAR_GEOMETRY",
+      "type": "TEAM_METHOD",
+      "title": "Solar geometry at the selected site (local solar time, solar elevation)",
+      "status": "IMPLEMENTED",
+      "description": "Solar geometry panel"
     }
   ],
   "evidence_statuses": {

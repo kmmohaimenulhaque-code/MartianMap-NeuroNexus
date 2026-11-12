@@ -98,7 +98,11 @@ def hires_window(lat: float = Query(..., ge=-88, le=88), lon: float = Query(...,
             "effective_baseline_m": layers.stats(baseline.astype("float64")) if baseline is not None else None,
             "grid": _display(array.astype("float64"), grid_max, 2 if name != "elevation" else 1),
         }
-    result["display_grid_step_m"] = res_m * int(np.ceil(window.grid.size / grid_max))
+    step = int(np.ceil(window.grid.size / grid_max))
+    # grid[r][c] is the pixel at row r*step, col c*step: its center in window meters is (x0 + c*step_m, y0 - r*step_m).
+    result["display_grid"] = {"step_m": window.grid.res_m * step, "x0": -window.grid.extent_m + window.grid.res_m / 2,
+                              "y0": window.grid.extent_m - window.grid.res_m / 2,
+                              "rows": int(np.ceil(window.grid.size / step)), "cols": int(np.ceil(window.grid.size / step))}
     result["classes"] = layers.CLASS_NAMES
     result["status_rule"] = config.status_rule_text(v)
     return result

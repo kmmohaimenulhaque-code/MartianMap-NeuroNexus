@@ -275,7 +275,7 @@ export default function RouteComparisonWorkspace({ routes, compareRouteIds, onTo
 
             <div className="cmp-snapshots-head">
               <span className="eyebrow">USGS SIM 3292 SNAPSHOTS</span>
-              <ProvenanceTag dataClass="OBSERVED" source="USGS MOLA hillshade + SIM 3292 FeatureServer" />
+              <ProvenanceTag dataClass="OBSERVED" ledgerId="USGS_SIM_3292_ARCGIS" source="USGS MOLA hillshade + SIM 3292 FeatureServer" />
               <button type="button" onClick={loadCombined} disabled={combined.loading}>
                 {combined.loading ? "BUILDING…" : "▣ COMBINED SNAPSHOT"}
               </button>

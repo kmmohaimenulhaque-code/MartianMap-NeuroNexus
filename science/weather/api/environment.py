@@ -629,3 +629,12 @@ app.include_router(rovers_router)
 from science.marswalk.api import router as marswalk_router  # noqa: E402
 
 app.include_router(marswalk_router)
+from science.ops.status import router as ops_router  # noqa: E402
+
+app.include_router(ops_router)
+from science.thermal.samples_api import router as thermal_samples_router  # noqa: E402
+
+app.include_router(thermal_samples_router)
+from science.landing_sites.api import router as landing_sites_router  # noqa: E402
+
+app.include_router(landing_sites_router)
