@@ -10,6 +10,7 @@
 import { mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { trackIdle } from "./idle.mjs";
 
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE ?? "playwright");
 const BASE = process.env.BASE_URL ?? "http://localhost:7860";
@@ -17,6 +18,7 @@ const OUT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "assets", 
 mkdirSync(OUT, { recursive: true });
 
 const errors = [];
+const idle = new WeakMap(); // page -> waitIdle
 const check = (ok, message) => {
   if (!ok) throw new Error(`DEVICE ASSERTION FAILED: ${message}`);
   console.log(`ok   ${message}`);
@@ -32,6 +34,7 @@ async function open(name, viewport, touch, dpr = touch ? 2 : 1) {
     await route.fulfill({ response, headers: { ...response.headers(), "access-control-allow-origin": "*" } });
   });
   const page = await context.newPage();
+  idle.set(page, trackIdle(page));
   page.on("pageerror", (e) => errors.push(`${name} ${e.name}: ${e.message}`));
   await page.goto(`${BASE.replace(/\/$/, "")}/console/`, { waitUntil: "domcontentloaded" }); // console moved to /console/ (landing page at /)
   await page.waitForFunction(() => /ONLINE/.test(document.querySelector(".status-dot")?.textContent ?? ""), null, { timeout: 120000 });
@@ -93,6 +96,7 @@ const selectionMarker = (page) =>
     };
   });
 const shot = async (page, name) => {
+  await idle.get(page)();
   await page.screenshot({ path: join(OUT, name) });
   console.log(`shot ${name}`);
 };

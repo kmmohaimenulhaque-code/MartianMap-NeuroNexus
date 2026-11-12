@@ -2,6 +2,21 @@
 
 NASA Space Apps Challenge 2026 · branch `v4-argon-landing-routing`
 
+<p align="center">
+  <img alt="NASA Space Apps 2026" src="https://img.shields.io/badge/NASA_Space_Apps-2026-0B3D91?style=flat-square">
+  <img alt="Status: Submission" src="https://img.shields.io/badge/Status-Submission-5FD3B0?style=flat-square">
+  <img alt="Platform: Web, Desktop and Mobile" src="https://img.shields.io/badge/Platform-Web_%C2%B7_Desktop_%C2%B7_Mobile-1B1F24?style=flat-square">
+  <br>
+  <img alt="Frontend: React 19 and Vite" src="https://img.shields.io/badge/Frontend-React_19_%C2%B7_Vite-DB3B36?style=flat-square">
+  <img alt="Backend: FastAPI" src="https://img.shields.io/badge/Backend-FastAPI-009688?style=flat-square">
+  <img alt="Maps: Leaflet and ArcGIS 4.33" src="https://img.shields.io/badge/Maps-Leaflet_%C2%B7_ArcGIS_4.33-3A7BD5?style=flat-square">
+  <img alt="AI: Gemini plus 5 fallback providers" src="https://img.shields.io/badge/AI-Gemini_%2B_5_fallbacks-7742E4?style=flat-square">
+  <br>
+  <img alt="Tests: 270 backend, 120 frontend, 71 device checks" src="https://img.shields.io/badge/Tests-270_backend_%C2%B7_120_frontend_%C2%B7_71_device-5FD3B0?style=flat-square">
+  <img alt="Data: NASA and USGS" src="https://img.shields.io/badge/Data-NASA_%C2%B7_USGS-0B3D91?style=flat-square">
+  <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-5FD3B0?style=flat-square">
+</p>
+
 ## Demo Video
 
 <div align="center">
@@ -161,7 +176,7 @@ A **Team** tab in the Command Index (and **Meet the Team** in the Command Index 
 
 ![New: Mars Intelligence assistant welcome screen with grouped suggestions, web search toggle, export and clear](assets/screenshots/v2/05-mars-intelligence-welcome.png)
 
-![New: Mars Intelligence answering a Mars-time, mission-history and how-to question with tool calls and cited sources](assets/screenshots/v2/06-mars-intelligence-answer.png)
+![New: Mars Intelligence answering a dust-storm history question with cited knowledge sections and the provider that answered](assets/screenshots/v2/06-mars-intelligence-answer.png)
 
 The assistant answers three kinds of question, not only tool lookups:
 
@@ -173,7 +188,7 @@ How it works: 26 tools (8 new), a curated and cited knowledge base (185 sections
 
 ### 6. NEW · Save AI-designed routes by name
 
-![New: AI Route Design with Save as route buttons and Save all candidates, six candidates saved as named routes](assets/screenshots/v2/07-ai-routes-saved-by-name.png)
+![New: AI Route Design with Save as route buttons and Save all candidates, five candidates saved as named routes](assets/screenshots/v2/07-ai-routes-saved-by-name.png)
 
 Every AI Route Designer candidate now has **SAVE AS ROUTE** (you choose the name), and **SAVE ALL CANDIDATES** saves the whole set under a name prefix. **Every saved route is reproducible:** it stores its exact geometry plus the inputs that produced it. For AI routes that is the exact generation request, objective weights, candidate id and engine version. Saved routes are numbered with a stable colour and appear in 2D, 3D, the comparison workspace, exports and the AI assistant.
 
@@ -199,7 +214,7 @@ Select two or more routes for comparison and **USGS SNAPSHOT** draws **all of th
 
 ### 9. NEW · Route Projection on the 3D globe
 
-![New: Route Projection on the 3D globe, three saved routes projected bold with name labels](assets/screenshots/v2/12-route-projection-3d.png)
+![New: Route Projection on the 3D globe, saved routes projected bold with name labels](assets/screenshots/v2/12-route-projection-3d.png)
 
 The 3D toolbar has a new **◎ ROUTE PROJECTION** button. Turn it on, **tick saved routes**, and each ticked route is projected bold above the terrain with its name and start/end markers; unticked routes fade. The camera reframes to show every ticked route whenever the selection changes (PROJECT ALL, CLEAR and REFRAME buttons are in the panel). The 3D **⌁ ROUTES** panel also gives per-route show/hide, fly-to, compare, USGS and rename.
 
@@ -233,13 +248,13 @@ The route-design workspace lets users set start and destination coordinates, adj
 
 ### Saved-route comparison
 
-![Saved Marswalk routes plotted together with comparison cards for distance, waypoints, slope, roughness, MOLA coverage, and elevation range](assets/screenshots/route-comparison.png)
+![Saved routes plotted together with the along-track comparison table for distance, EVA time, elevation, slope and roughness](assets/screenshots/route-comparison.png)
 
 Colour-coded saved routes remain visible together while comparison cards show distance, waypoint counts, slope, roughness, MOLA coverage, elevation range, and review notes.
 
 ### Mars Intelligence : tool-grounded interpretation
 
-![Mars Intelligence assistant discussing saved-route trade-offs while explicitly marking unavailable deterministic metrics and distinguishing project data from AI interpretation](assets/screenshots/mars-intelligence.png)
+![Mars Intelligence assistant answering from the knowledge base, labeling the answering provider and marking the answer as AI interpretation, not a NASA observation](assets/screenshots/mars-intelligence.png)
 
 Mars Intelligence uses structured mission context and application tools to explain evidence and route trade-offs. This captured response lists saved routes but marks their quantitative comparison as unavailable when the deterministic metric is not present.
 
@@ -700,7 +715,7 @@ One screen holds the whole mission picture. The **left column** is the site evid
 
 ### Maps and routes
 
-![2D coloured global map with a three-waypoint route and the route console showing displacement and planned route length](assets/screenshots/tour/10-2d-map-route-planning.png)
+![2D coloured global map with a two-waypoint route and the route console showing displacement and planned route length](assets/screenshots/tour/10-2d-map-route-planning.png)
 
 **2D coloured global map and route planning.** 2,052 USGS/IAU features are clickable and colour-coded by type. Turn on **PLAN ROUTE**, click waypoints, and **ANALYZE** returns the haversine displacement and planned length with NASA MOLA terrain analysed at every waypoint. **SAVE ROUTE**, **COMPARE**, custom places and Safe Havens live in the same console. Saved routes are the basis of the **NEW** comparison, projection and snapshot features.
 

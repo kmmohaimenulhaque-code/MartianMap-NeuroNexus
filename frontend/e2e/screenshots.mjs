@@ -9,6 +9,7 @@
 import { mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { trackIdle } from "./idle.mjs";
 
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE ?? "playwright");
 const BASE = process.env.BASE_URL ?? "http://localhost:7860";
@@ -29,10 +30,12 @@ await context.route(/fontshare\.com/, async (route) => {
   await route.fulfill({ response, headers: { ...response.headers(), "access-control-allow-origin": "*" } });
 });
 const page = await context.newPage();
+const waitIdle = trackIdle(page);
 // ArcGIS throws "webgl:major-performance-caveat-detected" on headless software WebGL (no GPU here); only that is ignored.
 page.on("pageerror", (e) => e.name !== "webgl:major-performance-caveat-detected" && errors.push(`${e.name}: ${e.message}`));
 
 const shot = async (name) => {
+  await waitIdle();
   await page.screenshot({ path: join(OUT, name) });
   console.log(`shot ${name}`);
 };
@@ -89,7 +92,7 @@ try {
   const after = await page.textContent("[data-testid=thermal-sol-readout]");
   check(before !== after, "THEMIS readout follows the active sol");
   await page.$eval("[data-testid=thermal-sol-readout]", (el) => el.scrollIntoView({ block: "center" }));
-  await page.waitForFunction(() => document.querySelector(".nn-rover-label")?.innerText.includes("SOL 400"), null, { timeout: 15000 });
+  await page.waitForFunction(() => [...document.querySelectorAll(".nn-rover-label")].some((e) => e.innerText.includes("CURIOSITY @ SOL 400")), null, { timeout: 15000 });
   check(true, "Curiosity's position marker follows the active sol (MY34 sol 400)");
   await page.waitForFunction(() => document.querySelector("[data-testid=sol-conditions]")?.innerText.includes("EXCEED"), null, { timeout: 15000 });
   check(true, "conditions card shows the storm-level dust class at sol 400");
@@ -149,9 +152,15 @@ try {
   await page.waitForSelector(".map-toolbar");
   await page.click(".map-toolbar button:has-text('3D MAP')");
   await page.waitForTimeout(8000);
-  const canvas = await page.$(".esri-view canvas, .esri-view-surface");
+  const canvas = await page.$(".m3d-view canvas, .m3d-view .esri-view-surface"); // the 3D globe, not the ArcGIS layered 2D map
   const cb = canvas ? await canvas.boundingBox() : { x: 900, y: 500, width: 0, height: 0 };
-  await openWheelAt(cb.x + cb.width / 2, cb.y + cb.height / 2);
+  // Software WebGL renders the globe at ~1 FPS, so two real right-clicks arrive more than 300 ms apart; fire both
+  // contextmenu events on the element under the globe's center in one task instead (same window handler).
+  await page.evaluate(([x, y]) => {
+    const target = document.elementFromPoint(x, y);
+    for (let i = 0; i < 2; i++) target.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true, clientX: x, clientY: y, button: 2 }));
+  }, [cb.x + cb.width / 2, cb.y + cb.height / 2]);
+  await page.waitForSelector("[data-testid=radial-wheel]");
   const onTop = await page.evaluate(() => {
     const w = document.querySelector(".nn-wheel");
     const b = w.getBoundingClientRect();
