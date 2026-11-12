@@ -582,13 +582,6 @@
       "where": "MARSWALK · EVA setup · Radial Feature Wheel · [MENU] → Quick start"
     },
     {
-      "id": "judge-tour",
-      "category": "system",
-      "label": "Guided judge tour",
-      "description": "Three steps in under a minute: pick a site, plan a Marswalk, read the decision and the status-by-sol strip. SKIP is always visible.",
-      "where": "[MENU] · Radial Feature Wheel · Command Index"
-    },
-    {
       "id": "parameter-sensitivity",
       "category": "analysis",
       "label": "Parameter sensitivity",

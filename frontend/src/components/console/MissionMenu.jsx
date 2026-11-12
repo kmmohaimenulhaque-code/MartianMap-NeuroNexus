@@ -14,7 +14,7 @@ const glassButtonStyle = {
 
   fontFamily: "var(--nn-font)",
 
-  fontSize: "14px",
+  fontSize: "11px",
 
   letterSpacing: "0.06em",
 
@@ -78,7 +78,7 @@ export default function MissionMenu({
                 style={{
                   color: "#75e6ff",
 
-                  fontSize: "14px",
+                  fontSize: "11px",
 
                   letterSpacing: "0.06em",
                 }}
@@ -92,7 +92,7 @@ export default function MissionMenu({
 
                   marginTop: "5px",
 
-                  fontSize: "15px",
+                  fontSize: "11px",
                 }}
               >
                 Mission objective / field note
@@ -127,7 +127,7 @@ export default function MissionMenu({
 
                   fontFamily: "var(--nn-font)",
 
-                  fontSize: "14px",
+                  fontSize: "11px",
 
                   lineHeight: 1.6,
 
@@ -149,7 +149,7 @@ export default function MissionMenu({
 
                   fontFamily: "var(--nn-font)",
 
-                  fontSize: "14px",
+                  fontSize: "11px",
                 }}
               >
                 <span>MAXIMUM 150 WORDS</span>
@@ -181,7 +181,7 @@ export default function MissionMenu({
                 style={{
                   color: "#75e6ff",
 
-                  fontSize: "14px",
+                  fontSize: "11px",
 
                   letterSpacing: "0.06em",
                 }}
@@ -195,7 +195,7 @@ export default function MissionMenu({
 
                   marginTop: "5px",
 
-                  fontSize: "15px",
+                  fontSize: "11px",
                 }}
               >
                 Tickable mission actions
@@ -221,7 +221,7 @@ export default function MissionMenu({
 
                   fontFamily: "var(--nn-font)",
 
-                  fontSize: "14px",
+                  fontSize: "11px",
                 }}
               >
                 <span>
@@ -308,7 +308,7 @@ export default function MissionMenu({
 
                         fontFamily: "var(--nn-font)",
 
-                        fontSize: "14px",
+                        fontSize: "11px",
 
                         outline: "none",
                       }}
@@ -328,7 +328,7 @@ export default function MissionMenu({
 
                         cursor: "pointer",
 
-                        fontSize: "15px",
+                        fontSize: "11px",
                       }}
                     >
                       ×
@@ -351,7 +351,7 @@ export default function MissionMenu({
 
                       color: "#667980",
 
-                      fontSize: "14px",
+                      fontSize: "11px",
 
                       textAlign: "center",
                     }}
@@ -411,7 +411,7 @@ export default function MissionMenu({
                   style={{
                     color: "#75e6ff",
 
-                    fontSize: "14px",
+                    fontSize: "11px",
 
                     letterSpacing: "0.06em",
                   }}
@@ -427,7 +427,7 @@ export default function MissionMenu({
 
                     color: "#687b83",
 
-                    fontSize: "14px",
+                    fontSize: "11px",
                   }}
                 >
                   Notes and checklist are saved locally and included in both mission exports. The complete CSV flattens every value in the mission
@@ -552,7 +552,7 @@ export default function MissionMenu({
               style={{
                 color: "#75e6ff",
 
-                fontSize: "14px",
+                fontSize: "11px",
 
                 letterSpacing: "0.06em",
               }}
@@ -580,7 +580,7 @@ export default function MissionMenu({
 
                 color: "#74868e",
 
-                fontSize: "14px",
+                fontSize: "11px",
               }}
             >
               Persistent local mission planning workspace.

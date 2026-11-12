@@ -25,10 +25,8 @@ const check = (ok, message) => {
 // WebGL on any machine: ANGLE, GPU blocklist ignored (software rendering where there is no GPU).
 const browser = await chromium.launch({ args: ["--enable-webgl", "--ignore-gpu-blocklist", "--use-gl=angle", "--enable-unsafe-swiftshader"] });
 
-async function open(name, viewport, touch, dpr = touch ? 2 : 1, { tourHint = false } = {}) {
+async function open(name, viewport, touch, dpr = touch ? 2 : 1) {
   const context = await browser.newContext({ viewport, isMobile: touch && viewport.width < 768, hasTouch: touch, deviceScaleFactor: dpr });
-  // The first-visit tour hint would sit over the map in every shot; it is checked once on its own.
-  if (!tourHint) await context.addInitScript(() => localStorage.setItem("nn.tourHintSeen", "1"));
   await context.route(/fontshare\.com/, async (route) => {
     const response = await route.fetch();
     await route.fulfill({ response, headers: { ...response.headers(), "access-control-allow-origin": "*" } });
@@ -187,24 +185,6 @@ const cockpit = async (page, w, label) => {
   await context.close();
 }
 
-/* ---------------------------------------------------------------- First visit: tour hint and the guided tour */
-{
-  const { context, page } = await open("tour", { width: 1440, height: 900 }, false, 1, { tourHint: true });
-  check((await box(page, "[data-testid=tour-hint]"))?.visible, "desktop 1440: first visit shows the tour hint");
-  await page.click("[data-testid=tour-hint] .is-primary");
-  await page.waitForSelector("[data-testid=judge-tour]");
-  await page.waitForTimeout(1600);
-  await shot(page, "desktop-tour-step1.png");
-  await page.click("[data-testid=judge-tour] .is-primary");
-  await page.waitForSelector("[data-testid=decision-at-sol]", { state: "attached", timeout: 240000 });
-  await page.click("[data-testid=judge-tour] .is-primary");
-  await page.waitForFunction(() => /On screen now/.test(document.querySelector("[data-testid=judge-tour]")?.textContent ?? ""), null, { timeout: 30000 });
-  await shot(page, "desktop-tour-decision.png");
-  await page.click("[data-testid=judge-tour] .is-primary");
-  check(!(await box(page, "[data-testid=judge-tour]")) && !(await box(page, "[data-testid=tour-hint]")), "desktop 1440: tour runs 3 steps and DONE closes it; the hint does not return");
-  await context.close();
-}
-
 /* ---------------------------------------------------------------- iPads: the same cockpit */
 for (const [w, h, name, file] of [[768, 1024, "iPad mini 768", null], [820, 1180, "iPad Air 820", "tablet-cockpit-ipad-air.png"], [1024, 768, "iPad landscape 1024", "tablet-cockpit-ipad-landscape.png"]]) {
   const { context, page } = await open(name, { width: w, height: h }, true);
@@ -284,7 +264,7 @@ for (const [w, h, name, file] of [[768, 1024, "iPad mini 768", null], [820, 1180
   });
   check(sheet.visible && sheet.left === 0 && sheet.right === 393 && sheet.height <= 852 * 0.78 + 1, "iPhone 393: INTEL bottom sheet, at most 78% of the height");
   check(/blur\(5px\)/.test(sheetStyle.blur) && sheetStyle.top === 0, "iPhone 393: full-screen blurred backdrop behind the sheet");
-  check(sheetStyle.grid === 2 && sheetStyle.tag === "10px", "iPhone 393: 2-column KPI grid and 10 px source pills");
+  check(sheetStyle.grid === 2 && sheetStyle.tag === "11px", "iPhone 393: 2-column KPI grid and 11 px source pills");
   await shot(page, "mobile-intel-sheet-ios.png");
   await page.click(".left-column .nn-sheet-close");
   await page.waitForTimeout(400);

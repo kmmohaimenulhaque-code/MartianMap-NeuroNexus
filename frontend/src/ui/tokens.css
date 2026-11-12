@@ -2,12 +2,12 @@
 :root {
   /* Typography: Switzer (Fontshare, loaded in index.html) with tabular figures for telemetry. */
   --nn-font: "Switzer", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --nn-fs-micro: 13px;
-  --nn-fs-label: 14px;
-  --nn-fs-body: 15px;
-  --nn-fs-control: 16px;
-  --nn-fs-head: 18px;
-  --nn-fs-kpi: 21px;
+  --nn-fs-micro: 11px;
+  --nn-fs-label: 11px;
+  --nn-fs-body: 11px;
+  --nn-fs-control: 11px;
+  --nn-fs-head: 14px;
+  --nn-fs-kpi: 18px;
   --nn-teal: #1a8fa8;
   --nn-steel: #4ea8de;
   --nn-slate: #6f858d;

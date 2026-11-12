@@ -10,7 +10,7 @@ import { perfStore } from "../perf/perfStore";
 import { solSnapshot } from "../state/solStore";
 
 export function buildConsoleHandlers(ctx) {
-  const { appMode, switchMode, setLayerVisibility, setLegendOpen, scrollToPanel, setCommandIndex, setNotice, setSol, setDustPlaying, startDemo, startTour } = ctx;
+  const { appMode, switchMode, setLayerVisibility, setLegendOpen, scrollToPanel, setCommandIndex, setNotice, setSol, setDustPlaying, startDemo } = ctx;
 
   const toMarswalk = (pending) => {
     planStore.set({ pending });
@@ -74,7 +74,6 @@ export function buildConsoleHandlers(ctx) {
       run: () => toMarswalk({ type: "sensitivity", scroll: "mw-sensitivity" }),
       available: () => (planStore.get().plan ? true : "Plan a Marswalk first"),
     },
-    "judge-tour": { run: () => startTour?.() },
     "install-app": { run: run(() => installStore.install()) },
     "verify-plan": { run: () => toMarswalk({ type: "verify" }), available: () => (planStore.get().plan ? true : "Plan a Marswalk first") },
     "export-eva-brief": { run: run(exportEvaBrief), available: () => (planStore.get().plan ? true : "Plan a Marswalk first") },

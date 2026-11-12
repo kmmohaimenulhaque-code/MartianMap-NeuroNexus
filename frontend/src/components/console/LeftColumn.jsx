@@ -62,7 +62,7 @@ export default function LeftColumn({ activeCustomPlace, displayName, displayType
 
               color: "#71848c",
 
-              fontSize: "13px",
+              fontSize: "11px",
 
               lineHeight: 1.5,
             }}

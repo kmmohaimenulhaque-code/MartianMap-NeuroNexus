@@ -57,7 +57,7 @@ Captured by the Playwright e2e tour (`node frontend/e2e/screenshots.mjs`), which
 | ![MARSWALK at sol 100](assets/screenshots/v3/05_marswalk_mode.png) **MARSWALK at sol 100.** The route decision is shown with the modeled dust at the active sol (τ 0.31, WITHIN): the combined status stays REVIEW REQUIRED (slope segments). | ![MARSWALK at sol 400](assets/screenshots/v3/06_marswalk_storm_sol.png) **Same plan, storm sol.** Scrubbing to sol 400 refetches conditions (`GET /conditions?site=gale&sol=400`): τ 4.62 [EXCEED] raises the decision to EXCEEDS PLANNING LIMIT. Planning limits are not safety limits. |
 | ![Browser Optimization](assets/screenshots/v3/07_browser_optimization.png) **Browser Optimization is opt-in.** One [BROWSER OPTIMIZATION] switch in the Menu (and on the wheel) turns on worker math, the IndexedDB tile cache, WebGL suspension and marker culling for 4 GB devices. Every computed number is identical either way (parity-tested). | ![Command Index exports](assets/screenshots/v3/08_command_index_exports.png) **Everything exports.** EVA brief (JSON v4: server brief + plan + conditions at the active sol), route GeoJSON (route, per-segment LineStrings with attributes, turnaround), CSV profile, printable brief, route comparison JSON/CSV, validation JSON + Markdown + chart PNGs, THEMIS + conditions snapshot JSON/CSV. Each carries `plan_id`, `active_sol`, `data_versions`, `retrieved_at`. |
 
-### Shared layers, smooth dust playback and six new features
+### Shared layers, smooth dust playback and new features
 
 **One set of LAYERS for all three maps.** The colored 2D map, the ArcGIS map (the USGS panel's new LAYERED view, a Mars 2000 MapView) and the 3D globe read one layer store. A layer turned on from any map's LAYERS menu is on everywhere it can be drawn; each row shows chips for the maps that draw it (2D / ARCGIS / 3D) and, once on, an opacity slider. Our own products (the dust scenario frames and the slope, roughness and walkability heatmaps from local MOLA 128 ppd) are drawn on all three maps from the same data, alongside the USGS SIM 3292 geologic units, contacts and structures, HiRISE DTM footprints, rover traverses, THEMIS observations, landing sites and routes. The USGS APP switch still shows the USGS web application.
 
@@ -65,7 +65,7 @@ Captured by the Playwright e2e tour (`node frontend/e2e/screenshots.mjs`), which
 
 **All maps follow one selection.** A coordinate picked on the 2D map, the ArcGIS map or the 3D globe (or found by search) moves the other maps to it; the map you clicked keeps its own zoom, and no map zooms out to follow. The USGS APP view re-syncs its extent to the same point.
 
-**Readability.** Text is 1 px larger across the console (Switzer throughout), the side columns are wider (about 21% of the window each), and buttons, chips, titles and labels stay on one line: where a line is longer than its box, the box scrolls sideways and fades at its edge. Popovers (METHOD, source chips) and the LAYERS menus are drawn on top of the page, so a panel never clips them, and they stay inside the window.
+**Readability.** Text is 11 px Switzer across the console (headings 13 to 18 px), the side columns are wider (about 21% of the window each), and buttons, chips, titles and labels stay on one line: where a line is longer than its box, the box scrolls sideways and fades at its edge. Popovers (METHOD, source chips) and the LAYERS menus are drawn on top of the page, so a panel never clips them, and they stay inside the window.
 
 | Feature | Where | Notes |
 | --- | --- | --- |
@@ -73,14 +73,12 @@ Captured by the Playwright e2e tour (`node frontend/e2e/screenshots.mjs`), which
 | Parameter sensitivity | MARSWALK decision column, wheel, Command Index | The planned route re-evaluated with each planning slider at its low and high bound: margin change bars and status changes. The route is simplified (Douglas-Peucker, at most 480 vertices) for `/marswalk/evaluate`; when that re-evaluation's status differs from the plan's, the panel says so. Shows which choices drive the result; it is not an uncertainty estimate. |
 | Visual printable brief | MARSWALK PRINT BRIEF | Hillshade with the route, numbered stops and turnaround, the elevation and slope profile, the STATUS BY SOL strip, dose screening, key numbers and sources, on one printable page. |
 | Layer opacity | Every LAYERS menu | Per layer, shared by the three maps, remembered in this browser. |
-| Guided judge tour | First-visit hint, [MENU], wheel, Command Index | Three steps (pick a site, plan a Marswalk, read the decision); it drives the real console and reads the decision from the screen. SKIP is always visible. |
 | Install as app (PWA) | [MENU] INSTALL AS APP, wheel, Command Index; browser install button | Own window and home-screen icon on desktop, Android, iPhone and iPad (Share, then Add to Home Screen). The service worker caches no data: with no connection it shows an offline page instead of stale numbers. |
 
 | | |
 | --- | --- |
 | ![ArcGIS LAYERED view with the shared LAYERS menu](assets/screenshots/v3/desktop-arcgis-layers.png) **ArcGIS LAYERED view.** The shared LAYERS menu with map chips and opacity sliders; the slope heatmap over the USGS geology. | ![Multi-stop EVA](assets/screenshots/v3/desktop-multistop.png) **Multi-stop EVA.** Three numbered stops at Gale, 8 h. |
-| ![Parameter sensitivity](assets/screenshots/v3/desktop-sensitivity.png) **Parameter sensitivity.** Margin change at each slider bound; bounds that break a rule show "not valid" and the reason. | ![Guided judge tour](assets/screenshots/v3/desktop-tour-decision.png) **Guided judge tour, step 3.** The decision is read from the screen, not narrated. |
-| ![SOL card on iPhone](assets/screenshots/v3/mobile-sol-card.png) **SOL card on iPhone.** | ![Tour step 1](assets/screenshots/v3/desktop-tour-step1.png) **Tour step 1.** The selected site and maps are outlined. |
+| ![Parameter sensitivity](assets/screenshots/v3/desktop-sensitivity.png) **Parameter sensitivity.** Margin change at each slider bound; bounds that break a rule show "not valid" and the reason. | ![SOL card on iPhone](assets/screenshots/v3/mobile-sol-card.png) **SOL card on iPhone.** |
 
 ### Mobile & Cross-Device Field Readiness (iOS / Android)
 
@@ -91,7 +89,7 @@ PCs, laptops and tablets (768 px and wider, iPads in portrait and landscape) get
 
 The Radial Feature Wheel opens from the dock, a 500 ms long-press or a two-finger tap (touch tablets also get a WHEEL chip). On phones it is at most 340 px wide and stays 12 px inside the screen edges. The 3D globe has a one-row phone toolbar (GALE, JEZERO, 3D TOOLS, close). Where hardware acceleration is off it renders with software WebGL; where WebGL is missing entirely it shows a 2D canvas globe instead of an error. Its software or hardware status appears in the menu's Browser Optimization panel.
 
-Mobile web-app meta tags, `100dvh` with fallbacks, safe areas, 16 px inputs (so iOS does not zoom) and `-webkit-` prefixes are in place, and no viewport from 320 to 2560 px scrolls sideways. `node frontend/e2e/devices.mjs` checks a PC (1440), three iPads (768, 820, 1024 landscape), an iPhone 15 (393 at 3x) and an Android phone (360) in Chromium device emulation; it also checks the shared layers, multi-stop, sensitivity, tour and PWA installability. It has not been run on real devices.
+Mobile web-app meta tags, `100dvh` with fallbacks, safe areas, 16 px inputs (so iOS does not zoom) and `-webkit-` prefixes are in place, and no viewport from 320 to 2560 px scrolls sideways. `node frontend/e2e/devices.mjs` checks a PC (1440), three iPads (768, 820, 1024 landscape), an iPhone 15 (393 at 3x) and an Android phone (360) in Chromium device emulation; it also checks the shared layers, map sync, search, popovers, multi-stop, sensitivity and PWA installability. It has not been run on real devices.
 
 | | | |
 | --- | --- | --- |

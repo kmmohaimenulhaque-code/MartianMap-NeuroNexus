@@ -8,7 +8,7 @@ import SourceTag from "../sources/SourceTag";
 import { GUIDES, QUICK_STARTS } from "./manualContent";
 import "../sources/sources.css";
 
-export default function MissionManualDrawer({ open, onClose, onQuickStart, onOpenSources, onOpenCommands, optimizationPanel, onStartTour }) {
+export default function MissionManualDrawer({ open, onClose, onQuickStart, onOpenSources, onOpenCommands, optimizationPanel }) {
   const ledger = useSourceLedger();
   const [status, setStatus] = useState({ state: "idle" });
   const install = useInstall();
@@ -51,12 +51,6 @@ export default function MissionManualDrawer({ open, onClose, onQuickStart, onOpe
         <section className="nn-manual-section">
           <h3>QUICK START</h3>
           <div className="nn-manual-quick">
-            {onStartTour && (
-              <button type="button" className="nn-manual-tour" onClick={onStartTour} data-quickstart="judge-tour">
-                <strong>Guided judge tour (60 seconds)</strong>
-                <small>Three steps: pick a site, plan a Marswalk, read the decision and the status by sol. SKIP is always visible.</small>
-              </button>
-            )}
             <button
               type="button"
               className="nn-manual-install"

@@ -49,7 +49,7 @@ export default function InterpretationPanel({ environment, siteScience }) {
 
             color: "#667a82",
 
-            fontSize: "13px",
+            fontSize: "11px",
 
             lineHeight: 1.45,
           }}
