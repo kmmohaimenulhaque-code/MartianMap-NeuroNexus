@@ -6,7 +6,7 @@ import json
 import time
 from typing import Any
 
-from science.ai.config import api_key, model_name, resolve_model, status
+from science.ai.config import api_key, mark_model_failed, mark_model_ok, model_name, resolve_model, status
 from science.ai.tools import DECLARATIONS, call_tool
 
 MAX_TOOL_ROUNDS = 6
@@ -105,6 +105,46 @@ def _failure(exc: Exception, model: str | None = None) -> dict[str, Any]:
             "note": "Deterministic route generation, metrics, maps, exports and tracking continue to work without Gemini."}
 
 
+def _error_code(exc: Exception) -> int | None:
+    code = getattr(exc, "code", None)
+    if isinstance(code, int):
+        return code
+    text = str(exc)
+    for candidate in (404, 429, 500, 503, 400, 401, 403):
+        if text.startswith(str(candidate)) or f"'code': {candidate}" in text or f" {candidate} " in text[:40]:
+            return candidate
+    return None
+
+
+def _should_fail_over(exc: Exception) -> bool:
+    """Model-specific problems move on to the next model; key problems do not."""
+    code = _error_code(exc)
+    lowered = str(exc).lower()
+    if code in (401, 403) or "api key not valid" in lowered:
+        return False
+    return code in (404, 429, 500, 502, 503, 504) or "no longer available" in lowered or "high demand" in lowered or "overloaded" in lowered
+
+
+def _substitution_notice(model: str, resolution: dict[str, Any], failures: list[dict[str, Any]]) -> str | None:
+    if model == resolution["requested"] and not failures:
+        return None
+    tried = "; ".join(f"{f['model']}: {f['reason']}" for f in failures)
+    base = f"Configured model '{resolution['requested']}' was not used; answered with '{model}'."
+    return f"{base} ({tried})" if tried else base
+
+
+def _short_reason(exc: Exception) -> str:
+    code = _error_code(exc)
+    lowered = str(exc).lower()
+    if "no longer available" in lowered:
+        return "404 retired for this key"
+    if code == 503 or "high demand" in lowered:
+        return "503 overloaded"
+    if code == 429:
+        return "429 quota/rate limit"
+    return f"{code or 'error'}"
+
+
 def _resolved(client) -> tuple[str | None, dict[str, Any]]:
     info = resolve_model(client)
     return info["model"], info
@@ -144,41 +184,59 @@ def chat(messages: list[dict[str, str]], mission_state: dict[str, Any] | None = 
         return {"status": "unavailable", "reason": resolution["notice"], "model": resolution["requested"],
                 "available_models": resolution["available"]}
 
+    base_contents = list(contents)
+    failures: list[dict[str, Any]] = []
+    last_exc: Exception | None = None
     tool_log: list[dict[str, Any]] = []
-    try:
-        for _ in range(MAX_TOOL_ROUNDS):
-            response = client.models.generate_content(model=model, contents=contents, config=config)
-            candidate = (response.candidates or [None])[0]
-            parts = list(getattr(getattr(candidate, "content", None), "parts", None) or [])
-            calls = [p.function_call for p in parts if getattr(p, "function_call", None)]
-            if not calls:
-                text = (response.text or "").strip()
-                grounding = getattr(candidate, "grounding_metadata", None)
-                return {
-                    "status": "ok", "model": model, "model_notice": resolution["notice"],
-                    "text": text or "(no content returned)",
-                    "tool_calls": tool_log,
-                    "search_grounding": [
-                        {"title": getattr(getattr(c, "web", None), "title", None),
-                         "uri": getattr(getattr(c, "web", None), "uri", None)}
-                        for c in (getattr(grounding, "grounding_chunks", None) or [])
-                    ] if grounding else [],
-                    "elapsed_ms": round((time.perf_counter() - started) * 1000, 1),
-                    "evidence_note": "AI INTERPRETATION of NeuroNexus tool results. Not itself a NASA observation.",
-                }
-            contents.append(candidate.content)
-            responses = []
-            for call in calls:
-                arguments = dict(call.args or {})
-                result = call_tool(call.name, arguments, state)
-                tool_log.append({"name": call.name, "arguments": arguments,
-                                 "result_preview": json.dumps(result, default=str)[:400]})
-                responses.append(types.Part.from_function_response(name=call.name, response={"result": result}))
-            contents.append(types.Content(role="user", parts=responses))
-        return {"status": "error", "reason": f"Stopped after {MAX_TOOL_ROUNDS} tool rounds without a final answer.",
-                "tool_calls": tool_log, "model": model}
-    except Exception as exc:
-        return {**_failure(exc, model), "tool_calls": tool_log, "model_notice": resolution["notice"]}
+    for model in resolution["attempt_order"]:
+        contents = list(base_contents)
+        tool_log = []
+        try:
+            for _ in range(MAX_TOOL_ROUNDS):
+                response = client.models.generate_content(model=model, contents=contents, config=config)
+                candidate = (response.candidates or [None])[0]
+                parts = list(getattr(getattr(candidate, "content", None), "parts", None) or [])
+                calls = [p.function_call for p in parts if getattr(p, "function_call", None)]
+                if not calls:
+                    mark_model_ok(model)
+                    text = (response.text or "").strip()
+                    grounding = getattr(candidate, "grounding_metadata", None)
+                    return {
+                        "status": "ok", "model": model,
+                        "model_notice": _substitution_notice(model, resolution, failures),
+                        "text": text or "(no content returned)",
+                        "tool_calls": tool_log,
+                        "search_grounding": [
+                            {"title": getattr(getattr(c, "web", None), "title", None),
+                             "uri": getattr(getattr(c, "web", None), "uri", None)}
+                            for c in (getattr(grounding, "grounding_chunks", None) or [])
+                        ] if grounding else [],
+                        "elapsed_ms": round((time.perf_counter() - started) * 1000, 1),
+                        "evidence_note": "AI INTERPRETATION of NeuroNexus tool results. Not itself a NASA observation.",
+                    }
+                # candidate.content is appended unchanged so Gemini 3 thought signatures round-trip.
+                contents.append(candidate.content)
+                responses = []
+                for call in calls:
+                    arguments = dict(call.args or {})
+                    result = call_tool(call.name, arguments, state)
+                    tool_log.append({"name": call.name, "arguments": arguments,
+                                     "result_preview": json.dumps(result, default=str)[:400]})
+                    responses.append(types.Part.from_function_response(name=call.name, response={"result": result}))
+                contents.append(types.Content(role="user", parts=responses))
+            mark_model_ok(model)
+            return {"status": "error", "reason": f"Stopped after {MAX_TOOL_ROUNDS} tool rounds without a final answer.",
+                    "tool_calls": tool_log, "model": model}
+        except Exception as exc:
+            last_exc = exc
+            if not _should_fail_over(exc):
+                return {**_failure(exc, model), "tool_calls": tool_log}
+            mark_model_failed(model, _error_code(exc))
+            failures.append({"model": model, "reason": _short_reason(exc)})
+    failure = _failure(last_exc, resolution["attempt_order"][-1]) if last_exc else {"status": "unavailable", "reason": "No model could be tried."}
+    tried = ", ".join(f"{f['model']} ({f['reason']})" for f in failures)
+    failure["reason"] = f"No Gemini model answered. Tried: {tried}. Try again shortly or set GEMINI_MODEL."
+    return {**failure, "tool_calls": tool_log, "models_tried": failures}
 
 
 def analyse_routes(payload: dict[str, Any]) -> dict[str, Any]:
@@ -205,17 +263,28 @@ def analyse_routes(payload: dict[str, Any]) -> dict[str, Any]:
     if model is None:
         return {"status": "unavailable", "reason": resolution["notice"], "model": resolution["requested"],
                 "available_models": resolution["available"]}
-    try:
-        response = client.models.generate_content(model=model, contents=prompt, config=config)
-        analysis = json.loads(response.text)
-    except json.JSONDecodeError as exc:
-        return {"status": "error", "reason": "Gemini returned invalid JSON.", "error": str(exc)[:200], "model": model}
-    except Exception as exc:
-        return _failure(exc, model)
-    return {"status": "ok", "model": model, "model_notice": resolution["notice"], "analysis": analysis,
-            "elapsed_ms": round((time.perf_counter() - started) * 1000, 1),
-            "evidence_note": "AI INTERPRETATION. Numerical values remain those computed by the deterministic engine.",
-            "schema": "neuronexus.route-analysis.v1"}
+    failures: list[dict[str, Any]] = []
+    for model in resolution["attempt_order"]:
+        try:
+            response = client.models.generate_content(model=model, contents=prompt, config=config)
+            analysis = json.loads(response.text)
+        except json.JSONDecodeError as exc:
+            return {"status": "error", "reason": "Gemini returned invalid JSON.", "error": str(exc)[:200], "model": model}
+        except Exception as exc:
+            if not _should_fail_over(exc):
+                return _failure(exc, model)
+            mark_model_failed(model, _error_code(exc))
+            failures.append({"model": model, "reason": _short_reason(exc)})
+            continue
+        mark_model_ok(model)
+        return {"status": "ok", "model": model, "model_notice": _substitution_notice(model, resolution, failures),
+                "analysis": analysis,
+                "elapsed_ms": round((time.perf_counter() - started) * 1000, 1),
+                "evidence_note": "AI INTERPRETATION. Numerical values remain those computed by the deterministic engine.",
+                "schema": "neuronexus.route-analysis.v1"}
+    tried = ", ".join(f"{f['model']} ({f['reason']})" for f in failures)
+    return {"status": "unavailable", "reason": f"No Gemini model answered. Tried: {tried}. Try again shortly or set GEMINI_MODEL.",
+            "models_tried": failures, "model": resolution["requested"]}
 
 
 def service_status() -> dict[str, Any]:
