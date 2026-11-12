@@ -1,0 +1,127 @@
+{
+  "project": "NeuroNexus",
+  "version": "0.2.0",
+  "dataset_type": "mars_landing_sites",
+  "coordinate_convention": {
+    "latitude": "planetocentric degrees",
+    "longitude": "east longitude, degrees [0, 360)"
+  },
+  "source_of_truth": {
+    "organization": "NASA",
+    "reference": "NASA Mars landing-site mission documentation",
+    "overview_url": "https://science.nasa.gov/planetary-science/programs/mars-exploration/mission-timeline/how-we-land-on-mars/"
+  },
+  "sites": [
+    {
+      "site_id": "viking_1",
+      "mission": "Viking 1",
+      "spacecraft": "Viking Lander 1",
+      "landing_date": "1976-07-20",
+      "region": "Chryse Planitia",
+      "latitude_deg": 22.483,
+      "longitude_deg": 312.06,
+      "longitude_source": "47.94 W converted to east longitude",
+      "site_status": "successful_landing",
+      "source_url": "https://science.nasa.gov/mission/viking-1/",
+      "coordinate_provenance": "NASA mission documentation"
+    },
+    {
+      "site_id": "viking_2",
+      "mission": "Viking 2",
+      "spacecraft": "Viking Lander 2",
+      "landing_date": "1976-09-03",
+      "region": "Utopia Planitia",
+      "latitude_deg": 47.968,
+      "longitude_deg": 134.29,
+      "longitude_source": "225.71 W converted to east longitude",
+      "site_status": "successful_landing",
+      "source_url": "https://science.nasa.gov/mission/viking-2/",
+      "coordinate_provenance": "NASA mission documentation"
+    },
+    {
+      "site_id": "mars_pathfinder",
+      "mission": "Mars Pathfinder",
+      "spacecraft": "Pathfinder / Sojourner",
+      "landing_date": "1997-07-04",
+      "region": "Ares Vallis",
+      "latitude_deg": 19.17,
+      "longitude_deg": 326.79,
+      "longitude_source": "33.21 W converted to east longitude",
+      "site_status": "successful_landing",
+      "source_url": "https://science.nasa.gov/resource/mars-pathfinder-landing-site/",
+      "coordinate_provenance": "NASA/JPL Photojournal landing-site reference"
+    },
+    {
+      "site_id": "mer_a_spirit",
+      "mission": "Mars Exploration Rover A",
+      "spacecraft": "Spirit",
+      "landing_date": "2004-01-03",
+      "region": "Gusev Crater",
+      "latitude_deg": -14.5692,
+      "longitude_deg": 175.4729,
+      "site_status": "successful_landing",
+      "source_url": "https://science.nasa.gov/mission/mer-spirit/",
+      "coordinate_provenance": "NASA mission documentation"
+    },
+    {
+      "site_id": "mer_b_opportunity",
+      "mission": "Mars Exploration Rover B",
+      "spacecraft": "Opportunity",
+      "landing_date": "2004-01-24",
+      "region": "Meridiani Planum",
+      "latitude_deg": -1.95,
+      "longitude_deg": 354.47,
+      "site_status": "successful_landing",
+      "source_url": "https://science.nasa.gov/mission/mars-exploration-rovers/",
+      "coordinate_provenance": "NASA mission documentation"
+    },
+    {
+      "site_id": "phoenix",
+      "mission": "Phoenix",
+      "spacecraft": "Phoenix Lander",
+      "landing_date": "2008-05-25",
+      "region": "Vastitas Borealis",
+      "latitude_deg": 68.22,
+      "longitude_deg": 234.25,
+      "site_status": "successful_landing",
+      "source_url": "https://science.nasa.gov/planetary-science/programs/mars-exploration/mission-timeline/how-we-land-on-mars/",
+      "coordinate_provenance": "NASA mission documentation"
+    },
+    {
+      "site_id": "msl_curiosity",
+      "mission": "Mars Science Laboratory",
+      "spacecraft": "Curiosity",
+      "landing_date": "2012-08-06",
+      "region": "Gale Crater",
+      "latitude_deg": -4.5895,
+      "longitude_deg": 137.4417,
+      "site_status": "successful_landing",
+      "source_url": "https://science.nasa.gov/mission/mars-science-laboratory/",
+      "coordinate_provenance": "NASA mission / MSL localization"
+    },
+    {
+      "site_id": "mars_insight",
+      "mission": "InSight",
+      "spacecraft": "InSight Lander",
+      "landing_date": "2018-11-26",
+      "region": "Elysium Planitia",
+      "latitude_deg": -4.5024,
+      "longitude_deg": 135.6234,
+      "site_status": "successful_landing",
+      "source_url": "https://science.nasa.gov/mission/insight/",
+      "coordinate_provenance": "NASA mission documentation"
+    },
+    {
+      "site_id": "mars_2020_perseverance",
+      "mission": "Mars 2020",
+      "spacecraft": "Perseverance",
+      "landing_date": "2021-02-18",
+      "region": "Jezero Crater",
+      "latitude_deg": 18.4447,
+      "longitude_deg": 77.4502,
+      "site_status": "successful_landing",
+      "source_url": "https://science.nasa.gov/mission/mars-2020-perseverance/",
+      "coordinate_provenance": "NASA mission documentation"
+    }
+  ]
+}

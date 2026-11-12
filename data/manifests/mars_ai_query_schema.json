@@ -1,0 +1,276 @@
+{
+  "project": "NeuroNexus",
+  "version": "0.1.0",
+  "purpose": "Unified spatial-temporal query schema for Mars scientific context retrieval",
+
+  "query": {
+    "latitude_deg": "required",
+    "longitude_deg": "required",
+    "radius_km": "optional",
+    "sol": "optional",
+    "utc_time": "optional",
+    "mission": "optional"
+  },
+
+  "layers": {
+
+    "gazetteer": {
+      "enabled": true,
+      "source": "USGS Gazetteer of Planetary Nomenclature / IAU",
+      "fields": [
+        "feature_id",
+        "name",
+        "feature_type",
+        "latitude_deg",
+        "longitude_deg",
+        "diameter_km",
+        "approval_status",
+        "approval_date",
+        "origin",
+        "reference"
+      ]
+    },
+
+    "landing_sites": {
+      "enabled": true,
+      "fields": [
+        "site_id",
+        "mission",
+        "spacecraft",
+        "landing_date",
+        "region",
+        "latitude_deg",
+        "longitude_deg"
+      ]
+    },
+
+    "terrain": {
+      "enabled": true,
+      "source": "NASA MOLA",
+      "fields": [
+        "elevation_m",
+        "slope_deg",
+        "aspect_deg",
+        "roughness_m"
+      ]
+    },
+
+    "geology": {
+      "enabled": true,
+      "fields": [
+        "geologic_unit",
+        "geologic_age",
+        "lithology",
+        "geomorphology",
+        "map_source"
+      ]
+    },
+
+    "imagery": {
+      "enabled": true,
+      "fields": [
+        "instrument",
+        "product_id",
+        "acquisition_time",
+        "resolution_m_per_pixel",
+        "wavelength",
+        "image_url"
+      ]
+    },
+
+    "mineralogy": {
+      "enabled": true,
+      "sources": [
+        "CRISM",
+        "CheMin"
+      ],
+      "fields": [
+        "mineral",
+        "abundance_or_confidence",
+        "spectral_signature",
+        "observation_id"
+      ]
+    },
+
+    "soil_chemistry": {
+      "enabled": true,
+      "sources": [
+        "APXS",
+        "ChemCam",
+        "SAM"
+      ],
+      "fields": [
+        "element",
+        "abundance",
+        "unit",
+        "instrument",
+        "observation_id"
+      ]
+    },
+
+    "water_ice": {
+      "enabled": true,
+      "sources": [
+        "GRS",
+        "SHARAD",
+        "CRISM"
+      ],
+      "fields": [
+        "measurement_type",
+        "value",
+        "unit",
+        "confidence",
+        "observation_id"
+      ]
+    },
+
+    "thermal": {
+      "enabled": true,
+      "sources": [
+        "THEMIS"
+      ],
+      "fields": [
+        "temperature",
+        "unit",
+        "thermal_inertia",
+        "observation_time",
+        "product_id"
+      ]
+    },
+
+    "atmosphere": {
+      "enabled": true,
+      "sources": [
+        "MCS",
+        "MAVEN"
+      ],
+      "fields": [
+        "pressure",
+        "temperature",
+        "density",
+        "altitude_km",
+        "observation_time",
+        "instrument"
+      ]
+    },
+
+    "weather": {
+      "enabled": true,
+      "sources": [
+        "REMS",
+        "MEDA"
+      ],
+      "fields": [
+        "air_temperature",
+        "pressure",
+        "wind_speed",
+        "wind_direction",
+        "humidity",
+        "observation_time"
+      ]
+    },
+
+    "clouds_dust": {
+      "enabled": true,
+      "sources": [
+        "MARCI",
+        "THEMIS",
+        "Viking IRTM"
+      ],
+      "fields": [
+        "dust_opacity",
+        "cloud_presence",
+        "observation_time",
+        "product_id"
+      ]
+    },
+
+    "subsurface": {
+      "enabled": true,
+      "sources": [
+        "SHARAD",
+        "RIMFAX"
+      ],
+      "fields": [
+        "depth_m",
+        "interface",
+        "radar_reflection",
+        "observation_id"
+      ]
+    },
+
+    "missions": {
+      "enabled": true,
+      "fields": [
+        "mission",
+        "spacecraft",
+        "instrument",
+        "position",
+        "orientation",
+        "sol",
+        "observation_id"
+      ]
+    },
+
+    "solar_environment": {
+      "enabled": true,
+      "sources": [
+        "SPICE",
+        "MAVEN"
+      ],
+      "fields": [
+        "solar_longitude_deg",
+        "local_solar_time",
+        "sun_elevation_deg",
+        "illumination",
+        "season"
+      ]
+    },
+
+    "asteroids_orbits": {
+      "enabled": true,
+      "sources": [
+        "NASA/JPL Horizons",
+        "JPL Small-Body Database"
+      ],
+      "fields": [
+        "object_id",
+        "designation",
+        "epoch",
+        "position",
+        "velocity",
+        "distance_from_mars",
+        "relative_velocity"
+      ]
+    },
+
+    "survival": {
+      "derived": true,
+      "fields": [
+        "terrain_risk",
+        "thermal_risk",
+        "dust_risk",
+        "water_resource_score",
+        "solar_energy_score",
+        "mobility_score",
+        "communication_visibility",
+        "landing_suitability"
+      ]
+    }
+  },
+
+  "provenance": {
+    "required": true,
+    "fields": [
+      "source_organization",
+      "dataset_id",
+      "product_id",
+      "source_url",
+      "doi",
+      "processing_level",
+      "processing_method",
+      "checksum",
+      "retrieval_time"
+    ]
+  }
+}

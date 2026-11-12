@@ -1,0 +1,90 @@
+{
+  "project": "NeuroNexus",
+  "sources": [
+    {
+      "id": "NASA_PDS",
+      "organization": "NASA Planetary Data System",
+      "role": "primary_archive"
+    },
+    {
+      "id": "MOLA",
+      "organization": "NASA / MGS / MOLA",
+      "role": "terrain"
+    },
+    {
+      "id": "THEMIS",
+      "organization": "NASA / Mars Odyssey / THEMIS",
+      "role": "visible_and_thermal_imagery"
+    },
+    {
+      "id": "CRISM",
+      "organization": "NASA / Mars Reconnaissance Orbiter / CRISM",
+      "role": "mineralogy"
+    },
+    {
+      "id": "APXS",
+      "organization": "NASA / Mars Science Laboratory / APXS",
+      "role": "elemental_soil_and_rock_chemistry"
+    },
+    {
+      "id": "CHEMCAM",
+      "organization": "NASA / Mars Science Laboratory / ChemCam",
+      "role": "geochemistry"
+    },
+    {
+      "id": "CHEMIN",
+      "organization": "NASA / Mars Science Laboratory / CheMin",
+      "role": "mineralogy"
+    },
+    {
+      "id": "GRS",
+      "organization": "NASA / Mars Odyssey / GRS",
+      "role": "regional_composition_and_hydrogen"
+    },
+    {
+      "id": "SHARAD",
+      "organization": "NASA / Mars Reconnaissance Orbiter / SHARAD",
+      "role": "subsurface"
+    },
+    {
+      "id": "MCS",
+      "organization": "NASA / Mars Reconnaissance Orbiter / MCS",
+      "role": "atmosphere"
+    },
+    {
+      "id": "MARCI",
+      "organization": "NASA / Mars Reconnaissance Orbiter / MARCI",
+      "role": "clouds_and_dust"
+    },
+    {
+      "id": "MAVEN",
+      "organization": "NASA / MAVEN",
+      "role": "upper_atmosphere_and_space_environment"
+    },
+    {
+      "id": "MSL_REMS",
+      "organization": "NASA / Mars Science Laboratory / REMS",
+      "role": "surface_weather"
+    },
+    {
+      "id": "MARS2020_MEDA",
+      "organization": "NASA / Mars 2020 / MEDA",
+      "role": "surface_environment"
+    },
+    {
+      "id": "CTX",
+      "organization": "NASA / Mars Reconnaissance Orbiter / CTX",
+      "role": "regional_imagery"
+    },
+    {
+      "id": "HIRISE",
+      "organization": "NASA / Mars Reconnaissance Orbiter / HiRISE",
+      "role": "high_resolution_imagery"
+    },
+    {
+      "id": "SPICE",
+      "organization": "NASA / NAIF",
+      "role": "observation_geometry"
+    }
+  ]
+}

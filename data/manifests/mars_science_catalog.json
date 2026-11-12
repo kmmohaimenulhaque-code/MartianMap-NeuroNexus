@@ -1,0 +1,188 @@
+{
+  "project": "NeuroNexus",
+  "schema_version": "1.0",
+  "target": "Mars",
+  "purpose": "Scientific metadata registry for spatial AI analysis",
+  "datasets": [
+    {
+      "id": "mola_meg128_global_topography",
+      "category": "terrain",
+      "mission": "Mars Global Surveyor",
+      "instrument": "MOLA",
+      "measurement": "surface_elevation",
+      "units": "meter",
+      "spatial_role": "global_terrain"
+    },
+    {
+      "id": "mola_meg512_polar_topography",
+      "category": "terrain",
+      "mission": "Mars Global Surveyor",
+      "instrument": "MOLA",
+      "measurement": "surface_elevation",
+      "units": "meter",
+      "spatial_role": "polar_terrain"
+    },
+
+    {
+      "id": "themis_vis",
+      "category": "visible_imagery",
+      "mission": "Mars Odyssey",
+      "instrument": "THEMIS VIS",
+      "measurement": "visible_reflectance",
+      "spatial_role": "surface_imagery"
+    },
+    {
+      "id": "themis_ir",
+      "category": "thermal",
+      "mission": "Mars Odyssey",
+      "instrument": "THEMIS IR",
+      "measurement": "thermal_infrared",
+      "spatial_role": "surface_temperature_and_thermal_properties"
+    },
+
+    {
+      "id": "crism",
+      "category": "mineralogy",
+      "mission": "Mars Reconnaissance Orbiter",
+      "instrument": "CRISM",
+      "measurement": "visible_near_infrared_spectroscopy",
+      "spatial_role": "surface_mineral_mapping"
+    },
+
+    {
+      "id": "apxs",
+      "category": "soil_chemistry",
+      "mission": "Mars Science Laboratory",
+      "instrument": "APXS",
+      "measurement": "elemental_composition",
+      "spatial_role": "in_situ_geochemistry"
+    },
+    {
+      "id": "chemcam",
+      "category": "soil_chemistry",
+      "mission": "Mars Science Laboratory",
+      "instrument": "ChemCam",
+      "measurement": "laser_induced_breakdown_spectroscopy",
+      "spatial_role": "in_situ_geochemistry"
+    },
+    {
+      "id": "chemin",
+      "category": "mineralogy",
+      "mission": "Mars Science Laboratory",
+      "instrument": "CheMin",
+      "measurement": "x_ray_diffraction",
+      "spatial_role": "in_situ_mineralogy"
+    },
+    {
+      "id": "sam",
+      "category": "soil_chemistry",
+      "mission": "Mars Science Laboratory",
+      "instrument": "SAM",
+      "measurement": "molecular_and_chemical_analysis",
+      "spatial_role": "in_situ_geochemistry"
+    },
+
+    {
+      "id": "grs",
+      "category": "water_ice_and_composition",
+      "mission": "Mars Odyssey",
+      "instrument": "GRS",
+      "measurement": "gamma_ray_and_neutron_spectroscopy",
+      "spatial_role": "regional_surface_composition"
+    },
+
+    {
+      "id": "sharad",
+      "category": "subsurface",
+      "mission": "Mars Reconnaissance Orbiter",
+      "instrument": "SHARAD",
+      "measurement": "subsurface_radar",
+      "spatial_role": "subsurface_structure"
+    },
+    {
+      "id": "rimfax",
+      "category": "subsurface",
+      "mission": "Mars 2020",
+      "instrument": "RIMFAX",
+      "measurement": "ground_penetrating_radar",
+      "spatial_role": "local_subsurface_structure"
+    },
+
+    {
+      "id": "mcs",
+      "category": "atmosphere_weather",
+      "mission": "Mars Reconnaissance Orbiter",
+      "instrument": "MCS",
+      "measurement": "atmospheric_profiles",
+      "spatial_role": "atmospheric_state"
+    },
+    {
+      "id": "marci",
+      "category": "atmosphere_weather",
+      "mission": "Mars Reconnaissance Orbiter",
+      "instrument": "MARCI",
+      "measurement": "global_atmospheric_imaging",
+      "spatial_role": "clouds_and_dust"
+    },
+    {
+      "id": "maven",
+      "category": "atmosphere_space_environment",
+      "mission": "MAVEN",
+      "instrument": "multiple",
+      "measurement": "upper_atmosphere_and_space_environment",
+      "spatial_role": "atmospheric_context"
+    },
+
+    {
+      "id": "rems",
+      "category": "surface_weather",
+      "mission": "Mars Science Laboratory",
+      "instrument": "REMS",
+      "measurement": "surface_weather",
+      "spatial_role": "local_weather"
+    },
+    {
+      "id": "meda",
+      "category": "surface_weather",
+      "mission": "Mars 2020",
+      "instrument": "MEDA",
+      "measurement": "surface_environment",
+      "spatial_role": "local_weather"
+    },
+
+    {
+      "id": "ctx",
+      "category": "visible_imagery",
+      "mission": "Mars Reconnaissance Orbiter",
+      "instrument": "CTX",
+      "measurement": "visible_surface_imaging",
+      "spatial_role": "regional_high_resolution_imagery"
+    },
+    {
+      "id": "hirise",
+      "category": "visible_imagery",
+      "mission": "Mars Reconnaissance Orbiter",
+      "instrument": "HiRISE",
+      "measurement": "high_resolution_surface_imaging",
+      "spatial_role": "local_high_resolution_imagery"
+    },
+
+    {
+      "id": "mars_gazetteer",
+      "category": "gazetteer",
+      "mission": "Mars",
+      "instrument": "cartographic_catalogue",
+      "measurement": "named_features",
+      "spatial_role": "place_names"
+    },
+
+    {
+      "id": "spice",
+      "category": "geometry",
+      "mission": "multiple",
+      "instrument": "SPICE",
+      "measurement": "spacecraft_and_observation_geometry",
+      "spatial_role": "coordinate_and_observation_context"
+    }
+  ]
+}

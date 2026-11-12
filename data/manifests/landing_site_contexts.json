@@ -1,0 +1,165 @@
+{
+  "project": "NeuroNexus",
+  "version": "0.1.0",
+  "dataset_type": "landing_site_spatial_context",
+  "source": {
+    "landing_sites": "data/manifests/mars_landing_sites.json",
+    "terrain": "NASA MOLA MEGDR 128 ppd",
+    "gazetteer": "NeuroNexus Mars Gazetteer"
+  },
+  "sites": [
+    {
+      "site_id": "viking_1",
+      "mission": "Viking 1",
+      "spacecraft": "Viking Lander 1",
+      "region": "Chryse Planitia",
+      "location": {
+        "latitude_deg": 22.483,
+        "longitude_deg": 312.06
+      },
+      "terrain": {
+        "elevation_m": -3615.0,
+        "slope_deg": 0.46957959665682725,
+        "aspect_deg": 270.0,
+        "roughness_m": 8.0
+      },
+      "nearby_places": []
+    },
+    {
+      "site_id": "viking_2",
+      "mission": "Viking 2",
+      "spacecraft": "Viking Lander 2",
+      "region": "Utopia Planitia",
+      "location": {
+        "latitude_deg": 47.968,
+        "longitude_deg": 134.29
+      },
+      "terrain": {
+        "elevation_m": -4475.0,
+        "slope_deg": 0.6082716257832733,
+        "aspect_deg": 65.94574974448659,
+        "roughness_m": 9.0
+      },
+      "nearby_places": []
+    },
+    {
+      "site_id": "mars_pathfinder",
+      "mission": "Mars Pathfinder",
+      "spacecraft": "Pathfinder / Sojourner",
+      "region": "Ares Vallis",
+      "location": {
+        "latitude_deg": 19.17,
+        "longitude_deg": 326.79
+      },
+      "terrain": {
+        "elevation_m": -3676.0,
+        "slope_deg": 0.20639981948419595,
+        "aspect_deg": 107.47658122333966,
+        "roughness_m": 8.0
+      },
+      "nearby_places": []
+    },
+    {
+      "site_id": "mer_a_spirit",
+      "mission": "Mars Exploration Rover A",
+      "spacecraft": "Spirit",
+      "region": "Gusev Crater",
+      "location": {
+        "latitude_deg": -14.5692,
+        "longitude_deg": 175.4729
+      },
+      "terrain": {
+        "elevation_m": -1943.0,
+        "slope_deg": 0.13953649938875687,
+        "aspect_deg": 332.6785856541516,
+        "roughness_m": 5.0
+      },
+      "nearby_places": []
+    },
+    {
+      "site_id": "mer_b_opportunity",
+      "mission": "Mars Exploration Rover B",
+      "spacecraft": "Opportunity",
+      "region": "Meridiani Planum",
+      "location": {
+        "latitude_deg": -1.95,
+        "longitude_deg": 354.47
+      },
+      "terrain": {
+        "elevation_m": -1384.0,
+        "slope_deg": 0.0620213196770418,
+        "aspect_deg": 270.0,
+        "roughness_m": 2.0
+      },
+      "nearby_places": []
+    },
+    {
+      "site_id": "phoenix",
+      "mission": "Phoenix",
+      "spacecraft": "Phoenix Lander",
+      "region": "Vastitas Borealis",
+      "location": {
+        "latitude_deg": 68.22,
+        "longitude_deg": 234.25
+      },
+      "terrain": {
+        "elevation_m": -4126.0,
+        "slope_deg": 1.0689913448292196,
+        "aspect_deg": 110.35705517649049,
+        "roughness_m": 14.0
+      },
+      "nearby_places": []
+    },
+    {
+      "site_id": "msl_curiosity",
+      "mission": "Mars Science Laboratory",
+      "spacecraft": "Curiosity",
+      "region": "Gale Crater",
+      "location": {
+        "latitude_deg": -4.5895,
+        "longitude_deg": 137.4417
+      },
+      "terrain": {
+        "elevation_m": -4503.0,
+        "slope_deg": 0.6868028600705508,
+        "aspect_deg": 264.82213604307657,
+        "roughness_m": 13.0
+      },
+      "nearby_places": []
+    },
+    {
+      "site_id": "mars_insight",
+      "mission": "InSight",
+      "spacecraft": "InSight Lander",
+      "region": "Elysium Planitia",
+      "location": {
+        "latitude_deg": -4.5024,
+        "longitude_deg": 135.6234
+      },
+      "terrain": {
+        "elevation_m": -1387.0,
+        "slope_deg": 1.0825761524881237,
+        "aspect_deg": 346.7199440783288,
+        "roughness_m": 21.0
+      },
+      "nearby_places": []
+    },
+    {
+      "site_id": "mars_2020_perseverance",
+      "mission": "Mars 2020",
+      "spacecraft": "Perseverance",
+      "region": "Jezero Crater",
+      "location": {
+        "latitude_deg": 18.4447,
+        "longitude_deg": 77.4502
+      },
+      "terrain": {
+        "elevation_m": -2571.0,
+        "slope_deg": 1.104878224942881,
+        "aspect_deg": 235.8787285786334,
+        "roughness_m": 24.0
+      },
+      "nearby_places": []
+    }
+  ]
+}

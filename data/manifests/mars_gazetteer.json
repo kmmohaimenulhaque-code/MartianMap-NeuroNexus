@@ -1,0 +1,44 @@
+{
+  "project": "NeuroNexus",
+  "version": "0.3.0",
+  "dataset_id": "mars_usgs_gazetteer",
+  "dataset_type": "planetary_nomenclature",
+  "authority": {
+    "organization": "USGS",
+    "program": "Gazetteer of Planetary Nomenclature",
+    "target": "Mars"
+  },
+  "source_archive": "MARS_nomenclature_center_pts.zip",
+  "source_format": "ESRI Shapefile",
+  "derived_format": "GeoParquet",
+  "feature_count": 2052,
+  "coordinate_convention": {
+    "latitude": "planetocentric degrees",
+    "longitude": "east longitude [0,360)"
+  },
+  "crs": "GEOGCS[\"GCS_Mars_2000\",DATUM[\"D_Mars_2000\",SPHEROID[\"Mars_2000_IAU_IAG\",3396190,169.894447223612,AUTHORITY[\"ESRI\",\"107905\"]],AUTHORITY[\"ESRI\",\"106905\"]],PRIMEM[\"Reference_Meridian\",0,AUTHORITY[\"ESRI\",\"108900\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AXIS[\"Latitude\",NORTH],AXIS[\"Longitude\",EAST],AUTHORITY[\"ESRI\",\"104905\"]]",
+  "fields": [
+    "feature_name",
+    "clean_name",
+    "approval_date",
+    "naming_origin",
+    "diameter_km",
+    "longitude_deg",
+    "latitude_deg",
+    "feature_type",
+    "feature_code",
+    "approval_status",
+    "min_longitude_deg",
+    "max_longitude_deg",
+    "min_latitude_deg",
+    "max_latitude_deg",
+    "namesake_ethnicity",
+    "namesake_continent",
+    "quadrangle_name",
+    "quadrangle_code",
+    "usgs_feature_url",
+    "geometry"
+  ],
+  "source_geometry": "feature center points",
+  "status": "validated"
+}

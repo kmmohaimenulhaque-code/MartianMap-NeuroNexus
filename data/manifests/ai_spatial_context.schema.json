@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NeuroNexus Mars Spatial AI Context",
+  "type": "object",
+  "required": ["location"],
+  "properties": {
+    "location": {
+      "type": "object",
+      "required": ["latitude", "longitude"],
+      "properties": {
+        "latitude": {"type": "number"},
+        "longitude": {"type": "number"}
+      }
+    },
+
+    "place_names": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+
+    "terrain": {
+      "type": "object"
+    },
+
+    "geology": {
+      "type": "object"
+    },
+
+    "mineralogy": {
+      "type": "object"
+    },
+
+    "soil_chemistry": {
+      "type": "object"
+    },
+
+    "water_ice": {
+      "type": "object"
+    },
+
+    "thermal": {
+      "type": "object"
+    },
+
+    "atmosphere": {
+      "type": "object"
+    },
+
+    "weather": {
+      "type": "object"
+    },
+
+    "clouds_dust": {
+      "type": "object"
+    },
+
+    "subsurface": {
+      "type": "object"
+    },
+
+    "imagery": {
+      "type": "object"
+    },
+
+    "missions": {
+      "type": "object"
+    },
+
+    "solar_environment": {
+      "type": "object"
+    },
+
+    "provenance": {
+      "type": "array"
+    }
+  }
+}
