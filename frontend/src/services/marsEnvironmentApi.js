@@ -193,3 +193,25 @@ export async function askMarsIntelligence({ messages, missionState, enableSearch
 export async function requestRouteAnalysis(payload) {
   return postJson("/ai/route-analysis", payload);
 }
+
+/* ------------------------------------------------------------------
+ * 3D Mars view data (/mars3d): rover traverses, bounded local MOLA grid,
+ * documented exploration context.
+ * ------------------------------------------------------------------ */
+
+export async function fetchMars3dTraverses() {
+  return fetchJson(`${API_BASE}/mars3d/traverses`);
+}
+
+export async function fetchMars3dTerrainGrid(latitude, longitude, halfWidthKm = 20) {
+  const params = new URLSearchParams({
+    latitude: String(Number(latitude)),
+    longitude: String(normaliseLongitude(longitude)),
+    half_width_km: String(halfWidthKm),
+  });
+  return fetchJson(`${API_BASE}/mars3d/terrain-grid?${params}`);
+}
+
+export async function fetchMars3dContext() {
+  return fetchJson(`${API_BASE}/mars3d/context`);
+}
