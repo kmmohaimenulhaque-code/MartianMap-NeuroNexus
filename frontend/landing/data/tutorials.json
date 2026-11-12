@@ -1059,11 +1059,29 @@
           0.72,
           0.82
         ],
-        "cursor": [
-          0.746,
-          0.169
-        ],
-        "caption": "One integrated map. Open LAYERS to stack HiRISE, CTX, MOLA, geology and dust on every view."
+        "caption": "One integrated map: open LAYERS, or double right-click anywhere for the radial wheel of every feature.",
+        "taps": [
+          {
+            "cursor": [
+              0.746,
+              0.169
+            ]
+          },
+          {
+            "media": "wheel",
+            "focus": [
+              0.3,
+              0.2,
+              0.4,
+              0.65
+            ],
+            "cursor": [
+              0.5,
+              0.5185
+            ],
+            "double": true
+          }
+        ]
       },
       {
         "media": "solstorm",
@@ -1077,7 +1095,7 @@
           0.551,
           0.052
         ],
-        "caption": "Press play: dust, RAD dose and weather update every map, sol by sol."
+        "caption": "Conditions follow the sol: dust, RAD dose and weather update every map."
       },
       {
         "media": "qgroute1",
@@ -1087,53 +1105,54 @@
           0.3,
           0.26
         ],
-        "cursor": [
-          0.213,
-          0.258
-        ],
-        "caption": "Open Route Design and set the selected site as START."
-      },
-      {
-        "media": "qgroute2",
-        "focus": [
-          0.13,
-          0.25,
-          0.3,
-          0.2
-        ],
-        "cursor": [
-          0.213,
-          0.374
-        ],
-        "caption": "Pick a destination on the map, then set it as DESTINATION."
-      },
-      {
-        "media": "qgroute2",
-        "focus": [
-          0.13,
-          0.55,
-          0.3,
-          0.35
-        ],
-        "cursor": [
-          0.213,
-          0.86
-        ],
-        "caption": "Weigh your objectives and press GENERATE ROUTES."
-      },
-      {
-        "media": "qgroute3",
-        "focus": [
-          0.29,
-          0.12,
-          0.59,
-          0.85
-        ],
-        "cursor": [
-          0.371,
-          0.228
-        ],
-        "caption": "Six deterministic candidates appear. Save them all and compare."
+        "caption": "Route Design: set START and DESTINATION, press GENERATE ROUTES, then save the candidates.",
+        "taps": [
+          {
+            "cursor": [
+              0.213,
+              0.258
+            ]
+          },
+          {
+            "media": "qgroute2",
+            "focus": [
+              0.13,
+              0.25,
+              0.3,
+              0.2
+            ],
+            "cursor": [
+              0.213,
+              0.374
+            ]
+          },
+          {
+            "media": "qgroute2",
+            "focus": [
+              0.13,
+              0.55,
+              0.3,
+              0.35
+            ],
+            "cursor": [
+              0.213,
+              0.86
+            ]
+          },
+          {
+            "media": "qgroute3",
+            "focus": [
+              0.29,
+              0.12,
+              0.59,
+              0.85
+            ],
+            "cursor": [
+              0.371,
+              0.228
+            ]
+          }
+        ]
       },
       {
         "media": "qgmarswalk",
@@ -1143,35 +1162,45 @@
           0.65,
           0.68
         ],
-        "cursor": [
-          0.494,
-          0.418
-        ],
-        "caption": "In MARSWALK, tap a target. The walk is planned over 1 m HiRISE terrain."
+        "caption": "MARSWALK: tap a target and press PLAN for a turnaround point and walk-back margin.",
+        "taps": [
+          {
+            "cursor": [
+              0.494,
+              0.418
+            ]
+          },
+          {
+            "focus": [
+              0.0,
+              0.22,
+              0.3,
+              0.4
+            ],
+            "cursor": [
+              0.0875,
+              0.5825
+            ]
+          },
+          {
+            "focus": [
+              0.8,
+              0.17,
+              0.2,
+              0.62
+            ]
+          }
+        ]
       },
       {
-        "media": "qgmarswalk",
+        "media": "exports",
         "focus": [
           0.0,
-          0.22,
-          0.3,
-          0.4
+          0.0,
+          1.0,
+          1.0
         ],
-        "cursor": [
-          0.0875,
-          0.5825
-        ],
-        "caption": "Pick 4 or 8 hours and press PLAN: a turnaround point and walk-back margin."
-      },
-      {
-        "media": "qgmarswalk",
-        "focus": [
-          0.8,
-          0.17,
-          0.2,
-          0.62
-        ],
-        "caption": "Every decision cites its NASA source and reads as a planning limit, never a safety verdict."
+        "caption": "Every number carries its NASA source, checked against rover ground truth."
       }
     ]
   }

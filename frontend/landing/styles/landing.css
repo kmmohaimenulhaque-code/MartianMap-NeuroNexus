@@ -1742,7 +1742,7 @@ main > section {
   top: 0;
   transform-origin: 0 0;
   will-change: transform;
-  transition: transform 1400ms var(--ease-reveal);
+  transition: transform 900ms var(--ease-reveal);
 }
 
 .tt-frame {
@@ -1792,8 +1792,8 @@ main > section {
   opacity: 0;
   transform-origin: 4px 3px;
   transition:
-    left 900ms var(--ease-reveal),
-    top 900ms var(--ease-reveal),
+    left 560ms var(--ease-out),
+    top 560ms var(--ease-out),
     opacity var(--t-slow) var(--ease-out),
     transform var(--t-fast) var(--ease-out);
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.45));

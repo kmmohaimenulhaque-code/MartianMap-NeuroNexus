@@ -9,6 +9,8 @@ import { fillTokens } from "./content.js";
 const CURSOR_SVG =
   '<svg class="tt-cursor" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 2l17 9.5-7.4 1.6L9.2 21z" fill="#f2f0ec" stroke="#05090b" stroke-width="1.4" stroke-linejoin="round"/></svg>';
 
+const TAP_MS = 1800; // one cursor tap: camera move, glide, click
+
 export class TutorialStage {
   constructor(host, tutorial, { sizes, tokens, mode = "card", onStep, onEnd, loop = mode === "card" } = {}) {
     this.host = host;
@@ -29,7 +31,7 @@ export class TutorialStage {
   }
 
   build() {
-    const media = [...new Set(this.t.steps.map((s) => s.media))];
+    const media = [...new Set(this.t.steps.flatMap((s) => [s.media, ...(s.taps ?? []).map((t) => t.media ?? s.media)]))];
     const stage = document.createElement("div");
     stage.className = `tt-stage tt-stage--${this.mode}`;
     stage.innerHTML = `
@@ -54,9 +56,16 @@ export class TutorialStage {
     this.ripple = stage.querySelector(".tt-ripple");
   }
 
+  /* A step either has one view (media, focus, optional cursor) or a list of taps, each its own view. */
+  views(step) {
+    return step.taps?.length ? step.taps.map((t) => ({ media: step.media, focus: step.focus, ...t })) : [step];
+  }
+
   stepDuration(step) {
     const words = step.caption.split(/\s+/).length;
-    return Math.max(3400, 1500 + words * 230 + (step.cursor ? 1500 : 0));
+    const read = 1500 + words * 230;
+    if (step.taps?.length) return Math.max(3400, read, step.taps.length * TAP_MS + 900);
+    return Math.max(3400, read + (step.cursor ? 1100 : 0));
   }
 
   /* Camera transform that fits the focus region inside the stage. Units are CSS px of the cam element. */
@@ -78,7 +87,7 @@ export class TutorialStage {
   }
 
   layout(animate = true) {
-    const step = this.t.steps[this.index];
+    const step = this.view;
     if (!step) return;
     const frame = this.frames[step.media];
     const cam = frame.querySelector(".tt-cam");
@@ -127,11 +136,11 @@ export class TutorialStage {
     }
     i = clamp(i, 0, n - 1);
     this.clearTimers();
-    const prev = this.t.steps[this.index];
+    const prev = this.view;
     this.index = i;
     const step = this.t.steps[i];
-    Object.entries(this.frames).forEach(([k, f]) => f.classList.toggle("is-on", k === step.media));
-    this.layout(Boolean(prev && prev.media === step.media));
+    const views = this.views(step);
+    this.show(views[0], Boolean(prev && prev.media === views[0].media));
     this.bars.forEach((b, k) => b.style.setProperty("--p", k < i ? "1" : "0"));
 
     this.caption.classList.add("is-swap");
@@ -141,36 +150,54 @@ export class TutorialStage {
     }, 180);
 
     this.cursor.classList.remove("is-on", "is-press");
-    if (step.cursor) {
-      const camDelay = reducedMotion() ? 0 : 1250;
-      this.later(() => {
-        const p = this.cursorPoint(step);
-        const W = this.stage.clientWidth;
-        const H = this.stage.clientHeight;
-        this.cursor.style.transition = "none";
-        this.cursor.style.left = `${p.x + W * 0.12}px`;
-        this.cursor.style.top = `${p.y + H * 0.16}px`;
-        this.cursor.getBoundingClientRect();
-        this.cursor.style.transition = "";
-        this.cursor.classList.add("is-on");
-        this.cursor.style.left = `${p.x}px`;
-        this.cursor.style.top = `${p.y}px`;
-        this.later(() => {
-          this.cursor.classList.add("is-press");
-          this.ripple.style.left = `${p.x}px`;
-          this.ripple.style.top = `${p.y}px`;
-          this.ripple.classList.remove("is-on");
-          this.ripple.getBoundingClientRect();
-          this.ripple.classList.add("is-on");
-          if (this.mode === "player") haptic(8);
-          this.later(() => this.cursor.classList.remove("is-press"), 160);
-        }, reducedMotion() ? 0 : 950);
-      }, camDelay);
-    }
+    const fast = reducedMotion();
+    views.forEach((v, k) => {
+      const t0 = k * TAP_MS;
+      if (k > 0) this.later(() => this.show(v, v.media === views[k - 1].media), t0);
+      if (v.cursor) this.later(() => this.tap(v, k === 0 && !step.taps), fast ? 0 : t0 + (k === 0 ? 700 : 520));
+      else if (k > 0) this.later(() => this.cursor.classList.remove("is-on"), t0);
+    });
     this.onStep?.(i, step);
     this.duration = this.stepDuration(step);
     this.elapsed = 0;
     if (autoplay) this.play();
+  }
+
+  /* Switch to a view's screenshot and frame its focus region. */
+  show(view, animate) {
+    this.view = view;
+    Object.entries(this.frames).forEach(([k, f]) => f.classList.toggle("is-on", k === view.media));
+    this.layout(animate);
+  }
+
+  /* Glide the cursor to the view's control and click it (twice for a double click). */
+  tap(view, enterFromCorner) {
+    const p = this.cursorPoint(view);
+    const W = this.stage.clientWidth;
+    const H = this.stage.clientHeight;
+    if (enterFromCorner || !this.cursor.classList.contains("is-on")) {
+      this.cursor.style.transition = "none";
+      this.cursor.style.left = `${p.x + W * 0.12}px`;
+      this.cursor.style.top = `${p.y + H * 0.16}px`;
+      this.cursor.getBoundingClientRect();
+      this.cursor.style.transition = "";
+    }
+    this.cursor.classList.add("is-on");
+    this.cursor.style.left = `${p.x}px`;
+    this.cursor.style.top = `${p.y}px`;
+    const press = () => {
+      this.cursor.classList.add("is-press");
+      this.ripple.style.left = `${p.x}px`;
+      this.ripple.style.top = `${p.y}px`;
+      this.ripple.classList.remove("is-on");
+      this.ripple.getBoundingClientRect();
+      this.ripple.classList.add("is-on");
+      if (this.mode === "player") haptic(8);
+      this.later(() => this.cursor.classList.remove("is-press"), 120);
+    };
+    const glide = reducedMotion() ? 0 : 560;
+    this.later(press, glide);
+    if (view.double) this.later(press, glide + 240);
   }
 
   play() {
