@@ -3,9 +3,10 @@ from __future__ import annotations
 import numpy as np
 import torch
 
-from science.ingestion.mola import load_mola
+from science.ingestion.mola import load_elevation_array
 
 
+MOLA_PATH = "data/raw/mola/meg016/megt90n000eb.img"
 MARS_RADIUS = 3_389_500.0
 
 
@@ -20,20 +21,6 @@ def build_mars_mesh_gpu(
     row_step: int = 8,
     col_step: int = 8,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """
-    Generate a regular-grid Mars terrain mesh.
-
-    The elevation grid is sampled on the GPU and converted into:
-      vertices: [N, 3] float32
-      faces:    [M, 3] int32
-
-    Coordinates use a spherical Mars model:
-      x = r cos(lat) cos(lon)
-      y = r cos(lat) sin(lon)
-      z = r sin(lat)
-
-    Elevation is added radially to the mean Mars radius.
-    """
 
     device = get_device()
 
@@ -78,13 +65,26 @@ def build_mars_mesh_gpu(
     y = radius * torch.cos(lat_rad) * torch.sin(lon_rad)
     z = radius * torch.sin(lat_rad)
 
-    vertices = torch.stack((x, y, z), dim=-1).reshape(-1, 3)
+    vertices = torch.stack(
+        (x, y, z),
+        dim=-1,
+    ).reshape(-1, 3)
 
-    # Each grid cell becomes two triangles.
-    row = torch.arange(rows - 1, device=device)
-    col = torch.arange(cols - 1, device=device)
+    row = torch.arange(
+        rows - 1,
+        device=device,
+    )
 
-    r, c = torch.meshgrid(row, col, indexing="ij")
+    col = torch.arange(
+        cols - 1,
+        device=device,
+    )
+
+    r, c = torch.meshgrid(
+        row,
+        col,
+        indexing="ij",
+    )
 
     top_left = r * cols + c
     top_right = top_left + 1
@@ -116,6 +116,7 @@ def build_mars_mesh_gpu(
 
 
 def verify_mesh() -> None:
+
     print("=" * 60)
     print("       NEURONEXUS MI300X MARS MESH GENERATOR")
     print("=" * 60)
@@ -123,12 +124,15 @@ def verify_mesh() -> None:
     device = get_device()
 
     print(f"PyTorch : {torch.__version__}")
-    print(f"GPU     : {torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU'}")
+    print(
+        f"GPU     : "
+        f"{torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU'}"
+    )
     print(f"Device  : {device}")
 
     print("\nLoading real NASA MOLA terrain...")
 
-    elevation = load_mola()
+    elevation = load_elevation_array(MOLA_PATH)
 
     print(f"Terrain : {elevation.shape}")
 
@@ -145,6 +149,7 @@ def verify_mesh() -> None:
 
     print(f"Vertices : {len(vertices):,}")
     print(f"Faces    : {len(faces):,}")
+
     print(f"Vertex shape : {vertices.shape}")
     print(f"Face shape   : {faces.shape}")
 
@@ -155,11 +160,11 @@ def verify_mesh() -> None:
     print("-" * 60)
 
     print(f"Vertices finite : {np.isfinite(vertices).all()}")
-    print(f"Faces valid     : {faces.min() >= 0 and faces.max() < len(vertices)}")
-
-    expected_faces = (vertices.shape[0] > 0)
-
-    print(f"Mesh non-empty  : {expected_faces}")
+    print(
+        f"Faces valid     : "
+        f"{faces.min() >= 0 and faces.max() < len(vertices)}"
+    )
+    print(f"Mesh non-empty  : {len(vertices) > 0 and len(faces) > 0}")
 
     print("=" * 60)
     print("🟢 MI300X MARS MESH GENERATOR READY")
