@@ -26,7 +26,7 @@ export function featureColor(featureType = "") {
   const type = String(featureType).split(",")[0].trim();
   const colors = {
     Crater: "#b9cfd6", Vallis: "#72d9ff", Mons: "#4ea8de", Fossa: "#9fe3a8", Mensa: "#e7d06f", Planum: "#3fbcd4", Patera: "#ff718d",
-    Chaos: "#75e6ff", Rupes: "#b9cfd6", Chasma: "#80aaff", Dorsum: "#c5a27b", Terra: "#f0c6a0", Planitia: "#9cc2b5",
+    Chaos: "#01ffff", Rupes: "#b9cfd6", Chasma: "#80aaff", Dorsum: "#c5a27b", Terra: "#f0c6a0", Planitia: "#9cc2b5",
   };
   return colors[type] ?? "#d5d9dc";
 }

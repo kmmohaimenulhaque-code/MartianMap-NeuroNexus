@@ -134,7 +134,7 @@
   .nn-solpill-btn { min-height: 32px; padding: 0 8px; border: 1px solid #29414b; background: #091115; color: var(--nn-cyan); font: 600 12px var(--nn-mono); letter-spacing: 0.06em; white-space: nowrap; cursor: pointer; }
   .topbar button[aria-label="Open mission command index"], .topbar .burger-button { width: 38px !important; min-width: 38px !important; height: 38px; min-height: 38px !important; padding: 0; justify-self: end; }
   .topbar button[aria-label="Open mission command index"] { grid-area: idx; }
-  .topbar .burger-button { grid-area: burger; border-color: var(--nn-cyan) !important; box-shadow: 0 0 14px rgba(117, 230, 255, 0.4); }
+  .topbar .burger-button { grid-area: burger; border-color: var(--nn-cyan) !important; box-shadow: 0 0 14px rgba(1, 255, 255, 0.4); }
 
   .evidence-bar { display: none; }
 
@@ -199,7 +199,7 @@
 
   .left-column .nn-tag, .right-column .nn-tag, .route-console .nn-tag, .mw-left .nn-tag, .mw-right .nn-tag, .mw-bottom .nn-tag {
     display: inline-flex; width: auto; max-width: 100%; font-size: 12px; line-height: 1.2; padding: 2px 7px; border-radius: 3px;
-    background: rgba(117, 230, 255, 0.08); border: 1px solid rgba(117, 230, 255, 0.28);
+    background: rgba(1, 255, 255, 0.08); border: 1px solid rgba(1, 255, 255, 0.28);
   }
   .left-column .nn-tag-list, .right-column .nn-tag-list { gap: 3px; }
   .left-column .panel, .right-column .panel { box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
@@ -236,7 +236,7 @@
     border: 0; border-top: 2px solid transparent; background: transparent; color: #93a7af; font: 600 12px var(--nn-mono); letter-spacing: 0.08em; cursor: pointer;
     -webkit-tap-highlight-color: transparent; touch-action: manipulation;
   }
-  .nn-dock button.is-active { color: var(--nn-cyan); border-top-color: var(--nn-cyan); background: linear-gradient(180deg, rgba(117, 230, 255, 0.1), transparent); }
+  .nn-dock button.is-active { color: var(--nn-cyan); border-top-color: var(--nn-cyan); background: linear-gradient(180deg, rgba(1, 255, 255, 0.1), transparent); }
   .nn-dock button:focus-visible { outline: 2px solid var(--nn-cyan); outline-offset: -2px; }
   .route-console-actions button, .mw-mode button, .mw-actions button, .route-console button { min-height: 44px; }
   .mw-check, .mw-field select { min-height: 44px; }
@@ -440,10 +440,10 @@
  * columns, and above the center map and its route / profile strip. Phones (< 768 px) are untouched.
  */
 @media (min-width: 768px) {
-  .topbar { position: relative; z-index: 3000; /* not 30: the search suggestions must stay above the map panes (z 400+) */ box-shadow: 0 8px 24px rgba(0, 0, 0, 0.72), 0 1px 0 rgba(117, 230, 255, 0.14); }
-  .left-column, .mw-left { position: relative; z-index: 20; box-shadow: 10px 0 28px -4px rgba(0, 0, 0, 0.68), 1px 0 0 rgba(117, 230, 255, 0.12); }
-  .right-column, .mw-right { position: relative; z-index: 20; box-shadow: -10px 0 28px -4px rgba(0, 0, 0, 0.68), -1px 0 0 rgba(117, 230, 255, 0.12); }
-  .site-field, .mw-center, .route-console, .mw-bottom { box-shadow: 0 -8px 24px -4px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(117, 230, 255, 0.12); }
+  .topbar { position: relative; z-index: 3000; /* not 30: the search suggestions must stay above the map panes (z 400+) */ box-shadow: 0 8px 24px rgba(0, 0, 0, 0.72), 0 1px 0 rgba(1, 255, 255, 0.14); }
+  .left-column, .mw-left { position: relative; z-index: 20; box-shadow: 10px 0 28px -4px rgba(0, 0, 0, 0.68), 1px 0 0 rgba(1, 255, 255, 0.12); }
+  .right-column, .mw-right { position: relative; z-index: 20; box-shadow: -10px 0 28px -4px rgba(0, 0, 0, 0.68), -1px 0 0 rgba(1, 255, 255, 0.12); }
+  .site-field, .mw-center, .route-console, .mw-bottom { box-shadow: 0 -8px 24px -4px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(1, 255, 255, 0.12); }
 }
 @media (max-width: 767px) {
   .left-column .panel-body > :is(.site-split, .place-title, .coordinate-block, .rule) { grid-column: 1 / -1; }
@@ -453,13 +453,15 @@
   .topbar .nn-solpill-btn { padding: 0 8px; letter-spacing: 0.03em; }
 }
 
-/* Laptops, desktops, tablets: one exact cyan, #01FFFF, for text and accents, the SYSTEM ONLINE status and
- * the selected-site signal alike. */
-@media (min-width: 768px) {
+/* One exact cyan on every screen, #01FFFF, for text and accents, the SYSTEM ONLINE status and the
+ * selected-site signal alike. */
+@media all {
   :root { --nn-cyan: #01ffff; --cyan: #01ffff; }
   #root .status-dot { color: #01ffff; }
   #root .status-dot > span { background: #01ffff; box-shadow: 0 0 13px rgba(1, 255, 255, 0.75); }
   #root .signal { color: #01ffff; text-shadow: 0 0 12px rgba(1, 255, 255, 0.7); }
-  /* Thermal context summary without a box: a quiet left rule instead. */
-  .site-thermal-summary { border: 0; border-left: 1px solid rgba(117, 230, 255, 0.18); background: none; padding: 2px 0 2px 10px; }
+}
+@media (min-width: 768px) {
+  /* Laptops and desktops: thermal context summary without a box, a quiet left rule instead. */
+  .site-thermal-summary { border: 0; border-left: 1px solid rgba(1, 255, 255, 0.18); background: none; padding: 2px 0 2px 10px; }
 }

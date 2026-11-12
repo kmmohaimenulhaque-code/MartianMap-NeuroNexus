@@ -24,7 +24,7 @@ const MARS_CRS = {
   },
 };
 
-const COMPARISON_COLOURS = ["#75e6ff", "#4ea8de", "#8cf0b1", "#3fbcd4"];
+const COMPARISON_COLOURS = ["#01ffff", "#4ea8de", "#8cf0b1", "#3fbcd4"];
 
 function normaliseLongitude(longitude) {
   return ((Number(longitude) % 360) + 360) % 360;
@@ -219,7 +219,7 @@ function RouteWaypoints({ routePoints }) {
 
         const isEnd = index === routePoints.length - 1;
 
-        const color = isStart ? "#62f59a" : isEnd ? "#ff647c" : "#75e6ff";
+        const color = isStart ? "#62f59a" : isEnd ? "#ff647c" : "#01ffff";
 
         return (
           <RoutePointMarker
@@ -257,7 +257,7 @@ function CustomPlacesLayer({ places, safeHavens, routeMode, interactive, onRoute
             radius={6}
             pathOptions={{
               color: "var(--nn-cyan)",
-              fillColor: "#75e6ff",
+              fillColor: "#01ffff",
               fillOpacity: 0.95,
               weight: 2,
             }}
@@ -553,7 +553,7 @@ function ComparisonLegend({ routes }) {
 
         padding: "9px 10px",
 
-        border: "1px solid rgba(117,230,255,0.2)",
+        border: "1px solid rgba(1,255,255,0.2)",
 
         background: "rgba(6,12,16,0.88)",
 
@@ -675,7 +675,7 @@ function CandidateRoutesLayer({ candidates = [], selectedId = null, onSelect }) 
             key={candidate.id}
             positions={positions}
             pathOptions={{
-              color: candidate.colour ?? "#75e6ff",
+              color: candidate.colour ?? "#01ffff",
               weight: selected ? 5 : 2.4,
               opacity: selected ? 1 : 0.55,
               dashArray: selected ? undefined : "6 5",
@@ -713,7 +713,7 @@ function CandidateRoutesLayer({ candidates = [], selectedId = null, onSelect }) 
               pathOptions={{
                 color: "#04080b",
                 weight: 1,
-                fillColor: index === 0 ? "#62f59a" : index === candidate.coordinates.length - 1 ? "#ff647c" : (candidate.colour ?? "#75e6ff"),
+                fillColor: index === 0 ? "#62f59a" : index === candidate.coordinates.length - 1 ? "#ff647c" : (candidate.colour ?? "#01ffff"),
                 fillOpacity: 1,
               }}
             />
@@ -964,7 +964,7 @@ export default function MarsMap({
               center={position}
               radius={selected ? 5 : 2.2}
               pathOptions={{
-                color: selected ? "#75e6ff" : markerColor,
+                color: selected ? "#01ffff" : markerColor,
 
                 weight: selected ? 2 : 0.7,
 
@@ -1036,7 +1036,7 @@ export default function MarsMap({
 
             padding: "7px 9px",
 
-            border: "1px solid rgba(117,230,255,0.23)",
+            border: "1px solid rgba(1,255,255,0.23)",
 
             background: "rgba(7,13,17,0.88)",
 

@@ -25,7 +25,7 @@ export default function SeasonalCharts({ ls, tauByLs }) {
   }, []);
   const fmtLs = (x) => `Ls ${Math.round(x)}°`;
   const charts = [
-    { id: "tau", title: "DUST τ · MY34 SCENARIO (THIS CELL)", series: [{ id: "tau", label: "τ", colour: "#75e6ff", points: tauByLs }], fy: (y) => y.toFixed(2), tag: "NASA_AMES_MGCM" },
+    { id: "tau", title: "DUST τ · MY34 SCENARIO (THIS CELL)", series: [{ id: "tau", label: "τ", colour: "#01ffff", points: tauByLs }], fy: (y) => y.toFixed(2), tag: "NASA_AMES_MGCM" },
     data && { id: "p", title: `PRESSURE · REMS SOLS ${data.pressure_pa.sols?.join("–")} (GALE)`, series: [{ id: "p", label: "Pa", colour: "#4ea8de", points: data.pressure_pa.points }], fy: (y) => `${Math.round(y)} Pa`, tag: "MSL_REMS_OUTREACH" },
     data && {
       id: "t",

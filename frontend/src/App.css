@@ -4,7 +4,7 @@
   --panel-soft: rgba(17, 23, 27, 0.9);
   --border: rgba(124, 225, 255, 0.17);
   --border-strong: rgba(124, 225, 255, 0.42);
-  --cyan: #75e6ff;
+  --cyan: #01ffff;
   --text: #eef4f6;
   --muted: #7f8d95;
   --danger: #ff8a8a;
@@ -187,7 +187,7 @@ a {
 
 .suggestions button.is-active,
 .suggestions button:hover {
-  background: rgba(117, 230, 255, 0.07);
+  background: rgba(1, 255, 255, 0.07);
 }
 
 .suggestion-dot {
@@ -195,7 +195,7 @@ a {
   height: 7px;
   border-radius: 50%;
   background: var(--cyan);
-  box-shadow: 0 0 10px rgba(117, 230, 255, 0.6);
+  box-shadow: 0 0 10px rgba(1, 255, 255, 0.6);
 }
 
 .suggestion-main {
@@ -246,7 +246,7 @@ a {
   height: 7px;
   border-radius: 50%;
   background: var(--cyan);
-  box-shadow: 0 0 13px rgba(117, 230, 255, 0.75);
+  box-shadow: 0 0 13px rgba(1, 255, 255, 0.75);
 }
 
 .workspace {
@@ -262,7 +262,7 @@ a {
   min-height: 0;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: rgba(117, 230, 255, 0.2) transparent;
+  scrollbar-color: rgba(1, 255, 255, 0.2) transparent;
   display: flex;
   flex-direction: column;
   gap: 9px;
@@ -309,7 +309,7 @@ a {
 
 .signal {
   color: var(--cyan);
-  text-shadow: 0 0 12px rgba(117, 230, 255, 0.7);
+  text-shadow: 0 0 12px rgba(1, 255, 255, 0.7);
 }
 
 .place-title h3 {
@@ -671,7 +671,7 @@ a {
   grid-template-columns: minmax(220px, 1fr) auto;
   gap: 8px;
   padding: 8px;
-  border: 1px solid rgba(117, 230, 255, 0.27);
+  border: 1px solid rgba(1, 255, 255, 0.27);
   background: rgba(7, 13, 17, 0.94);
   backdrop-filter: blur(9px);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.34);
@@ -768,7 +768,7 @@ a {
   grid-template-columns: auto auto;
   gap: 3px 8px;
   padding: 7px 8px;
-  border: 1px solid rgba(117, 230, 255, 0.16);
+  border: 1px solid rgba(1, 255, 255, 0.16);
   background: rgba(7, 13, 17, 0.88);
   pointer-events: none;
   font-family: var(--nn-font);
@@ -797,7 +797,7 @@ a {
   justify-content: space-between;
   gap: 8px;
   padding: 6px 8px;
-  border: 1px solid rgba(117, 230, 255, 0.16);
+  border: 1px solid rgba(1, 255, 255, 0.16);
   background: rgba(7, 13, 17, 0.88);
   pointer-events: none;
   font-size: 12px;
@@ -1343,7 +1343,7 @@ a {
   gap: 5px;
   flex-wrap: wrap;
   padding: 6px 7px;
-  border: 1px solid rgba(117, 230, 255, 0.08);
+  border: 1px solid rgba(1, 255, 255, 0.08);
   background: #071014;
 }
 
@@ -1391,7 +1391,7 @@ a {
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color:
-    rgba(117, 230, 255, 0.18)
+    rgba(1, 255, 255, 0.18)
     transparent;
 }
 
@@ -1553,7 +1553,7 @@ a {
   width: 36px;
   height: 36px;
   margin-left: 6px;
-  border: 1px solid rgba(117, 230, 255, 0.16);
+  border: 1px solid rgba(1, 255, 255, 0.16);
   background: rgba(6, 13, 16, 0.84);
   color: var(--nn-cyan);
   font-size: 14px;
@@ -1562,8 +1562,8 @@ a {
 }
 
 .nn-hamburger-button:hover {
-  background: rgba(117, 230, 255, 0.06);
-  border-color: rgba(117, 230, 255, 0.35);
+  background: rgba(1, 255, 255, 0.06);
+  border-color: rgba(1, 255, 255, 0.35);
 }
 
 /* =========================================================
@@ -1571,7 +1571,7 @@ a {
    ========================================================= */
 
 .nn-route-console {
-  border-top: 1px solid rgba(117, 230, 255, 0.08);
+  border-top: 1px solid rgba(1, 255, 255, 0.08);
 }
 
 .nn-route-analysis-header {
@@ -1581,7 +1581,7 @@ a {
   gap: 12px;
   margin-top: 10px;
   padding-top: 10px;
-  border-top: 1px solid rgba(117, 230, 255, 0.08);
+  border-top: 1px solid rgba(1, 255, 255, 0.08);
 }
 
 .nn-route-analysis-header > div {
@@ -1677,7 +1677,7 @@ a {
 .nn-route-analysis-note {
   margin-top: 5px;
   padding: 7px 8px;
-  border: 1px dashed rgba(117, 230, 255, 0.1);
+  border: 1px dashed rgba(1, 255, 255, 0.1);
   color: #64777f;
   font-size: 12px;
   line-height: 1.5;
@@ -1700,7 +1700,7 @@ a {
 .nn-route-pace input {
   width: 64px;
   padding: 5px;
-  border: 1px solid rgba(117, 230, 255, 0.12);
+  border: 1px solid rgba(1, 255, 255, 0.12);
   background: #061014;
   color: #cfdde1;
   font: inherit;
@@ -1734,7 +1734,7 @@ a {
 .nn-route-save input {
   min-width: 0;
   padding: 6px;
-  border: 1px solid rgba(117, 230, 255, 0.1);
+  border: 1px solid rgba(1, 255, 255, 0.1);
   background: #061014;
   color: #cedde2;
   font: inherit;
@@ -1743,7 +1743,7 @@ a {
 
 .nn-route-save button,
 .nn-compare-trigger {
-  border: 1px solid rgba(117, 230, 255, 0.17);
+  border: 1px solid rgba(1, 255, 255, 0.17);
   background: #071115;
   color: #83cede;
   padding: 7px 8px;
@@ -1805,8 +1805,8 @@ a {
   gap: 4px;
   margin-top: 9px;
   padding: 8px;
-  border: 1px dashed rgba(117, 230, 255, 0.12);
-  background: rgba(117, 230, 255, 0.02);
+  border: 1px dashed rgba(1, 255, 255, 0.12);
+  background: rgba(1, 255, 255, 0.02);
 }
 
 .nn-unnamed-location strong {
@@ -1851,7 +1851,7 @@ a {
 
 .nn-map-create-popup input {
   padding: 5px;
-  border: 1px solid rgba(117, 230, 255, 0.18);
+  border: 1px solid rgba(1, 255, 255, 0.18);
   background: #071014;
   color: #d7e2e6;
   font-size: 12px;
@@ -1859,7 +1859,7 @@ a {
 
 .nn-map-create-popup button {
   padding: 6px;
-  border: 1px solid rgba(117, 230, 255, 0.18);
+  border: 1px solid rgba(1, 255, 255, 0.18);
   background: #08161b;
   color: #77d8e5;
   cursor: pointer;
@@ -1900,7 +1900,7 @@ a {
   height: 100%;
   overflow-y: auto;
   padding: 16px;
-  border-left: 1px solid rgba(117, 230, 255, 0.14);
+  border-left: 1px solid rgba(1, 255, 255, 0.14);
   background: rgba(5, 12, 15, 0.97);
   box-shadow: -28px 0 80px rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(18px);
@@ -1930,7 +1930,7 @@ a {
 .nn-drawer-header > button {
   width: 28px;
   height: 28px;
-  border: 1px solid rgba(117, 230, 255, 0.14);
+  border: 1px solid rgba(1, 255, 255, 0.14);
   background: transparent;
   color: #85cbd6;
   cursor: pointer;
@@ -1953,7 +1953,7 @@ a {
   min-height: 160px;
   resize: vertical;
   padding: 9px;
-  border: 1px solid rgba(117, 230, 255, 0.1);
+  border: 1px solid rgba(1, 255, 255, 0.1);
   background: #061014;
   color: #d2e0e4;
   font: inherit;
@@ -1976,7 +1976,7 @@ a {
 .nn-check-entry input {
   min-width: 0;
   padding: 7px;
-  border: 1px solid rgba(117, 230, 255, 0.1);
+  border: 1px solid rgba(1, 255, 255, 0.1);
   background: #061014;
   color: #d2e0e4;
   font: inherit;
@@ -1985,7 +1985,7 @@ a {
 
 .nn-check-entry button {
   width: 30px;
-  border: 1px solid rgba(117, 230, 255, 0.14);
+  border: 1px solid rgba(1, 255, 255, 0.14);
   background: #08161b;
   color: var(--nn-cyan);
   cursor: pointer;
@@ -2042,7 +2042,7 @@ a {
 .nn-export-grid button {
   min-height: 35px;
   padding: 6px;
-  border: 1px solid rgba(117, 230, 255, 0.14);
+  border: 1px solid rgba(1, 255, 255, 0.14);
   background: #071115;
   color: #84cad6;
   font: inherit;
@@ -2081,7 +2081,7 @@ a {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   overflow: hidden;
-  border: 1px solid rgba(117, 230, 255, 0.16);
+  border: 1px solid rgba(1, 255, 255, 0.16);
   background: rgba(6, 13, 16, 0.75);
   box-shadow:
     0 30px 110px rgba(0, 0, 0, 0.58),
@@ -2119,7 +2119,7 @@ a {
 
 .nn-compare-close {
   padding: 7px 9px;
-  border: 1px solid rgba(117, 230, 255, 0.15);
+  border: 1px solid rgba(1, 255, 255, 0.15);
   background: rgba(4, 10, 13, 0.7);
   color: #84cad6;
   cursor: pointer;
@@ -2140,7 +2140,7 @@ a {
   min-width: 0;
   min-height: 0;
   overflow: hidden;
-  border: 1px solid rgba(117, 230, 255, 0.08);
+  border: 1px solid rgba(1, 255, 255, 0.08);
   background: #040a0d;
 }
 
@@ -2155,7 +2155,7 @@ a {
   left: 8px;
   z-index: 500;
   padding: 5px 6px;
-  border: 1px solid rgba(117, 230, 255, 0.13);
+  border: 1px solid rgba(1, 255, 255, 0.13);
   background: rgba(3, 9, 11, 0.84);
   color: #8bd1dc;
   font-size: 12px;
@@ -2182,8 +2182,8 @@ a {
 }
 
 .nn-compare-route-card.active {
-  border-color: rgba(117, 230, 255, 0.35);
-  background: rgba(117, 230, 255, 0.045);
+  border-color: rgba(1, 255, 255, 0.35);
+  background: rgba(1, 255, 255, 0.045);
 }
 
 .nn-compare-route-top {
@@ -2249,7 +2249,7 @@ a {
    ========================================================= */
 
 .legend-mark.route {
-  background: #75e6ff;
+  background: #01ffff;
 }
 
 .legend-mark.haven {
@@ -2325,7 +2325,7 @@ a {
   padding: 16px;
 
   border: 1px solid
-    rgba(117, 230, 255, 0.22);
+    rgba(1, 255, 255, 0.22);
 
   background:
     linear-gradient(
@@ -2374,7 +2374,7 @@ a {
   padding: 0 10px;
 
   border: 1px solid
-    rgba(117, 230, 255, 0.2);
+    rgba(1, 255, 255, 0.2);
 
   background: #091115;
   color: var(--cyan);
@@ -2414,7 +2414,7 @@ a {
   padding: 0 8px;
 
   border: 1px solid
-    rgba(117, 230, 255, 0.14);
+    rgba(1, 255, 255, 0.14);
 
   background: #080f12;
   color: #e7f4f7;
@@ -2435,7 +2435,7 @@ a {
   overflow: hidden;
 
   border: 1px solid
-    rgba(117, 230, 255, 0.11);
+    rgba(1, 255, 255, 0.11);
 
   background: #06090b;
 }
@@ -2450,7 +2450,7 @@ a {
   padding: 8px;
 
   border-bottom: 1px solid
-    rgba(117, 230, 255, 0.08);
+    rgba(1, 255, 255, 0.08);
 }
 
 .comparison-card-head span {
@@ -2492,7 +2492,7 @@ a {
   padding: 10px;
 
   border: 1px solid
-    rgba(117, 230, 255, 0.09);
+    rgba(1, 255, 255, 0.09);
 
   background: #080f12;
 }
@@ -2518,7 +2518,7 @@ a {
   padding: 6px;
 
   border: 1px solid
-    rgba(117, 230, 255, 0.06);
+    rgba(1, 255, 255, 0.06);
 
   background: #070c0f;
 }
@@ -2581,7 +2581,7 @@ a {
   padding: 5px 6px;
 
   border: 1px solid
-    rgba(117, 230, 255, 0.05);
+    rgba(1, 255, 255, 0.05);
 
   color: #8da1a8;
   background: #070c0f;
@@ -2611,7 +2611,7 @@ a {
   padding: 7px;
 
   border: 1px solid
-    rgba(117, 230, 255, 0.08);
+    rgba(1, 255, 255, 0.08);
 
   background: #080e11;
 
@@ -2622,7 +2622,7 @@ a {
 
 .comparison-route-strip button.selected {
   border-color:
-    rgba(117, 230, 255, 0.4);
+    rgba(1, 255, 255, 0.4);
 
   background: #0b171c;
 }
@@ -2681,7 +2681,7 @@ a {
 .mission-action {
   min-height: 28px;
   padding: 0 10px;
-  border: 1px solid rgba(117, 230, 255, 0.28);
+  border: 1px solid rgba(1, 255, 255, 0.28);
   background: linear-gradient(180deg, rgba(13, 32, 40, 0.92), rgba(7, 13, 17, 0.92));
   color: var(--nn-cyan);
   font-family: var(--nn-font);
@@ -2692,8 +2692,8 @@ a {
 }
 
 .mission-action:hover:not(:disabled) {
-  border-color: rgba(117, 230, 255, 0.6);
-  box-shadow: 0 0 14px rgba(117, 230, 255, 0.18);
+  border-color: rgba(1, 255, 255, 0.6);
+  box-shadow: 0 0 14px rgba(1, 255, 255, 0.18);
   color: #d6f6ff;
 }
 
@@ -2879,7 +2879,7 @@ a {
   width: min(1420px, 100%);
   max-height: 94vh;
   overflow: hidden;
-  border: 1px solid rgba(117, 230, 255, 0.2);
+  border: 1px solid rgba(1, 255, 255, 0.2);
   border-radius: 14px;
   background: linear-gradient(180deg, rgba(9, 17, 21, 0.98), rgba(5, 9, 12, 0.99));
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.02);
@@ -2897,7 +2897,7 @@ a {
   justify-content: space-between;
   gap: 16px;
   padding: 14px 16px;
-  border-bottom: 1px solid rgba(117, 230, 255, 0.14);
+  border-bottom: 1px solid rgba(1, 255, 255, 0.14);
   background: rgba(8, 15, 19, 0.96);
 }
 
@@ -2951,7 +2951,7 @@ a {
   gap: 12px;
   padding: 14px;
   overflow-y: auto;
-  border-right: 1px solid rgba(117, 230, 255, 0.12);
+  border-right: 1px solid rgba(1, 255, 255, 0.12);
   background: rgba(6, 11, 15, 0.9);
 }
 
@@ -2991,10 +2991,10 @@ a {
 .ai-field button:hover,
 .ai-presets button:hover,
 .ai-generate:hover:not(:disabled),
-.ai-analyse:hover:not(:disabled) { border-color: rgba(117, 230, 255, 0.55); color: #e3f7ff; }
+.ai-analyse:hover:not(:disabled) { border-color: rgba(1, 255, 255, 0.55); color: #e3f7ff; }
 
 .ai-presets { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
-.ai-presets button.active { border-color: #75e6ff; color: var(--nn-cyan); background: #0d2028; }
+.ai-presets button.active { border-color: #01ffff; color: var(--nn-cyan); background: #0d2028; }
 
 .ai-weights { display: flex; flex-direction: column; gap: 6px; padding: 10px; border: 1px solid #1d2f37; background: #081014; }
 .ai-weights-head { display: flex; justify-content: space-between; font-family: var(--nn-font); font-size: 12px; letter-spacing: 0.06em; color: var(--nn-cyan); }
@@ -3002,16 +3002,16 @@ a {
 .ai-weights-head .warn { color: #ffc46b; }
 .ai-weights label { display: grid; grid-template-columns: 96px 1fr 38px; align-items: center; gap: 7px; font-size: 12px; color: #9fb4bb; }
 .ai-weights label strong { text-align: right; font-family: var(--nn-font); color: #d6e6ec; }
-.ai-weights input[type="range"] { width: 100%; accent-color: #75e6ff; }
+.ai-weights input[type="range"] { width: 100%; accent-color: #01ffff; }
 .ai-weights small, .ai-note { color: #5f737a; font-size: 12px; line-height: 1.55; }
 
 .ai-numeric { display: flex; flex-direction: column; gap: 7px; }
 .ai-numeric label { display: grid; grid-template-columns: 1fr 74px 34px; align-items: center; gap: 6px; font-size: 12px; color: #9fb4bb; }
 .ai-numeric input[type="number"] { background: #060c10; border: 1px solid #29414b; color: #d6e6ec; font-family: var(--nn-font); font-size: 12px; padding: 5px 6px; }
 .ai-numeric .ai-check { display: flex; align-items: flex-start; gap: 7px; font-size: 12px; line-height: 1.5; }
-.ai-numeric .ai-check input { accent-color: #75e6ff; margin-top: 1px; }
+.ai-numeric .ai-check input { accent-color: #01ffff; margin-top: 1px; }
 
-.ai-generate { background: #0d2028; border-color: #75e6ff; color: var(--nn-cyan); font-weight: 700; padding: 11px; }
+.ai-generate { background: #0d2028; border-color: #01ffff; color: var(--nn-cyan); font-weight: 700; padding: 11px; }
 .ai-generate:disabled, .ai-analyse:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .ai-error {
@@ -3040,7 +3040,7 @@ a {
 .ai-candidate-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 11px; }
 
 .ai-candidate { display: flex; flex-direction: column; gap: 8px; padding: 11px; border: 1px solid #1d2f37; background: #070e12; }
-.ai-candidate.active { background: #0a1820; box-shadow: 0 0 20px rgba(117, 230, 255, 0.09); }
+.ai-candidate.active { background: #0a1820; box-shadow: 0 0 20px rgba(1, 255, 255, 0.09); }
 .ai-candidate > header { display: grid; grid-template-columns: 12px 1fr auto; align-items: center; gap: 8px; padding: 0; border: 0; background: none; cursor: pointer; }
 .ai-candidate-swatch { width: 10px; height: 10px; border-radius: 2px; }
 .ai-candidate > header strong { display: block; color: #e0eef3; font-size: 12px; letter-spacing: 0.06em; }
@@ -3078,7 +3078,7 @@ a {
 .snapshot-body { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 0; min-height: 0; overflow: hidden; }
 .snapshot-canvas { padding: 12px; overflow: auto; background: #04080b; }
 .snapshot-canvas svg { display: block; width: 100%; height: auto; border: 1px solid #1d2f37; background: #04080b; }
-.snapshot-side { display: flex; flex-direction: column; gap: 12px; padding: 12px; overflow-y: auto; border-left: 1px solid rgba(117, 230, 255, 0.12); }
+.snapshot-side { display: flex; flex-direction: column; gap: 12px; padding: 12px; overflow-y: auto; border-left: 1px solid rgba(1, 255, 255, 0.12); }
 .snapshot-block { border: 1px solid #1d2f37; background: #070e12; padding: 10px; }
 .snapshot-block h3 { margin: 0 0 7px; color: var(--nn-cyan); font-size: 12px; letter-spacing: 0.06em; }
 .snapshot-block dl { display: grid; grid-template-columns: 112px 1fr; gap: 3px 8px; margin: 0; font-size: 12px; }
@@ -3097,7 +3097,7 @@ a {
 .orbital { width: min(1180px, 100%); }
 .orbital-actions { display: flex; align-items: center; gap: 8px; }
 .orbital-actions label { display: flex; align-items: center; gap: 5px; color: #6f858d; font-family: var(--nn-font); font-size: 12px; letter-spacing: 0.06em; }
-.orbital-status { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 8px 16px; border-bottom: 1px solid rgba(117, 230, 255, 0.1); color: #6f858d; font-family: var(--nn-font); font-size: 12px; letter-spacing: 0.08em; }
+.orbital-status { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 8px 16px; border-bottom: 1px solid rgba(1, 255, 255, 0.1); color: #6f858d; font-family: var(--nn-font); font-size: 12px; letter-spacing: 0.08em; }
 .orbital-status a { color: var(--nn-cyan); text-decoration: none; }
 .orbital-state.ok { color: #8cf0b1; }
 .orbital-state.warn { color: #ffc46b; }
@@ -3115,19 +3115,19 @@ a {
 .orbital-band.low { color: #8cf0b1; }
 .orbital-band.unclassified { color: #83979d; }
 .orbital-empty { padding: 20px 16px; color: #5f737a; font-size: 12px; }
-.orbital-footer { padding: 10px 16px 14px; border-top: 1px solid rgba(117, 230, 255, 0.1); color: #6f858d; font-size: 12px; line-height: 1.6; }
+.orbital-footer { padding: 10px 16px 14px; border-top: 1px solid rgba(1, 255, 255, 0.1); color: #6f858d; font-size: 12px; line-height: 1.6; }
 .orbital-footer ul { margin: 6px 0; padding-left: 16px; }
 .orbital-boundary { color: #ffc46b; }
 
 /* ---------------------------------------------- Mars Intelligence */
 
-.intel-context { display: flex; flex-wrap: wrap; gap: 12px; padding: 8px 16px; border-bottom: 1px solid rgba(117, 230, 255, 0.1); color: #6f858d; font-family: var(--nn-font); font-size: 12px; letter-spacing: 0.08em; }
+.intel-context { display: flex; flex-wrap: wrap; gap: 12px; padding: 8px 16px; border-bottom: 1px solid rgba(1, 255, 255, 0.1); color: #6f858d; font-family: var(--nn-font); font-size: 12px; letter-spacing: 0.08em; }
 .intel-context b { color: var(--nn-cyan); font-weight: 400; margin-right: 4px; }
 .intel-log { flex: 1; min-height: 240px; overflow-y: auto; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
 .intel-empty p { margin: 0 0 10px; color: #6f858d; font-size: 12px; line-height: 1.65; }
 .intel-suggestions { display: flex; flex-direction: column; gap: 6px; }
 .intel-suggestions button { text-align: left; border: 1px solid #1d2f37; background: #070e12; color: #9fb4bb; font-size: 12px; padding: 8px 10px; cursor: pointer; }
-.intel-suggestions button:hover { border-color: rgba(117, 230, 255, 0.45); color: #d6f2fa; }
+.intel-suggestions button:hover { border-color: rgba(1, 255, 255, 0.45); color: #d6f2fa; }
 .intel-message { display: flex; flex-direction: column; gap: 5px; padding: 10px 11px; border: 1px solid #1d2f37; background: #070e12; }
 .intel-message.user { border-color: #23343c; background: #0a1318; }
 .intel-message.error { border-color: rgba(255, 138, 138, 0.32); }
@@ -3141,13 +3141,13 @@ a {
 .intel-grounding a { color: var(--nn-cyan); font-size: 12px; }
 .intel-note { color: #5f737a; font-size: 12px; }
 .intel-busy { color: var(--nn-cyan); font-family: var(--nn-font); font-size: 12px; letter-spacing: 0.06em; }
-.intel-input { display: flex; gap: 7px; padding: 11px 16px; border-top: 1px solid rgba(117, 230, 255, 0.12); background: rgba(8, 15, 19, 0.96); }
+.intel-input { display: flex; gap: 7px; padding: 11px 16px; border-top: 1px solid rgba(1, 255, 255, 0.12); background: rgba(8, 15, 19, 0.96); }
 .intel-input input { flex: 1; background: #060c10; border: 1px solid #29414b; color: #d6e6ec; font-size: 12px; padding: 9px 10px; }
-.intel-input input:focus { outline: none; border-color: rgba(117, 230, 255, 0.55); }
+.intel-input input:focus { outline: none; border-color: rgba(1, 255, 255, 0.55); }
 
 @media (max-width: 1100px) {
   .ai-designer-body, .snapshot-body { grid-template-columns: minmax(0, 1fr); }
-  .ai-designer-controls, .snapshot-side { border-right: 0; border-left: 0; border-bottom: 1px solid rgba(117, 230, 255, 0.12); }
+  .ai-designer-controls, .snapshot-side { border-right: 0; border-left: 0; border-bottom: 1px solid rgba(1, 255, 255, 0.12); }
 }
 
 
@@ -3171,7 +3171,7 @@ a {
 
 .ai-info {
   padding: 8px 10px;
-  border: 1px solid rgba(117, 230, 255, 0.32);
+  border: 1px solid rgba(1, 255, 255, 0.32);
   background: rgba(9, 28, 36, 0.9);
   color: #9fe6f7;
   font-family: var(--nn-font);
@@ -3232,7 +3232,7 @@ a.briefing-card-link:hover {
 }
 
 .map-3d-button.active {
-  border-color: #75e6ff;
+  border-color: #01ffff;
   color: #e3f7ff;
   background: #0d2028;
 }

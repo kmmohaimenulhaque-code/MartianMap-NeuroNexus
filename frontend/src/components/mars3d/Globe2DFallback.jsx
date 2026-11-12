@@ -87,7 +87,7 @@ export default function Globe2DFallback({ center, onSelectCoordinate, onReadout,
       for (const m of MARKERS) {
         const p = project(m.lat, m.lon, lat0, lon0, R);
         if (!p) continue;
-        ctx.fillStyle = "#75e6ff";
+        ctx.fillStyle = "#01ffff";
         ctx.beginPath();
         ctx.arc(p.x, p.y, 4 * dpr, 0, 2 * Math.PI);
         ctx.fill();

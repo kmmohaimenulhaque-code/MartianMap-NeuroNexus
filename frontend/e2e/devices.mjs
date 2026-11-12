@@ -229,7 +229,7 @@ for (const [w, h, name, file] of [[768, 1024, "iPad mini 768", null], [820, 1180
     const r = a.getBoundingClientRect();
     return { color: getComputedStyle(a).color, w: r.width, left: r.left };
   });
-  check(zoom.color === "rgb(117, 230, 255)" && Math.round(zoom.w) === 32, `iPhone 393: dark-cyan 32 px zoom buttons (${Math.round(zoom.w)} px)`);
+  check(zoom.color === "rgb(1, 255, 255)" && Math.round(zoom.w) === 32, `iPhone 393: dark-cyan 32 px zoom buttons (${Math.round(zoom.w)} px)`);
   const dockButtons = await page.$$eval(".nn-dock button", (els) => els.map((e) => e.getBoundingClientRect()).map((r) => Math.min(r.width, r.height)));
   check(dockButtons.length === 5 && dockButtons.every((s) => s >= 44), "iPhone 393: five dock tabs, each at least 44 x 44");
   await shot(page, "mobile-console-ios.png");

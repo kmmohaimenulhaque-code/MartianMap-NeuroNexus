@@ -24,7 +24,7 @@ function SnapshotFigure({ snapshot, routes, height = 220 }) {
   const image = snapshot?.image;
   const width = image?.width ?? 900;
   const h = image?.height ?? 600;
-  const overlays = snapshot?.routes?.length ? snapshot.routes : [{ route_px: snapshot?.route_px ?? [], colour: routes?.[0]?.colour ?? "#75e6ff" }];
+  const overlays = snapshot?.routes?.length ? snapshot.routes : [{ route_px: snapshot?.route_px ?? [], colour: routes?.[0]?.colour ?? "#01ffff" }];
   return (
     <svg viewBox={`0 0 ${width} ${h}`} width="100%" style={{ maxHeight: height, display: "block" }} role="img" aria-label="USGS geology snapshot">
       {image?.data_uri && <image href={image.data_uri} x="0" y="0" width={width} height={h} />}
@@ -35,8 +35,8 @@ function SnapshotFigure({ snapshot, routes, height = 220 }) {
       )}
       {overlays.map((overlay, index) => (
         <g key={overlay.route_id ?? index}>
-          <polyline points={overlay.route_px.map((p) => p.join(",")).join(" ")} fill="none" stroke={overlay.colour ?? "#75e6ff"} strokeOpacity="0.3" strokeWidth="9" strokeLinecap="round" strokeLinejoin="round" />
-          <polyline points={overlay.route_px.map((p) => p.join(",")).join(" ")} fill="none" stroke={overlay.colour ?? "#75e6ff"} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+          <polyline points={overlay.route_px.map((p) => p.join(",")).join(" ")} fill="none" stroke={overlay.colour ?? "#01ffff"} strokeOpacity="0.3" strokeWidth="9" strokeLinecap="round" strokeLinejoin="round" />
+          <polyline points={overlay.route_px.map((p) => p.join(",")).join(" ")} fill="none" stroke={overlay.colour ?? "#01ffff"} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
           {overlay.route_px.length > 0 && <circle cx={overlay.route_px[0][0]} cy={overlay.route_px[0][1]} r="6" fill="#62f59a" stroke="#04080b" strokeWidth="1.5" />}
           {overlay.route_px.length > 1 && (
             <circle cx={overlay.route_px[overlay.route_px.length - 1][0]} cy={overlay.route_px[overlay.route_px.length - 1][1]} r="6" fill="#ff647c" stroke="#04080b" strokeWidth="1.5" />

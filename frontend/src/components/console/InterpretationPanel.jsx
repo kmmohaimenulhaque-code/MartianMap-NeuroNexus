@@ -43,7 +43,7 @@ export default function InterpretationPanel({ environment, siteScience }) {
 
             padding: "9px 10px",
 
-            border: "1px solid rgba(117,230,255,0.08)",
+            border: "1px solid rgba(1,255,255,0.08)",
 
             background: "#081014",
 

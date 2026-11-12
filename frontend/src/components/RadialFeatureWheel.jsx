@@ -60,13 +60,13 @@ export function WheelSvg({ state, dispatch, onAction, availability, solLabel, co
           <stop offset="1" stopColor="#091115" />
         </radialGradient>
         <linearGradient id="nn-wheel-active" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="rgba(117, 230, 255, 0.35)" />
+          <stop offset="0" stopColor="rgba(1, 255, 255, 0.35)" />
           <stop offset="1" stopColor="rgba(9, 17, 21, 0.92)" />
         </linearGradient>
         <radialGradient id="nn-wheel-glow" gradientUnits="userSpaceOnUse" cx={C} cy={C} r={GEOM.subOuter}>
           <stop offset="0.3" stopColor="rgba(26, 143, 168, 0)" />
           <stop offset="0.62" stopColor="rgba(26, 143, 168, 0.85)" />
-          <stop offset="0.66" stopColor="rgba(117, 230, 255, 0.55)" />
+          <stop offset="0.66" stopColor="rgba(1, 255, 255, 0.55)" />
           <stop offset="1" stopColor="rgba(26, 143, 168, 0.75)" />
         </radialGradient>
         <linearGradient id="nn-wheel-metal" x1="0" y1="0" x2="0" y2="1">

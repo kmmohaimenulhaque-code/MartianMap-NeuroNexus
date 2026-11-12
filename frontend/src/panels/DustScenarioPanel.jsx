@@ -16,7 +16,7 @@ import Icon from "../ui/Icon";
  * instantly from cached data.
  */
 
-const BAND_COLOURS = { low: null, moderate: "#75e6ff", high: "#ffc46b", very_high: "#ff647c" };
+const BAND_COLOURS = { low: null, moderate: "#01ffff", high: "#ffc46b", very_high: "#ff647c" };
 const LEVEL_LABEL = { low: "LOW", moderate: "MODERATE", high: "HIGH", very_high: "VERY HIGH" };
 const MAX_SOL = 668;
 
@@ -62,7 +62,7 @@ export default function DustScenarioPanel({ location, sol, onSolChange, onSelect
   const filled = series?.filled?.[sol - 1];
 
   const tauSeries = useMemo(
-    () => (series ? [{ id: "tau", label: "τ", colour: "#75e6ff", points: series.sol.map((s, i) => [s, series.tau[i]]) }] : []),
+    () => (series ? [{ id: "tau", label: "τ", colour: "#01ffff", points: series.sol.map((s, i) => [s, series.tau[i]]) }] : []),
     [series],
   );
   const zSeries = useMemo(

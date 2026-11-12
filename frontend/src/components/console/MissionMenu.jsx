@@ -6,7 +6,7 @@ const glassButtonStyle = {
 
   padding: "0 10px",
 
-  border: "1px solid rgba(117,230,255,0.22)",
+  border: "1px solid rgba(1,255,255,0.22)",
 
   background: "rgba(7,15,19,0.76)",
 
@@ -62,7 +62,7 @@ export default function MissionMenu({
             style={{
               minWidth: 0,
 
-              border: "1px solid rgba(117,230,255,0.14)",
+              border: "1px solid rgba(1,255,255,0.14)",
 
               background: "rgba(7,15,19,0.72)",
             }}
@@ -71,7 +71,7 @@ export default function MissionMenu({
               style={{
                 padding: "12px",
 
-                borderBottom: "1px solid rgba(117,230,255,0.1)",
+                borderBottom: "1px solid rgba(1,255,255,0.1)",
               }}
             >
               <div
@@ -165,7 +165,7 @@ export default function MissionMenu({
             style={{
               minWidth: 0,
 
-              border: "1px solid rgba(117,230,255,0.14)",
+              border: "1px solid rgba(1,255,255,0.14)",
 
               background: "rgba(7,15,19,0.72)",
             }}
@@ -174,7 +174,7 @@ export default function MissionMenu({
               style={{
                 padding: "12px",
 
-                borderBottom: "1px solid rgba(117,230,255,0.1)",
+                borderBottom: "1px solid rgba(1,255,255,0.1)",
               }}
             >
               <div
@@ -386,7 +386,7 @@ export default function MissionMenu({
             style={{
               gridColumn: "1 / -1",
 
-              border: "1px solid rgba(117,230,255,0.14)",
+              border: "1px solid rgba(1,255,255,0.14)",
 
               background: "rgba(7,15,19,0.72)",
 
@@ -509,7 +509,7 @@ export default function MissionMenu({
 
           overflow: "auto",
 
-          border: "1px solid rgba(117,230,255,0.25)",
+          border: "1px solid rgba(1,255,255,0.25)",
 
           background: "linear-gradient(180deg, rgba(11,21,27,0.9), rgba(4,10,13,0.92))",
 
@@ -538,7 +538,7 @@ export default function MissionMenu({
 
             padding: "16px 18px",
 
-            borderBottom: "1px solid rgba(117,230,255,0.13)",
+            borderBottom: "1px solid rgba(1,255,255,0.13)",
 
             background: "rgba(5,12,16,0.82)",
 

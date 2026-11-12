@@ -864,7 +864,7 @@ export default function Mars3DView({
       savedRoutes
         .filter((r) => !hiddenRoutes.has(r.id) && r.points?.length > 1 && !(projection && projectedIds.has(r.id)))
         .flatMap((r) =>
-          glowLine(line(r.points), r.colour ?? "#75e6ff", comparing && compareRouteIds.includes(r.id) ? 4 : 3, {
+          glowLine(line(r.points), r.colour ?? "#01ffff", comparing && compareRouteIds.includes(r.id) ? 4 : 3, {
             savedRouteId: r.id,
             opacity: bright(r) ? 1 : projection ? 0.15 : 0.25,
           }),
@@ -882,7 +882,7 @@ export default function Mars3DView({
     rebuild(
       "projection",
       projectedRoutes.flatMap((r) => {
-        const rgb = hexToRgb(r.colour ?? "#75e6ff");
+        const rgb = hexToRgb(r.colour ?? "#01ffff");
         const first = r.points[0];
         const last = r.points[r.points.length - 1];
         // Label at the route's middle vertex so routes sharing a start keep separate labels.
@@ -943,7 +943,7 @@ export default function Mars3DView({
       ordered
         .filter((c) => (c.path_coordinates ?? c.coordinates)?.length > 1)
         .flatMap((c) =>
-          glowLine(line(c.path_coordinates ?? c.coordinates), c.colour ?? "#75e6ff", c.id === selectedCandidateId ? 5 : 2.5, {
+          glowLine(line(c.path_coordinates ?? c.coordinates), c.colour ?? "#01ffff", c.id === selectedCandidateId ? 5 : 2.5, {
             candidateId: c.id,
             dashed: c.id !== selectedCandidateId,
           }),

@@ -13,12 +13,12 @@
   --nn-slate: #6f858d;
   --nn-surface-3: #0d181e;
   --nn-border-soft: #1b313b;
-  --nn-cyan: #75e6ff;
-  --nn-cyan-soft: rgba(117, 230, 255, 0.55);
-  --nn-cyan-dim: rgba(117, 230, 255, 0.22);
-  --nn-cyan-faint: rgba(117, 230, 255, 0.08);
-  --nn-glow: 0 0 6px rgba(117, 230, 255, 0.55), 0 0 18px rgba(117, 230, 255, 0.18);
-  --nn-glow-soft: 0 0 12px rgba(117, 230, 255, 0.12);
+  --nn-cyan: #01ffff;
+  --nn-cyan-soft: rgba(1, 255, 255, 0.55);
+  --nn-cyan-dim: rgba(1, 255, 255, 0.22);
+  --nn-cyan-faint: rgba(1, 255, 255, 0.08);
+  --nn-glow: 0 0 6px rgba(1, 255, 255, 0.55), 0 0 18px rgba(1, 255, 255, 0.18);
+  --nn-glow-soft: 0 0 12px rgba(1, 255, 255, 0.12);
   --nn-surface: #091115;
   --nn-surface-2: #081014;
   --nn-surface-glass: rgba(7, 15, 19, 0.76);
@@ -29,7 +29,7 @@
   --nn-green: #8cf0b1;
   --nn-amber: #ffc46b;
   --nn-red: #ff647c;
-  --nn-series-1: #75e6ff;
+  --nn-series-1: #01ffff;
   --nn-series-2: #8cf0b1;
   --nn-series-3: #4ea8de;
   --nn-series-4: #3fbcd4;
@@ -48,7 +48,7 @@
   --nn-walk-ramp-lo: #ff647c;
   --nn-walk-hatch: #081014;
   /* Terrain ladder rungs. */
-  --nn-src-hirise: #75e6ff;
+  --nn-src-hirise: #01ffff;
   --nn-src-ctx: #4ea8de;
   --nn-src-mola: #6f858d;
   /* Rover traverses. */
@@ -56,7 +56,7 @@
   --nn-rover-m2020: #a7d8ff;
   /* Source tags: one color per evidence class (the class is always written as text too). */
   --nn-tag-observed: #8cf0b1;
-  --nn-tag-reference: #75e6ff;
+  --nn-tag-reference: #01ffff;
   --nn-tag-modeled: #4ea8de;
   --nn-tag-derived: #3fbcd4;
   --nn-tag-simulated: #b9cfd6;
@@ -71,7 +71,7 @@
   /* THEMIS brightness-temperature ramp: obsidian -> deep teal -> cyan -> ice-white / pale gold (rising luminance). */
   --nn-thermal-cold: #0d181e;
   --nn-thermal-low: #1a8fa8;
-  --nn-thermal-mid: #75e6ff;
+  --nn-thermal-mid: #01ffff;
   --nn-thermal-high: #e8f8fc;
   --nn-thermal-hot: #fff1c9;
 }

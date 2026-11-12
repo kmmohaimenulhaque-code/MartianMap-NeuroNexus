@@ -113,7 +113,7 @@ export default function ArcgisLayeredMap({ center, halfWidthKm = 40, features = 
   useEffect(() => {
     if (!ready || lat == null || lon == null) return;
     const view = viewRef.current;
-    rebuild("selection", [{ geometry: pt(lat, lon), symbol: { type: "simple-marker", style: "circle", size: 14, color: [0, 0, 0, 0], outline: { color: [117, 230, 255, 1], width: 2 } } }]);
+    rebuild("selection", [{ geometry: pt(lat, lon), symbol: { type: "simple-marker", style: "circle", size: 14, color: [0, 0, 0, 0], outline: { color: [1, 255, 255, 1], width: 2 } } }]);
     const key = `${Number(lat).toFixed(4)},${(((Number(lon) % 360) + 360) % 360).toFixed(4)}`;
     if (ownPickRef.current === key) return; // picked on this map: keep the user's view, the other maps follow
     // A plain { type: "extent" } target is silently ignored by goTo, so frame ±halfWidthKm with center + scale
@@ -192,8 +192,8 @@ export default function ArcgisLayeredMap({ center, halfWidthKm = 40, features = 
 
   useEffect(() => {
     if (!ready) return;
-    const line = routePoints.length > 1 ? [{ geometry: { type: "polyline", paths: [routePoints.map((p) => [lon180(p.longitude_deg), Number(p.latitude_deg)])], spatialReference: MARS_SR }, symbol: { type: "simple-line", color: [117, 230, 255, 1], width: 3 } }] : [];
-    const stops = routePoints.map((p) => ({ geometry: pt(p.latitude_deg, p.longitude_deg), symbol: dot([117, 230, 255, 1], 8) }));
+    const line = routePoints.length > 1 ? [{ geometry: { type: "polyline", paths: [routePoints.map((p) => [lon180(p.longitude_deg), Number(p.latitude_deg)])], spatialReference: MARS_SR }, symbol: { type: "simple-line", color: [1, 255, 255, 1], width: 3 } }] : [];
+    const stops = routePoints.map((p) => ({ geometry: pt(p.latitude_deg, p.longitude_deg), symbol: dot([1, 255, 255, 1], 8) }));
     const havens = safeHavens.map((h) => ({ geometry: pt(h.latitude_deg, h.longitude_deg), symbol: dot([140, 240, 177, 1], 9) }));
     rebuild("routes", [...line, ...stops, ...havens]);
   }, [ready, routePoints, safeHavens]);

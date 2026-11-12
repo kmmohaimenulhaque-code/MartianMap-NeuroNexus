@@ -101,8 +101,8 @@ export default function UsgsRouteSnapshot({ open, onClose, snapshot, loading, er
                 )}
                 {(snapshot.routes ?? []).map((overlay, overlayIndex) => (
                   <g key={overlay.route_id ?? overlayIndex}>
-                    <polyline points={overlay.route_px.map((point) => point.join(",")).join(" ")} fill="none" stroke={overlay.colour ?? "#75e6ff"} strokeOpacity="0.3" strokeWidth="9" strokeLinecap="round" strokeLinejoin="round" />
-                    <polyline points={overlay.route_px.map((point) => point.join(",")).join(" ")} fill="none" stroke={overlay.colour ?? "#75e6ff"} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                    <polyline points={overlay.route_px.map((point) => point.join(",")).join(" ")} fill="none" stroke={overlay.colour ?? "#01ffff"} strokeOpacity="0.3" strokeWidth="9" strokeLinecap="round" strokeLinejoin="round" />
+                    <polyline points={overlay.route_px.map((point) => point.join(",")).join(" ")} fill="none" stroke={overlay.colour ?? "#01ffff"} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
                     {[overlay.route_px[0], overlay.route_px[overlay.route_px.length - 1]].map((point, end) => (
                       <circle key={end} cx={point[0]} cy={point[1]} r="6" fill={end ? "#ff647c" : "#62f59a"} stroke={overlay.colour ?? "#04080b"} strokeWidth="2" />
                     ))}
@@ -112,7 +112,7 @@ export default function UsgsRouteSnapshot({ open, onClose, snapshot, loading, er
                   <polyline
                     points={(snapshot.route_px ?? []).map((point) => point.join(",")).join(" ")}
                     fill="none"
-                    stroke="#75e6ff"
+                    stroke="#01ffff"
                     strokeWidth="3"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -124,7 +124,7 @@ export default function UsgsRouteSnapshot({ open, onClose, snapshot, loading, er
                     cx={point[0]}
                     cy={point[1]}
                     r={index === 0 || index === snapshot.route_px.length - 1 ? 6 : 3}
-                    fill={index === 0 ? "#62f59a" : index === snapshot.route_px.length - 1 ? "#ff647c" : "#75e6ff"}
+                    fill={index === 0 ? "#62f59a" : index === snapshot.route_px.length - 1 ? "#ff647c" : "#01ffff"}
                     stroke="#04080b"
                     strokeWidth="1.5"
                   />

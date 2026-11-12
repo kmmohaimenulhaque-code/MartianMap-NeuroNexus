@@ -157,7 +157,7 @@ export default function TopBar({ appMode, backendConnected, commandIndex, compar
 
                 cursor: "pointer",
 
-                boxShadow: "0 0 16px rgba(117,230,255,0.06)",
+                boxShadow: "0 0 16px rgba(1,255,255,0.06)",
               }}
             >
               <Icon name="index" size={18} title="Command index" />

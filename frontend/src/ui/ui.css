@@ -17,8 +17,8 @@
   position: relative;
   margin: 2px 0 6px;
   border: 1px solid var(--nn-cyan-faint);
-  background: linear-gradient(180deg, rgba(117, 230, 255, 0.035), rgba(6, 12, 15, 0.6));
-  box-shadow: inset 0 0 18px rgba(117, 230, 255, 0.04);
+  background: linear-gradient(180deg, rgba(1, 255, 255, 0.035), rgba(6, 12, 15, 0.6));
+  box-shadow: inset 0 0 18px rgba(1, 255, 255, 0.04);
 }
 
 .nn-chart svg {
@@ -122,7 +122,7 @@
 
 @keyframes nn-flash {
   0% {
-    box-shadow: 0 0 0 1px var(--nn-cyan), 0 0 26px rgba(117, 230, 255, 0.45);
+    box-shadow: 0 0 0 1px var(--nn-cyan), 0 0 26px rgba(1, 255, 255, 0.45);
   }
   100% {
     box-shadow: 0 16px 38px rgba(0, 0, 0, 0.28);
@@ -169,7 +169,7 @@
   color: var(--nn-cyan);
   font-size: 12px;
   letter-spacing: 0.06em;
-  text-shadow: 0 0 8px rgba(117, 230, 255, 0.35);
+  text-shadow: 0 0 8px rgba(1, 255, 255, 0.35);
 }
 
 .nn-stat-label small {
@@ -232,7 +232,7 @@
 .dust-kpis > div {
   padding: 7px 8px;
   border: 1px solid var(--nn-cyan-dim);
-  background: linear-gradient(180deg, rgba(117, 230, 255, 0.06), rgba(8, 16, 20, 0.8));
+  background: linear-gradient(180deg, rgba(1, 255, 255, 0.06), rgba(8, 16, 20, 0.8));
   box-shadow: var(--nn-glow-soft);
 }
 
@@ -250,7 +250,7 @@
   margin: 3px 0 2px;
   color: var(--nn-cyan);
   font-size: 12px;
-  text-shadow: 0 0 10px rgba(117, 230, 255, 0.55);
+  text-shadow: 0 0 10px rgba(1, 255, 255, 0.55);
 }
 
 .dust-kpis strong.dust-level-high {
@@ -324,7 +324,7 @@
 .dust-ramp {
   flex: 0 0 64px;
   height: 6px;
-  background: linear-gradient(90deg, #060e13, #125266, #75e6ff, #ffc46b, #ff647c);
+  background: linear-gradient(90deg, #060e13, #125266, #01ffff, #ffc46b, #ff647c);
   box-shadow: var(--nn-glow-soft);
 }
 
@@ -361,7 +361,7 @@
   color: var(--nn-cyan);
   font-family: var(--nn-mono);
   font-size: 12px;
-  text-shadow: 0 0 8px rgba(117, 230, 255, 0.5);
+  text-shadow: 0 0 8px rgba(1, 255, 255, 0.5);
 }
 
 /* ---------------------------------------------------- morphology */
@@ -476,7 +476,7 @@
   font-size: 12px;
   letter-spacing: 0.08em;
   text-decoration: none;
-  text-shadow: 0 0 8px rgba(117, 230, 255, 0.5);
+  text-shadow: 0 0 8px rgba(1, 255, 255, 0.5);
 }
 
 /* ---------------------------------------------------- command index */
@@ -498,7 +498,7 @@
   height: 100%;
   border-left: 1px solid var(--nn-cyan-dim);
   background: linear-gradient(180deg, rgba(11, 21, 27, 0.96), rgba(4, 10, 13, 0.98));
-  box-shadow: -20px 0 80px rgba(0, 0, 0, 0.6), -1px 0 24px rgba(117, 230, 255, 0.08);
+  box-shadow: -20px 0 80px rgba(0, 0, 0, 0.6), -1px 0 24px rgba(1, 255, 255, 0.08);
   color: var(--nn-text);
 }
 
@@ -553,7 +553,7 @@
 .cmp-tabs button.active {
   border-color: var(--nn-cyan);
   color: var(--nn-cyan);
-  box-shadow: 0 -4px 14px rgba(117, 230, 255, 0.12);
+  box-shadow: 0 -4px 14px rgba(1, 255, 255, 0.12);
 }
 
 .cix-search {
@@ -595,7 +595,7 @@ kbd {
   overflow-y: auto;
   padding: 10px 16px 20px;
   scrollbar-width: thin;
-  scrollbar-color: rgba(117, 230, 255, 0.2) transparent;
+  scrollbar-color: rgba(1, 255, 255, 0.2) transparent;
 }
 
 .cix-group {
@@ -615,7 +615,7 @@ kbd {
   font-family: var(--nn-mono);
   font-size: 12px;
   letter-spacing: 0.06em;
-  text-shadow: 0 0 8px rgba(117, 230, 255, 0.4);
+  text-shadow: 0 0 8px rgba(1, 255, 255, 0.4);
   cursor: pointer;
 }
 
@@ -645,7 +645,7 @@ kbd {
 .cix-item.cursor,
 .cix-item:focus-visible {
   border-color: var(--nn-cyan-dim);
-  background: rgba(117, 230, 255, 0.06);
+  background: rgba(1, 255, 255, 0.06);
   box-shadow: var(--nn-glow-soft);
   outline: none;
 }
@@ -708,7 +708,7 @@ kbd {
   margin: 0;
   color: var(--nn-cyan);
   letter-spacing: 0.06em;
-  text-shadow: 0 0 12px rgba(117, 230, 255, 0.6);
+  text-shadow: 0 0 12px rgba(1, 255, 255, 0.6);
 }
 
 .cix-team p {
@@ -777,7 +777,7 @@ kbd {
   overflow: auto;
   border: 1px solid var(--nn-cyan-dim);
   background: linear-gradient(180deg, rgba(10, 17, 22, 0.97), rgba(5, 10, 13, 0.98));
-  box-shadow: 0 30px 100px rgba(0, 0, 0, 0.65), 0 0 30px rgba(117, 230, 255, 0.06);
+  box-shadow: 0 30px 100px rgba(0, 0, 0, 0.65), 0 0 30px rgba(1, 255, 255, 0.06);
   color: var(--nn-text);
 }
 
@@ -1368,7 +1368,7 @@ kbd {
   border-color: var(--nn-cyan);
   color: var(--nn-cyan);
   box-shadow: var(--nn-glow);
-  text-shadow: 0 0 8px rgba(117, 230, 255, 0.6);
+  text-shadow: 0 0 8px rgba(1, 255, 255, 0.6);
 }
 
 .m3d-projection-bar {
@@ -1379,7 +1379,7 @@ kbd {
   margin-bottom: 6px;
   padding: 6px;
   border: 1px solid var(--nn-cyan-dim);
-  background: rgba(117, 230, 255, 0.05);
+  background: rgba(1, 255, 255, 0.05);
   box-shadow: var(--nn-glow-soft);
 }
 
@@ -1561,7 +1561,7 @@ textarea {
 .nn-thermal-sol span { color: var(--nn-cyan); font-size: var(--nn-fs-micro); letter-spacing: 0.06em; }
 .nn-thermal-sol strong { color: var(--nn-text-strong); font-size: var(--nn-fs-label); }
 .nn-thermal-sol small { color: var(--nn-text); font-size: var(--nn-fs-micro); }
-.nn-thermal-active { stroke: var(--nn-cyan); stroke-width: 2; filter: drop-shadow(0 0 4px rgba(117, 230, 255, 0.8)); }
+.nn-thermal-active { stroke: var(--nn-cyan); stroke-width: 2; filter: drop-shadow(0 0 4px rgba(1, 255, 255, 0.8)); }
 
 /* MARSWALK decision at the active sol */
 .mw-solstatus { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 8px 0; padding: 8px 10px; border: 1px dashed var(--nn-border); font-size: var(--nn-fs-label); }
@@ -1595,29 +1595,29 @@ textarea {
 .nn-wheel-backplate { fill: #04080a; }
 .nn-wheel-rim { fill: none; stroke: #29414b; stroke-width: 2; }
 .nn-wheel-rim-hi { fill: none; stroke: rgba(185, 207, 214, 0.18); stroke-width: 1; }
-.nn-wheel-tick { stroke: rgba(117, 230, 255, 0.28); stroke-width: 1; }
+.nn-wheel-tick { stroke: rgba(1, 255, 255, 0.28); stroke-width: 1; }
 .nn-wheel-sep { stroke-width: 3; stroke-linecap: round; opacity: 0.85; }
 .nn-wheel-sector, .nn-wheel-subitem { cursor: pointer; }
 .nn-wheel-face { stroke: #29414b; stroke-width: 1.4; transition: stroke 120ms; }
-.nn-wheel-face-on { stroke: #75e6ff; stroke-width: 1.6; }
+.nn-wheel-face-on { stroke: #01ffff; stroke-width: 1.6; }
 .nn-wheel-face-glow { mix-blend-mode: screen; opacity: 0.75; pointer-events: none; }
 .nn-wheel-sector:hover .nn-wheel-face { stroke: #4ea8de; }
 .nn-wheel-rivet { fill: #1b313b; stroke: #6f858d; stroke-width: 0.8; }
 .nn-wheel-icon path { stroke: #b9cfd6; }
-.nn-wheel-sector.is-active .nn-wheel-icon path { stroke: #75e6ff; filter: drop-shadow(0 0 4px rgba(117, 230, 255, 0.85)); }
+.nn-wheel-sector.is-active .nn-wheel-icon path { stroke: #01ffff; filter: drop-shadow(0 0 4px rgba(1, 255, 255, 0.85)); }
 .nn-wheel-label { fill: #a8bbc1; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; pointer-events: none; }
 .nn-wheel-sector.is-active .nn-wheel-label { fill: #e8f8fc; }
 .nn-wheel-sub { transform-origin: 300px 300px; animation: nn-wheel-expand 180ms cubic-bezier(0.2, 0.8, 0.2, 1); }
 .nn-wheel-subface { fill: #0d181e; stroke: #29414b; stroke-width: 1.2; }
 .nn-wheel-subitem:hover .nn-wheel-subface { stroke: #4ea8de; }
 .nn-wheel-sublabel { fill: #b9cfd6; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; pointer-events: none; }
-.nn-wheel-subitem.is-active .nn-wheel-sublabel { fill: #75e6ff; }
+.nn-wheel-subitem.is-active .nn-wheel-sublabel { fill: #01ffff; }
 .nn-wheel-subitem.is-disabled .nn-wheel-sublabel { fill: #71848c; }
 .nn-wheel-subitem.is-disabled { cursor: not-allowed; }
 .nn-wheel-hub { fill: #081014; stroke: #1b313b; stroke-width: 2; }
-.nn-wheel-hub-ring { fill: none; stroke: rgba(117, 230, 255, 0.25); stroke-width: 1; stroke-dasharray: 2 5; }
+.nn-wheel-hub-ring { fill: none; stroke: rgba(1, 255, 255, 0.25); stroke-width: 1; stroke-dasharray: 2 5; }
 .nn-wheel-hub-kicker { fill: #71848c; font-size: 13px; letter-spacing: 0.08em; }
-.nn-wheel-hub-title { fill: #75e6ff; font-size: 15px; font-weight: 700; letter-spacing: 0.05em; }
+.nn-wheel-hub-title { fill: #01ffff; font-size: 15px; font-weight: 700; letter-spacing: 0.05em; }
 .nn-wheel-hub-sub { fill: #d8e6ea; font-size: 13px; letter-spacing: 0.04em; }
 .nn-wheel-hub-hint { fill: #71848c; font-size: 13px; letter-spacing: 0.06em; }
 @keyframes nn-wheel-expand { from { opacity: 0; transform: scale(0.88); } to { opacity: 1; transform: scale(1); } }
@@ -1642,14 +1642,14 @@ label:has(> .m3d-layer-tag) { flex-wrap: wrap; }
 .nn-season-chart figcaption { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; color: var(--nn-text-dim); font-size: var(--nn-fs-micro); letter-spacing: 0.04em; margin-bottom: 2px; }
 
 /* Cockpit depth: top bar, side panels, brand breathing room, glowing menu button. */
-.topbar { position: relative; z-index: 20; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.65), 0 1px 0 rgba(117, 230, 255, 0.12); }
+.topbar { position: relative; z-index: 20; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.65), 0 1px 0 rgba(1, 255, 255, 0.12); }
 .topbar { padding-left: 20px; }
 .brand-block { padding-left: 54px; padding-block: 6px; }
 .left-column { position: relative; z-index: 2; box-shadow: 8px 0 24px rgba(0, 0, 0, 0.55); }
 .right-column { position: relative; z-index: 2; box-shadow: -8px 0 24px rgba(0, 0, 0, 0.55); }
-.burger-button { border-color: var(--nn-cyan); color: var(--nn-cyan); box-shadow: 0 0 12px rgba(117, 230, 255, 0.35); }
+.burger-button { border-color: var(--nn-cyan); color: var(--nn-cyan); box-shadow: 0 0 12px rgba(1, 255, 255, 0.35); }
 .burger-button .nn-icon { stroke: var(--nn-cyan); }
-.burger-button:hover { box-shadow: 0 0 18px rgba(117, 230, 255, 0.55); }
+.burger-button:hover { box-shadow: 0 0 18px rgba(1, 255, 255, 0.55); }
 .map-toolbar > .mission-action, .map-toolbar .map-ai-route-button { position: static !important; inset: auto !important; transform: none !important; }
 .brand-block > span { font-size: 12px; letter-spacing: 0.04em; white-space: nowrap; }
 
@@ -1658,7 +1658,7 @@ label:has(> .m3d-layer-tag) { flex-wrap: wrap; }
 .map-panel-scroll {
   flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column;
   overflow-y: auto; overscroll-behavior: contain;
-  scrollbar-width: thin; scrollbar-color: rgba(117, 230, 255, 0.25) transparent;
+  scrollbar-width: thin; scrollbar-color: rgba(1, 255, 255, 0.25) transparent;
 }
 .map-panel-scroll > .route-console { flex: 0 0 auto; }
 .nn-flip-v { transform: scaleY(-1); }
@@ -1668,7 +1668,7 @@ label:has(> .m3d-layer-tag) { flex-wrap: wrap; }
   display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 0 12px;
   border: 1px solid var(--nn-cyan-dim); background: rgba(8, 16, 20, 0.94); color: var(--nn-cyan);
   font: 600 12px var(--nn-mono); letter-spacing: 0.08em; cursor: pointer;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55), 0 0 14px rgba(117, 230, 255, 0.12);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55), 0 0 14px rgba(1, 255, 255, 0.12);
   animation: nn-jump-in 160ms ease-out;
 }
 .nn-scroll-jump:hover, .nn-scroll-jump:focus-visible { border-color: var(--nn-cyan); color: #fff; }
@@ -1676,7 +1676,7 @@ label:has(> .m3d-layer-tag) { flex-wrap: wrap; }
 @media (prefers-reduced-motion: reduce) { .nn-scroll-jump { animation: none; } }
 
 /* ------------------------------------------------------------------ Cockpit depth: dim shadows under the top bar and beside the side columns */
-.topbar { box-shadow: 0 10px 24px -8px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(117, 230, 255, 0.05); }
+.topbar { box-shadow: 0 10px 24px -8px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(1, 255, 255, 0.05); }
 .left-column { box-shadow: 14px 0 28px -18px rgba(0, 0, 0, 0.8); }
 .right-column { box-shadow: -14px 0 28px -18px rgba(0, 0, 0, 0.8); }
 .site-field { box-shadow: inset 0 12px 18px -14px rgba(0, 0, 0, 0.7); }
@@ -1761,7 +1761,7 @@ label:has(> .m3d-layer-tag) { flex-wrap: wrap; }
 #root :is(.nn-chart-axis, .nn-chart-tick, .nn-thermal-axis, .mw-axis) { fill: var(--nn-cyan); }
 #root :is(.nn-heatmap-axis, .mw-season-axis, .dust-chart-title small) { color: var(--nn-cyan); }
 /* MARSWALK: glow on the decision numbers; legend text cyan, line swatches keep their series colors. */
-#root .mw-row > strong { text-shadow: 0 0 8px rgba(117, 230, 255, 0.45); }
+#root .mw-row > strong { text-shadow: 0 0 8px rgba(1, 255, 255, 0.45); }
 #root .mw-key { color: var(--nn-cyan); }
 #root .mw-key--elev::before { background: var(--nn-text-strong); }
 #root .mw-key--s3::before { background: var(--nn-steel); }
@@ -1785,7 +1785,7 @@ label:has(> .m3d-layer-tag) { flex-wrap: wrap; }
 .site-split-main { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
 .site-thermal-summary {
   display: flex; flex-direction: column; gap: 6px; min-width: 0; padding: 8px 9px;
-  border: 1px solid var(--nn-cyan-dim); background: linear-gradient(180deg, rgba(117, 230, 255, 0.06), rgba(8, 16, 20, 0.8));
+  border: 1px solid var(--nn-cyan-dim); background: linear-gradient(180deg, rgba(1, 255, 255, 0.06), rgba(8, 16, 20, 0.8));
 }
 .site-thermal-kicker { color: var(--nn-cyan); font-size: 12px; font-weight: 700; letter-spacing: 0.08em; }
 .site-thermal-summary dl { margin: 0; display: flex; flex-direction: column; gap: 5px; }
@@ -1821,3 +1821,25 @@ label:has(> .m3d-layer-tag) { flex-wrap: wrap; }
   .photo-grid { grid-template-columns: minmax(0, 1fr) !important; }
   .thermal-stat-grid, .evidence-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
 }
+
+/* ------------------------------------------------------------------ Cyan text is regular weight
+ * Bold is reserved for non-cyan emphasis; every cyan text element below reads at regular weight. */
+:is(#root, .nn-floating, .nn-drawer, .nn-drawer-backdrop) :is(
+  .nn-solscrub-value, .nn-solscrub-value small, .mode-switch button, .mode-word, .panel-heading h2, .nn-tag, .nn-tag-text,
+  .place-title h3, .coordinate-block strong, .metric strong, .site-thermal-kicker, .site-thermal-summary dd, .site-thermal-link,
+  .nn-solcond-grid dd, .nn-solcond-head strong, .nn-scroll-jump, .nn-seg button, .evidence-bar strong, .evidence-sources,
+  .dust-scrubber strong, .dust-kpis strong, .nn-stat-val, .morph-aspect strong, .gas-row strong, .assessment-status strong,
+  .mission-stat strong, .mission-row strong, .mission-tag, .nn-thermal-bar span, .nn-manual-section h3, .nn-manual-quick strong,
+  .perf-presets button, .perf-telemetry dd, .mw-card h3, .mw-stops b, .mw-stops strong, .mw-mode button, .mw-ladder-chip strong,
+  .mw-primary, .mw-north, .mw-row > strong, .mw-sens-run, .route-console strong, .photo-card h2, .nn-pop-title, .nn-pop-body b,
+  .nn-pop-body strong, .nn-tag-pop strong, .nn-layers-menu summary, .nn-layer-maps i
+) { font-weight: 400 !important; }
+.leaflet-tooltip, .leaflet-marker-icon, .leaflet-marker-icon *, .leaflet-control-zoom a { font-weight: 400 !important; }
+
+/* ------------------------------------------------------------------ Switzer everywhere
+ * Leaflet (zoom glyphs, tooltips, scale) and the Esri attribution ship their own fonts; use Switzer. */
+body, button, input, select, textarea, optgroup { font-family: var(--nn-font); }
+.leaflet-container, .leaflet-container *, .leaflet-tooltip, .esri-attribution, .esri-attribution *, .mw-scale, .mw-scale * {
+  font-family: var(--nn-font) !important;
+}
+:is(.nn-sheet-head, .nn-sheet-head *, .nn-dock button, .nn-dock button *, .nn-solpill-btn, .nn-mapview-toggle button, .nn-solpill-pop *, .nn-phone-mapbar button) { font-weight: 400 !important; }

@@ -51,7 +51,7 @@ function SchematicTrack({ objects }) {
       role="img"
       aria-label="Mars-centered close-approach distance schematic"
     >
-      <line x1={marsX} y1="26" x2={marsX} y2={height - 18} stroke="#75e6ff" strokeOpacity="0.35" strokeDasharray="3 3" />
+      <line x1={marsX} y1="26" x2={marsX} y2={height - 18} stroke="#01ffff" strokeOpacity="0.35" strokeDasharray="3 3" />
       <circle cx={marsX} cy={height / 2} r="12" fill="#c1440e" stroke="#4ea8de" strokeWidth="1.5" />
       <text x={marsX} y={height - 4} fontSize="9" fill="#8aa0a8" textAnchor="middle">
         MARS
@@ -71,8 +71,8 @@ function SchematicTrack({ objects }) {
         const xMax = scale(object.distance_max_au ?? object.distance_au);
         return (
           <g key={object.designation ?? index}>
-            <line x1={xMin} y1={y} x2={xMax} y2={y} stroke="#75e6ff" strokeOpacity="0.35" strokeWidth="6" strokeLinecap="round" />
-            <circle cx={x} cy={y} r="4.5" fill={object.tracking_status === "HIGH-PRIORITY MONITORING" ? "#ff647c" : "#75e6ff"} />
+            <line x1={xMin} y1={y} x2={xMax} y2={y} stroke="#01ffff" strokeOpacity="0.35" strokeWidth="6" strokeLinecap="round" />
+            <circle cx={x} cy={y} r="4.5" fill={object.tracking_status === "HIGH-PRIORITY MONITORING" ? "#ff647c" : "#01ffff"} />
             <text x={x + 10} y={y + 3.5} fontSize="9" fill="#a8bbc1">
               {object.designation}
             </text>
