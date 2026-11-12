@@ -4,6 +4,10 @@
 #
 #   export GEMINI_API_KEY=...            # optional; without it Qwen answers everything it can
 #   bash tools/codespace_qwen_demo.sh          # install, build, start, smoke test
+#
+# Remote model (for example the Colab host in tools/colab_qwen_host.ipynb): set both, and the
+# local llama.cpp build and model download are skipped:
+#   export QWEN_BASE_URL=https://xxxx.trycloudflare.com QWEN_API_KEY=...
 #   bash tools/codespace_qwen_demo.sh stop     # stop both servers
 #
 # Re-running is safe: finished steps are skipped. Logs: ~/nn-demo/*.log
@@ -16,6 +20,7 @@ GGUF_FILE="neuronexus-qwen3-4b-mars-intel-Q4_K_M.gguf"
 QWEN_PORT=8081
 API_PORT=7860
 THREADS="${QWEN_THREADS:-3}"     # leave one core for the API and the browser
+REMOTE_QWEN="${QWEN_BASE_URL:-}"
 mkdir -p "$WORK"
 step() { printf '\n== %s\n' "$*"; }
 
@@ -49,7 +54,9 @@ echo "ok"
 
 step "3/7 llama.cpp server (CPU build, about 5 to 8 min once)"
 LLAMA="$WORK/llama.cpp"
-if [ ! -x "$LLAMA/build/bin/llama-server" ]; then
+if [ -n "$REMOTE_QWEN" ]; then
+  echo "skipped: using the remote model at $REMOTE_QWEN"
+elif [ ! -x "$LLAMA/build/bin/llama-server" ]; then
   [ -d "$LLAMA" ] || git clone -q --depth 1 https://github.com/ggml-org/llama.cpp "$LLAMA"
   cmake -S "$LLAMA" -B "$LLAMA/build" -DCMAKE_BUILD_TYPE=Release -DLLAMA_CURL=OFF -DGGML_CUDA=OFF > "$WORK/build.log"
   cmake --build "$LLAMA/build" -j "$(nproc)" --target llama-server >> "$WORK/build.log"
@@ -58,10 +65,14 @@ echo "ok"
 
 step "4/7 fine-tuned model (2.5 GB, once)"
 MODEL="$WORK/$GGUF_FILE"
-if [ ! -s "$MODEL" ] || [ "$(stat -c %s "$MODEL")" -lt 2000000000 ]; then
-  curl -L --fail --retry 3 -o "$MODEL" "https://huggingface.co/$GGUF_REPO/resolve/main/$GGUF_FILE"
+if [ -n "$REMOTE_QWEN" ]; then
+  echo "skipped: the remote host serves the model"
+else
+  if [ ! -s "$MODEL" ] || [ "$(stat -c %s "$MODEL")" -lt 2000000000 ]; then
+    curl -L --fail --retry 3 -o "$MODEL" "https://huggingface.co/$GGUF_REPO/resolve/main/$GGUF_FILE"
+  fi
+  echo "ok: $(du -h "$MODEL" | cut -f1)"
 fi
-echo "ok: $(du -h "$MODEL" | cut -f1)"
 
 step "5/7 Python and frontend"
 VENV="$WORK/venv"
@@ -75,12 +86,19 @@ echo "ok"
 
 step "6/7 start servers"
 stop_servers
-nohup "$LLAMA/build/bin/llama-server" -m "$MODEL" --jinja -c 4096 -np 1 -t "$THREADS" \
-  --host 127.0.0.1 --port "$QWEN_PORT" --alias neuronexus-qwen3-4b-mars-intel > "$WORK/llama.log" 2>&1 &
-echo $! > "$WORK/llama.pid"
-until curl -s "http://127.0.0.1:$QWEN_PORT/health" | grep -q ok; do sleep 2; done
-echo "llama-server up on :$QWEN_PORT"
-(cd "$REPO" && QWEN_BASE_URL="http://127.0.0.1:$QWEN_PORT" QWEN_TIMEOUT_S="${QWEN_TIMEOUT_S:-180}" \
+if [ -n "$REMOTE_QWEN" ]; then
+  QWEN_URL="${REMOTE_QWEN%/}"
+  if curl -s -m 20 "$QWEN_URL/health" | grep -q ok; then echo "remote model up at $QWEN_URL"
+  else echo "WARNING: $QWEN_URL/health did not answer; the router will use Gemini until it does"; fi
+else
+  QWEN_URL="http://127.0.0.1:$QWEN_PORT"
+  nohup "$LLAMA/build/bin/llama-server" -m "$MODEL" --jinja -c 4096 -np 1 -t "$THREADS" \
+    --host 127.0.0.1 --port "$QWEN_PORT" --alias neuronexus-qwen3-4b-mars-intel > "$WORK/llama.log" 2>&1 &
+  echo $! > "$WORK/llama.pid"
+  until curl -s "$QWEN_URL/health" | grep -q ok; do sleep 2; done
+  echo "llama-server up on :$QWEN_PORT"
+fi
+(cd "$REPO" && QWEN_BASE_URL="$QWEN_URL" QWEN_API_KEY="${QWEN_API_KEY:-}" QWEN_TIMEOUT_S="${QWEN_TIMEOUT_S:-180}" \
   nohup "$VENV/bin/python" -m uvicorn science.serve:app --host 0.0.0.0 --port "$API_PORT" > "$WORK/api.log" 2>&1 &
   echo $! > "$WORK/api.pid")
 until curl -s "http://127.0.0.1:$API_PORT/api/ai/status" > /dev/null; do sleep 2; done
