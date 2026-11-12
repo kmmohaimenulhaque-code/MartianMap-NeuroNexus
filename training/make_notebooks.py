@@ -21,13 +21,13 @@ FILTERS_SRC = (HERE / "filters.py").read_text()
 
 TARGETS = {
     "qwen3_14b_mi300x": {
-        "TITLE": "Qwen3-14B fine-tune on AMD MI300X (bf16 LoRA, 50-minute budget)",
+        "TITLE": "Qwen3-14B fine-tune on AMD MI300X (bf16 LoRA)",
         "PLATFORM": "mi300x",
         "BASE_MODEL": "Qwen/Qwen3-14B",
         "RUN_NAME": "neuronexus-qwen3-14b-mars-intel",
         "LOAD_IN_4BIT": "False",
         "BATCH": "16", "GRAD_ACCUM": "1", "LR": "1e-4",
-        "TRAIN_BUDGET_MIN": "24",
+        "TRAIN_BUDGET_MIN": "None",
         "QUANTS": '["Q4_K_M"]',
         "WORK": "/workspace/nn" ,
         "INSTALL": "mi300x",

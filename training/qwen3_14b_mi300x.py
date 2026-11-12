@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Qwen3-14B fine-tune on AMD MI300X (bf16 LoRA, 50-minute budget)
+# # Qwen3-14B fine-tune on AMD MI300X (bf16 LoRA)
 #
 # NeuroNexus Martian Map, MARS INTELLIGENCE voice model. Run all cells top to bottom; nothing needs typing
 # except the secrets below.
@@ -34,7 +34,7 @@ EPOCHS = 2
 LR = 1e-4
 BATCH, GRAD_ACCUM = 16, 1
 LORA_R = 16
-TRAIN_BUDGET_MIN = 24      # None = train to the end; a number stops at the latest step after that many minutes
+TRAIN_BUDGET_MIN = None      # None = train to the end; a number stops at the latest step after that many minutes
 EVAL_N = 40                 # held-out rows scored for base and fine-tuned
 QUANTS = ["Q4_K_M"]
 PUBLIC = True               # model repo visibility; the Space reads it without a token when public
