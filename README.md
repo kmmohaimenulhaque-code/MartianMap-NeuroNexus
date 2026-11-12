@@ -165,8 +165,9 @@ React/Vite mission console
      2D map   3D Mars   USGS map
         ↘       ↓        ↙
           shared mission state
-Google Gemini
-      ↓
+                ↓
+          Google Gemini
+                ↓
 AI interpretation of structured results
 ```
 # Architecture (Mermaid Diagram)
