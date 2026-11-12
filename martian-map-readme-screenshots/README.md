@@ -1,6 +1,6 @@
 # NeuroNexus - Interplanetary Survival Guide: Martian Map
 
-NASA Space Apps Challenge 2026 · branch Master-Ai
+NASA Space Apps Challenge 2026 · branch landing-core-features
 
 Setup first: SETUP_INSTRUCTIONS.md contains the complete installation, NASA data, Gemini API-key, backend/frontend startup, troubleshooting, and demo instructions.
 
@@ -32,7 +32,7 @@ What it does
 
 ## Screenshots — the mission console in action
 
-The screenshots below show the Master-Ai interface, including Gale site context, historical thermal evidence, route comparison, and the interactive 3D workspace. Displayed values belong to the captured selection and configuration; historical observations, modelled scenarios, and derived planning aids are not live measurements or safety guarantees.
+The screenshots below show the console interface, including Gale site context, historical thermal evidence, route comparison, and the interactive 3D workspace. Displayed values belong to the captured selection and configuration; historical observations, modelled scenarios, and derived planning aids are not live measurements or safety guarantees.
 
 ### Site selection and synchronized maps
 
