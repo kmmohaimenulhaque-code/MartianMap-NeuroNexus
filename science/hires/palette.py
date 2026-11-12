@@ -6,7 +6,7 @@ TOKENS = {
     "--nn-walk-ramp-hi": "#dcf8ff",
     "--nn-walk-ramp-mid": "#ffc46b",
     "--nn-walk-ramp-lo": "#ff647c",
-    "--nn-walk-hatch": "#2a0710",
+    "--nn-walk-hatch": "#081014",
     "--nn-green": "#8cf0b1",
     "--nn-amber": "#ffc46b",
     "--nn-red": "#ff647c",

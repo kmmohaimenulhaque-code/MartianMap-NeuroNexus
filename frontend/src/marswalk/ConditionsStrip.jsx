@@ -40,7 +40,7 @@ export default function ConditionsStrip({ site, evaHours, onConditions }) {
   const { rad, weather, dust, season, meda, solar } = state.data;
   const dose = rad?.rate_E_median != null ? rad.rate_E_median * (evaHours / 24) : null;
   return (
-    <section className="mw-card">
+    <section className="mw-card" id="mw-conditions">
       <h3>CONDITIONS · {season?.label ?? site.toUpperCase()}</h3>
       <div className="mw-row">
         <span className="mw-row-label">RAD dose rate (E)</span>

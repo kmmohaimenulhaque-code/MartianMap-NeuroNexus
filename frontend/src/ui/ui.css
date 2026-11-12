@@ -1584,3 +1584,40 @@ textarea {
 .leaflet-tooltip-right::before { border-right-color: var(--nn-border); }
 .leaflet-popup-content-wrapper, .leaflet-popup-tip { background: rgba(8, 16, 20, 0.96); color: var(--nn-text); border: 1px solid var(--nn-border); box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55); }
 .leaflet-popup-content { font: 13px/1.5 var(--nn-font); }
+
+/* ------------------------------------------------------------------ Radial Feature Wheel (double right-click) */
+.nn-wheel-overlay { position: fixed; inset: 0; z-index: 3000; background: radial-gradient(circle at center, rgba(4, 8, 10, 0.35), rgba(4, 8, 10, 0.6)); outline: none; animation: nn-wheel-fade 120ms ease-out; }
+.nn-wheel { position: absolute; width: 600px; height: 600px; filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.65)); }
+.nn-wheel-svg { display: block; overflow: visible; font-family: var(--nn-font); text-transform: uppercase; user-select: none; }
+.nn-wheel-backplate { fill: #04080a; }
+.nn-wheel-rim { fill: none; stroke: #29414b; stroke-width: 2; }
+.nn-wheel-rim-hi { fill: none; stroke: rgba(185, 207, 214, 0.18); stroke-width: 1; }
+.nn-wheel-tick { stroke: rgba(117, 230, 255, 0.28); stroke-width: 1; }
+.nn-wheel-sep { stroke-width: 3; stroke-linecap: round; opacity: 0.85; }
+.nn-wheel-sector, .nn-wheel-subitem { cursor: pointer; }
+.nn-wheel-face { stroke: #29414b; stroke-width: 1.4; transition: stroke 120ms; }
+.nn-wheel-face-on { stroke: #75e6ff; stroke-width: 1.6; }
+.nn-wheel-face-glow { mix-blend-mode: screen; opacity: 0.75; pointer-events: none; }
+.nn-wheel-sector:hover .nn-wheel-face { stroke: #4ea8de; }
+.nn-wheel-rivet { fill: #1b313b; stroke: #6f858d; stroke-width: 0.8; }
+.nn-wheel-icon path { stroke: #b9cfd6; }
+.nn-wheel-sector.is-active .nn-wheel-icon path { stroke: #75e6ff; filter: drop-shadow(0 0 4px rgba(117, 230, 255, 0.85)); }
+.nn-wheel-label { fill: #a8bbc1; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; pointer-events: none; }
+.nn-wheel-sector.is-active .nn-wheel-label { fill: #e8f8fc; }
+.nn-wheel-sub { transform-origin: 300px 300px; animation: nn-wheel-expand 180ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+.nn-wheel-subface { fill: #0d181e; stroke: #29414b; stroke-width: 1.2; }
+.nn-wheel-subitem:hover .nn-wheel-subface { stroke: #4ea8de; }
+.nn-wheel-sublabel { fill: #b9cfd6; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; pointer-events: none; }
+.nn-wheel-subitem.is-active .nn-wheel-sublabel { fill: #75e6ff; }
+.nn-wheel-subitem.is-disabled .nn-wheel-sublabel { fill: #71848c; }
+.nn-wheel-subitem.is-disabled { cursor: not-allowed; }
+.nn-wheel-hub { fill: #081014; stroke: #1b313b; stroke-width: 2; }
+.nn-wheel-hub-ring { fill: none; stroke: rgba(117, 230, 255, 0.25); stroke-width: 1; stroke-dasharray: 2 5; }
+.nn-wheel-hub-kicker { fill: #71848c; font-size: 12px; letter-spacing: 0.08em; }
+.nn-wheel-hub-title { fill: #75e6ff; font-size: 15px; font-weight: 700; letter-spacing: 0.05em; }
+.nn-wheel-hub-sub { fill: #d8e6ea; font-size: 12px; letter-spacing: 0.04em; }
+.nn-wheel-hub-hint { fill: #71848c; font-size: 12px; letter-spacing: 0.06em; }
+@keyframes nn-wheel-expand { from { opacity: 0; transform: scale(0.88); } to { opacity: 1; transform: scale(1); } }
+@keyframes nn-wheel-fade { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .nn-wheel-sub, .nn-wheel-overlay { animation: none; } }
+.nn-wheel-hub-hint.is-blocked { fill: #ffc46b; }

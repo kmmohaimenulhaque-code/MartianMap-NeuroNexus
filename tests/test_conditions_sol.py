@@ -39,3 +39,22 @@ def test_conditions_follow_the_console_sol():
     body = r.json()
     assert body["season"]["sol"] == 400 and body["dust"]["my34_sol"] == 400
     assert body["solar"]["ls_deg"] == body["season"]["ls"]
+
+
+def test_validation_figures_are_downloadable_and_path_safe():
+    import json
+    from pathlib import Path
+
+    from fastapi.testclient import TestClient
+
+    from science.serve import app
+
+    latest = Path("validation/reports/latest.json")
+    if not latest.exists():
+        pytest.skip("no validation report")
+    fig = json.loads(latest.read_text())["sites"]["gale"]["figures"][0]
+    client = TestClient(app)
+    r = client.get("/api/" + fig.replace("validation/reports/", "validation/figure/"))
+    assert r.status_code == 200 and r.headers["content-type"] == "image/png"
+    assert client.get("/api/validation/figure/gale/20261020-4c5fb3e5/figures/..%2Fsecret.png").status_code in (400, 404)
+    assert client.get("/api/validation/figure/mars/20261020-4c5fb3e5/figures/a.png").status_code == 400

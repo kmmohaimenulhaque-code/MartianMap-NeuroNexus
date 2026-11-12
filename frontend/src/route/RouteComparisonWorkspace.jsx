@@ -7,6 +7,8 @@ import { ProvenanceTag } from "../ui/StatTriplet";
 import { fmt } from "../ui/format";
 import { COMPARISON_METRICS, comparisonToCsv, rankMetric, readSnapshot, routeColour, routeStats, writeSnapshot } from "../utils/savedRoutes";
 import Icon from "../ui/Icon";
+import { provenance, provenanceCsvHeader } from "../exports/exporters";
+import { useSol } from "../state/solStore";
 
 /*
  * ROUTE COMPARISON WORKSPACE
@@ -93,6 +95,7 @@ function useRouteSnapshots(routes) {
 }
 
 export default function RouteComparisonWorkspace({ routes, compareRouteIds, onToggleRoute, onClose, onDeleteRoute, onReevaluate, onRename, onVerify, onShowIn3D, onExportFile }) {
+  const { sol, seasonLs } = useSol();
   const [view, setView] = useState("map");
   const [combinedState, setCombined] = useState({ key: null, loading: false, snapshot: null, error: "" });
 
@@ -153,7 +156,7 @@ export default function RouteComparisonWorkspace({ routes, compareRouteIds, onTo
                 3D ↗
               </button>
             </div>
-            <button type="button" disabled={!selected.length} onClick={() => onExportFile("route-comparison", "csv", comparisonToCsv(selected), "text/csv;charset=utf-8")}>
+            <button type="button" disabled={!selected.length} onClick={() => onExportFile("route-comparison", "csv", provenanceCsvHeader(provenance({ sol, seasonLs })) + comparisonToCsv(selected), "text/csv;charset=utf-8")}>
               CSV
             </button>
             <button
@@ -168,6 +171,7 @@ export default function RouteComparisonWorkspace({ routes, compareRouteIds, onTo
                       schema: "neuronexus.route-comparison.v1",
                       generated_at: new Date().toISOString(),
                       provenance: "NASA MOLA MEGDR 128 ppd along-track sampling (DERIVED) · USGS SIM 3292",
+                      export_provenance: provenance({ sol, seasonLs }),
                       routes: selected.map((r, i) => ({ id: r.id, name: r.name, colour: r.colour, points: r.points, generation: r.generation ?? null, reproducibility: r.reproducibility ?? null, stats: statsList[i] })),
                     },
                     null,

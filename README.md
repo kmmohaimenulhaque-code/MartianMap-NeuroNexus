@@ -2,14 +2,14 @@
 
 NASA Space Apps Challenge 2026 · branch ```Master-Ai```
 
-## 🎬 Demo Video
+## Demo Video
 
 <div align="center">
   <a href="https://www.youtube.com/watch?v=0MLtYKHewcA" target="_blank">
     <img src="https://img.youtube.com/vi/0MLtYKHewcA/maxresdefault.jpg" alt="NeuroNexus: Interplanetary Survival Guide - Martian Map" width="100%" style="max-width: 900px; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);"/>
   </a>
   <br/>
-  <p><strong>▶️ Click image to watch demo on YouTube</strong></p>
+  <p><strong>Click the image to watch the demo on YouTube</strong></p>
 </div>
 
 ---
@@ -42,7 +42,20 @@ The goal is not to declare a universally "safe" place on Mars. NeuroNexus provid
 * USGS route snapshot + exports: route visualisation against USGS SIM 3292 geology plus JSON/CSV exports.
 * Mars Intelligence: Google Gemini interprets structured NeuroNexus results and explains trade-offs; Gemini does not generate route geometry or alter deterministic numerical results.
 
-## 🆕 NEW FEATURES — Mission Console v2
+## Mission Console v3: one active sol, a radial HUD, exports everywhere
+
+Captured by the Playwright e2e tour (`node frontend/e2e/screenshots.mjs`), which also asserts each behavior shown (12 checks, zero page errors). Production build, live API, 1920 × 1080.
+
+| | |
+|---|---|
+| ![Console overview](assets/screenshots/v3/01_console_overview.png) **Console overview.** Dark-cyan HUD, Switzer type at 12 px minimum, no emoji, no truncated text: long product ids and methods live in popovers. Browser Optimization is OFF (FULL FIDELITY) until you turn it on. | ![Radial Feature Wheel](assets/screenshots/v3/02_radial_wheel_subwheel.png) **Radial Feature Wheel.** Double right-click anywhere (two clicks within 300 ms; Shift + right-click keeps the browser menu, W opens it at the center). Eight sectors; hovering one expands its outer arc of sub-features, each a Command Index action. Unavailable actions say why in the hub. |
+| ![THEMIS heatmap at the active sol](assets/screenshots/v3/03_thermal_sol_synced.png) **One activeSol, end to end.** The top-bar ACTIVE SOL (MY34 scenario sol) drives the THEMIS heatmap's season column and readout, the dust scenario and its 2D/3D overlays, Curiosity's position on the map, and the conditions card (dust τ, noon sun, day length, direct beam, EVA dust class). At sol 400 (Ls 196°, 2018 global storm) the THEMIS column has no samples, and the card says so instead of interpolating. | ![Layers and legend](assets/screenshots/v3/04_layers_and_legend.png) **Categorized layers and the dynamic legend.** Every layer and legend key carries its source tag; the legend lists only active layers. |
+| ![MARSWALK at sol 100](assets/screenshots/v3/05_marswalk_mode.png) **MARSWALK at sol 100.** The route decision is shown with the modeled dust at the active sol (τ 0.31, WITHIN): the combined status stays REVIEW REQUIRED (slope segments). | ![MARSWALK at sol 400](assets/screenshots/v3/06_marswalk_storm_sol.png) **Same plan, storm sol.** Scrubbing to sol 400 refetches conditions (`GET /conditions?site=gale&sol=400`): τ 4.62 [EXCEED] raises the decision to EXCEEDS PLANNING LIMIT. Planning limits are not safety limits. |
+| ![Browser Optimization](assets/screenshots/v3/07_browser_optimization.png) **Browser Optimization is opt-in.** One [BROWSER OPTIMIZATION] switch in the Menu (and on the wheel) turns on worker math, the IndexedDB tile cache, WebGL suspension and marker culling for 4 GB devices. Every computed number is identical either way (parity-tested). | ![Command Index exports](assets/screenshots/v3/08_command_index_exports.png) **Everything exports.** EVA brief (JSON v4: server brief + plan + conditions at the active sol), route GeoJSON (route, per-segment LineStrings with attributes, turnaround), CSV profile, printable brief, route comparison JSON/CSV, validation JSON + Markdown + chart PNGs, THEMIS + conditions snapshot JSON/CSV. Each carries `plan_id`, `active_sol`, `data_versions`, `retrieved_at`. |
+
+Palette: surfaces `#081014 / #091115 / #0d181e`, chrome `#1b313b / #29414b`, HiRISE and active glow `#75e6ff / #1a8fa8`, CTX `#4ea8de`, nominal `#8cf0b1`, MOLA `#6f858d`; gold `#ffc46b` only for review and coral-red `#ff647c` only for exceeds. Unit tests fail the build if an emoji returns to the UI source.
+
+## Mission Console v2 features
 
 Everything in this section is **new** in the `feature/mission-console-v2` release. Screenshots were captured from the production build of the running application (`npm run build` + `vite preview` against the live API). Design record: [docs/architecture/mission-console-v2.md](docs/architecture/mission-console-v2.md) · Deployment: [DEPLOYMENT.md](DEPLOYMENT.md).
 

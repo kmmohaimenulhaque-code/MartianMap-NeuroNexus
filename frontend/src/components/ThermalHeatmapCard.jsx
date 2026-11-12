@@ -13,11 +13,14 @@ import { useSol } from "../state/solStore";
 import { lsBin } from "../state/solMath";
 import { columnStats } from "../state/thermalStats";
 import Popover from "../ui/Popover";
+import { downloadText, thermalCsv, thermalSnapshot } from "../exports/exporters";
+import { useSolConditions } from "../state/useSolConditions";
 
 const RAMP = ["--nn-thermal-cold", "--nn-thermal-low", "--nn-thermal-mid", "--nn-thermal-high", "--nn-thermal-hot"];
 
 export default function ThermalHeatmapCard({ location, radiusKm = 50 }) {
   const { sol, seasonLs, label: solLabel } = useSol();
+  const conditions = useSolConditions(location?.latitude_deg, location?.longitude_deg);
   const [state, setState] = useState({ key: "", data: null, error: "" });
   const lat = location?.latitude_deg;
   const lon = location?.longitude_deg;
@@ -93,7 +96,7 @@ export default function ThermalHeatmapCard({ location, radiusKm = 50 }) {
           <text key={h} x={0} y={(h / rowH) * cell + 9} className="nn-thermal-axis">{`${h}h`}</text>
         ))}
         {[0, 90, 180, 270].map((ls) => (
-          <text key={ls} x={30 + (ls / colDeg) * cell} y={rows * cell + 12} className="nn-thermal-axis">{`Ls ${ls}`}</text>
+          <text key={ls} x={30 + (ls / colDeg) * cell} y={rows * cell + 12} className="nn-thermal-axis">{ls === 0 ? "Ls 0" : String(ls)}</text>
         ))}
       </svg>
       <div className="nn-thermal-bar" aria-label={`Color bar ${lo.toFixed(0)} to ${hi.toFixed(0)} K`}>
@@ -107,6 +110,23 @@ export default function ThermalHeatmapCard({ location, radiusKm = 50 }) {
           {nearest.product_id} at {nearest.distance_km} km · {nearest.tb_k} K · Ls {nearest.ls_deg}° · LST {nearest.lst_h} h. Brightness
           temperature from Mars Odyssey THEMIS IR-PBT, historical; not surface temperature and not current weather.
         </Popover>
+        <span className="nn-export-row">
+          {["json", "csv"].map((fmt) => (
+            <button
+              key={fmt}
+              type="button"
+              className="nn-pop-trigger"
+              onClick={() => {
+                const snap = thermalSnapshot({ ...data, radius_km: radiusKm }, location, { sol, ls: conditions.ls, tau: conditions.tau, solar: conditions.solar }, { sol, seasonLs });
+                const name = `neuronexus_thermal_sol${sol}_${lat.toFixed(3)}_${lon.toFixed(3)}.${fmt}`;
+                if (fmt === "json") downloadText(name, JSON.stringify(snap, null, 2));
+                else downloadText(name, thermalCsv(snap), "text/csv;charset=utf-8");
+              }}
+            >
+              EXPORT {fmt.toUpperCase()}
+            </button>
+          ))}
+        </span>
       </div>
     </div>
   );

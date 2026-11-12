@@ -2,18 +2,12 @@ import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } fro
 
 import MarsMap from "./components/mars/MarsMap";
 import MarsTopographicMap from "./components/mars/MarsTopographicMap";
-import MarsBriefingPanel from "./components/mars/MarsBriefingPanel";
-import RoverPhotosPanel from "./components/mars/RoverPhotosPanel";
-import SiteSciencePanel from "./components/mars/SiteSciencePanel";
-import MissionOpsPanel from "./components/mission/MissionOpsPanel";
 
 import AiRouteDesigner from "./components/route/AiRouteDesigner";
 import UsgsRouteSnapshot from "./components/mars/UsgsRouteSnapshot";
 import OrbitalTrackingPanel from "./components/mission/OrbitalTrackingPanel";
 import MarsIntelligence from "./components/mission/MarsIntelligence";
 
-import DustScenarioPanel from "./panels/DustScenarioPanel";
-import SiteMorphologyPanel from "./panels/SiteMorphologyPanel";
 import RouteComparisonWorkspace, { MAX_COMPARE_ROUTES } from "./route/RouteComparisonWorkspace";
 import CommandIndex from "./command/CommandIndex";
 import { SHORTCUTS, TEAM_URL, buildRegistry } from "./features/registry";
@@ -54,9 +48,9 @@ import { buildThermalPanel } from "./utils/thermalPanel";
 import BrowserOptimizationPanel from "./components/BrowserOptimizationPanel";
 import { perfStore } from "./perf/perfStore";
 import { usePerfSettings } from "./perf/usePerf";
-import ThermalHeatmapCard from "./components/ThermalHeatmapCard";
-import SolConditionsCard from "./components/SolConditionsCard";
 import { SolProvider } from "./state/SolContext";
+import RadialFeatureWheel from "./components/RadialFeatureWheel";
+import { buildConsoleHandlers } from "./features/consoleHandlers";
 import CategorizedLayersMenu from "./components/CategorizedLayersMenu";
 import DynamicMapLegend from "./components/DynamicMapLegend";
 import ContextLayers from "./components/mars/ContextLayers";
@@ -67,9 +61,11 @@ import SourcesDrawer from "./sources/SourcesDrawer";
 import { SourcesContext } from "./sources/SourcesContext";
 
 import { MAX_CHECKLIST_POINTS, MAX_CHECKLIST_WORDS, MAX_ROUTE_POINTS, countWords, createId, downloadTextFile, isNetworkFailure, normaliseLocation, normaliseLongitude, readStorage, writeStorage } from "./utils/appHelpers";
-import { Metric, Panel } from "./components/console/Panel";
 import MissionMenu from "./components/console/MissionMenu";
 import RouteConsole from "./components/console/RouteConsole";
+import RightColumn from "./components/console/RightColumn";
+import EvidenceBar from "./components/console/EvidenceBar";
+import LeftColumn from "./components/console/LeftColumn";
 import TopBar from "./components/console/TopBar";
 
 import "./ui/tokens.css";
@@ -90,19 +86,12 @@ const MAX_SOL = 668;
 
 const STORAGE_KEYS = {
   routes: STORAGE_KEY_V4,
-
   sol: "neuronexus.consoleSol.v1",
-
   customPlaces: "neuronexus.customPlaces.v2",
-
   safeHavens: "neuronexus.safeHavens.v2",
-
   todo: "neuronexus.missionTodo.v2",
-
   checklist: "neuronexus.missionChecklist.v2",
-
   missionProfile: "neuronexus.missionProfile.v1",
-
   routeObjectives: "neuronexus.routeObjectives.v1",
 };
 
@@ -1337,9 +1326,7 @@ export default function App() {
       ...current,
       {
         id: createId("check"),
-
         text: "",
-
         done: false,
       },
     ]);
@@ -1755,9 +1742,19 @@ export default function App() {
     "backend-status": { run: () => setNotice(backendConnected ? "Backend online (FastAPI, port 8002)." : "Backend unreachable — start uvicorn on port 8002.") },
     about: { run: () => setCommandIndex({ open: true, tab: "team" }) },
     "meet-the-team": { run: () => window.open(TEAM_URL, "_blank", "noopener,noreferrer") },
+    ...buildConsoleHandlers({ appMode, switchMode, setLayerVisibility, setLegendOpen, scrollToPanel, setCommandIndex, setNotice, setSol, setDustPlaying }),
   };
 
   const commandRegistry = buildRegistry(commandHandlers);
+  const runCommand = (id) => {
+    const command = commandRegistry.find((c) => c.id === id);
+    if (command?.ok) command.run();
+    else setNotice(command?.reason ?? `Unknown action ${id}`);
+  };
+  const commandAvailable = (id) => {
+    const command = commandRegistry.find((c) => c.id === id);
+    return command?.ok ? true : (command?.reason ?? "Not wired");
+  };
   const commandRegistryRef = useRef(commandRegistry);
 
   useEffect(() => {
@@ -2038,35 +2035,20 @@ export default function App() {
           role="alert"
           style={{
             position: "fixed",
-
             top: "78px",
-
             left: "50%",
-
             transform: "translateX(-50%)",
-
             zIndex: 4100,
-
             maxWidth: "min(760px, calc(100vw - 24px))",
-
             display: "flex",
-
             alignItems: "center",
-
             gap: "10px",
-
             padding: "8px 10px",
-
             border: "1px solid rgba(255,138,138,0.32)",
-
             background: "rgba(36,14,16,0.95)",
-
             color: "#ffb0b0",
-
             fontFamily: "var(--nn-font)",
-
             fontSize: "13px",
-
             boxShadow: "0 10px 30px rgba(0,0,0,0.45)",
           }}
         >
@@ -2097,153 +2079,17 @@ export default function App() {
         </Suspense>
       ) : (
       <div className="workspace">
-        <aside className="left-column">
-          <Panel eyebrow="GEOGRAPHY / NOMENCLATURE" title="Selected site" sources={["USGS_IAU_GAZETTEER", "MOLA_MEGDR"]}>
-            <div className="place-title">
-              <span className="signal">●</span>
-
-              <div>
-                <h3>{loading && !selectedLocation ? "Loading" : displayName}</h3>
-
-                <p>{displayType}</p>
-              </div>
-            </div>
-
-            <div className="coordinate-block">
-              <span>LATITUDE</span>
-
-              <strong>{selectedLocation ? `${Number(selectedLocation.latitude_deg).toFixed(4)}°` : "—"}</strong>
-
-              <span>LONGITUDE</span>
-
-              <strong>{selectedLocation ? `${Number(selectedLocation.longitude_deg).toFixed(4)}°E` : "—"}</strong>
-            </div>
-
-            <div className="rule" />
-
-            <Metric
-              label="Selection source"
-              value={namedFeature ? "USGS / IAU FEATURE" : activeCustomPlace ? "USER PLACE" : selectedLocation ? "COORDINATE SELECTION" : "—"}
-            />
-
-            {namedFeature ? (
-              <>
-                <Metric
-                  label="Diameter"
-                  value={namedFeature.diameter_km == null ? "—" : `${Number(namedFeature.diameter_km).toFixed(2)} km`}
-                  detail="USGS / IAU nomenclature"
-                />
-
-                <Metric label="Approval" value={namedFeature.approval_status} />
-
-                <Metric label="Quadrangle" value={namedFeature.quadrangle_name} detail={namedFeature.quadrangle_code} />
-              </>
-            ) : (
-              <div
-                style={{
-                  marginTop: "4px",
-
-                  padding: "9px",
-
-                  border: "1px dashed #29414b",
-
-                  background: "#091115",
-
-                  color: "#71848c",
-
-                  fontSize: "13px",
-
-                  lineHeight: 1.5,
-                }}
-              >
-                Exact coordinate selected. Nearby USGS nomenclature, when available, is context only.
-              </div>
-            )}
-          </Panel>
-
-          <Panel eyebrow="IMAGERY / ROVER" title="Applicable rover photos" sources={["NASA_IMAGE_LIBRARY"]}>
-            <RoverPhotosPanel feature={namedFeature} />
-          </Panel>
-
-          <Panel eyebrow="THERMAL / NASA THEMIS" title="Historical evidence" id="panel-thermal" sources={["THEMIS"]}>
-            {!thermalPanel.hasHistorical && (
-              <div className="thermal-note" role="status">
-                <strong>THERMAL DATA UNAVAILABLE</strong>
-                <div>{loading ? "Loading..." : thermalPanel.unavailableDetail}</div>
-              </div>
-            )}
-
-            <Metric
-              label={thermalPanel.nearest.label}
-              value={thermalPanel.nearest.value}
-              detail={thermalPanel.nearest.detail}
-            />
-
-            <div className="thermal-stat-grid">
-              {thermalPanel.stats.map(({ key, ...metric }) => <Metric key={key} {...metric} />)}
-            </div>
-
-            <div className="evidence-grid">
-              <Metric label="Evidence" value={thermalPanel.evidence.label} />
-
-              <Metric label="Score" value={thermalPanel.evidence.score} />
-
-              <Metric label="Evidence observations" value={thermalPanel.evidence.observationCount} />
-
-              <Metric label="Evidence years" value={thermalPanel.evidence.years} />
-
-              <Metric label="Historical radius samples" value={thermalPanel.coverage.sampleCount} />
-
-              <Metric label="Valid temperature samples" value={thermalPanel.coverage.validSampleCount} />
-
-              <Metric label="Search radius" value={thermalPanel.coverage.searchRadius} />
-
-              <Metric label="Historical radius years" value={thermalPanel.coverage.years} />
-
-              <Metric
-                label="Seasonal coverage"
-                value={thermalPanel.coverage.seasonalCoverage}
-                detail={thermalPanel.coverage.seasonalBins}
-              />
-            </div>
-
-            {thermalPanel.conditions.length > 0 && (
-              <div className="thermal-condition-block">
-                <div className="thermal-condition-title">SOURCE-CLASSIFIED CONDITIONS</div>
-
-                {thermalPanel.conditions.map((condition) => (
-                  <div key={condition.key}>
-                    <div className="thermal-condition-title">{condition.label}</div>
-                    <div className="thermal-stat-grid">
-                      {condition.stats.map(({ key, ...metric }) => <Metric key={key} {...metric} />)}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <div className="thermal-note">{thermalPanel.conditionNote}</div>
-
-            <div className="thermal-note">
-              Aggregate statistics cover historical THEMIS brightness-temperature observations within the stated search radius. The nearest reference is shown separately; these are not exact-coordinate measurements or current Martian weather.
-            </div>
-
-            <ThermalHeatmapCard location={selectedLocation} />
-            <SolConditionsCard lat={selectedLocation?.latitude_deg} lon={selectedLocation?.longitude_deg} />
-
-            <div className="source-note">
-              <span>SOURCE</span>
-
-              <strong>{thermal?.product_id ?? "NASA THEMIS IR-PBT"}</strong>
-            </div>
-          </Panel>
-
-          <Panel eyebrow="ENVIRONMENT / SOLAR" title="Solar geometry" id="panel-solar" sources={["NEURONEXUS_SOLAR_GEOMETRY"]}>
-            <Metric label="Areocentric longitude" value={solar ? `${Number(solar.areocentric_longitude_deg).toFixed(2)}°` : "—"} detail="Ls" />
-
-            <Metric label="Observation local solar time" value={thermal ? `${Number(thermal.local_solar_time_hours).toFixed(2)} h` : "—"} />
-          </Panel>
-        </aside>
+        <LeftColumn
+          activeCustomPlace={activeCustomPlace}
+          displayName={displayName}
+          displayType={displayType}
+          loading={loading}
+          namedFeature={namedFeature}
+          selectedLocation={selectedLocation}
+          solar={solar}
+          thermal={thermal}
+          thermalPanel={thermalPanel}
+        />
 
         <section className="site-field">
           <div className="field-header">
@@ -2447,168 +2293,29 @@ export default function App() {
           </div>
         </section>
 
-        <aside className="right-column">
-          <Panel eyebrow="ATMOSPHERE / NASA AMES" title="Dust scenario" id="panel-dust" sources={["NASA_AMES_MGCM"]}>
-            <DustScenarioPanel
-              location={selectedLocation}
-              sol={sol}
-              onSolChange={setSol}
-              onSelectCoordinate={handleSelectCoordinate}
-              fallbackDust={dust}
-              playing={dustPlaying}
-              onPlayingChange={setDustPlaying}
-            />
-          </Panel>
-
-          <Panel eyebrow="TERRAIN / NASA MOLA" title="Site morphology" id="panel-morphology" sources={["MOLA_MEGDR"]}>
-            <SiteMorphologyPanel location={selectedLocation} terrain={terrain} />
-          </Panel>
-
-          <Panel eyebrow="SITE SCIENCE / SURVIVAL" title="Material + habitability context" id="panel-site-science" sources={["USGS_SIM_3292", "NASA_CURIOSITY"]}>
-            <SiteSciencePanel science={siteScience} />
-          </Panel>
-
-          <Panel eyebrow="ASSESSMENT / EVIDENCE" title="Interpretation" id="panel-interpretation" sources={["NN_TERRAIN_RISK_PROXY"]}>
-            <div className="assessment-status">
-              <span>STATUS</span>
-
-              <strong>{environment?.assessment?.assessment_status ?? "—"}</strong>
-            </div>
-
-            <div className="source-note">
-              <span>THERMAL</span>
-
-              <strong>Nearest historical observation</strong>
-            </div>
-
-            <div className="source-note">
-              <span>DUST</span>
-
-              <strong>Modeled MY34 scenario</strong>
-            </div>
-
-            <div className="source-note">
-              <span>TERRAIN</span>
-
-              <strong>NASA MOLA MEGDR</strong>
-            </div>
-
-            {environment?.assessment?.warnings?.length > 0 && (
-              <div className="warning-box">
-                {environment.assessment.warnings.map((warning) => (
-                  <p key={warning}>{warning}</p>
-                ))}
-              </div>
-            )}
-
-            {siteScience?.nearest_feature_context?.feature_name && (
-              <div
-                style={{
-                  marginTop: "9px",
-
-                  padding: "9px 10px",
-
-                  border: "1px solid rgba(117,230,255,0.08)",
-
-                  background: "#081014",
-
-                  color: "#667a82",
-
-                  fontSize: "13px",
-
-                  lineHeight: 1.45,
-                }}
-              >
-                <span
-                  style={{
-                    color: "#75e6ff",
-                  }}
-                >
-                  NEAREST NOMENCLATURE CONTEXT
-                </span>
-
-                <strong
-                  style={{
-                    display: "block",
-
-                    marginTop: "4px",
-
-                    color: "#a8bbc1",
-                  }}
-                >
-                  {siteScience.nearest_feature_context.feature_name}
-                </strong>
-
-                <span>Context only. It is not the selected coordinate.</span>
-              </div>
-            )}
-          </Panel>
-
-          <Panel eyebrow="MISSION / OPERATIONS" title="Crewed Mars console" id="panel-crew" sources={["NN_MISSION_SIM"]}>
-            <MissionOpsPanel
-              consoleState={missionConsoleState}
-              profile={missionProfile}
-              onProfileChange={setMissionProfile}
-              onOpenOrbital={handleOpenOrbital}
-            />
-          </Panel>
-
-          <Panel eyebrow="BRIEFING / NASA FEED" title="Mars reference feed" id="panel-feed" sources={["NASA_MARS"]}>
-            <MarsBriefingPanel />
-          </Panel>
-        </aside>
+        <RightColumn
+          dust={dust}
+          dustPlaying={dustPlaying}
+          environment={environment}
+          handleOpenOrbital={handleOpenOrbital}
+          handleSelectCoordinate={handleSelectCoordinate}
+          missionConsoleState={missionConsoleState}
+          missionProfile={missionProfile}
+          selectedLocation={selectedLocation}
+          setDustPlaying={setDustPlaying}
+          setMissionProfile={setMissionProfile}
+          setSol={setSol}
+          siteScience={siteScience}
+          sol={sol}
+          terrain={terrain}
+        />
       </div>
       )}
 
-      <footer className="evidence-bar">
-        <div>
-          <span>USGS</span>
-
-          <strong>2,052 REGISTERED FEATURES</strong>
-        </div>
-
-        <div>
-          <span>THEMIS</span>
-
-          <strong>HISTORICAL IR-PBT</strong>
-        </div>
-
-        <div>
-          <span>GCM</span>
-
-          <strong>AMES MY34</strong>
-        </div>
-
-        <div>
-          <span>MOLA</span>
-
-          <strong>128 PX / DEG</strong>
-        </div>
-
-        <div>
-          <span>MEDIA</span>
-
-          <strong>NASA IMAGE LIBRARY</strong>
-        </div>
-
-        <div className="evidence-warning">
-          <span>DATA MODEL</span>
-
-          <strong>Observed · Modeled · Derived · Simulated</strong>
-
-          <button type="button" className="evidence-sources" onClick={() => setSourcesDrawer({ open: true, focusId: null })}>
-            [SOURCE LEDGER]
-          </button>
-        </div>
-
-        <div className="team-credit">
-          <img src="/team-neuronexus-icon.png" alt="" width="18" height="18" />
-          <span>© {new Date().getFullYear()} TEAM NEURONEXUS · NASA SPACE APPS CHALLENGE 2026</span>
-          <a href={TEAM_URL} target="_blank" rel="noreferrer">
-            MEET THE TEAM ↗
-          </a>
-        </div>
-      </footer>
+      <EvidenceBar
+        TEAM_URL={TEAM_URL}
+        setSourcesDrawer={setSourcesDrawer}
+      />
 
       {map3dOpen && (
       <Suspense fallback={<div className="nn-loading">Loading the 3D globe…</div>}>
@@ -2753,6 +2460,7 @@ export default function App() {
       )}
 
       <SourcesDrawer open={sourcesDrawer.open} focusId={sourcesDrawer.focusId} onClose={() => setSourcesDrawer({ open: false, focusId: null })} />
+      <RadialFeatureWheel onAction={runCommand} availability={commandAvailable} />
     </main>
     </SourcesContext.Provider>
     </SolProvider>

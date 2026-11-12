@@ -19,7 +19,6 @@
     { "id": "save-place", "category": "site", "label": "Save current place", "description": "Store the selected location as a custom place.", "how": "Select a site, then choose Save current place.", "where": "Route console under the 2D map" },
     { "id": "add-safe-haven", "category": "site", "label": "Add Safe Haven", "description": "Mark the selected location as a user-defined Safe Haven (planning retreat point, not certified safe).", "how": "Select a site, then choose Add Safe Haven.", "where": "Route console under the 2D map" },
     { "id": "sync-usgs", "category": "site", "label": "Sync USGS scientific map", "description": "Centre the USGS SIM 3292 scientific map on the selected site.", "how": "Select a site; the USGS map syncs automatically, or run this command to re-sync.", "where": "USGS scientific map panel" },
-
     { "id": "route-mode", "category": "route", "label": "Toggle route mode", "shortcut": "R", "description": "When on, clicks on the 2D map or 3D globe add waypoints instead of selecting sites.", "how": "Turn on route mode, click waypoints, then Analyze.", "where": "Route console under the 2D map" },
     { "id": "add-selected-waypoint", "category": "route", "label": "Add selected site as waypoint", "description": "Append the currently selected site to the route.", "where": "Route console" },
     { "id": "analyze-route", "category": "route", "label": "Analyze route", "description": "Compute the haversine distance and the MOLA terrain at each waypoint.", "where": "Route console" },
@@ -27,7 +26,6 @@
     { "id": "clear-route", "category": "route", "label": "Clear route", "where": "Route console" },
     { "id": "save-route", "category": "route", "label": "Save route", "shortcut": "S", "description": "Save the analysed route. Saving starts an along-track MOLA evaluation (MIN/MEAN/MAX elevation, slope, roughness, profile).", "how": "Analyze a route with at least two waypoints, then Save route and name it.", "where": "Route console" },
     { "id": "ai-route-design", "category": "route", "label": "AI Route Designer", "shortcut": "A", "description": "Deterministic multi-objective route candidates (EVA, terrain, science, operational) over NASA MOLA terrain.", "how": "Set a start and a destination, adjust objective weights, Generate, then Apply a candidate.", "where": "Top bar, 2D map, 3D toolbar" },
-
     { "id": "compare-routes", "category": "saved", "label": "Compare saved routes", "shortcut": "C", "description": "Side-by-side comparison of up to four saved routes: map, elevation profiles, along-track MIN/MEAN/MAX table with best and worst marked, per-route and combined USGS snapshots, CSV/JSON export.", "how": "Save at least two routes, then Compare saved routes (also available from the 3D toolbar).", "where": "Route console, 3D toolbar, Command Index" },
     { "id": "routes-3d", "category": "saved", "label": "Show saved routes on 3D globe", "description": "Open the 3D view with the ROUTES panel: every saved route drawn in its colour, with show/hide, fly-to, add-to-compare and USGS snapshot.", "where": "3D view → ROUTES" },
     { "id": "route-projection", "category": "saved", "label": "Route Projection", "description": "Open the 3D globe in projection mode: tick saved routes and each one is projected bold, lifted above the terrain with its name; the camera reframes to show every projected route.", "where": "3D toolbar → ◎ ROUTE PROJECTION" },
@@ -35,11 +33,9 @@
     { "id": "save-candidates", "category": "saved", "label": "Save AI route candidates", "description": "Save every AI Route Designer candidate as a named, reproducible route (single candidates: SAVE AS ROUTE on each card).", "where": "AI Route Designer" },
     { "id": "verify-routes", "category": "saved", "label": "Verify route reproducibility", "description": "AI routes: replay the stored generation request and compare geometry vertex by vertex. Manual routes: re-run the deterministic MOLA evaluation and compare the statistics.", "where": "Command Index, comparison cards" },
     { "id": "reevaluate-routes", "category": "saved", "label": "Re-evaluate saved routes", "description": "Re-run the along-track MOLA evaluation for every saved route (for example after the backend was offline).", "where": "Command Index" },
-
     { "id": "mars-intelligence", "category": "analysis", "label": "Mars Intelligence assistant", "shortcut": "I", "description": "AI assistant for this mission, Mars science, missions and history, and how to use NeuroNexus. Shows the tools it used and its sources; optional web search.", "where": "Top bar" },
     { "id": "hazard-overview", "category": "analysis", "label": "Site hazard & evidence assessment", "description": "Environment assessment status, warnings and data links for the selected site.", "where": "Right column → Interpretation" },
     { "id": "site-science", "category": "analysis", "label": "Site science & habitability", "description": "Material and habitability context for the selected site.", "where": "Right column → Material + habitability context" },
-
     { "id": "dust-panel", "category": "environment", "label": "Dust scenario graphs", "description": "Modeled NASA Ames MY34 dust: opacity over all 668 sols, dust-top height, global dust map and the sol scrubber.", "where": "Right column → Dust scenario" },
     { "id": "dust-play", "category": "environment", "label": "Play / pause sol animation", "description": "Animate the console sol through Mars Year 34.", "where": "Dust scenario panel" },
     { "id": "sol-next", "category": "environment", "label": "Next sol", "shortcut": "]", "where": "Dust scenario panel" },
@@ -47,24 +43,19 @@
     { "id": "sol-peak", "category": "environment", "label": "Jump to the site's dustiest sol", "description": "Set the sol to this site's MY34 opacity peak (the 2018 global dust storm).", "where": "Command Index" },
     { "id": "morphology", "category": "environment", "label": "Site morphology statistics", "description": "Elevation, slope and roughness AT SITE plus MIN/MEAN/MAX over a 2, 4, 10 or 20 km MOLA window.", "where": "Right column → Site morphology" },
     { "id": "thermal", "category": "environment", "label": "THEMIS thermal evidence", "description": "Historical NASA THEMIS brightness temperatures near the site (nearest value, min/max/mean, seasonal coverage).", "where": "Left column → Historical evidence" },
-
     { "id": "map-3d", "category": "views", "label": "3D Mars globe", "shortcut": "3", "description": "ArcGIS SceneView in Mars 2000 coordinates with terrain, geology, landing sites, rover traverses, exploration zones, overlays and saved routes.", "where": "2D map → 3D MAP" },
     { "id": "exploration-zones", "category": "views", "label": "Potential exploration zones", "description": "Candidate human exploration zones and regions of interest in the 3D view.", "where": "3D toolbar → ◇" },
     { "id": "focus-usgs", "category": "views", "label": "USGS scientific map", "description": "Scroll to the USGS SIM 3292 scientific map panel.", "where": "Centre, right map panel" },
-
     { "id": "crew-console", "category": "ops", "label": "Crewed Mars console", "description": "Mission profile, crew, EVA, life support and resources (derived and simulated planning state).", "where": "Right column → Crewed Mars console" },
     { "id": "orbital-tracking", "category": "ops", "label": "Orbital tracking", "shortcut": "O", "description": "Live NASA/JPL near-Mars small-body close approaches. Awareness only, not impact predictions.", "where": "Top bar" },
     { "id": "nasa-feed", "category": "ops", "label": "NASA Mars reference feed", "description": "Recent NASA Science Mars items.", "where": "Right column → Mars reference feed" },
-
     { "id": "export-json", "category": "data", "label": "Export mission JSON", "description": "Everything: selection, environment, routes, candidates, console state, provenance." },
     { "id": "export-csv", "category": "data", "label": "Export complete CSV" },
     { "id": "export-route-csv", "category": "data", "label": "Export route CSV", "description": "Per-waypoint table of the active or saved route." },
     { "id": "export-comparison", "category": "data", "label": "Export route comparison CSV", "description": "Every saved route's along-track statistics." },
     { "id": "print", "category": "data", "label": "Print / save as PDF", "shortcut": "P" },
     { "id": "provenance", "category": "data", "label": "Data provenance ledger", "description": "Every dataset NeuroNexus uses, with its source and evidence class (download as JSON)." },
-
     { "id": "field-notes", "category": "workspace", "label": "Field notes & checklist", "shortcut": "N", "description": "Persistent mission objective notes and a ten-item checklist (stored in this browser)." },
-
     { "id": "shortcuts", "category": "system", "label": "Keyboard shortcuts", "shortcut": "?", "description": "Ctrl/Cmd+K opens the Command Index anywhere. Single-key shortcuts work when no text field is focused." },
     { "id": "backend-status", "category": "system", "label": "Backend status", "description": "Whether the NeuroNexus backend (FastAPI, port 8002) is reachable." },
     { "id": "about", "category": "system", "label": "About NeuroNexus", "description": "Project purpose, data sources and the NASA Space Apps Challenge 2026 context." },
@@ -73,6 +64,28 @@
     { "id": "marswalk-demo", "category": "views", "label": "Gale Crater Marswalk demo", "description": "Plan a 4-hour EVA from Curiosity's latest position to a target 1.2 km west, at 1 m.", "where": "[MENU] → Quick start" },
     { "id": "mission-manual", "category": "system", "label": "Mission Operations Manual", "description": "Quick starts, guides, live data status, the source ledger and Browser Optimization.", "where": "Top bar → [MENU]" },
     { "id": "sources-ledger", "category": "data", "label": "Source ledger", "description": "Browse, filter and export the canonical source ledger every source tag resolves to.", "where": "Footer → SOURCE LEDGER, any tag → View in ledger" },
-    { "id": "browser-optimization", "category": "system", "label": "Browser Optimization", "description": "Presets (AUTO, LOW-RAM / 4 GB, MAX FIDELITY), worker math, lazy loading, WebGL suspension, canvas culling and a 150 MB tile cache, with live FPS and memory telemetry.", "where": "[MENU] → Browser Optimization, top-bar [PERF] pill, or the Radial Feature Wheel" }
+    { "id": "browser-optimization", "category": "system", "label": "Browser Optimization", "description": "OFF by default (MAX FIDELITY). Turn it on for 4 GB RAM or low-end devices: worker math, IndexedDB tile cache, WebGL suspension and canvas culling, with live FPS and memory telemetry. Numbers never change.", "where": "[MENU] → Browser Optimization, top-bar [PERF] pill, or the Radial Feature Wheel" },
+    { "id": "global-console", "category": "views", "label": "Global console", "description": "Return to the global mission console (2D map, USGS geology, dust and THEMIS panels).", "where": "Top bar → GLOBAL CONSOLE · Radial Feature Wheel (double right-click)" },
+    { "id": "rover-replay", "category": "route", "label": "Rover replay", "description": "Turn on Curiosity's traverse and play the active sol forward: the rover marker moves to where Curiosity was at each MY34 sol.", "where": "Radial Feature Wheel (double right-click)" },
+    { "id": "ladder-full", "category": "route", "label": "Terrain ladder: full (HiRISE 1 m)", "description": "MARSWALK terrain ladder HiRISE → CTX → MOLA, 1 m where HiRISE exists.", "where": "MARSWALK → TERRAIN LADDER · Radial Feature Wheel (double right-click)" },
+    { "id": "ladder-ctx", "category": "route", "label": "Terrain ladder: CTX + MOLA (20 m)", "description": "MARSWALK without HiRISE: CTX 20 m, MOLA beyond.", "where": "MARSWALK → TERRAIN LADDER · Radial Feature Wheel (double right-click)" },
+    { "id": "ladder-mola", "category": "route", "label": "Terrain ladder: MOLA only (463 m)", "description": "MARSWALK on MOLA 463 m only, to see what coarse terrain hides.", "where": "MARSWALK → TERRAIN LADDER · Radial Feature Wheel (double right-click)" },
+    { "id": "slope-baseline", "category": "route", "label": "Slope baseline overlay", "description": "MARSWALK slope overlay at the rung's baseline (3 m on HiRISE).", "where": "MARSWALK → OVERLAYS · Radial Feature Wheel (double right-click)" },
+    { "id": "layer-topography", "category": "views", "label": "Layer: topography", "description": "Toggle HiRISE DTM footprints over the MOLA basemap.", "where": "LAYERS ▾ → Topography · Radial Feature Wheel (double right-click)" },
+    { "id": "layer-geology", "category": "views", "label": "Layer: geology", "description": "Toggle IAU named features and focus the USGS SIM 3292 geologic map.", "where": "LAYERS ▾ → Geology · Radial Feature Wheel (double right-click)" },
+    { "id": "layer-dust", "category": "views", "label": "Layer: atmosphere / dust", "description": "Toggle the MY34 dust optical depth tint (follows the active sol).", "where": "LAYERS ▾ → Atmosphere · Radial Feature Wheel (double right-click)" },
+    { "id": "layer-ground-truth", "category": "views", "label": "Layer: ground truth", "description": "Toggle Curiosity and Perseverance traverses and waypoints (NASA MMGIS).", "where": "LAYERS ▾ → Missions · Radial Feature Wheel (double right-click)" },
+    { "id": "toggle-legend", "category": "views", "label": "Toggle map legend", "description": "Show or hide the legend for the active layers.", "where": "MAP LEGEND ▾ · Radial Feature Wheel (double right-click)" },
+    { "id": "sol-scrubber", "category": "environment", "label": "Active sol scrubber", "description": "Focus the top-bar ACTIVE SOL slider; every panel follows it (arrow keys step one sol).", "where": "Top bar → ACTIVE SOL · Radial Feature Wheel (double right-click)" },
+    { "id": "rad-weather", "category": "environment", "label": "RAD and weather conditions", "description": "Open MARSWALK conditions: archived RAD dose rate, REMS outreach line, dust and solar geometry at the active sol.", "where": "MARSWALK → CONDITIONS · Radial Feature Wheel (double right-click)" },
+    { "id": "validation-gale", "category": "data", "label": "Gale validation", "description": "MARSWALK at Gale with the V1–V7 validation scorecard.", "where": "MARSWALK → VALIDATION · Radial Feature Wheel (double right-click)" },
+    { "id": "validation-jezero", "category": "data", "label": "Jezero validation", "description": "MARSWALK at Jezero (out-of-sample) with its validation scorecard.", "where": "MARSWALK → VALIDATION · Radial Feature Wheel (double right-click)" },
+    { "id": "verify-plan", "category": "data", "label": "Verify plan", "description": "Re-run the current MARSWALK plan and compare plan_ids (same request + data versions → same plan).", "where": "MARSWALK · Radial Feature Wheel (double right-click)" },
+    { "id": "export-eva-brief", "category": "data", "label": "Export EVA brief (JSON v4)", "description": "Server brief (schema-checked) + plan + conditions at the active sol + provenance.", "where": "MARSWALK → EXPORT BRIEF · Radial Feature Wheel (double right-click)" },
+    { "id": "export-geojson", "category": "data", "label": "Export route GeoJSON", "description": "Route LineString, one LineString per segment with its attributes, and the turnaround point.", "where": "MARSWALK → EXPORT GEOJSON · Radial Feature Wheel (double right-click)" },
+    { "id": "export-csv-profile", "category": "data", "label": "Export CSV profile", "description": "Along-route profile table with a provenance header.", "where": "MARSWALK → EXPORT CSV PROFILE · Radial Feature Wheel (double right-click)" },
+    { "id": "export-validation", "category": "data", "label": "Export validation report", "description": "Gale and Jezero V1–V7 as JSON and Markdown, plus the chart PNGs.", "where": "MARSWALK → VALIDATION · Radial Feature Wheel (double right-click)" },
+    { "id": "command-index", "category": "system", "label": "Command index", "description": "Every capability of the console, searchable.", "where": "Top bar → index icon (Ctrl/Cmd+K) · Radial Feature Wheel (double right-click)" },
+    { "id": "radial-wheel", "category": "system", "label": "Radial Feature Wheel", "description": "Tactical HUD ring: double right-click anywhere (Shift + right-click keeps the browser menu). W opens it at the center.", "where": "Double right-click · W", "shortcut": "W" }
   ]
 }

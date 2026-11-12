@@ -34,3 +34,4 @@ tools/fetch_rad.py
 tests/test_rad_parser.py
 tools/gen_parity_fixture.py
 tests/test_parity_fixture.py
+tests/test_conditions_sol.py

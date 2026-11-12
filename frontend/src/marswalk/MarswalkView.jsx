@@ -10,7 +10,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import SourceTag from "../sources/SourceTag";
 import ConditionsStrip from "./ConditionsStrip";
 import DecisionCard from "./DecisionCard";
-import { downloadBrief, openPrintableBrief } from "./evaBrief";
+import { openPrintableBrief } from "./evaBrief";
+import { exportEvaBrief, exportGeoJson, exportProfileCsv } from "../exports/actions";
+import { planStore } from "./planStore";
 import { marswalkApi } from "./marswalkApi";
 import { perfStore } from "../perf/perfStore";
 import { useSol } from "../state/solStore";
@@ -71,7 +73,8 @@ export default function MarswalkView({ demo, onNotice }) {
   const [groundTruth, setGroundTruth] = useState(Boolean(demo?.groundTruth));
   const [rover, setRover] = useState(null);
   const [conditions, setConditions] = useState(null);
-  const { missionSol } = useSol();
+  const solCtx = useSol();
+  const { missionSol } = solCtx;
   const [hoverIndex, setHoverIndex] = useState(null);
   const planAbort = useRef(null);
   const autoPlanned = useRef(false);
@@ -231,9 +234,34 @@ export default function MarswalkView({ demo, onNotice }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, evaHours]);
 
-  const exportBrief = async () => {
+  useEffect(() => planStore.set({ plan, conditions, site }), [plan, conditions, site]);
+
+  /* Requests from the Radial Feature Wheel / Command Index (ladder mode, overlay, site, scroll, verify). */
+  useEffect(() => {
+    const apply = () => {
+      const req = planStore.get().pending;
+      if (!req) return;
+      planStore.set({ pending: null });
+      if (req.type === "mode") changeMode(req.value);
+      if (req.type === "overlay") setOverlays((o) => ({ ...o, [req.value]: true }));
+      if (req.type === "site" && req.value !== site) changeSite(req.value);
+      if (req.type === "verify") {
+        if (!targets.length || !base) onNotice?.("Plan a Marswalk first, then VERIFY PLAN re-runs it.");
+        else {
+          runPlan(targets);
+          onNotice?.(`VERIFY: re-running plan ${plan?.plan_id ?? "(none yet)"}; the same request and data versions must return the same plan_id (V5).`);
+        }
+      }
+      if (req.scroll) setTimeout(() => document.getElementById(req.scroll)?.scrollIntoView({ behavior: "smooth", block: "start" }), 400);
+    };
+    apply();
+    return planStore.subscribe(apply);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [site, targets, base, plan]);
+
+  const runExport = async (fn) => {
     try {
-      await downloadBrief(plan.plan_id);
+      onNotice?.(await fn(solCtx));
     } catch (error) {
       onNotice?.(error.message);
     }
@@ -294,8 +322,14 @@ export default function MarswalkView({ demo, onNotice }) {
             <button type="button" disabled={!base || !targets.length} onClick={() => runPlan(targets, "straight")} title="Evaluate the straight line instead of searching">
               CHECK STRAIGHT LINE
             </button>
-            <button type="button" disabled={!plan?.plan_id} onClick={exportBrief}>
+            <button type="button" disabled={!plan?.plan_id} onClick={() => runExport(exportEvaBrief)}>
               EXPORT BRIEF (JSON)
+            </button>
+            <button type="button" disabled={!plan?.plan_id} onClick={() => runExport(exportGeoJson)}>
+              EXPORT GEOJSON
+            </button>
+            <button type="button" disabled={!plan?.plan_id} onClick={() => runExport(exportProfileCsv)}>
+              EXPORT CSV PROFILE
             </button>
             <button type="button" disabled={!plan?.plan_id} onClick={() => openPrintableBrief(plan.plan_id)}>
               PRINT BRIEF

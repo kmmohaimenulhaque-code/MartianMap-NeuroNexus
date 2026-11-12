@@ -37,8 +37,9 @@ describe("canonical ledger resolution", () => {
     expect(missing).toEqual([]);
   });
 
-  it("every App panel declares the sources it shows", () => {
-    const app = readFileSync(join(SRC, "App.jsx"), "utf8");
+  it("every console panel (App.jsx and components/console) declares the sources it shows", () => {
+    const consoleDir = join(SRC, "components", "console");
+    const app = [join(SRC, "App.jsx"), ...readdirSync(consoleDir).map((f) => join(consoleDir, f))].map((f) => readFileSync(f, "utf8")).join("\n");
     const panels = [...app.matchAll(/<Panel\s[^>]*>/g)].map((m) => m[0]);
     expect(panels.length).toBeGreaterThan(8);
     const ids = panels.flatMap((p) => [...(p.match(/sources=\{\[([^\]]*)\]\}/)?.[1] ?? "").matchAll(/"([A-Z0-9_]+)"/g)].map((m) => m[1]));

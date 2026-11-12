@@ -7,7 +7,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { lsAt, missionSolAt, my34SolToUtc, seasonName } from "./solMath";
-import { SolContext } from "./solStore";
+import { SolContext, setSolSnapshot } from "./solStore";
 
 let tableCache = null;
 
@@ -46,5 +46,6 @@ export function SolProvider({ sol, setSol, playing = false, setPlaying, children
       label: seasonLs == null ? `MY34 SOL ${sol}` : `MY34 SOL ${sol} · LS ${seasonLs.toFixed(0)}°`,
     };
   }, [sol, setSol, playing, setPlaying, table]);
+  useEffect(() => setSolSnapshot(value), [value]);
   return <SolContext.Provider value={value}>{children}</SolContext.Provider>;
 }

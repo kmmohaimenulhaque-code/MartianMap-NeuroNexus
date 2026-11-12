@@ -5,10 +5,13 @@ import catalogue from "../features/commands.json";
 import { buildRegistry, missingHandlers, searchCommands, SHORTCUTS } from "../features/registry";
 
 const app = readFileSync(new URL("../App.jsx", import.meta.url), "utf8");
-const handlerBlock = app.slice(app.indexOf("const commandHandlers = {"), app.indexOf("const commandRegistry = buildRegistry"));
+const consoleHandlers = readFileSync(new URL("../features/consoleHandlers.js", import.meta.url), "utf8");
+const handlerBlock =
+  app.slice(app.indexOf("const commandHandlers = {"), app.indexOf("const commandRegistry = buildRegistry")) +
+  consoleHandlers.slice(consoleHandlers.indexOf("return {"));
 
 describe("command index coverage", () => {
-  it("every catalogue command has a handler in App.jsx", () => {
+  it("every catalogue command has a handler (App.jsx or features/consoleHandlers.js)", () => {
     const missing = catalogue.commands.filter((c) => !new RegExp(`(["']${c.id}["']|\\b${c.id})\\s*:`).test(handlerBlock)).map((c) => c.id);
     expect(missing).toEqual([]);
   });

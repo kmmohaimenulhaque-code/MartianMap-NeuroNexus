@@ -54,7 +54,7 @@ function ScaleBar() {
 }
 
 /* Overlay PNGs go through the IndexedDB tile cache and are pre-decoded with createImageBitmap. */
-function CachedOverlay({ url, bounds, opacity }) {
+function CachedOverlay({ url, bounds, opacity, className }) {
   const enabled = perfStore.enabled("tileCache");
   const [state, setState] = useState({ url: null, src: null });
   useEffect(() => {
@@ -77,7 +77,7 @@ function CachedOverlay({ url, bounds, opacity }) {
     };
   }, [url, enabled]);
   const src = enabled ? (state.url === url ? state.src : null) : url;
-  return src ? <ImageOverlay url={src} bounds={bounds} opacity={opacity} /> : null;
+  return src ? <ImageOverlay url={src} bounds={bounds} opacity={opacity} className={className} /> : null;
 }
 
 function FitFrame({ extent }) {
@@ -147,8 +147,8 @@ export default function SiteMap({ frame, mode, overlays, plan, estimate, editPts
         <FitFrame extent={extent} />
         {overlays.hillshade && <CachedOverlay url={layerUrl("hillshade")} bounds={bounds} opacity={1} />}
         {overlays.ortho && <CachedOverlay url={layerUrl("ortho")} bounds={bounds} opacity={0.92} />}
-        {overlays.walkability && <CachedOverlay url={layerUrl("walkability")} bounds={bounds} opacity={0.62} />}
-        {overlays.slope && <CachedOverlay url={layerUrl("slope")} bounds={bounds} opacity={0.62} />}
+        {overlays.walkability && <CachedOverlay url={layerUrl("walkability")} bounds={bounds} opacity={0.9} className="mw-blend" />}
+        {overlays.slope && <CachedOverlay url={layerUrl("slope")} bounds={bounds} opacity={0.9} className="mw-blend" />}
         {overlays.source && <CachedOverlay url={layerUrl("source")} bounds={bounds} opacity={0.55} />}
         <Pane name="rovers" style={{ zIndex: 420 }}>
           {groundTruth &&
