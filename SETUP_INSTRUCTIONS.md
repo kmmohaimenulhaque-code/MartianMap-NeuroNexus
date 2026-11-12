@@ -1,4 +1,4 @@
-# NeuroNexus — Martian Map · Setup Instructions
+# NeuroNexus - Martian Map · Setup Instructions
 
 NASA Space Apps Challenge 2026 · branch `Master-Ai`
 
@@ -64,10 +64,15 @@ foreach ($t in $tiles) {
 ## 3. Add the `.env` file (Gemini AI key)
 
 Create a file named **`.env`** in the **repository root** (the same folder as `requirements.txt`):
-
+write this 
 ```
-GEMINI_API_KEY=your_gemini_api_key_here
+nano .env
 ```
+And paste inside .env
+```
+GEMINI_API_KEY=AQ.Ab8RN6Iig3GcIdyA4HgLPN9hcfLZw7oPWLGi1ONA_pKa73lIvQ
+```
+( Note that API keys are meant to be private, but for the sake of easy installation, I have committed the key here )
 
 Or copy the template: `cp .env.example .env` (Windows: `copy .env.example .env`) and edit it.
 
