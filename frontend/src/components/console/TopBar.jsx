@@ -42,7 +42,7 @@ export default function TopBar({ appMode, backendConnected, commandIndex, compar
         >
           <SolScrubber />
 
-          <div>
+          <div className="topbar-features">
             <span className="state-label">FEATURES</span>
 
             <strong>{places.length.toLocaleString()}</strong>

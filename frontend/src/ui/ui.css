@@ -1651,3 +1651,30 @@ label:has(> .m3d-layer-tag) { flex-wrap: wrap; }
 .burger-button:hover { box-shadow: 0 0 18px rgba(117, 230, 255, 0.55); }
 .map-toolbar > .mission-action, .map-toolbar .map-ai-route-button { position: static !important; inset: auto !important; transform: none !important; }
 .brand-block > span { font-size: 12px; letter-spacing: 0.04em; white-space: nowrap; }
+
+/* ------------------------------------------------------------------ Colored map: scroll to buried waypoints */
+.map-panel { position: relative; }
+.map-panel-scroll {
+  flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column;
+  overflow-y: auto; overscroll-behavior: contain;
+  scrollbar-width: thin; scrollbar-color: rgba(117, 230, 255, 0.25) transparent;
+}
+.map-panel-scroll > .route-console { flex: 0 0 auto; }
+.nn-flip-v { transform: scaleY(-1); }
+.nn-scroll-jump {
+  position: absolute; left: 50%; bottom: 12px; z-index: 1200; translate: -50% 0;
+  display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 0 12px;
+  border: 1px solid var(--nn-cyan-dim); background: rgba(8, 16, 20, 0.94); color: var(--nn-cyan);
+  font: 600 13px var(--nn-mono); letter-spacing: 0.08em; cursor: pointer;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55), 0 0 14px rgba(117, 230, 255, 0.12);
+  animation: nn-jump-in 160ms ease-out;
+}
+.nn-scroll-jump:hover, .nn-scroll-jump:focus-visible { border-color: var(--nn-cyan); color: #fff; }
+@keyframes nn-jump-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .nn-scroll-jump { animation: none; } }
+
+/* ------------------------------------------------------------------ Cockpit depth: dim shadows under the top bar and beside the side columns */
+.topbar { box-shadow: 0 10px 24px -8px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(117, 230, 255, 0.05); }
+.left-column { box-shadow: 14px 0 28px -18px rgba(0, 0, 0, 0.8); }
+.right-column { box-shadow: -14px 0 28px -18px rgba(0, 0, 0, 0.8); }
+.site-field { box-shadow: inset 0 12px 18px -14px rgba(0, 0, 0, 0.7); }

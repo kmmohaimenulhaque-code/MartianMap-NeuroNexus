@@ -67,10 +67,12 @@ import RightColumn from "./components/console/RightColumn";
 import EvidenceBar from "./components/console/EvidenceBar";
 import LeftColumn from "./components/console/LeftColumn";
 import TopBar from "./components/console/TopBar";
+import ScrollJumpButton from "./components/console/ScrollJumpButton";
 
 import "./ui/tokens.css";
 import "./App.css";
 import "./ui/ui.css";
+import "./ui/responsive.css";
 
 const loadMarswalk = () => import("./marswalk/MarswalkView");
 const loadGlobe = () => import("./components/mars3d/Mars3DView");
@@ -304,6 +306,7 @@ export default function App() {
     [],
   );
 
+  const mapPanelScrollRef = useRef(null);
   const selectionKeyRef = useRef(null);
   const selectionKey = selectedLocation ? `${selectedLocation.latitude_deg},${selectedLocation.longitude_deg}` : null;
 
@@ -2101,6 +2104,7 @@ export default function App() {
                 <small>USGS FEATURE + COORDINATE NAVIGATION</small>
               </div>
 
+              <div className="map-panel-scroll" ref={mapPanelScrollRef}>
               <div className="map-panel-body map-panel-body--with-actions">
                 {/* Both open shared, existing workspaces: the AI Route Designer and the 3D view. */}
                 <div className="map-layer-controls map-toolbar">
@@ -2220,6 +2224,9 @@ export default function App() {
 
                 onAddSafeHaven={handleAddSafeHaven}
               />
+              </div>
+
+              <ScrollJumpButton scrollRef={mapPanelScrollRef} watch={routePoints.length + (routePlan ? 1 : 0)} />
             </div>
 
             <div className="map-panel" id="panel-usgs-map">

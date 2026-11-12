@@ -1,0 +1,34 @@
+/*
+ * Responsive layer, loaded last. Desktop cockpit (>= 1680 px) is unchanged; 1200-1679 px keeps the
+ * 3-column cockpit with a tighter top bar; < 1200 px is the tablet / mobile workspace.
+ */
+
+/* Never let one wide child stretch the shell past the viewport (was 1682 px wide at 1440). */
+.mission-shell { grid-template-columns: minmax(0, 1fr); }
+
+/* ------------------------------------------------------------------ Compact desktop, 1200-1679 px */
+@media (max-width: 1679px) {
+  .topbar { grid-template-columns: 250px minmax(180px, 1fr) auto; gap: 14px; }
+  .topbar-features { display: none; }
+  .nn-solscrub { min-width: 230px; }
+  .nn-solscrub input[type="range"] { min-width: 70px; }
+  .mission-action { padding: 0 8px; letter-spacing: 0.05em; }
+}
+
+/* Two-row top bar below 1600 px: brand, search and sol on row 1; mode, status and actions on row 2. */
+@media (max-width: 1599px) {
+  .mission-shell { grid-template-rows: auto minmax(0, 1fr) 64px; }
+  .topbar { grid-template-columns: 250px minmax(180px, 1fr) auto; row-gap: 4px; padding: 8px 16px; }
+  .topbar .mission-state { display: contents !important; }
+  .topbar .mission-state > div:last-child { grid-column: 1 / -1; flex-direction: row !important; justify-content: space-between; align-items: center !important; flex-wrap: wrap; }
+}
+
+/* Footer below 1600 px: one row; the long credit line folds to the icon and MEET THE TEAM. */
+@media (max-width: 1599px) {
+  .evidence-bar { grid-template-columns: repeat(5, max-content) minmax(0, 1fr) max-content; gap: 14px; }
+  .evidence-bar .evidence-warning { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: flex-end; column-gap: 8px; row-gap: 0; }
+  .team-credit > span { display: none; }
+}
+@media (max-width: 1365px) {
+  .evidence-bar > div:nth-child(4), .evidence-bar > div:nth-child(5) { display: none; }
+}
