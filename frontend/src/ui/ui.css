@@ -1843,3 +1843,12 @@ body, button, input, select, textarea, optgroup { font-family: var(--nn-font); }
   font-family: var(--nn-font) !important;
 }
 :is(.nn-sheet-head, .nn-sheet-head *, .nn-dock button, .nn-dock button *, .nn-solpill-btn, .nn-mapview-toggle button, .nn-solpill-pop *, .nn-phone-mapbar button) { font-weight: 400 !important; }
+
+/* Selected-site signal: a true circle centered on the site-name line (not on the two-line block). */
+#root .place-title { align-items: flex-start; gap: 12px; }
+#root .place-title h3 { line-height: 24px; }
+#root .place-title .signal {
+  flex: 0 0 10px; width: 10px; height: 10px; margin-top: 7px; border-radius: 50%;
+  font-size: 0; line-height: 0; color: transparent; text-shadow: none;
+  background: #01ffff; box-shadow: 0 0 10px rgba(1, 255, 255, 0.75);
+}
