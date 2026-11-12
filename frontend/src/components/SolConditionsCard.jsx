@@ -4,6 +4,7 @@ import SourceTag from "../sources/SourceTag";
 import { useSol } from "../state/solStore";
 import { useSolConditions } from "../state/useSolConditions";
 import Popover from "../ui/Popover";
+import SeasonalCharts from "./SeasonalCharts";
 
 const fmt = (v, d = 1) => (Number.isFinite(v) ? v.toFixed(d) : "n/a");
 
@@ -41,7 +42,8 @@ export default function SolConditionsCard({ lat, lon, title = "CONDITIONS AT ACT
           <dd>{c.solar?.directBeam != null ? `${(c.solar.directBeam * 100).toFixed(0)}%` : "n/a"}</dd>
         </div>
       </dl>
-      {c.error && <p className="nn-solcond-error">Dust scenario unavailable: {c.error}</p>}
+      {c.error && <p className="nn-solcond-error">Dust scenario: NOT AVAILABLE for this cell ({c.error.replace(/^Request failed: /, "HTTP ")})</p>}
+      <SeasonalCharts ls={c.ls} tauByLs={c.tauByLs} />
       <div className="nn-solcond-foot">
         <SourceTag ledgerId="NASA_AMES_MGCM" evidence="MODELED" compact />
         <SourceTag ledgerId="NEURONEXUS_SOLAR_GEOMETRY" compact />

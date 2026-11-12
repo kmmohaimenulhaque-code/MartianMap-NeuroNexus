@@ -708,3 +708,17 @@
 .mission-orbital-strip strong { display: block; color: #d6e6ec; font-size: 13px; }
 .mission-orbital-strip small { display: block; color: #66797f; font-size: 13px; }
 .mission-orbital-strip button { border: 1px solid #29414b; background: #0a1318; color: #9fd8e8; font-family: var(--nn-font); font-size: 13px; letter-spacing: 0.06em; padding: 7px 9px; cursor: pointer; }
+
+/* Containment: nothing in the right panel may cross its right edge. */
+.mission-ops-panel, .mission-ops-panel * { box-sizing: border-box; min-width: 0; }
+.mission-ops-panel { max-width: 100%; overflow-x: hidden; }
+.mission-edit { padding: 4px 8px 4px 0; }
+.mission-edit label { grid-template-columns: minmax(0, 40%) minmax(0, 1fr); }
+.mission-edit input { width: 100%; max-width: 100%; }
+.mission-section-title { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 8px; }
+.mission-section-title a, .mission-src { overflow-wrap: anywhere; }
+
+/* Justified telemetry rows: key left, value and badges right, wrapping inside the panel. */
+.mission-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: nowrap; }
+.mission-row > span { flex: 0 1 38%; text-align: left; }
+.mission-row > strong { flex: 1 1 62%; max-width: 62%; justify-content: flex-end; text-align: right; overflow-wrap: anywhere; }

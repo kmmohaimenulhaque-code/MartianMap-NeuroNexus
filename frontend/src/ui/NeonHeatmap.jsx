@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 
 /*
- * NeonHeatmap — a lat/lon grid drawn on <canvas> with a dark→cyan→white ramp
+ * NeonHeatmap · a lat/lon grid drawn on <canvas> with a dark→cyan→white ramp
  * and an SVG crosshair. grid[row][col] with row 0 = southernmost latitude.
  */
 

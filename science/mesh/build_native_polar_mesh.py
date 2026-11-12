@@ -127,7 +127,7 @@ def build_hemisphere(hemisphere: str) -> None:
 
     print()
     print("=" * 72)
-    print(f"NATIVE POLAR MESH — {hemisphere.upper()}")
+    print(f"NATIVE POLAR MESH · {hemisphere.upper()}")
     print("=" * 72)
     print(f"Input       : {input_path}")
     print(f"Raster      : {SIZE} × {SIZE}")

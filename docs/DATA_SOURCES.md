@@ -2,7 +2,7 @@
 
 # Data sources
 
-Canonical ledger: `data/manifests/source_ledger.json` (`neuronexus.source-ledger.v3`, 75 entries). Every 🏷️ source tag in the console resolves to one of these ids (GET `/sources/{id}`, aliases accepted).
+Canonical ledger: `data/manifests/source_ledger.json` (`neuronexus.source-ledger.v3`, 76 entries). Every 🏷️ source tag in the console resolves to one of these ids (GET `/sources/{id}`, aliases accepted).
 
 Evidence classes: **OBSERVED**: A real instrument measurement from a mission archive.; **NASA REFERENCE**: A published NASA/USGS/partner reference value, catalog or map.; **MODELED**: Output of a physical model (e.g. NASA Ames Mars GCM).; **DERIVED**: Computed by NeuroNexus from observed or modeled inputs.; **COMPUTED**: Geometry or arithmetic computed by NeuroNexus.; **SIMULATED**: A configurable NeuroNexus simulation value, not a measurement.; **AI INTERPRETATION**: Language-model interpretation of structured results; never a NASA observation.
 
@@ -50,6 +50,7 @@ Evidence classes: **OBSERVED**: A real instrument measurement from a mission arc
 | `MAVEN` | NASA / MAVEN | Maven | CATALOGED NOT INGESTED |  |  |  |
 | `MCS` | NASA / Mars Reconnaissance Orbiter / MCS | Mcs | CATALOGED NOT INGESTED |  |  |  |
 | `MSL_REMS` | NASA / Mars Science Laboratory / REMS | Msl Rems | QUERIED LIVE (OUTREACH) |  | 2026-10-20 |  |
+| `MSL_SAM_GALE_VMR` | NASA | MSL SAM QMS atmospheric volume mixing ratios at Gale crater (Franz et al. 2017) | REFERENCE ONLY |  | 2026-10-20 | [link](https://doi.org/10.1016/j.pss.2017.01.014) |
 | `NASA_CURIOSITY` | NASA / Mars Science Laboratory | Nasa Curiosity | REFERENCE ONLY |  |  | [link](https://science.nasa.gov/mission/msl-curiosity/) |
 | `NASA_EVA` | NASA | Nasa Eva | REFERENCE ONLY |  |  | [link](https://www.nasa.gov/suits-and-rovers/) |
 | `NASA_HUMANS_TO_MARS` | NASA | Nasa Humans To Mars | REFERENCE ONLY |  |  | [link](https://www.nasa.gov/humans-in-space/humans-to-mars/) |

@@ -439,6 +439,43 @@
       }
     },
     {
+      "id": "MSL_SAM_GALE_VMR",
+      "aliases": [],
+      "organization": "NASA",
+      "mission": "Mars Science Laboratory (Curiosity)",
+      "instrument": "SAM",
+      "product_title": "MSL SAM QMS atmospheric volume mixing ratios at Gale crater (Franz et al. 2017)",
+      "product_id_pattern": null,
+      "doi": "10.1016/j.pss.2017.01.014",
+      "url": "https://doi.org/10.1016/j.pss.2017.01.014",
+      "landing_page": null,
+      "license": null,
+      "citation": "Franz H. B. et al. (2017), Initial SAM calibration gas experiments on Mars: Quadrupole mass spectrometer results and implications, Planet. Space Sci. 138, 44-54",
+      "evidence_class": "NASA REFERENCE",
+      "ingestion_status": "REFERENCE ONLY",
+      "access_method": "published values transcribed from the peer-reviewed paper",
+      "used_by": [
+        "GET /site-science (atmosphere, Gale)",
+        "Mission console: ATMOSPHERE / GASES"
+      ],
+      "retrieved_at": null,
+      "version": null,
+      "archive_lag_days": null,
+      "caveats": [
+        "Campaign means; N2, Ar and O2 vary seasonally by several percent (Trainer et al. 2019, JGR Planets)."
+      ],
+      "verified_on": "2026-10-20",
+      "verification_note": "Values transcribed from the publication; DOI not re-resolved in this session.",
+      "legacy": {
+        "id": "MSL_SAM_GALE_VMR",
+        "role": "atmosphere_reference",
+        "status": "USED_AS_REFERENCE",
+        "used_for": [
+          "Gale atmospheric composition (SAM QMS volume mixing ratios)"
+        ]
+      }
+    },
+    {
       "id": "NASA_PERSEVERANCE",
       "aliases": [],
       "organization": "NASA / Mars 2020",

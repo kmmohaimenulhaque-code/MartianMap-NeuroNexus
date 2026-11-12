@@ -146,7 +146,7 @@ export default function Mars3DLegend({ visible, traverses, candidateRoutes = [],
         <Row swatch={<AreaSwatch gradient />} label={AREA_STYLES.slope.label} status="DERIVED" off={!visible.slope} />
         <Row swatch={<AreaSwatch gradient />} label={AREA_STYLES.roughness.label} status="DERIVED" off={!visible.roughness} />
         <Row swatch={<AreaSwatch gradient />} label={AREA_STYLES.walkability.label} status="DERIVED" off={!visible.walkability} />
-        <Row swatch={<AreaSwatch colour="#555" />} label="NASA SWIM water-ice consensus map — not integrated" status="UNAVAILABLE" off />
+        <Row swatch={<AreaSwatch colour="#555" />} label="NASA SWIM water-ice consensus map · not integrated" status="UNAVAILABLE" off />
       </ul>
       <small>Greyed entries are currently switched off in LAYERS.</small>
     </div>

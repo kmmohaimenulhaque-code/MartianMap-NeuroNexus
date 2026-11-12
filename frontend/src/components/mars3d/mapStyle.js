@@ -78,8 +78,8 @@ export function labelTier(feature) {
 /* Non-USGS entities (shape = ArcGIS icon primitive; also drawn by the legend). */
 export const ENTITY_STYLES = {
   landing: { label: "USGS landing site", colour: "#e8f4f7", shape: "square", size: 10, status: "OBSERVED" },
-  curiosity: { label: "Curiosity — latest traverse position", colour: "#8cf0b1", shape: "triangle", size: 13, status: "OBSERVED" },
-  perseverance: { label: "Perseverance — latest traverse position", colour: "#a7d8ff", shape: "triangle", size: 13, status: "OBSERVED" },
+  curiosity: { label: "Curiosity · latest traverse position", colour: "#8cf0b1", shape: "triangle", size: 13, status: "OBSERVED" },
+  perseverance: { label: "Perseverance · latest traverse position", colour: "#a7d8ff", shape: "triangle", size: 13, status: "OBSERVED" },
   safeHaven: { label: "Safe Haven (user-defined)", colour: "#62f59a", shape: "kite", size: 12, status: "DERIVED" },
   customPlace: { label: "Custom place (user-defined)", colour: "#b9cfd6", shape: "circle", size: 10, status: "DERIVED" },
   routeStart: { label: "Route start", colour: "#62f59a", shape: "circle", size: 11, status: "DERIVED" },

@@ -26,7 +26,7 @@ export function Metric({ label, value, detail }) {
     <div className="metric">
       <span>{label}</span>
 
-      <strong>{value ?? "—"}</strong>
+      <strong>{value ?? "n/a"}</strong>
 
       {detail && <small>{detail}</small>}
     </div>

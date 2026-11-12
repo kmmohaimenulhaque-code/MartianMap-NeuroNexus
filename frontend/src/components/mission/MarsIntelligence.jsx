@@ -238,12 +238,12 @@ export default function MarsIntelligence({ open, onClose, status, onAsk, mission
           {
             role: "assistant",
             error: true,
-            content: `MARS INTELLIGENCE UNAVAILABLE — ${reply?.reason ?? reply?.error ?? "the AI service did not respond."} The rest of NeuroNexus is unaffected.`,
+            content: `MARS INTELLIGENCE UNAVAILABLE · ${reply?.reason ?? reply?.error ?? "the AI service did not respond."} The rest of NeuroNexus is unaffected.`,
           },
         ]);
       }
     } catch (error) {
-      setMessages([...history, { role: "assistant", error: true, content: `REQUEST FAILED — ${error.message}` }]);
+      setMessages([...history, { role: "assistant", error: true, content: `REQUEST FAILED · ${error.message}` }]);
     } finally {
       setBusy(false);
     }

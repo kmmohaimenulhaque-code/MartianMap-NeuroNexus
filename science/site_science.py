@@ -95,32 +95,19 @@ def build_site_science(
                 "Curiosity / Gale Crater atmospheric context"
             ),
             "gases": [
-                {
-                    "name": "Carbon dioxide (CO₂)",
-                    "volume_percent": 95.9,
-                },
-                {
-                    "name": "Argon (Ar)",
-                    "volume_percent": None,
-                },
-                {
-                    "name": "Nitrogen (N₂)",
-                    "volume_percent": None,
-                },
-                {
-                    "name": "Oxygen (O₂)",
-                    "volume_percent": None,
-                },
-                {
-                    "name": "Carbon monoxide (CO)",
-                    "volume_percent": None,
-                },
+                {"name": "Carbon dioxide (CO₂)", "volume_percent": 95.1, "uncertainty": 0.3},
+                {"name": "Nitrogen (N₂)", "volume_percent": 2.59, "uncertainty": 0.06},
+                {"name": "Argon (Ar)", "volume_percent": 1.94, "uncertainty": 0.04},
+                {"name": "Oxygen (O₂)", "volume_percent": 0.161, "uncertainty": 0.009},
+                {"name": "Carbon monoxide (CO)", "volume_percent": 0.058, "uncertainty": 0.008},
             ],
             "note": (
-                "A Curiosity/SAM measurement context is available "
-                "for Gale Crater. Only the explicitly represented "
-                "measurement is shown numerically here."
+                "Curiosity SAM quadrupole mass spectrometer volume mixing ratios at Gale "
+                "(campaign means, Franz et al. 2017, Planet. Space Sci. 138). N₂, Ar and O₂ "
+                "vary seasonally by several percent (Trainer et al. 2019)."
             ),
+            "ledger_id": "MSL_SAM_GALE_VMR",
+            "evidence": "NASA REFERENCE",
             "source": "NASA Curiosity / SAM",
             "url": NASA_CURIOSITY,
         }

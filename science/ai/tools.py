@@ -192,7 +192,7 @@ def get_THEMIS_context(state, radius_km: float = 50.0, **_):
 def get_Mars_weather_context(state, **_):
     environment = _get(state, "environment") or {}
     return {"dust": environment.get("dust") or "UNAVAILABLE",
-            "dust_status": "MODELED — NASA Ames Mars GCM MY34 dust scenario, not a live forecast",
+            "dust_status": "MODELED · NASA Ames Mars GCM MY34 dust scenario, not a live forecast",
             "solar": environment.get("solar") or "UNAVAILABLE",
             "assessment": environment.get("assessment") or "UNAVAILABLE",
             "live_weather_feed": "NOT CONNECTED"}

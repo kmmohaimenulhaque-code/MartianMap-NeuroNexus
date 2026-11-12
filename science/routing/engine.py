@@ -988,7 +988,7 @@ def _plan_segmented(a: tuple[float, float], b: tuple[float, float], anchors: lis
         for item in leg["evidence_items"]:
             evidence_items.setdefault(item.get("id"), item)
 
-    message = f"Long traverse detected — planning terrain-aware route in {len(legs)} local MOLA segments."
+    message = f"Long traverse detected · planning terrain-aware route in {len(legs)} local MOLA segments."
     return {
         **{k: first[k] for k in ("engine", "algorithm_version", "requested_weights", "methodology", "safety_notice")},
         "status": "ok",

@@ -344,9 +344,11 @@ export function buildMissionConsoleState(state = {}) {
         ? gases.map((gas) => ({
             name: gas.name,
             volume_percent: gas.volume_percent ?? null,
+            uncertainty: gas.uncertainty ?? null,
+            ledger_id: siteScience?.atmosphere?.ledger_id ?? null,
             status: gas.status ?? (gas.volume_percent == null ? "UNAVAILABLE" : "NASA REFERENCE"),
-            source: gas.source ?? "NASA Mars facts",
-            url: gas.source_url ?? NASA_LINKS.marsFacts,
+            source: gas.source ?? siteScience?.atmosphere?.source ?? "NASA Mars facts",
+            url: gas.source_url ?? siteScience?.atmosphere?.url ?? NASA_LINKS.marsFacts,
           }))
         : [
             {

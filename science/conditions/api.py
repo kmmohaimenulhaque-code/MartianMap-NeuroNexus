@@ -74,3 +74,29 @@ def conditions(site: str = Query("gale"), sol: int | None = Query(None, ge=1, le
     out["dose_screening"] = {"rule": "EVA dose = daily E rate x EVA hours / 24 (altitude term below 1% at EVA scale)",
                              "ledger_id": "NEURONEXUS_DOSE_SCREENING", "evidence": "DERIVED"}
     return out
+
+
+@router.get("/conditions/seasonal")
+def seasonal(site: str = Query("gale")):
+    """Season (Ls) series for the conditions charts: REMS pressure and air temperature over the most recent
+    Mars year of the outreach feed, and archived RAD dose rates joined to Ls by sol. Gale only (instruments
+    are on Curiosity); Jezero shows Gale's series as context. Each series names its source and its sols."""
+    if site not in SITES:
+        raise ApiError(400, "BAD_REQUEST", f"unknown site {site!r}", "use gale or jezero")
+    rows = sorted((r for r in rems.load_snapshot("msl").get("sols", []) if r.get("ls") is not None), key=lambda r: r["sol"])
+    year = rows[-669:]
+    ls_by_sol = {r["sol"]: r["ls"] for r in rows}
+
+    def pts(key, fn=lambda v: v):
+        return sorted([r["ls"], None if r.get(key) is None else round(fn(r[key]), 2)] for r in year)
+
+    rad_rows = [s for s in rad.load_snapshot().get("sols", {}).values() if s.get("status") == "OK" and s["sol"] in ls_by_sol]
+    rad_pts = sorted([ls_by_sol[s["sol"]], round(s["median_e_ugy_h"] * 24, 1)] for s in rad_rows)
+    span = [year[0]["sol"], year[-1]["sol"]] if year else None
+    return {"site": site, "measured_at": "Gale crater (Curiosity)", "axis": "Ls (deg)",
+            "pressure_pa": {"points": pts("pressure_pa"), "sols": span, "ledger_id": "MSL_REMS_OUTREACH", "evidence": "OBSERVED (OUTREACH)"},
+            "air_temp_min_k": {"points": pts("min_temp_c", lambda c: c + 273.15), "sols": span, "ledger_id": "MSL_REMS_OUTREACH"},
+            "air_temp_max_k": {"points": pts("max_temp_c", lambda c: c + 273.15), "sols": span, "ledger_id": "MSL_REMS_OUTREACH"},
+            "rad_e_ugy_day": {"points": rad_pts, "sols": [min((s["sol"] for s in rad_rows), default=None), max((s["sol"] for s in rad_rows), default=None)],
+                              "ledger_id": "MSL_RAD_RDR", "evidence": "OBSERVED (ARCHIVED, LAG)"},
+            "note": "Different years and instruments on one season axis: context for the MY34 dust scenario, not one record."}

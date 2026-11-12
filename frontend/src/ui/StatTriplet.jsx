@@ -1,5 +1,5 @@
 /*
- * StatTriplet — the one way NeuroNexus shows statistics:
+ * StatTriplet · the one way NeuroNexus shows statistics:
  *   LABEL | AT SITE | MIN · MEAN · MAX
  * `flag` colours a cell amber/red only from backend thresholds.
  */

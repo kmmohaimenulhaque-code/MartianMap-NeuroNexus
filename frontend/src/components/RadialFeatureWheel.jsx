@@ -6,6 +6,7 @@
  */
 
 import { useCallback, useEffect, useReducer, useRef } from "react";
+import { createPortal } from "react-dom";
 
 import { useSol } from "../state/solStore";
 import { ICON_PATHS } from "../ui/iconPaths";
@@ -223,7 +224,9 @@ export default function RadialFeatureWheel({ onAction, availability }) {
   useEffect(() => {
     if (!state.open) return undefined;
     rootRef.current?.focus();
-    return undefined;
+    const onKey = (event) => event.key === "Escape" && dispatch({ type: "close" });
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, [state.open]);
 
   if (!state.open) return null;
@@ -247,7 +250,7 @@ export default function RadialFeatureWheel({ onAction, availability }) {
     event.preventDefault();
   };
 
-  return (
+  return createPortal(
     <div
       className="nn-wheel-overlay"
       ref={rootRef}
@@ -259,6 +262,7 @@ export default function RadialFeatureWheel({ onAction, availability }) {
       <div className="nn-wheel" style={{ left: state.x - GEOM.size / 2, top: state.y - GEOM.size / 2 }} onMouseDown={(e) => e.stopPropagation()}>
         <WheelSvg state={state} dispatch={dispatch} onAction={onAction} availability={availability} solLabel={solLabel} />
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

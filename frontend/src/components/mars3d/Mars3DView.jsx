@@ -43,30 +43,30 @@ const SERVICES = {
 };
 
 const LAYERS = [
-  { key: "terrain", group: "TERRAIN", label: "3D terrain — MOLA/HRSC blended DEM (200 m)", status: "OBSERVED", on: true },
+  { key: "terrain", group: "TERRAIN", label: "3D terrain · MOLA/HRSC blended DEM (200 m)", status: "OBSERVED", on: true },
   { key: "imagery", group: "TERRAIN", label: "Viking MDIM 2.1 imagery", status: "OBSERVED", on: true },
   { key: "colorDem", group: "TERRAIN", label: "Colourised MOLA elevation", status: "OBSERVED", on: false },
   { key: "dtmFootprints", group: "TERRAIN", label: "HiRISE 1 m and CTX 20 m DTM footprints near the site (bounding boxes)", status: "OBSERVED", on: false },
-  { key: "slope", group: "TERRAIN", label: "Slope — local MOLA 128 ppd grid", status: "DERIVED", on: false },
-  { key: "roughness", group: "TERRAIN", label: "Roughness — local MOLA 128 ppd grid", status: "DERIVED", on: false },
+  { key: "slope", group: "TERRAIN", label: "Slope · local MOLA 128 ppd grid", status: "DERIVED", on: false },
+  { key: "roughness", group: "TERRAIN", label: "Roughness · local MOLA 128 ppd grid", status: "DERIVED", on: false },
   { key: "features", group: "USGS", label: "USGS/IAU named features (2,052, coloured-map classes)", status: "OBSERVED", on: true },
   { key: "labels", group: "USGS", label: "Persistent labels (all named entities)", status: "OBSERVED", on: true },
   { key: "units", group: "USGS", label: "Geologic units (SIM 3292)", status: "DERIVED", on: false },
   { key: "contacts", group: "USGS", label: "Geologic contacts", status: "DERIVED", on: false },
   { key: "structures", group: "USGS", label: "Geologic structures", status: "DERIVED", on: false },
   { key: "landing", group: "USGS", label: "Landing sites", status: "OBSERVED", on: true },
-  { key: "rovers", group: "ROVERS", label: "Rover locations — latest traverse position", status: "OBSERVED", on: true },
-  { key: "traverses", group: "ROVERS", label: "Rover traverses — Curiosity, Perseverance (NASA MMGIS)", status: "OBSERVED", on: true },
+  { key: "rovers", group: "ROVERS", label: "Rover locations · latest traverse position", status: "OBSERVED", on: true },
+  { key: "traverses", group: "ROVERS", label: "Rover traverses · Curiosity, Perseverance (NASA MMGIS)", status: "OBSERVED", on: true },
   { key: "route", group: "MISSION", label: "Active route and waypoints", status: "DERIVED", on: true },
   { key: "candidates", group: "MISSION", label: "AI candidate routes", status: "DERIVED", on: true },
   { key: "places", group: "MISSION", label: "Safe Havens and custom places (user-defined)", status: "DERIVED", on: true },
   { key: "dust", group: "ATMOSPHERE", label: "MY34 dust optical depth τ tint (modeled, follows the sol)", status: "MODELED", on: false },
   { key: "themis", group: "SCIENCE", label: "THEMIS thermal observations near the site", status: "OBSERVED", on: false },
-  { key: "zones", group: "EXPLORATION", label: "Potential Exploration Zones — DERIVED — NEURONEXUS", status: "DERIVED", on: false },
+  { key: "zones", group: "EXPLORATION", label: "Potential Exploration Zones · DERIVED · NEURONEXUS", status: "DERIVED", on: false },
   { key: "swim", group: "EXPLORATION", label: "NASA SWIM water-ice consensus map", status: "UNAVAILABLE", on: false, disabled: true },
-  { key: "iceRegions", group: "EXPLORATION", label: "Human exploration context — documented ice study regions", status: "DERIVED", on: false },
+  { key: "iceRegions", group: "EXPLORATION", label: "Human exploration context · documented ice study regions", status: "DERIVED", on: false },
   { key: "ancient", group: "EXPLORATION", label: "Ancient habitability evidence (not present-day)", status: "OBSERVED", on: false },
-  { key: "walkability", group: "EXPLORATION", label: "Walkability — NeuroNexus-derived terrain score", status: "DERIVED", on: false },
+  { key: "walkability", group: "EXPLORATION", label: "Walkability · NeuroNexus-derived terrain score", status: "DERIVED", on: false },
 ];
 
 /* Canonical ledger id behind each 3D layer (rendered as a tag in the layer list). */
@@ -437,7 +437,7 @@ export default function Mars3DView({
           const zone = hits.find((h) => Number.isInteger(h.graphic?.attributes?.zoneIndex));
           if (zone) {
             const z = zonesRef.current[zone.graphic.attributes.zoneIndex];
-            if (z) setInfo({ title: "POTENTIAL EXPLORATION ZONE — DERIVED — NEURONEXUS", zone: z });
+            if (z) setInfo({ title: "POTENTIAL EXPLORATION ZONE · DERIVED · NEURONEXUS", zone: z });
           }
           const geologic = hits.find((h) => h.graphic && [L.units, L.structures, L.contacts].includes(h.graphic.layer));
           if (geologic && !zone) {
@@ -1124,7 +1124,7 @@ export default function Mars3DView({
 
   function handleCompare() {
     if (!compareAvailable) {
-      setToast("COMPARE needs at least two saved routes — save routes from the route editor first.");
+      setToast("COMPARE needs at least two saved routes · save routes from the route editor first.");
       return;
     }
     onOpenCompare?.();
@@ -1274,13 +1274,13 @@ export default function Mars3DView({
         <div className="m3d-labels" ref={labelContainerRef} aria-hidden="true" />
 
         {!ready && !loadError && <div className="m3d-status">LOADING ARCGIS MARS SCENE…</div>}
-        {loadError && <div className="m3d-status m3d-error">3D VIEW UNAVAILABLE — {loadError}</div>}
+        {loadError && <div className="m3d-status m3d-error">3D VIEW UNAVAILABLE · {loadError}</div>}
         {toast && (
           <div className="m3d-toast" role="status">
             {toast}
           </div>
         )}
-        {routeMode && !toast && <div className="m3d-toast">ROUTE MODE — clicks on the 3D surface add waypoints to the route editor.</div>}
+        {routeMode && !toast && <div className="m3d-toast">ROUTE MODE · clicks on the 3D surface add waypoints to the route editor.</div>}
 
         {candidateRoutes.length > 0 && (
           <div className="m3d-candidates">
@@ -1460,11 +1460,11 @@ export default function Mars3DView({
               </button>
             </header>
             <p className="m3d-pez-label">
-              <Tag status="DERIVED" /> DERIVED — NEURONEXUS · not an official NASA zone · not certified safe · no guaranteed habitability or confirmed
+              <Tag status="DERIVED" /> DERIVED · NEURONEXUS · not an official NASA zone · not certified safe · no guaranteed habitability or confirmed
               resource.
             </p>
             {!zones.data && !zones.error && <p className="m3d-muted">Evaluating bounded MOLA windows…</p>}
-            {zones.error && <p className="m3d-error-text">Zones unavailable — {zones.error}</p>}
+            {zones.error && <p className="m3d-error-text">Zones unavailable · {zones.error}</p>}
             {zoneList.map((z) => (
               <div key={`${z.name}-${z.latitude_deg}`} className="m3d-zone">
                 <div className="m3d-zone-head">
@@ -1502,19 +1502,19 @@ export default function Mars3DView({
                     />
                     <span>{l.label}</span>
                     <Tag status={l.status} />
-                    {LAYER_LEDGER[l.key] && <SourceTag ledgerId={LAYER_LEDGER[l.key]} compact />}
+                    {LAYER_LEDGER[l.key] && <SourceTag ledgerId={LAYER_LEDGER[l.key]} compact className="m3d-layer-tag" />}
                   </label>
                 ))}
                 {group === "TERRAIN" && (visible.slope || visible.roughness) && (
                   <small>
                     {grid.error
-                      ? `Local grid unavailable — ${grid.error}`
+                      ? `Local grid unavailable · ${grid.error}`
                       : `Bounded ±20 km MOLA window around the selected site (${grid.data?.cells?.length ?? 0} cells).`}
                   </small>
                 )}
                 {group === "ROVERS" && traverses && (
                   <small>
-                    {(traverses.rovers ?? []).map((r) => `${r.rover}: ${r.status}${r.latest_sol ? ` (to sol ${r.latest_sol})` : ""}`).join(" · ")} —{" "}
+                    {(traverses.rovers ?? []).map((r) => `${r.rover}: ${r.status}${r.latest_sol ? ` (to sol ${r.latest_sol})` : ""}`).join(" · ")} ·{" "}
                     {traverses.source}
                     {traverses.status !== "ok" && (
                       <button type="button" className="m3d-link" onClick={() => setTraverses(null)}>
@@ -1567,7 +1567,7 @@ export default function Mars3DView({
                       </p>
                       <p>
                         <b>Geology</b> nearest named feature: {environment.gazetteer?.nearest_feature?.feature_name ?? "UNAVAILABLE"} (
-                        {environment.gazetteer?.nearest_feature?.feature_type ?? "—"})
+                        {environment.gazetteer?.nearest_feature?.feature_type ?? "n/a"})
                         {info?.attributes?.Unit ? ` · unit ${info.attributes.Unit}` : ""} <Tag status="OBSERVED" />
                       </p>
                       {["soil", "minerals", "bioavailability", "vegetation"].map((key) => (
@@ -1589,7 +1589,7 @@ export default function Mars3DView({
                             ? `; nearest documented ice study region: ${exploration.nearest.name} (${fmt(exploration.nearest.distance_km, 0, " km")})`
                             : ""}{" "}
                           <Tag status="DERIVED" />
-                          <small>Context only — not a landing-site certification. Ancient habitability ≠ present-day habitability.</small>
+                          <small>Context only · not a landing-site certification. Ancient habitability ≠ present-day habitability.</small>
                         </p>
                       )}
                       <p>

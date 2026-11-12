@@ -91,11 +91,11 @@ export default function RouteConsole({
 
       {routePlan && (
         <div className="route-console-results">
-          <Metric label="Displacement" value={displacement == null ? "—" : `${Number(displacement).toFixed(2)} km`} />
+          <Metric label="Displacement" value={displacement == null ? "n/a" : `${Number(displacement).toFixed(2)} km`} />
 
-          <Metric label="Planned route" value={planned == null ? "—" : `${Number(planned).toFixed(2)} km`} />
+          <Metric label="Planned route" value={planned == null ? "n/a" : `${Number(planned).toFixed(2)} km`} />
 
-          <Metric label="Extension" value={extension == null ? "—" : `${Number(extension).toFixed(2)} km`} />
+          <Metric label="Extension" value={extension == null ? "n/a" : `${Number(extension).toFixed(2)} km`} />
         </div>
       )}
 

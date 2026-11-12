@@ -32,7 +32,7 @@ export default function UsgsRouteSnapshot({ open, onClose, snapshot, loading, er
         <header>
           <div>
             <span className="eyebrow">USGS SIM 3292 · ROUTE SCIENTIFIC SNAPSHOT</span>
-            <h2>{snapshot?.route?.name ?? "ROUTE"} — USGS VIEW</h2>
+            <h2>{snapshot?.route?.name ?? "ROUTE"} · USGS VIEW</h2>
             <small>{snapshot?.source?.map ?? "USGS Geologic Map of Mars"}</small>
           </div>
           <div className="snapshot-actions">
@@ -53,7 +53,7 @@ export default function UsgsRouteSnapshot({ open, onClose, snapshot, loading, er
         </header>
 
         {loading && <div className="snapshot-status">BUILDING SNAPSHOT FROM USGS MAP SERVICES…</div>}
-        {error && <div className="ai-error">USGS SNAPSHOT UNAVAILABLE — {error}</div>}
+        {error && <div className="ai-error">USGS SNAPSHOT UNAVAILABLE · {error}</div>}
         {snapshot?.errors?.length > 0 && <div className="ai-error">{snapshot.errors.join(" · ")}</div>}
 
         {snapshot && (
@@ -145,7 +145,7 @@ export default function UsgsRouteSnapshot({ open, onClose, snapshot, loading, er
                 <h3>Route record</h3>
                 <dl>
                   <dt>Route ID</dt>
-                  <dd>{snapshot.route?.route_id ?? "—"}</dd>
+                  <dd>{snapshot.route?.route_id ?? "n/a"}</dd>
                   <dt>Start</dt>
                   <dd>
                     {format(snapshot.start?.latitude_deg, 4, "°")}, {format(snapshot.start?.longitude_deg, 4, "°E")}
@@ -167,7 +167,7 @@ export default function UsgsRouteSnapshot({ open, onClose, snapshot, loading, er
                   <dt>Science evidence</dt>
                   <dd>{snapshot.route?.metrics?.science_evidence_count ?? "UNAVAILABLE"}</dd>
                   <dt>Method</dt>
-                  <dd>{snapshot.route?.generation_method ?? "—"}</dd>
+                  <dd>{snapshot.route?.generation_method ?? "n/a"}</dd>
                 </dl>
               </div>
 

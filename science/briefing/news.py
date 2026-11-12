@@ -28,15 +28,15 @@ FETCH_TIMEOUT_S = 10
 # mars_only=True: every item in the feed is about Mars.
 # mars_only=False: general feed, filtered by Mars keywords.
 FEEDS: list[dict[str, Any]] = [
-    {"organisation": "NASA", "name": "NASA — Mars", "url": "https://www.nasa.gov/solar-system/planets/mars/feed/", "mars_only": True},
-    {"organisation": "NASA", "name": "NASA — Mars 2020 Perseverance", "url": "https://www.nasa.gov/missions/mars-2020-perseverance/feed/", "mars_only": True},
-    {"organisation": "NASA", "name": "NASA — Mars Reconnaissance Orbiter", "url": "https://www.nasa.gov/missions/mars-reconnaissance-orbiter/feed/", "mars_only": True},
-    {"organisation": "NASA", "name": "NASA — MAVEN", "url": "https://www.nasa.gov/missions/maven/feed/", "mars_only": True},
-    {"organisation": "NASA Science", "name": "NASA Science — Mars Photojournal", "url": "https://science.nasa.gov/feed/photojournal/gallery/mars/", "mars_only": True},
-    {"organisation": "NASA", "name": "NASA — News", "url": "https://www.nasa.gov/feed/", "mars_only": False},
-    {"organisation": "ESA", "name": "ESA — Mars Express", "url": "https://www.esa.int/rssfeed/Science_Exploration/Space_Science/Mars_Express", "mars_only": True},
-    {"organisation": "ESA", "name": "ESA — ExoMars", "url": "https://www.esa.int/rssfeed/Science_Exploration/Human_and_Robotic_Exploration/Exploration/ExoMars", "mars_only": True},
-    {"organisation": "The Planetary Society", "name": "The Planetary Society — Articles", "url": "https://www.planetary.org/rss/articles", "mars_only": False},
+    {"organisation": "NASA", "name": "NASA · Mars", "url": "https://www.nasa.gov/solar-system/planets/mars/feed/", "mars_only": True},
+    {"organisation": "NASA", "name": "NASA · Mars 2020 Perseverance", "url": "https://www.nasa.gov/missions/mars-2020-perseverance/feed/", "mars_only": True},
+    {"organisation": "NASA", "name": "NASA · Mars Reconnaissance Orbiter", "url": "https://www.nasa.gov/missions/mars-reconnaissance-orbiter/feed/", "mars_only": True},
+    {"organisation": "NASA", "name": "NASA · MAVEN", "url": "https://www.nasa.gov/missions/maven/feed/", "mars_only": True},
+    {"organisation": "NASA Science", "name": "NASA Science · Mars Photojournal", "url": "https://science.nasa.gov/feed/photojournal/gallery/mars/", "mars_only": True},
+    {"organisation": "NASA", "name": "NASA · News", "url": "https://www.nasa.gov/feed/", "mars_only": False},
+    {"organisation": "ESA", "name": "ESA · Mars Express", "url": "https://www.esa.int/rssfeed/Science_Exploration/Space_Science/Mars_Express", "mars_only": True},
+    {"organisation": "ESA", "name": "ESA · ExoMars", "url": "https://www.esa.int/rssfeed/Science_Exploration/Human_and_Robotic_Exploration/Exploration/ExoMars", "mars_only": True},
+    {"organisation": "The Planetary Society", "name": "The Planetary Society · Articles", "url": "https://www.planetary.org/rss/articles", "mars_only": False},
 ]
 
 MARS_PATTERN = re.compile(

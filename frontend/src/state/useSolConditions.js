@@ -36,6 +36,7 @@ export function useSolConditions(lat, lon) {
       tau,
       filled: series?.filled?.[i] ?? false,
       cell: series?.cell ?? null,
+      tauByLs: series ? series.ls_deg.map((l, k) => [l, series.tau[k]]).filter(([l, t]) => l != null && t != null).sort((a, b) => a[0] - b[0]) : [],
       solar: solarGeometry(lat, ls, tau),
       error: state.key === key ? state.error : "",
       loading: Boolean(key) && !series && !(state.key === key && state.error),

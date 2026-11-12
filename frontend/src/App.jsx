@@ -464,8 +464,8 @@ export default function App() {
   /*
    * TWO MAPS, ONE LOCATION
    *
-   * Any selection — coordinate click, named USGS feature, custom place or
-   * Safe Haven — moves the USGS scientific map to the same coordinate via the
+   * Any selection · coordinate click, named USGS feature, custom place or
+   * Safe Haven · moves the USGS scientific map to the same coordinate via the
    * supported ArcGIS extent URL parameter. A failure is reported, never faked.
    */
   const usgsSyncKey = selectedLocation ? `${selectedLocation.latitude_deg},${selectedLocation.longitude_deg}` : null;
@@ -1058,7 +1058,7 @@ export default function App() {
   }
 
   /*
-   * Every saved route — manual or AI-designed — is one schema-v3 record with
+   * Every saved route · manual or AI-designed · is one schema-v3 record with
    * its exact geometry and a `generation` block holding the inputs needed to
    * reproduce it (see verifyRouteReproducibility).
    */
@@ -1225,7 +1225,7 @@ export default function App() {
       setNotice(`${route.name}: ${detail}`);
     } catch (err) {
       mark({ status: "error", checkedAt: new Date().toISOString(), detail: err.message });
-      setNotice(`${route.name}: reproducibility check failed — ${err.message}`);
+      setNotice(`${route.name}: reproducibility check failed · ${err.message}`);
     }
   }
 
@@ -1339,7 +1339,7 @@ export default function App() {
   /* ---------------------------------------------------------------- AI ROUTE DESIGN */
 
   /*
-   * The 120 km planning-window guard stays exactly as it is — it protects the
+   * The 120 km planning-window guard stays exactly as it is · it protects the
    * bounded MOLA sampling. Only the wording is made actionable.
    */
   function friendlyCandidateError(message) {
@@ -1348,7 +1348,7 @@ export default function App() {
       return `Start and destination are ${match[1]} km apart, beyond the 120 km bounded planning window. Add an intermediate waypoint and design the legs one at a time, or choose a closer destination.`;
     }
     if (/run git lfs pull|tile/i.test(message ?? "")) {
-      return `Terrain tiles for this area are not available locally — ${message}`;
+      return `Terrain tiles for this area are not available locally · ${message}`;
     }
     return message;
   }
@@ -1739,7 +1739,7 @@ export default function App() {
       run: () =>
         setNotice("Ctrl/Cmd+K command index · / search · R route mode · S save route · A route designer · C compare · I intelligence · 3 3D · O orbital · P print · N notes · [ ] sol"),
     },
-    "backend-status": { run: () => setNotice(backendConnected ? "Backend online (FastAPI, port 8002)." : "Backend unreachable — start uvicorn on port 8002.") },
+    "backend-status": { run: () => setNotice(backendConnected ? "Backend online (FastAPI, port 8002)." : "Backend unreachable · start uvicorn on port 8002.") },
     about: { run: () => setCommandIndex({ open: true, tab: "team" }) },
     "meet-the-team": { run: () => window.open(TEAM_URL, "_blank", "noopener,noreferrer") },
     ...buildConsoleHandlers({ appMode, switchMode, setLayerVisibility, setLegendOpen, scrollToPanel, setCommandIndex, setNotice, setSol, setDustPlaying }),
@@ -1796,7 +1796,7 @@ export default function App() {
     return {
       export: {
         schema: EXPORT_SCHEMA,
-        project: "NeuroNexus — Interplanetary Survival Guide: Martian Map",
+        project: "NeuroNexus · Interplanetary Survival Guide: Martian Map",
         event: "NASA Space Apps Challenge 2026",
         exported_at: new Date().toISOString(),
         sol,
@@ -1907,7 +1907,7 @@ export default function App() {
   }
 
   /*
-   * CSV EXPORT — complete, long-form.
+   * CSV EXPORT · complete, long-form.
    *
    * Columns: record_type, record_id, parent_id, field, value, unit, status,
    * source, source_url, timestamp, latitude_deg, longitude_deg.
@@ -1946,7 +1946,7 @@ export default function App() {
   function handleExportRouteCsv() {
     const route = routeForCsvExport();
     if (!route) {
-      setError("No route to export yet — plan a route, apply an AI candidate or save a route first.");
+      setError("No route to export yet · plan a route, apply an AI candidate or save a route first.");
       return;
     }
     const slug = String(route.name ?? "route")
@@ -2052,7 +2052,7 @@ export default function App() {
             boxShadow: "0 10px 30px rgba(0,0,0,0.45)",
           }}
         >
-          <span>REQUEST ERROR — {error}</span>
+          <span>REQUEST ERROR · {error}</span>
 
           <button
             type="button"
@@ -2116,7 +2116,7 @@ export default function App() {
 
               <div className="map-panel-body map-panel-body--with-actions">
                 {/* Both open shared, existing workspaces: the AI Route Designer and the 3D view. */}
-                <div className="map-floating-actions">
+                <div className="map-layer-controls map-toolbar">
                   <button
                     type="button"
                     className="mission-action map-ai-route-button"
@@ -2135,9 +2135,6 @@ export default function App() {
                   >
                     3D MAP
                   </button>
-                </div>
-
-                <div className="map-layer-controls">
                   <CategorizedLayersMenu
                     visibility={layerVisibility}
                     status={contextLayers.status}

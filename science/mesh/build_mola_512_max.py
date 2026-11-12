@@ -89,7 +89,7 @@ def build_faces(size: int) -> np.ndarray:
 
 
 def main() -> None:
-    print("NEURONEXUS — MAXIMUM NATIVE MOLA MESH")
+    print("NEURONEXUS · MAXIMUM NATIVE MOLA MESH")
     print("=" * 72)
 
     print(

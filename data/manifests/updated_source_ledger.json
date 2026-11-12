@@ -148,6 +148,16 @@
       ]
     },
     {
+      "id": "MSL_SAM_GALE_VMR",
+      "organization": "NASA",
+      "role": "atmosphere_reference",
+      "status": "USED_AS_REFERENCE",
+      "url": "https://doi.org/10.1016/j.pss.2017.01.014",
+      "used_for": [
+        "Gale atmospheric composition (SAM QMS volume mixing ratios)"
+      ]
+    },
+    {
       "id": "NASA_PERSEVERANCE",
       "organization": "NASA / Mars 2020",
       "role": "rover_and_science_context",

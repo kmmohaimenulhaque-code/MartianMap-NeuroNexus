@@ -1,7 +1,7 @@
 import { useId, useMemo, useRef, useState } from "react";
 
 /*
- * NeonLineChart — dependency-free SVG line chart in the console's cyan glow.
+ * NeonLineChart · dependency-free SVG line chart in the console's cyan glow.
  *
  * series: [{ id, label, colour, points: [[x, y], ...] }]   (y may be null → gap)
  * bands:  [{ from, to, colour, label }]   horizontal threshold bands (y units)

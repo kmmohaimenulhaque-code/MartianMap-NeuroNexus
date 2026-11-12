@@ -8,7 +8,7 @@ import { fmt } from "../ui/format";
 import Icon from "../ui/Icon";
 
 /*
- * DUST SCENARIO — NASA Ames MGCM MY34 (MODELED).
+ * DUST SCENARIO · NASA Ames MGCM MY34 (MODELED).
  * KPI strip, τ over all 668 sols with backend threshold bands, dust-top
  * sparkline, global τ map for the sol, and a sol scrubber with playback.
  * The scrubber changes the console sol; the chart, map and KPI update
@@ -124,7 +124,7 @@ export default function DustScenarioPanel({ location, sol, onSolChange, onSelect
       </div>
 
       {seriesError ? (
-        <div className="nn-degraded">DUST TIME SERIES UNAVAILABLE — {seriesError}. Values above come from the site environment.</div>
+        <div className="nn-degraded">DUST TIME SERIES UNAVAILABLE · {seriesError}. Values above come from the site environment.</div>
       ) : (
         <>
           <div className="dust-chart-title">
@@ -165,7 +165,7 @@ export default function DustScenarioPanel({ location, sol, onSolChange, onSelect
         </button>
       </div>
       {mapError && !currentMap ? (
-        <div className="nn-degraded">GLOBAL DUST MAP UNAVAILABLE — {mapError}</div>
+        <div className="nn-degraded">GLOBAL DUST MAP UNAVAILABLE · {mapError}</div>
       ) : (
         <NeonHeatmap
           grid={currentMap?.tau}

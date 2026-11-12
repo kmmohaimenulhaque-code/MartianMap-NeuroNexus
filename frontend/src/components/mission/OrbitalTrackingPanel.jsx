@@ -140,7 +140,7 @@ export default function OrbitalTrackingPanel({ open, onClose, data, loading, err
 
         {(error || data?.status === "unavailable") && (
           <div className="ai-error">
-            DATA SOURCE UNAVAILABLE — {error || data?.error}. No close-approach events are shown or inferred while the source is unavailable.
+            DATA SOURCE UNAVAILABLE · {error || data?.error}. No close-approach events are shown or inferred while the source is unavailable.
           </div>
         )}
 

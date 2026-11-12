@@ -29,7 +29,8 @@ await context.route(/fontshare\.com/, async (route) => {
   await route.fulfill({ response, headers: { ...response.headers(), "access-control-allow-origin": "*" } });
 });
 const page = await context.newPage();
-page.on("pageerror", (e) => errors.push(e.message));
+// ArcGIS throws "webgl:major-performance-caveat-detected" on headless software WebGL (no GPU here); only that is ignored.
+page.on("pageerror", (e) => e.name !== "webgl:major-performance-caveat-detected" && errors.push(`${e.name}: ${e.message}`));
 
 const shot = async (name) => {
   await page.screenshot({ path: join(OUT, name) });
@@ -94,12 +95,24 @@ try {
   check(true, "conditions card shows the storm-level dust class at sol 400");
   await shot("03_thermal_sol_synced.png");
 
-  // 4. Categorized layers and the dynamic legend.
+  // 4. Categorized layers and the dynamic legend; the map toolbar never overlaps itself.
   await setSol(100);
+  const overlap = await page.$$eval(".map-toolbar > *", (els) => {
+    const r = els.map((e) => e.getBoundingClientRect()).filter((b) => b.width);
+    return r.some((a, i) => r.some((b, j) => i < j && a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom));
+  });
+  check(!overlap, "AI ROUTE DESIGN, 3D MAP, LAYERS and MAP LEGEND do not overlap");
+  const rightOverflow = await page.$eval(".right-column", (col) => {
+    const edge = col.getBoundingClientRect().right;
+    return [...col.querySelectorAll("input, a, .mission-row")].some((e) => e.getBoundingClientRect().right > edge + 1);
+  });
+  check(!rightOverflow, "right-panel inputs, links and rows stay inside the panel");
   await page.click("button.mission-action:has-text('MAP LEGEND')");
   await page.waitForTimeout(400);
   await page.click("button.mission-action:has-text('LAYERS')");
   await page.waitForTimeout(800);
+  const wrapped = await page.$$eval(".nn-legend-item", (items) => items.some((e) => e.getBoundingClientRect().height > 30));
+  check(!wrapped, "legend phrases stay on one line");
   await shot("04_layers_and_legend.png");
   await page.keyboard.press("Escape");
   await page.click("button.mission-action:has-text('LAYERS')").catch(() => {});
@@ -129,6 +142,25 @@ try {
   check((await page.textContent(".perf-master")).includes("OFF"), "Menu shows [BROWSER OPTIMIZATION] OFF until the user turns it on");
   await shot("07_browser_optimization.png");
   await page.keyboard.press("Escape");
+
+  // 7b. Radial Feature Wheel over the 3D globe.
+  await page.keyboard.press("Escape");
+  await page.click("button:has-text('GLOBAL CONSOLE')");
+  await page.waitForSelector(".map-toolbar");
+  await page.click(".map-toolbar button:has-text('3D MAP')");
+  await page.waitForTimeout(8000);
+  const canvas = await page.$(".esri-view canvas, .esri-view-surface");
+  const cb = canvas ? await canvas.boundingBox() : { x: 900, y: 500, width: 0, height: 0 };
+  await openWheelAt(cb.x + cb.width / 2, cb.y + cb.height / 2);
+  const onTop = await page.evaluate(() => {
+    const w = document.querySelector(".nn-wheel");
+    const b = w.getBoundingClientRect();
+    return document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2)?.closest(".nn-wheel") != null;
+  });
+  check(onTop, "double right-click inside the 3D globe opens the wheel on top");
+  await shot("09_wheel_over_3d_globe.png");
+  await page.keyboard.press("Escape");
+  check(!(await page.evaluate(() => document.body.innerText.includes("\u2014"))), "no em dash in the rendered DOM text");
 
   // 8. Command Index lists the wheel and every export.
   await page.keyboard.press("Control+k");

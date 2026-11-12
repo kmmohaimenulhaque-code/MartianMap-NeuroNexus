@@ -73,7 +73,7 @@ export default function SourceTag({ ledgerId, evidence, detail, compact = false,
                 <span className="nn-tag-row">{[entry.mission, entry.instrument].filter(Boolean).join(" · ")}</span>
               )}
               <span className="nn-tag-row">
-                <b>{evidence ?? entry.evidence_class}</b> — {CLASS_MEANINGS[evidence ?? entry.evidence_class] ?? ""}
+                <b>{evidence ?? entry.evidence_class}</b> · {CLASS_MEANINGS[evidence ?? entry.evidence_class] ?? ""}
               </span>
               <span className="nn-tag-row">Ingestion: {entry.ingestion_status}</span>
               {entry.license && <span className="nn-tag-row">License: {entry.license}</span>}

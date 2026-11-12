@@ -118,7 +118,7 @@ function CandidateCard({ candidate, colour, active, onSelect, onApply, onSave, s
                   ) : (
                     item.name
                   )}{" "}
-                  — {item.source} ({item.status}), {format(item.min_distance_km, 2, " km")}
+                  · {item.source} ({item.status}), {format(item.min_distance_km, 2, " km")}
                 </li>
               ))}
             </ul>
@@ -313,7 +313,7 @@ export default function AiRouteDesigner({
 
             {loading && longTraverseEstimate > 1 && (
               <div className="ai-info">
-                Long traverse detected — planning terrain-aware route in about {longTraverseEstimate} local MOLA segments.
+                Long traverse detected · planning terrain-aware route in about {longTraverseEstimate} local MOLA segments.
               </div>
             )}
             {!loading && result?.segmentation?.segmented && <div className="ai-info">{result.segmentation.message}</div>}
@@ -367,7 +367,7 @@ export default function AiRouteDesigner({
                 <ul>
                   {(analysis.analysis.tradeoffs ?? []).map((item) => (
                     <li key={`${item.candidate}-${item.advantage}`}>
-                      <strong>{item.candidate}</strong> — {item.advantage} · cost: {item.cost} <em>({item.metric_basis})</em>
+                      <strong>{item.candidate}</strong> · {item.advantage} · cost: {item.cost} <em>({item.metric_basis})</em>
                     </li>
                   ))}
                 </ul>
@@ -382,7 +382,7 @@ export default function AiRouteDesigner({
                     <ul>
                       {(analysis.analysis.evidence ?? []).map((item, index) => (
                         <li key={`${item.claim}-${index}`}>
-                          [{item.evidence_class}] {item.claim}: {item.value} — {item.source}
+                          [{item.evidence_class}] {item.claim}: {item.value} · {item.source}
                         </li>
                       ))}
                     </ul>
@@ -393,7 +393,7 @@ export default function AiRouteDesigner({
             )}
 
             {analysis && analysis.status !== "ok" && (
-              <div className="ai-error">GEMINI UNAVAILABLE — {analysis.reason ?? analysis.error}. Deterministic candidates above are unaffected.</div>
+              <div className="ai-error">GEMINI UNAVAILABLE · {analysis.reason ?? analysis.error}. Deterministic candidates above are unaffected.</div>
             )}
 
             {candidates.length > 1 && onSaveAllCandidates && (

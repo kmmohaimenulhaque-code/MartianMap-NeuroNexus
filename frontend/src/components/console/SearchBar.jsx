@@ -35,7 +35,7 @@ export default function SearchBar({ query, suggestions, onQueryChange, onSelect 
                 <small>{suggestion.feature_type}</small>
               </span>
 
-              <span className="suggestion-meta">{suggestion.diameter_km == null ? "—" : `${Number(suggestion.diameter_km).toFixed(2)} km`}</span>
+              <span className="suggestion-meta">{suggestion.diameter_km == null ? "n/a" : `${Number(suggestion.diameter_km).toFixed(2)} km`}</span>
             </button>
           ))}
         </div>

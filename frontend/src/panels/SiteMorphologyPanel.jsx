@@ -5,7 +5,7 @@ import { ProvenanceTag, StatTable } from "../ui/StatTriplet";
 import { fmt } from "../ui/format";
 
 /*
- * SITE MORPHOLOGY — AT SITE (3×3 MOLA sample, from /environment) kept apart
+ * SITE MORPHOLOGY · AT SITE (3×3 MOLA sample, from /environment) kept apart
  * from MIN / MEAN / MAX over a selectable MOLA window (/terrain/window).
  * Amber flags use the routing engine's own reference limits.
  */
@@ -88,7 +88,7 @@ export default function SiteMorphologyPanel({ location, terrain }) {
   let basis;
   if (polar) basis = "POLAR: window statistics need |lat| ≤ 88°, so MIN/MAX elevation are from the 3×3 site sample.";
   else if (status === "loading") basis = `Computing ${windowKm}×${windowKm} km MOLA window…`;
-  else if (status === "error") basis = `WINDOW STATISTICS UNAVAILABLE — ${error}`;
+  else if (status === "error") basis = `WINDOW STATISTICS UNAVAILABLE · ${error}`;
   else if (stats) basis = `${windowKm}×${windowKm} km window · ${stats.valid_pixels?.toLocaleString()}/${stats.total_pixels?.toLocaleString()} valid px · slope p90 ${fmt(slope.p90, 1, "°") ?? "n/a"}`;
 
   return (

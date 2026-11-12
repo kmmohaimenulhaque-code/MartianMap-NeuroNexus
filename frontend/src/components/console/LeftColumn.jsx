@@ -21,25 +21,25 @@ export default function LeftColumn({ activeCustomPlace, displayName, displayType
         <div className="coordinate-block">
           <span>LATITUDE</span>
 
-          <strong>{selectedLocation ? `${Number(selectedLocation.latitude_deg).toFixed(4)}°` : "—"}</strong>
+          <strong>{selectedLocation ? `${Number(selectedLocation.latitude_deg).toFixed(4)}°` : "n/a"}</strong>
 
           <span>LONGITUDE</span>
 
-          <strong>{selectedLocation ? `${Number(selectedLocation.longitude_deg).toFixed(4)}°E` : "—"}</strong>
+          <strong>{selectedLocation ? `${Number(selectedLocation.longitude_deg).toFixed(4)}°E` : "n/a"}</strong>
         </div>
 
         <div className="rule" />
 
         <Metric
           label="Selection source"
-          value={namedFeature ? "USGS / IAU FEATURE" : activeCustomPlace ? "USER PLACE" : selectedLocation ? "COORDINATE SELECTION" : "—"}
+          value={namedFeature ? "USGS / IAU FEATURE" : activeCustomPlace ? "USER PLACE" : selectedLocation ? "COORDINATE SELECTION" : "n/a"}
         />
 
         {namedFeature ? (
           <>
             <Metric
               label="Diameter"
-              value={namedFeature.diameter_km == null ? "—" : `${Number(namedFeature.diameter_km).toFixed(2)} km`}
+              value={namedFeature.diameter_km == null ? "n/a" : `${Number(namedFeature.diameter_km).toFixed(2)} km`}
               detail="USGS / IAU nomenclature"
             />
 
@@ -148,9 +148,9 @@ export default function LeftColumn({ activeCustomPlace, displayName, displayType
       </Panel>
 
       <Panel eyebrow="ENVIRONMENT / SOLAR" title="Solar geometry" id="panel-solar" sources={["NEURONEXUS_SOLAR_GEOMETRY"]}>
-        <Metric label="Areocentric longitude" value={solar ? `${Number(solar.areocentric_longitude_deg).toFixed(2)}°` : "—"} detail="Ls" />
+        <Metric label="Areocentric longitude" value={solar ? `${Number(solar.areocentric_longitude_deg).toFixed(2)}°` : "n/a"} detail="Ls" />
 
-        <Metric label="Observation local solar time" value={thermal ? `${Number(thermal.local_solar_time_hours).toFixed(2)} h` : "—"} />
+        <Metric label="Observation local solar time" value={thermal ? `${Number(thermal.local_solar_time_hours).toFixed(2)} h` : "n/a"} />
       </Panel>
     </aside>
   );

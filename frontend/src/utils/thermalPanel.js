@@ -9,7 +9,7 @@ function finiteNumber(value) {
 
 export function formatThermalNumber(value, unit = "", digits = 1) {
   const number = finiteNumber(value);
-  return number === null ? "—" : `${number.toFixed(digits)}${unit ? ` ${unit}` : ""}`;
+  return number === null ? "n/a" : `${number.toFixed(digits)}${unit ? ` ${unit}` : ""}`;
 }
 
 function hasStats(stats) {
@@ -39,7 +39,7 @@ export function buildThermalPanel(thermal) {
   const outsideRadius = radius !== null && distance !== null && distance > radius;
   const nearestK = formatThermalNumber(nearest?.brightness_temperature_k, "K");
   const nearestC = formatThermalNumber(nearest?.brightness_temperature_c, "°C");
-  const hasNearest = nearestK !== "—" || nearestC !== "—";
+  const hasNearest = nearestK !== "n/a" || nearestC !== "n/a";
   const nearestContext = outsideRadius
     ? "Outside the historical search radius; reference only, not matching radius data"
     : !summary
@@ -75,24 +75,24 @@ export function buildThermalPanel(thermal) {
       : "Historical radius aggregate unavailable in this response.",
     nearest: {
       label: outsideRadius ? "Nearest brightness temperature · outside-radius reference" : "Nearest historical brightness temperature",
-      value: nearestK !== "—" ? nearestK : nearestC,
+      value: nearestK !== "n/a" ? nearestK : nearestC,
       detail: hasNearest
-        ? [nearestK !== "—" && nearestC !== "—" ? nearestC : null, nearestContext, distance !== null ? `${formatThermalNumber(distance, "km")} away` : null].filter(Boolean).join(" · ")
+        ? [nearestK !== "n/a" && nearestC !== "n/a" ? nearestC : null, nearestContext, distance !== null ? `${formatThermalNumber(distance, "km")} away` : null].filter(Boolean).join(" · ")
         : "Nearest temperature unavailable",
     },
     stats: temperatureStats(hasHistorical ? summary : null),
     evidence: {
-      label: evidence?.label ?? "—",
+      label: evidence?.label ?? "n/a",
       score: formatThermalNumber(evidence?.score),
       observationCount: formatThermalNumber(evidence?.observation_count, "", 0),
-      years: Array.isArray(evidence?.years) ? evidence.years.join(", ") || "—" : evidence?.years ?? "—",
+      years: Array.isArray(evidence?.years) ? evidence.years.join(", ") || "n/a" : evidence?.years ?? "n/a",
     },
     coverage: {
       sampleCount: formatThermalNumber(sampleCount, "", 0),
       validSampleCount: formatThermalNumber(validCount, "", 0),
       searchRadius: formatThermalNumber(radius, "km", 0),
-      years: coverage?.observation_years?.length ? coverage.observation_years.join(", ") : "—",
-      seasonalCoverage: hasHistorical && fraction !== null ? `${(fraction * 100).toFixed(1)}%` : "—",
+      years: coverage?.observation_years?.length ? coverage.observation_years.join(", ") : "n/a",
+      seasonalCoverage: hasHistorical && fraction !== null ? `${(fraction * 100).toFixed(1)}%` : "n/a",
       seasonalBins: binsTotal > 0 ? `${formatThermalNumber(coverage?.seasonal_bins, "", 0)}/${binsTotal} Ls bins` : undefined,
     },
     conditions,

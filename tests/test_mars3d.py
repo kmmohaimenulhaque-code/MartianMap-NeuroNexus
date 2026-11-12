@@ -81,12 +81,12 @@ def test_exploration_zones_are_derived_bounded_and_honest():
         return grid
 
     payload = exploration_zones({"latitude_deg": 46.0, "longitude_deg": 150.0}, loader=loader)
-    assert payload["label"].endswith("DERIVED — NEURONEXUS")
+    assert payload["label"].endswith("DERIVED · NEURONEXUS")
     assert "not a NASA-certified safe zone" in payload["method"]
     names = [z["name"] for z in payload["zones"]]
     assert "Arcadia Planitia" in names and names[-1] == "Selected site"
     for zone in payload["zones"]:
-        assert zone["classification"] == "POTENTIAL EXPLORATION ZONE — DERIVED — NEURONEXUS"
+        assert zone["classification"] == "POTENTIAL EXPLORATION ZONE · DERIVED · NEURONEXUS"
         for cell in zone["cells"]:
             assert cell["walkability"] >= PEZ_CRITERIA["walkability_min"]
             assert cell["slope_deg"] <= PEZ_CRITERIA["slope_max_deg"]

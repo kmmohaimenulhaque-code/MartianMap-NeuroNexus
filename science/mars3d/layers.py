@@ -288,7 +288,7 @@ PEZ_CRITERIA = {
     "ice_band_abs_latitude_deg": [30.0, 50.0],
 }
 PEZ_METHOD = (
-    "DERIVED — NEURONEXUS. Within a bounded +/-30 km NASA MOLA 128 ppd window, a cell is a candidate when "
+    "DERIVED · NEURONEXUS. Within a bounded +/-30 km NASA MOLA 128 ppd window, a cell is a candidate when "
     "NeuroNexus walkability >= 70, mean slope <= 5 deg and elevation <= 0 m (below the MOLA datum, i.e. more "
     "atmosphere above the surface for entry, descent and landing). The zone reports whether its centre lies in the "
     "30-50 deg latitude band where SWIM documents accessible shallow-ice study regions. Exploration context only: "
@@ -312,7 +312,7 @@ def evaluate_exploration_zone(name: str, latitude: float, longitude: float, *, c
     if loader is None and key in PEZ_CACHE:
         return PEZ_CACHE[key]
     base = {"name": name, "latitude_deg": latitude, "longitude_deg": longitude % 360.0, "context": context,
-            "criteria": PEZ_CRITERIA, "classification": "POTENTIAL EXPLORATION ZONE — DERIVED — NEURONEXUS"}
+            "criteria": PEZ_CRITERIA, "classification": "POTENTIAL EXPLORATION ZONE · DERIVED · NEURONEXUS"}
     try:
         grid = local_terrain_grid(latitude, longitude, half_width_km=half_width_km, max_cells=24, loader=loader)
     except Exception as exc:
@@ -360,7 +360,7 @@ def exploration_zones(site: dict[str, Any] | None = None, loader=None) -> dict[s
                                                context="Currently selected NeuroNexus site", loader=loader))
     return {
         "status": "ok",
-        "label": "POTENTIAL EXPLORATION ZONES — DERIVED — NEURONEXUS",
+        "label": "POTENTIAL EXPLORATION ZONES · DERIVED · NEURONEXUS",
         "method": PEZ_METHOD,
         "criteria": PEZ_CRITERIA,
         "zones": zones,

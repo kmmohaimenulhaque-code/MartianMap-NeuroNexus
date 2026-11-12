@@ -7,7 +7,7 @@ export default function InterpretationPanel({ environment, siteScience }) {
       <div className="assessment-status">
         <span>STATUS</span>
 
-        <strong>{environment?.assessment?.assessment_status ?? "—"}</strong>
+        <strong>{environment?.assessment?.assessment_status ?? "n/a"}</strong>
       </div>
 
       <div className="source-note">

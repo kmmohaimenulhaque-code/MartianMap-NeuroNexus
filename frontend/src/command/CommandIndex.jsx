@@ -4,7 +4,7 @@ import { CATEGORIES, TEAM_URL, searchCommands } from "../features/registry";
 import Icon from "../ui/Icon";
 
 /*
- * MISSION COMMAND INDEX — every capability of the console, by category.
+ * MISSION COMMAND INDEX · every capability of the console, by category.
  * Search, arrow keys + Enter, Esc to close. Unavailable commands say why.
  * Tabs: COMMANDS · FIELD NOTES & CHECKLIST · TEAM.
  */
@@ -148,7 +148,7 @@ export default function CommandIndex({ open, onClose, registry, initialTab = "co
                                 {command.label}
                                 {command.url ? " ↗" : ""}
                               </strong>
-                              <small>{command.ok ? command.description ?? command.where : `UNAVAILABLE — ${command.reason}`}</small>
+                              <small>{command.ok ? command.description ?? command.where : `UNAVAILABLE · ${command.reason}`}</small>
                             </span>
                             {command.shortcut && <kbd>{command.shortcut}</kbd>}
                           </button>

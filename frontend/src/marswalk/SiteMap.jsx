@@ -17,6 +17,39 @@ import { CLASS_TOKENS, cssVar, SOURCE_TOKENS } from "./walkabilityRamp";
 const CLASS_BY_CODE = ["UNAVAILABLE", "WITHIN PLANNING LIMITS", "REVIEW REQUIRED", "EXCEEDS PLANNING LIMIT"];
 const SOURCE_BY_CODE = ["NONE", "HIRISE", "CTX", "MOLA"];
 
+/*
+ * Zoomed in past the 2 m frame, re-fetch the visible area at the native 1 m HiRISE grid (sharp, not
+ * upscaled). The sub-window has its own center; at <= 700 m half-width the frame offset error is negligible.
+ */
+function DetailOverlays({ frame, mode, overlays }) {
+  const map = useMap();
+  const [win, setWin] = useState(null);
+  useMapEvents({
+    moveend() {
+      const b = map.getBounds();
+      const half = Math.max(b.getEast() - b.getWest(), b.getNorth() - b.getSouth()) / 2;
+      if (mode === "mola" || half > 700) return setWin(null);
+      const c = b.getCenter();
+      const h = Math.ceil(Math.min(700, half * 1.15) / 50) * 50;
+      const x = Math.round(c.lng / 25) * 25;
+      const y = Math.round(c.lat / 25) * 25;
+      const [lat, lon] = toLatLon(x, y, frame);
+      setWin({ x, y, h, frame: { lat: Math.round(lat * 1e6) / 1e6, lon: Math.round(lon * 1e6) / 1e6, halfWidth: h, res: 1 } });
+    },
+  });
+  if (!win) return null;
+  const bounds = [[win.y - win.h, win.x - win.h], [win.y + win.h, win.x + win.h]];
+  const url = (layer) => marswalkApi.imageUrl(win.frame, mode, layer, Math.min(1400, 2 * win.h));
+  return (
+    <>
+      {overlays.hillshade && <ImageOverlay url={url("hillshade")} bounds={bounds} opacity={1} />}
+      {overlays.ortho && <ImageOverlay url={url("ortho")} bounds={bounds} opacity={0.92} />}
+      {overlays.walkability && <ImageOverlay url={url("walkability")} bounds={bounds} opacity={0.9} className="mw-blend" />}
+      {overlays.slope && <ImageOverlay url={url("slope")} bounds={bounds} opacity={0.9} className="mw-blend" />}
+    </>
+  );
+}
+
 function pinIcon(kind, label) {
   return divIcon({ className: `mw-pin mw-pin--${kind}`, html: `<span>${label}</span>`, iconSize: [22, 22], iconAnchor: [11, 11] });
 }
@@ -136,7 +169,7 @@ export default function SiteMap({ frame, mode, overlays, plan, estimate, editPts
     return { lat, lon, elev, slope, src };
   }, [cursor, grids, frame]);
 
-  const gsd = { HIRISE: "1.0 m", CTX: "20 m", MOLA: "463 m", NONE: "—" };
+  const gsd = { HIRISE: "1.0 m", CTX: "20 m", MOLA: "463 m", NONE: "n/a" };
   const layerUrl = (layer) => marswalkApi.imageUrl(frame, mode, layer, Math.min(2048, Math.round((2 * frame.halfWidth) / frame.res)));
   const bounds = [[-extent, -extent], [extent, extent]];
   const editLine = editPts?.length > 1 ? editPts.map((p) => toLocal(p.lat, p.lon, frame).reverse()) : null;
@@ -150,6 +183,7 @@ export default function SiteMap({ frame, mode, overlays, plan, estimate, editPts
         {overlays.walkability && <CachedOverlay url={layerUrl("walkability")} bounds={bounds} opacity={0.9} className="mw-blend" />}
         {overlays.slope && <CachedOverlay url={layerUrl("slope")} bounds={bounds} opacity={0.9} className="mw-blend" />}
         {overlays.source && <CachedOverlay url={layerUrl("source")} bounds={bounds} opacity={0.55} />}
+        <DetailOverlays frame={frame} mode={mode} overlays={overlays} />
         <Pane name="rovers" style={{ zIndex: 420 }}>
           {groundTruth &&
             rovers.map((rover) =>

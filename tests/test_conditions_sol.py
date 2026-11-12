@@ -58,3 +58,24 @@ def test_validation_figures_are_downloadable_and_path_safe():
     assert r.status_code == 200 and r.headers["content-type"] == "image/png"
     assert client.get("/api/validation/figure/gale/20261020-4c5fb3e5/figures/..%2Fsecret.png").status_code in (400, 404)
     assert client.get("/api/validation/figure/mars/20261020-4c5fb3e5/figures/a.png").status_code == 400
+
+
+def test_seasonal_series_are_sorted_by_ls_and_name_their_sources():
+    from fastapi.testclient import TestClient
+
+    from science.serve import app
+
+    body = TestClient(app).get("/api/conditions/seasonal", params={"site": "gale"}).json()
+    for key, ledger in (("pressure_pa", "MSL_REMS_OUTREACH"), ("rad_e_ugy_day", "MSL_RAD_RDR")):
+        pts = body[key]["points"]
+        assert pts and [p[0] for p in pts] == sorted(p[0] for p in pts)
+        assert body[key]["ledger_id"] == ledger
+
+
+def test_gale_gases_are_sam_reference_values():
+    from science import site_science
+
+    src = open(site_science.__file__, encoding="utf-8").read()
+    for value in ("95.1", "2.59", "1.94", "0.161", "0.058"):
+        assert f'"volume_percent": {value}' in src
+    assert "MSL_SAM_GALE_VMR" in src

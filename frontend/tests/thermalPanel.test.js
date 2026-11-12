@@ -24,14 +24,14 @@ const nearest = {
 
 test("missing, nonnumeric and nonfinite temperatures never become zero or NaN", () => {
   for (const value of [null, undefined, NaN, Infinity, -Infinity, "NaN", "Infinity", "", "  ", "unknown", false, true, [], {}]) {
-    assert.equal(formatThermalNumber(value, "K"), "—");
+    assert.equal(formatThermalNumber(value, "K"), "n/a");
     const panel = buildThermalPanel({
       observations: [{ brightness_temperature_k: value, brightness_temperature_c: value }],
       historical_summary: summary({ min_k: value, max_k: value, mean_k: value, min_c: value, max_c: value, mean_c: value }),
     });
-    assert.equal(panel.nearest.value, "—");
+    assert.equal(panel.nearest.value, "n/a");
     assert.equal(panel.hasHistorical, false);
-    assert.ok(panel.stats.every((stat) => stat.value === "—" && stat.detail === "—"));
+    assert.ok(panel.stats.every((stat) => stat.value === "n/a" && stat.detail === "n/a"));
   }
 });
 
@@ -64,7 +64,7 @@ test("empty radius summary preserves a distant nearest reference without using i
   assert.match(panel.nearest.label, /outside-radius reference/);
   assert.match(panel.nearest.detail, /not matching radius data/);
   assert.match(panel.nearest.detail, /750\.5 km away/);
-  assert.ok(panel.stats.every((stat) => stat.value === "—" && stat.detail === "—"));
+  assert.ok(panel.stats.every((stat) => stat.value === "n/a" && stat.detail === "n/a"));
   assert.deepEqual(panel.conditions, []);
 });
 
@@ -75,14 +75,14 @@ test("valid_sample_count takes precedence over total rows and suppresses unusabl
   assert.equal(panel.hasHistorical, false);
   assert.equal(panel.coverage.sampleCount, "8");
   assert.equal(panel.coverage.validSampleCount, "0");
-  assert.ok(panel.stats.every((stat) => stat.value === "—"));
+  assert.ok(panel.stats.every((stat) => stat.value === "n/a"));
 });
 
 test("older summaries without valid_sample_count still use their valid available statistics", () => {
   const panel = buildThermalPanel({ historical_summary: summary({ coverage: { sample_count: "3" } }) });
   assert.equal(panel.hasHistorical, true);
   assert.equal(panel.stats[2].value, "230.3 K");
-  assert.equal(panel.coverage.validSampleCount, "—");
+  assert.equal(panel.coverage.validSampleCount, "n/a");
 });
 
 test("legacy responses show nearest values and evidence but unavailable radius aggregates", () => {
@@ -90,8 +90,8 @@ test("legacy responses show nearest values and evidence but unavailable radius a
   assert.equal(panel.nearest.value, "250.3 K");
   assert.match(panel.nearest.detail, /Legacy nearest THEMIS reference; radius aggregate unavailable/);
   assert.equal(panel.hasHistorical, false);
-  assert.ok(panel.stats.every((stat) => stat.value === "—" && stat.detail === "—"));
-  assert.equal(panel.coverage.sampleCount, "—");
+  assert.ok(panel.stats.every((stat) => stat.value === "n/a" && stat.detail === "n/a"));
+  assert.equal(panel.coverage.sampleCount, "n/a");
   assert.deepEqual(panel.evidence, { label: "STRONG", score: "0.8", observationCount: "14", years: 4 });
 });
 
@@ -109,11 +109,11 @@ test("missing individual stats remain unavailable without hiding other supplied 
     historical_summary: summary({ min_k: null, mean_k: "not a number", mean_c: null }),
   });
   assert.equal(panel.nearest.value, "0.0 °C");
-  assert.equal(panel.stats[0].value, "—");
+  assert.equal(panel.stats[0].value, "n/a");
   assert.equal(panel.stats[0].detail, "-92.9 °C");
   assert.equal(panel.stats[1].value, "280.3 K");
-  assert.equal(panel.stats[2].value, "—");
-  assert.equal(panel.stats[2].detail, "—");
+  assert.equal(panel.stats[2].value, "n/a");
+  assert.equal(panel.stats[2].detail, "n/a");
 });
 
 test("day/night conditions expose all six supplied statistics and actual sample counts", () => {
@@ -155,8 +155,8 @@ test("absent response and null summaries produce unavailable states safely", () 
   for (const response of [undefined, null, {}, { historical_summary: null, observations: [null] }]) {
     const panel = buildThermalPanel(response);
     assert.equal(panel.hasHistorical, false);
-    assert.equal(panel.nearest.value, "—");
-    assert.equal(panel.coverage.seasonalCoverage, "—");
+    assert.equal(panel.nearest.value, "n/a");
+    assert.equal(panel.coverage.seasonalCoverage, "n/a");
     assert.deepEqual(panel.conditions, []);
     assert.match(panel.conditionNote, /Day\/night classification unavailable/);
   }

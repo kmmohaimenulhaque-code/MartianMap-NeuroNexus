@@ -287,7 +287,7 @@ export default function RouteComparisonWorkspace({ routes, compareRouteIds, onTo
             </div>
             {(combined.snapshot || combined.error) && (
               <div className="cmp-combined">
-                {combined.error ? <div className="nn-degraded">COMBINED SNAPSHOT UNAVAILABLE — {combined.error}</div> : <SnapshotFigure snapshot={combined.snapshot} height={380} />}
+                {combined.error ? <div className="nn-degraded">COMBINED SNAPSHOT UNAVAILABLE · {combined.error}</div> : <SnapshotFigure snapshot={combined.snapshot} height={380} />}
               </div>
             )}
             <div className="cmp-snapshots">
@@ -310,7 +310,7 @@ export default function RouteComparisonWorkspace({ routes, compareRouteIds, onTo
                     {entry.loading ? (
                       <div className="cmp-snap-loading">BUILDING SNAPSHOT…</div>
                     ) : entry.error || !entry.snapshot ? (
-                      <div className="nn-degraded">SNAPSHOT UNAVAILABLE — {entry.error || "no response"}</div>
+                      <div className="nn-degraded">SNAPSHOT UNAVAILABLE · {entry.error || "no response"}</div>
                     ) : (
                       <SnapshotFigure snapshot={entry.snapshot} routes={[route]} />
                     )}
@@ -331,7 +331,7 @@ export default function RouteComparisonWorkspace({ routes, compareRouteIds, onTo
                     <UnitsCrossed units={entry.snapshot?.geology?.units_crossed} />
                     {route.reproducibility && (
                       <div className={`cmp-repro cmp-repro-${route.reproducibility.status}`}>
-                        {route.reproducibility.status === "checking" ? "VERIFYING…" : `${route.reproducibility.status.toUpperCase()} — ${route.reproducibility.detail}`}
+                        {route.reproducibility.status === "checking" ? "VERIFYING…" : `${route.reproducibility.status.toUpperCase()} · ${route.reproducibility.detail}`}
                       </div>
                     )}
                     <footer>

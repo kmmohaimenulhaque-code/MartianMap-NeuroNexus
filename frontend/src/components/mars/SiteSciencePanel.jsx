@@ -108,7 +108,7 @@ function ScienceField({
         ) : (
           <span>
             {data.source ??
-              '—'}
+              'n/a'}
           </span>
         )}
       </div>
@@ -318,7 +318,7 @@ export default function SiteSciencePanel({
           ) : (
             <span>
               {atmosphere?.source ??
-                '—'}
+                'n/a'}
             </span>
           )}
         </div>

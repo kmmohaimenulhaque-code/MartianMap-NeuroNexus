@@ -99,7 +99,7 @@ export default function MarsTopographicMap({
 
       {syncStatus === "error" && (
         <div className="usgs-sync-error">
-          USGS SYNCHRONISATION FAILED — {syncError || "the sync service did not respond."} The scientific map is showing its default extent.
+          USGS SYNCHRONISATION FAILED · {syncError || "the sync service did not respond."} The scientific map is showing its default extent.
         </div>
       )}
 

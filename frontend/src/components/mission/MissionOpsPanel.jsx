@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 
 import "./mission-ops.css";
 import { NASA_LINKS, buildMissionConsoleState } from "../../utils/missionConsole.js";
+import SourceTag from "../../sources/SourceTag";
 
 /*
  * CREWED MARS CONSOLE
@@ -423,7 +424,8 @@ export default function MissionOpsPanel({ consoleState, missionInput, profile, o
               <div className="mission-row" key={gas.name}>
                 <span>{gas.name}</span>
                 <strong className={TONE[gas.status] ?? ""}>
-                  {gas.volume_percent == null ? "NO SITE VALUE" : `${gas.volume_percent}%`}
+                  {gas.volume_percent == null ? "NO SITE VALUE" : `${gas.volume_percent}%${gas.uncertainty != null ? ` ± ${gas.uncertainty}` : ""}`}
+                  {gas.ledger_id && <SourceTag ledgerId={gas.ledger_id} detail="MSL SAM GALE" compact />}
                   <em className={`mission-tag ${TONE[gas.status] ?? ""}`}>{gas.status}</em>
                   {gas.url && (
                     <a href={gas.url} target="_blank" rel="noreferrer" className="mission-src">
