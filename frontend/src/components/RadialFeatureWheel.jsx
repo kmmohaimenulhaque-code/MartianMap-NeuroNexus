@@ -37,8 +37,22 @@ function WheelIcon({ name, x, y, size = 26 }) {
   );
 }
 
+/* Font size (viewBox units) at which the longest line fits a chord of maxW: never larger than base. Switzer
+ * caps with the wheel's letter spacing average about 0.64 em per character. */
+function fitSize(lines, maxW, base) {
+  const longest = Math.max(...lines.map((l) => l.length), 1);
+  return Math.min(base, Math.floor((maxW / (longest * 0.64)) * 10) / 10);
+}
+const chord = (r, spanDeg, pad) => 2 * r * Math.sin(((spanDeg / 2) * Math.PI) / 180) - pad;
+
 export function WheelSvg({ state, dispatch, onAction, availability, solLabel, compact = false }) {
   const lh = compact ? 19 : 14; // label line height in viewBox units (phones draw the wheel smaller, so text is set larger)
+  // Labels are sized to fit their sector (no word ever runs past its slice); phones start a little larger.
+  const mainBase = compact ? 15 : 12;
+  const subBase = compact ? 14 : 12;
+  // One size per ring (the size at which its longest label fits), so every sector reads the same.
+  const mainFit = Math.min(...WHEEL.map((sec) => fitSize(sec.label, chord(GEOM.inner + 30, 360 / WHEEL.length - GEOM.sectorGapDeg, 12), mainBase)));
+  const mainSize = () => mainFit;
   const active = state.active != null ? WHEEL[state.active] : null;
   const subItem = active && state.sub != null ? active.items[state.sub] : null;
   const subVerdict = subItem ? (availability?.(subItem.id) ?? true) : true;
@@ -74,15 +88,15 @@ export function WheelSvg({ state, dispatch, onAction, availability, solLabel, co
           <stop offset="0.45" stopColor="#6f858d" />
           <stop offset="1" stopColor="#29414b" />
         </linearGradient>
-        <filter id="nn-wheel-grain" x="0" y="0" width="100%" height="100%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7" result="noise" />
-          <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0.45  0 0 0 0 0.55  0 0 0 0 0.6  0 0 0 0.09 0" result="grain" />
-          <feComposite in="grain" in2="SourceGraphic" operator="in" result="grainIn" />
-          <feMerge>
-            <feMergeNode in="SourceGraphic" />
-            <feMergeNode in="grainIn" />
-          </feMerge>
+        {/* Grain as a texture fill, painted only inside each sector path (a filter on the path would render its
+            rectangular filter region as a faint box on iOS). */}
+        <filter id="nn-wheel-noise" x="0" y="0" width="100%" height="100%" filterUnits="userSpaceOnUse">
+          <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7" />
+          <feColorMatrix type="matrix" values="0 0 0 0 0.45  0 0 0 0 0.55  0 0 0 0 0.6  0 0 0 0.09 0" />
         </filter>
+        <pattern id="nn-wheel-grain" patternUnits="userSpaceOnUse" width={GEOM.size} height={GEOM.size}>
+          <rect width={GEOM.size} height={GEOM.size} filter="url(#nn-wheel-noise)" />
+        </pattern>
       </defs>
 
       {/* Backplate: the dark gaps between sectors read as machined seams. */}
@@ -110,7 +124,8 @@ export function WheelSvg({ state, dispatch, onAction, availability, solLabel, co
             onMouseEnter={() => dispatch({ type: "hover", index: i })}
             onClick={() => dispatch({ type: "hover", index: i })}
           >
-            <path d={annulusPath(GEOM.inner, GEOM.outer, a0, a1)} fill="url(#nn-wheel-slate)" filter="url(#nn-wheel-grain)" className="nn-wheel-face" />
+            <path d={annulusPath(GEOM.inner, GEOM.outer, a0, a1)} fill="url(#nn-wheel-slate)" className="nn-wheel-face" />
+            <path d={annulusPath(GEOM.inner, GEOM.outer, a0, a1)} fill="url(#nn-wheel-grain)" pointerEvents="none" />
             {on && <path d={annulusPath(GEOM.inner, GEOM.outer, a0, a1)} fill="url(#nn-wheel-active)" className="nn-wheel-face-on" />}
             {on && <path d={annulusPath(GEOM.inner, GEOM.outer, a0, a1)} fill="url(#nn-wheel-glow)" className="nn-wheel-face-glow" />}
             {[a0 + 2.2, a1 - 2.2].map((a) => {
@@ -118,9 +133,9 @@ export function WheelSvg({ state, dispatch, onAction, availability, solLabel, co
               return <circle key={a} cx={rx} cy={ry} r={2.1} className="nn-wheel-rivet" />;
             })}
             <WheelIcon name={sector.icon} x={ix} y={iy - 14} />
-            <text x={ix} y={iy + 14} textAnchor="middle" className="nn-wheel-label">
+            <text x={ix} y={iy + 14} textAnchor="middle" className="nn-wheel-label" style={{ fontSize: mainSize(sector.label) }}>
               {sector.label.map((line, k) => (
-                <tspan key={line} x={ix} dy={k === 0 ? 0 : lh}>
+                <tspan key={line} x={ix} dy={k === 0 ? 0 : lh * (mainSize(sector.label) / mainBase)}>
                   {line}
                 </tspan>
               ))}
@@ -143,7 +158,9 @@ export function WheelSvg({ state, dispatch, onAction, availability, solLabel, co
             const { a0, a1, mid } = subAngles(state.active, active.items.length, j);
             const on = state.sub === j;
             const verdict = availability?.(item.id) ?? true;
-            const lines = wrapLabel(`[${item.label}]`, compact ? 11 : 13);
+            const lines = wrapLabel(item.label, compact ? 11 : 13);
+            const size = Math.min(...active.items.map((it) => fitSize(wrapLabel(it.label, compact ? 11 : 13), chord((GEOM.subInner + GEOM.subOuter) / 2, a1 - a0, 14), subBase)));
+            const slh = lh * (size / subBase);
             const [tx, ty] = polar((GEOM.subInner + GEOM.subOuter) / 2, mid);
             return (
               <g
@@ -156,11 +173,12 @@ export function WheelSvg({ state, dispatch, onAction, availability, solLabel, co
                 onClick={() => choose(state.active, j)}
               >
                 <title>{verdict === true ? item.label : `${item.label}: ${verdict}`}</title>
-                <path d={annulusPath(GEOM.subInner, GEOM.subOuter, a0, a1)} className="nn-wheel-subface" filter="url(#nn-wheel-grain)" />
+                <path d={annulusPath(GEOM.subInner, GEOM.subOuter, a0, a1)} className="nn-wheel-subface" />
+                <path d={annulusPath(GEOM.subInner, GEOM.subOuter, a0, a1)} fill="url(#nn-wheel-grain)" pointerEvents="none" />
                 {on && <path d={annulusPath(GEOM.subInner, GEOM.subOuter, a0, a1)} fill="url(#nn-wheel-active)" className="nn-wheel-face-on" />}
-                <text x={tx} y={ty - ((lines.length - 1) * lh) / 2 + 4} textAnchor="middle" className="nn-wheel-sublabel">
+                <text x={tx} y={ty - ((lines.length - 1) * slh) / 2 + 4} textAnchor="middle" className="nn-wheel-sublabel" style={{ fontSize: size }}>
                   {lines.map((line, k) => (
-                    <tspan key={`${line}-${k}`} x={tx} dy={k === 0 ? 0 : lh}>
+                    <tspan key={`${line}-${k}`} x={tx} dy={k === 0 ? 0 : slh}>
                       {line}
                     </tspan>
                   ))}

@@ -1852,3 +1852,5 @@ body, button, input, select, textarea, optgroup { font-family: var(--nn-font); }
   font-size: 0; line-height: 0; color: transparent; text-shadow: none;
   background: #01ffff; box-shadow: 0 0 10px rgba(1, 255, 255, 0.75);
 }
+/* Radial wheel: no rectangular focus box around sectors (the active sector is already lit). */
+.nn-wheel-svg :is(g, path):focus, .nn-wheel-svg :is(g, path):focus-visible, .nn-wheel-svg:focus, .nn-wheel:focus, .nn-wheel-overlay:focus { outline: none; }
