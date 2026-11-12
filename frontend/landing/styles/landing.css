@@ -2208,3 +2208,36 @@ body.lp {
 .lp-finale .lp-fx--stars {
   z-index: 0;
 }
+
+/* Term cards: dark glass, cyan term, gray text (the dark theme turned --ink light, which blanked them). */
+.lp-termcard {
+  border: 1px solid rgba(1, 255, 255, 0.28);
+  background: rgba(6, 12, 20, 0.78);
+  color: #9fb0b4;
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(14px) saturate(140%);
+  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.7), 0 0 30px rgba(1, 255, 255, 0.12);
+}
+
+.lp-termcard strong {
+  color: var(--cyan);
+}
+
+/* Seamless section transitions: effects fade in and out at section edges instead of cutting off, and
+   sections with their own background melt into their neighbors. */
+.lp-fx {
+  -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
+  mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
+}
+
+.lp-challenge {
+  background: linear-gradient(transparent, var(--paper-2) 22%, var(--paper-2) 78%, transparent);
+}
+
+.lp-finale {
+  background: linear-gradient(transparent, var(--night) 20%);
+}
+
+.lp-footer {
+  background: linear-gradient(var(--night), #02050a);
+}
