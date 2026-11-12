@@ -3180,3 +3180,13 @@ a.briefing-card-link:hover {
 .briefing-note a:hover {
   text-decoration: underline;
 }
+
+/* ---------------------------------------------- Mars Intelligence markdown */
+
+.intel-message.assistant .intel-text { white-space: normal; }
+.intel-text p { margin: 0 0 7px; }
+.intel-text ul { margin: 0 0 7px; padding-left: 16px; }
+.intel-text li { margin: 2px 0; }
+.intel-text strong { color: #e6f6fb; }
+.intel-text code { color: #75e6ff; font-size: 9.5px; }
+.intel-heading { margin: 9px 0 4px; color: #75e6ff; font-family: monospace; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; }
