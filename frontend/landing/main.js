@@ -49,3 +49,19 @@ initTerms(doc, glossary);
 initLens(headline.hero);
 initFinale();
 initGlass();
+
+// Boot the real console offscreen once the landing page is idle: its bundles land in the HTTP cache and its
+// startup API calls wake the backends, so Enter Console opens warm. Skipped when the visitor asked to save data.
+addEventListener("load", () => {
+  if (navigator.connection?.saveData) return;
+  (window.requestIdleCallback ?? ((fn) => setTimeout(fn, 1500)))(() => {
+    const frame = doc.createElement("iframe");
+    frame.src = site.consolePath;
+    frame.title = "Console preload";
+    frame.tabIndex = -1;
+    frame.setAttribute("aria-hidden", "true");
+    // Full viewport size offscreen (not display:none) so the maps initialize with a real size.
+    frame.style.cssText = "position:fixed;left:-200vw;top:0;width:100vw;height:100vh;border:0;pointer-events:none;visibility:hidden";
+    doc.body.append(frame);
+  });
+}, { once: true });

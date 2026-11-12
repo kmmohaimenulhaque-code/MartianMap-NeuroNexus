@@ -50,8 +50,23 @@ replay (VERIFY) must reproduce its candidates.
 **V6 Seams.** Elevation differences where HiRISE, CTX and MOLA overlap around the waypoints (HiRISE averaged
 to the CTX posting first). Steps larger than 2 m are flagged; the console flags seam pixels on the map.
 
+> **Why 92% (Gale) and 96% (Jezero) of windows exceed the 2 m seam flag.** The HiRISE, CTX and MOLA products
+> are each registered on their own, and their absolute vertical offsets do not agree: the mean HiRISE - CTX step
+> is 7.3 m at Gale and -18.4 m at Jezero, and CTX - MOLA is -12.3 m and +21.5 m (run `20261020-4c5fb3e5`).
+> Stitching them naively would put artificial step "cliffs" at every strip boundary. NeuroNexus does not hide
+> this: it marks every seam pixel (`TerrainWindow.seams`, drawn on the map), reports the step across each product
+> pair (`seam_steps`, flagged when the median step exceeds 2 m), and gives each pixel the slope of its own rung
+> (`science/hires/layers.py::composite_slope`; MOLA slope from the MOLA surface alone). Horn stencils within a few
+> pixels of a seam can still straddle two products, which is why those pixels stay flagged for review. The high
+> share is a finding about the source products, not a failure of the planner.
+
 **V7 Radiation sanity (P1).** Whether the archived RAD dose rate is anticorrelated with surface pressure, as
 published. If it does not reproduce, the report says so.
+
+> **V7 result: ρ = 0.10 (95% CI -0.08 to 0.27, n = 121 sols), not significant.** The short-window sample of
+> REMS outreach pressure does not reproduce the published anticorrelation. This is why NeuroNexus uses RAD only
+> as an archived time-budget screening metric (EVA dose = daily E rate x EVA hours / 24,
+> `science/marswalk/brief.py`) and never as a per-pixel route modifier.
 
 ## What these results do not show
 

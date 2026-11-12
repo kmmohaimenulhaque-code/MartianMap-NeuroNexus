@@ -1,6 +1,6 @@
 ## Team NeuroNexus - Interplanetary Survival Guide: Martian Map
 
-NASA Space Apps Challenge 2026 · branch ```Master-Ai```
+NASA Space Apps Challenge 2026 · branch `v4-argon-landing-routing`
 
 ## Demo Video
 
@@ -17,7 +17,7 @@ NASA Space Apps Challenge 2026 · branch ```Master-Ai```
 Setup first: SETUP_INSTRUCTIONS.md contains the complete installation, NASA data, Gemini API-key, backend/frontend startup, troubleshooting, and demo instructions.
 
 Setup instructions:
-https://github.com/kmmohaimenulhaque-code/martian-map/blob/Master-Ai/SETUP_INSTRUCTIONS.md
+https://github.com/kmmohaimenulhaque-code/martian-map/blob/v4-argon-landing-routing/SETUP_INSTRUCTIONS.md
 
 ## OUR CHALLENGE:
 
@@ -44,7 +44,15 @@ The goal is not to declare a universally "safe" place on Mars. NeuroNexus provid
 
 ## Live demo
 
-**https://mhaquehaque-neuronexus-marswalk.static.hf.space** · static demo replaying 3,394 real responses recorded from the NeuroNexus backend (banner in the app; not live data). Run locally for live computation.
+Two ways to run it, and they are not the same thing:
+
+| | Local / Docker | Hugging Face static Space |
+|---|---|---|
+| What runs | The FastAPI backend computes every value live and deterministically from NASA/USGS COGs and PDS data | No backend: a precomputed demo pack replays 3,394 responses recorded from the real backend |
+| Use it for | Any site, route or sol; the numbers judged as science | An instant, zero-setup preview |
+| Limits | Needs the setup in SETUP_INSTRUCTIONS.md | Only the recorded requests answer; the app shows a banner, and it is not live data |
+
+Static preview: **https://mhaquehaque-neuronexus-marswalk.static.hf.space**
 
 ## Mission Console v3: one active sol, a radial HUD, exports everywhere
 
@@ -203,7 +211,7 @@ The 3D toolbar has a new **◎ ROUTE PROJECTION** button. Turn it on, **tick sav
 
 ## Screenshots : the mission console in action
 
-The screenshots below show the Master-Ai interface, including Gale site context, historical thermal evidence, route comparison, and the interactive 3D workspace. Displayed values belong to the captured application state used in this project.
+The screenshots below show the console interface, including Gale site context, historical thermal evidence, route comparison, and the interactive 3D workspace. Displayed values belong to the captured application state used in this project.
 
 ### Site selection and synchronized maps
 
@@ -574,7 +582,7 @@ Use the full SETUP_INSTRUCTIONS.md for installation, data acquisition, Gemini co
 
 The intended branch is:
 
-Master-Ai
+v4-argon-landing-routing
 
 Backend:
 ```
@@ -619,6 +627,21 @@ Run `20261020-4c5fb3e5` · generated 2026-10-20T04:43:42+00:00 · `python -m sci
 
 <!-- VALIDATION:END -->
 
+> **Why 92% (Gale) and 96% (Jezero) of windows exceed the 2 m seam flag.** The HiRISE, CTX and MOLA products
+> are each registered on their own, and their absolute vertical offsets do not agree: the mean HiRISE - CTX step
+> is 7.3 m at Gale and -18.4 m at Jezero, and CTX - MOLA is -12.3 m and +21.5 m (run `20261020-4c5fb3e5`).
+> Stitching them naively would put artificial step "cliffs" at every strip boundary. NeuroNexus does not hide
+> this: it marks every seam pixel (`TerrainWindow.seams`, drawn on the map), reports the step across each product
+> pair (`seam_steps`, flagged when the median step exceeds 2 m), and gives each pixel the slope of its own rung
+> (`science/hires/layers.py::composite_slope`; MOLA slope from the MOLA surface alone). Horn stencils within a few
+> pixels of a seam can still straddle two products, which is why those pixels stay flagged for review. The high
+> share is a finding about the source products, not a failure of the planner.
+
+> **V7 result: ρ = 0.10 (95% CI -0.08 to 0.27, n = 121 sols), not significant.** The short-window sample of
+> REMS outreach pressure does not reproduce the published anticorrelation. This is why NeuroNexus uses RAD only
+> as an archived time-budget screening metric (EVA dose = daily E rate x EVA hours / 24,
+> `science/marswalk/brief.py`) and never as a per-pixel route modifier.
+
 ## Test suites
 
 The repository contains tests covering AI behaviour, routing, USGS integration, orbital tracking, Mars 3D services, exports, and other mission subsystems.
@@ -641,10 +664,10 @@ Runtime notes
 # Repository
 
 NASA Space Apps 2026 submission branch:
-https://github.com/kmmohaimenulhaque-code/martian-map/tree/Master-Ai
+https://github.com/kmmohaimenulhaque-code/martian-map/tree/v4-argon-landing-routing
 
 # Source ledger:
-https://github.com/kmmohaimenulhaque-code/martian-map/blob/Master-Ai/data/manifests/updated_source_ledger.json
+https://github.com/kmmohaimenulhaque-code/martian-map/blob/v4-argon-landing-routing/data/manifests/updated_source_ledger.json
 
 
 ## Project tour: the whole console in screenshots
@@ -717,4 +740,4 @@ One screen holds the whole mission picture. The **left column** is the site evid
 
 **Team NeuroNexus** · NASA International Space Apps Challenge 2026 · [Meet the Team](https://www.spaceappschallenge.org/2026/find-a-team/neuronexus1/)
 
-© 2026 Team NeuroNexus. All rights reserved. Mars data courtesy of NASA, USGS and their partners. NASA does not endorse any non-U.S. Government entity and is not responsible for information contained on non-U.S. Government websites.
+© 2026 Team NeuroNexus. Code released under the [MIT License](LICENSE). Mars data courtesy of NASA, USGS and their partners. NASA does not endorse any non-U.S. Government entity and is not responsible for information contained on non-U.S. Government websites.
