@@ -1,6 +1,7 @@
 import { featureColor } from "../layers/sharedLayerData";
 import { useEffect, useMemo, useState } from "react";
 
+import { colorDemTiles } from "./colorDemTiles";
 import { CircleMarker, ImageOverlay, MapContainer, Marker, Polyline, Popup, Tooltip, useMap, useMapEvents } from "react-leaflet";
 
 import { CRS, divIcon, Transformation } from "leaflet";
@@ -519,6 +520,11 @@ function CoordinateCreator({ draftLocation, setDraftLocation, onCreateUserPlace,
   );
 }
 
+function ComparisonBasemap({ routes }) {
+  const tiles = colorDemTiles((routes ?? []).flatMap((route) => routeCoordinates(route)));
+  return tiles.map((t) => <ImageOverlay key={t.url} url={t.url} bounds={t.bounds} attribution="NASA/JPL/ESA/DLR/USGS/Esri" />);
+}
+
 /* Frame every compared route once the comparison map has its real size. */
 function FitComparisonRoutes({ routes }) {
   const map = useMap();
@@ -956,7 +962,7 @@ export default function MarsMap({
         center={[0, 180]}
         zoom={0}
         minZoom={0}
-        maxZoom={7}
+        maxZoom={comparisonMode ? 9 : 7} // comparison maps have the sharp colour-DEM tiles under them
         crs={MARS_CRS}
         maxBounds={MARS_BOUNDS}
         maxBoundsViscosity={1}
@@ -1025,6 +1031,7 @@ export default function MarsMap({
 
         {!comparisonMode && effectiveEnd && routePoints.length === 0 && <RoutePointMarker point={effectiveEnd} label="DESTINATION" color="#ff647c" />}
 
+        {comparisonMode && <ComparisonBasemap routes={comparisonRoutes} />}
         {comparisonMode && <ComparisonRoutesLayer routes={comparisonRoutes} />}
 
         {comparisonMode && <FitComparisonRoutes routes={comparisonRoutes} />}

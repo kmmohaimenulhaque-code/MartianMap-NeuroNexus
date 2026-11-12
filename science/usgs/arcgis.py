@@ -211,7 +211,7 @@ def stitch_tiles(extent: dict[str, float], level: int) -> dict[str, Any]:
     scale = 1
     if max(image.width, image.height) < 480:
         scale = max(1, int(round(640 / max(image.width, image.height, 1))))
-        image = image.resize((image.width * scale, image.height * scale), Image.NEAREST)
+        image = image.resize((image.width * scale, image.height * scale), Image.BICUBIC)  # smooth enlargement, no blocks
     flat = Image.new("RGB", image.size, BACKGROUND_RGB)
     flat.paste(image, mask=image.getchannel("A"))
     buffer = io.BytesIO()
