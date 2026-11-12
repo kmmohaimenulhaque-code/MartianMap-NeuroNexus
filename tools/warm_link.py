@@ -1,6 +1,6 @@
 """Wake the live console and every Render service behind it (one scheduled visit).
 
-  python tools/warm_link.py                      # default link (the v4 Vercel preview)
+  python tools/warm_link.py                      # default link (the judging link)
   python tools/warm_link.py https://example.app   # another link
 
 Free Render services sleep after 15 min idle and a cold start takes 20-90 s. One visit loads the page, wakes all
@@ -19,7 +19,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from gen_vercel_rewrites import health_url, host, service_names  # noqa: E402
 
-LINK = "https://martian-map-git-feature-mission-c-51d8a5-kmmohaimenulhaque-code.vercel.app"
+LINK = "https://martianmap-neuronexus.vercel.app"
 TIMEOUT_S = 180  # a cold start plus the first request stays well under this
 
 
