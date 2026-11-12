@@ -17,6 +17,12 @@ cd ..
 python -m uvicorn science.serve:app --host 0.0.0.0 --port 7860
 ```
 
+One shot (same thing, one line):
+
+```bash
+git switch landing-core-features2 && git pull --ff-only && git lfs pull && (cd frontend && npm ci && npm run build) && python -m uvicorn science.serve:app --host 0.0.0.0 --port 7860
+```
+
 Open **http://localhost:7860** (landing page) or **http://localhost:7860/console/** (mission console).
 Rebuild after every pull, then hard-refresh the browser (Ctrl+Shift+R).
 Check everything (tests, lint, build) with `bash tools/check.sh` (step 7).
