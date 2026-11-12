@@ -23,7 +23,7 @@
       "w": 1600
     },
     "exports": {
-      "src": "assets/screenshots/v3/08_command_index_exports.png",
+      "src": "assets/screenshots/v3/landing-qg-exports.png",
       "w": 1600
     },
     "validation": {
@@ -933,7 +933,7 @@
           ],
           "cursor": [
             0.79,
-            0.572
+            0.585
           ],
           "caption": "Export the EVA brief, the GeoJSON route, the CSV profile or the validation report."
         }
@@ -1157,18 +1157,37 @@
         ]
       },
       {
-        "media": "solstorm",
+        "media": "solcalm",
         "focus": [
           0.2,
           0.03,
           0.56,
           0.73
         ],
-        "cursor": [
-          0.551,
-          0.052
-        ],
-        "caption": "Conditions follow the sol: dust, RAD dose and weather update every map."
+        "caption": "Press play: the sol advances and dust, RAD dose and weather update on every map.",
+        "taps": [
+          {
+            "cursor": [
+              0.551,
+              0.052
+            ],
+            "focus": [
+              0.2,
+              0.0,
+              0.56,
+              0.76
+            ]
+          },
+          {
+            "media": "solstorm",
+            "focus": [
+              0.2,
+              0.03,
+              0.56,
+              0.73
+            ]
+          }
+        ]
       },
       {
         "media": "qg3a",
@@ -1345,13 +1364,19 @@
           {
             "cursor": [
               0.8544,
-              0.2742
+              0.3208
             ]
           },
           {
             "cursor": [
               0.8544,
-              0.4774
+              0.4205
+            ]
+          },
+          {
+            "cursor": [
+              0.8544,
+              0.5201
             ]
           }
         ]
