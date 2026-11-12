@@ -597,3 +597,118 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------------- v2: evidence tags, sources and configurable profile ------- */
+
+.mission-row strong {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.mission-tag {
+  padding: 1px 5px;
+  border: 1px solid currentColor;
+  font-family: monospace;
+  font-size: 7px;
+  font-style: normal;
+  letter-spacing: 0.08em;
+  opacity: 0.9;
+}
+
+.mission-row .observed, .mission-tag.observed { color: #8cf0b1; }
+.mission-row .reference, .mission-tag.reference { color: #9fd8e8; }
+.mission-row .modeled, .mission-tag.modeled { color: #c99bff; }
+.mission-row .derived, .mission-tag.derived { color: #75e6ff; }
+.mission-row .project, .mission-tag.project { color: #d6e6ec; }
+.mission-row .sim, .mission-tag.sim { color: #ffd166; }
+.mission-row .config, .mission-tag.config { color: #ff9f68; }
+.mission-row .missing, .mission-tag.missing { color: #7d949b; }
+
+.mission-src {
+  color: #5f8b99;
+  font-family: monospace;
+  font-size: 7px;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+}
+
+.mission-src:hover { color: #75e6ff; }
+
+.mission-detail {
+  display: block;
+  margin-top: 3px;
+  color: #5f737a;
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+.mission-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.mission-section-title a {
+  color: #5f8b99;
+  font-family: monospace;
+  font-size: 7.5px;
+  text-decoration: none;
+  letter-spacing: 0.06em;
+}
+
+.mission-section-title a:hover { color: #75e6ff; }
+
+.mission-vehicle-block { border-bottom: 1px solid rgba(29, 47, 55, 0.6); padding-bottom: 6px; margin-bottom: 6px; }
+
+.mission-vehicle-detail {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px 10px;
+  padding-top: 4px;
+  color: #66797f;
+  font-size: 8px;
+}
+
+.mission-vehicle-detail strong { font-family: monospace; color: #cfe0e5; }
+.mission-vehicle-detail .missing { color: #7d949b; }
+.mission-vehicle-detail .sim { color: #ffd166; }
+
+.mission-crew-row .warn { color: #ffb347; }
+
+.mission-edit { display: flex; flex-direction: column; gap: 6px; padding: 4px 0; }
+.mission-edit label { display: grid; grid-template-columns: 148px 1fr; align-items: center; gap: 8px; color: #83979d; font-size: 8.5px; }
+.mission-edit input { background: #060c10; border: 1px solid #29414b; color: #d6e6ec; font-family: monospace; font-size: 9.5px; padding: 5px 6px; }
+
+.mission-edit-toggle {
+  margin-top: 7px;
+  width: 100%;
+  border: 1px solid #29414b;
+  background: #0a1318;
+  color: #9fd8e8;
+  font-family: monospace;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  padding: 7px;
+  cursor: pointer;
+}
+
+.mission-orbital-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 9px;
+  padding: 8px 10px;
+  border: 1px solid rgba(117, 230, 255, 0.18);
+  background: rgba(8, 20, 26, 0.75);
+}
+
+.mission-orbital-strip span { display: block; color: #75e6ff; font-family: monospace; font-size: 7.5px; letter-spacing: 0.12em; }
+.mission-orbital-strip strong { display: block; color: #d6e6ec; font-size: 9.5px; }
+.mission-orbital-strip small { display: block; color: #66797f; font-size: 8px; }
+.mission-orbital-strip button { border: 1px solid #29414b; background: #0a1318; color: #9fd8e8; font-family: monospace; font-size: 8px; letter-spacing: 0.09em; padding: 7px 9px; cursor: pointer; }
