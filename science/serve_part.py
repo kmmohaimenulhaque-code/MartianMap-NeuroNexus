@@ -8,6 +8,7 @@ of that, so on a 512 MB instance it gets killed. Each part here imports only its
   NN_PART=terrain-window  /api/terrain/hires/window, /api/terrain/sources
   NN_PART=terrain-image   /api/terrain/hires/image
   NN_PART=marswalk        /api/marswalk/*
+  NN_PART=usgs            /api/usgs/* (USGS route snapshots, kept off the busy 0.1-CPU core)
 
   NN_PART=terrain-window python -m uvicorn science.serve_part:app --host 0.0.0.0 --port 7861
 
@@ -47,7 +48,7 @@ from science.hires import ladder  # noqa: E402
 from science.marswalk import planner  # noqa: E402
 from science.ops.errors import install as install_error_handlers  # noqa: E402
 
-PARTS = {"terrain-window", "terrain-image", "marswalk"}
+PARTS = {"terrain-window", "terrain-image", "marswalk", "usgs"}
 PART = os.environ.get("NN_PART", "terrain-window")
 if PART not in PARTS:
     raise RuntimeError(f"NN_PART must be one of {sorted(PARTS)}, not {PART!r}")
@@ -81,6 +82,8 @@ async def _served_by(request, call_next):
 
 if PART == "marswalk":
     from science.marswalk.api import router  # noqa: E402
+elif PART == "usgs":
+    from science.usgs.api import router  # noqa: E402
 else:
     from science.hires.api import router  # noqa: E402
 api.include_router(router)
@@ -93,7 +96,7 @@ async def health():
 
 
 _gate = asyncio.Semaphore(HEAVY_CONCURRENCY)
-LIGHT_PATHS = ("/health", "/marswalk/config", "/docs", "/openapi.json")
+LIGHT_PATHS = ("/health", "/marswalk/config", "/usgs/source", "/usgs/sync", "/docs", "/openapi.json")
 
 
 async def app(scope, receive, send):

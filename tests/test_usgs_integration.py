@@ -1,4 +1,3 @@
-import math
 
 import pytest
 
@@ -56,3 +55,27 @@ def test_antimeridian_route_is_refused_rather_than_mis_drawn():
 
 def test_map_wkt_is_the_published_definition():
     assert 'PROJECTION["Robinson"]' in MAP_WKT and "3396190.0" in MAP_WKT
+
+
+def test_snapshot_answers_within_its_budget_when_usgs_hangs(monkeypatch):
+    """A stalled USGS service yields a partial snapshot on time, never a request that outlives the proxy."""
+    import time as _time
+
+    from science.usgs import arcgis
+
+    def slow_query(*_args, **_kwargs):
+        _time.sleep(5)
+        return []
+
+    monkeypatch.setattr(arcgis, "SNAPSHOT_BUDGET_S", 0.5)
+    monkeypatch.setattr(arcgis, "stitch_tiles", lambda *_a, **_k: {"display_scale": 1, "data_uri": "", "level": 5})
+    monkeypatch.setattr(arcgis, "unit_colors", lambda: {})
+    monkeypatch.setattr(arcgis, "query_layer", slow_query)
+    arcgis._CACHE.clear()
+    started = _time.perf_counter()
+    snap = arcgis.build_route_snapshot({"coordinates": [{"latitude_deg": -4.81, "longitude_deg": 137.3},
+                                                        {"latitude_deg": -4.71, "longitude_deg": 137.35}]})
+    assert _time.perf_counter() - started < 3
+    assert snap["status"] == "partial" and snap["image"]
+    assert sum("no answer within" in e for e in snap["errors"]) == 4
+    assert not arcgis._CACHE  # a partial snapshot is not cached

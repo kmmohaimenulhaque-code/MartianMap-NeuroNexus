@@ -18,7 +18,8 @@ import threading
 import time
 import urllib.parse
 import urllib.request
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, wait
+from functools import lru_cache
 from typing import Any
 
 from science.usgs.robinson import MARS_2000_SPHERE_RADIUS_M, forward, to_longitude_180
@@ -47,6 +48,7 @@ LOD_RESOLUTIONS = [33072.9828126323 / (2 ** level) for level in range(8)]
 # (maxScale 3,906,250 -> 1,033.53 m/pixel). Finer levels return HTTP 404,
 # so NeuroNexus never requests them and reports the native limit honestly.
 MAX_CACHED_LEVEL = 5
+SNAPSHOT_BUDGET_S = 60.0  # whole USGS fetch for one snapshot, well inside a 120 s proxy limit
 NATIVE_LIMIT_NOTE = (
     "USGS tile cache limit: level 5, 1,033.53 m/pixel. Smaller extents are "
     "upsampled for display; no detail beyond the cached resolution exists."
@@ -110,6 +112,7 @@ _RENDERER_LOCK = threading.Lock()
 _RENDERER: dict[str, Any] = {}
 
 
+@lru_cache(maxsize=1)  # the published renderer does not change; a failed fetch is not cached
 def unit_colors() -> dict[str, str]:
     with _RENDERER_LOCK:
         if "colors" in _RENDERER:
@@ -217,7 +220,7 @@ def stitch_tiles(extent: dict[str, float], level: int) -> dict[str, Any]:
 
 def _point_in_ring(x: float, y: float, ring: list[list[float]]) -> bool:
     inside = False
-    for (x1, y1), (x2, y2) in zip(ring, ring[1:] + ring[:1]):
+    for (x1, y1), (x2, y2) in zip(ring, ring[1:] + ring[:1], strict=True):
         if (y1 > y) != (y2 > y) and x < (x2 - x1) * (y - y1) / ((y2 - y1) or 1e-12) + x1:
             inside = not inside
     return inside
@@ -236,7 +239,7 @@ def _units_crossed(coords: list[tuple[float, float]], cached: dict[str, Any]) ->
     from science.routing.metrics import densify
 
     lat_s, lon_s = densify(coords, 0.25)
-    samples = [project(a, b) for a, b in zip(lat_s, lon_s)]
+    samples = [project(a, b) for a, b in zip(lat_s, lon_s, strict=True)]
     counts: dict[str, int] = {}
     unit_info: dict[str, dict[str, Any]] = {}
     for feature in cached["units"]:
@@ -286,18 +289,31 @@ def build_route_snapshot(route: dict[str, Any]) -> dict[str, Any]:
     route_xy = [project(lat, lon) for lat, lon in coords]
     if cached is None:
         cached = {"image": None, "units": [], "contacts": [], "structures": [], "landing_sites": [], "colors": {}}
-        try:
-            cached["image"] = stitch_tiles(extent, level)
-        except Exception as exc:
-            errors.append(f"USGS MOLA hillshade tiles unavailable: {exc}")
-        try:
-            cached["colors"] = unit_colors()
-            cached["units"] = query_layer("units", extent, "Unit,UnitDesc,UnitGroup,Interpretation,PrimaryCharacteristics", True, res)
-            cached["contacts"] = query_layer("contacts", extent, "*", True, res)
-            cached["structures"] = query_layer("structures", extent, "*", True, res)
-            cached["landing_sites"] = query_layer("landing_sites", extent, "*", True)
-        except Exception as exc:
-            errors.append(f"USGS SIM 3292 FeatureServer query failed: {exc}")
+        query = "USGS SIM 3292 FeatureServer query failed"
+        jobs = {
+            "image": (lambda: stitch_tiles(extent, level), "USGS MOLA hillshade tiles unavailable"),
+            "colors": (unit_colors, f"{query} (unit colors)"),
+            "units": (lambda: query_layer("units", extent, "Unit,UnitDesc,UnitGroup,Interpretation,PrimaryCharacteristics",
+                                          True, res), f"{query} (units)"),
+            "contacts": (lambda: query_layer("contacts", extent, "*", True, res), f"{query} (contacts)"),
+            "structures": (lambda: query_layer("structures", extent, "*", True, res), f"{query} (structures)"),
+            "landing_sites": (lambda: query_layer("landing_sites", extent, "*", True), f"{query} (landing sites)"),
+        }
+        # All six USGS requests at once, under one time budget: run in sequence their timeouts could add up to
+        # more than a proxy waits (Vercel cuts external rewrites at 120 s). A late answer becomes a reported gap.
+        pool = ThreadPoolExecutor(max_workers=len(jobs))
+        futures = {key: pool.submit(fn) for key, (fn, _msg) in jobs.items()}
+        wait(futures.values(), timeout=max(1.0, SNAPSHOT_BUDGET_S - (time.perf_counter() - t0)))
+        pool.shutdown(wait=False, cancel_futures=True)
+        for key, future in futures.items():
+            message = jobs[key][1]
+            if not future.done():
+                errors.append(f"{message}: no answer within {SNAPSHOT_BUDGET_S:.0f} s")
+                continue
+            try:
+                cached[key] = future.result()
+            except Exception as exc:
+                errors.append(f"{message}: {exc}")
         if not errors:
             with _CACHE_LOCK:
                 if len(_CACHE) > 32:

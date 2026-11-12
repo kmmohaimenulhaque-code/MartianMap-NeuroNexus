@@ -46,6 +46,17 @@
       ]
     },
     {
+      "source": "/api/usgs/:path*",
+      "destination": "https://neuronexus-v4-usgs-a.onrender.com/api/usgs/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "1"
+        }
+      ]
+    },
+    {
       "source": "/api",
       "destination": "https://neuronexus-v4-core-a.onrender.com/api",
       "has": [
@@ -114,6 +125,17 @@
     {
       "source": "/api/marswalk/:path*",
       "destination": "https://neuronexus-v4-s2-marswalk.onrender.com/api/marswalk/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "2"
+        }
+      ]
+    },
+    {
+      "source": "/api/usgs/:path*",
+      "destination": "https://neuronexus-v4-usgs-a.onrender.com/api/usgs/:path*",
       "has": [
         {
           "type": "cookie",
@@ -200,6 +222,17 @@
       ]
     },
     {
+      "source": "/api/usgs/:path*",
+      "destination": "https://neuronexus-v4-usgs-a.onrender.com/api/usgs/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "3"
+        }
+      ]
+    },
+    {
       "source": "/api",
       "destination": "https://neuronexus-v4-core-a.onrender.com/api",
       "has": [
@@ -268,6 +301,17 @@
     {
       "source": "/api/marswalk/:path*",
       "destination": "https://neuronexus-v4-s4-marswalk.onrender.com/api/marswalk/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "4"
+        }
+      ]
+    },
+    {
+      "source": "/api/usgs/:path*",
+      "destination": "https://neuronexus-v4-usgs-b.onrender.com/api/usgs/:path*",
       "has": [
         {
           "type": "cookie",
@@ -354,6 +398,17 @@
       ]
     },
     {
+      "source": "/api/usgs/:path*",
+      "destination": "https://neuronexus-v4-usgs-b.onrender.com/api/usgs/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "5"
+        }
+      ]
+    },
+    {
       "source": "/api",
       "destination": "https://neuronexus-v4-core-b.onrender.com/api",
       "has": [
@@ -431,6 +486,17 @@
       ]
     },
     {
+      "source": "/api/usgs/:path*",
+      "destination": "https://neuronexus-v4-usgs-b.onrender.com/api/usgs/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "6"
+        }
+      ]
+    },
+    {
       "source": "/api",
       "destination": "https://neuronexus-v4-core-b.onrender.com/api",
       "has": [
@@ -478,6 +544,10 @@
     {
       "source": "/api/marswalk/:path*",
       "destination": "https://neuronexus-v4-s1-marswalk.onrender.com/api/marswalk/:path*"
+    },
+    {
+      "source": "/api/usgs/:path*",
+      "destination": "https://neuronexus-v4-usgs-a.onrender.com/api/usgs/:path*"
     },
     {
       "source": "/api",

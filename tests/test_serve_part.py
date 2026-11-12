@@ -24,7 +24,8 @@ def _part(monkeypatch, name):
 
 @pytest.mark.parametrize("name,route", [("terrain-window", "/terrain/hires/window"),
                                         ("terrain-image", "/terrain/hires/image"),
-                                        ("marswalk", "/marswalk/plan")])
+                                        ("marswalk", "/marswalk/plan"),
+                                        ("usgs", "/usgs/route-snapshot")])
 def test_part_serves_only_its_router(monkeypatch, name, route):
     part = _part(monkeypatch, name)
     client = TestClient(part.app)
