@@ -8,6 +8,7 @@ import SiteSciencePanel from "./components/mars/SiteSciencePanel";
 import MissionOpsPanel from "./components/mission/MissionOpsPanel";
 
 import AiRouteDesigner from "./components/route/AiRouteDesigner";
+import Mars3DView from "./components/mars3d/Mars3DView";
 import UsgsRouteSnapshot from "./components/mars/UsgsRouteSnapshot";
 import OrbitalTrackingPanel from "./components/mission/OrbitalTrackingPanel";
 import MarsIntelligence from "./components/mission/MarsIntelligence";
@@ -1766,6 +1767,8 @@ export default function App() {
 
   const [designerOpen, setDesignerOpen] = useState(false);
 
+  const [map3dOpen, setMap3dOpen] = useState(false);
+
   const [designStart, setDesignStart] = useState(null);
 
   const [designDestination, setDesignDestination] = useState(null);
@@ -3431,15 +3434,27 @@ export default function App() {
               </div>
 
               <div className="map-panel-body map-panel-body--with-actions">
-                {/* Opens the SAME AI Route Designer as the top-bar button. */}
-                <button
-                  type="button"
-                  className="mission-action map-ai-route-button"
-                  onClick={() => setDesignerOpen(true)}
-                  aria-label="Open AI Route Design"
-                >
-                  AI ROUTE DESIGN
-                </button>
+                {/* Both open shared, existing workspaces: the AI Route Designer and the 3D view. */}
+                <div className="map-floating-actions">
+                  <button
+                    type="button"
+                    className="mission-action map-ai-route-button"
+                    onClick={() => setDesignerOpen(true)}
+                    aria-label="Open AI Route Design"
+                  >
+                    AI ROUTE DESIGN
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`mission-action map-3d-button${map3dOpen ? " active" : ""}`}
+                    onClick={() => setMap3dOpen((value) => !value)}
+                    aria-label="Open interactive 3D map"
+                    aria-pressed={map3dOpen}
+                  >
+                    3D MAP
+                  </button>
+                </div>
 
                 <MarsMap
                   features={places}
@@ -3752,6 +3767,29 @@ export default function App() {
           <strong>Observed · Modeled · Derived · Simulated</strong>
         </div>
       </footer>
+
+      <Mars3DView
+        open={map3dOpen}
+        onClose={() => setMap3dOpen(false)}
+        selectedLocation={selectedLocation}
+        displayName={displayName}
+        environment={environment}
+        features={places}
+        routePoints={routePoints}
+        routeMode={routeMode}
+        candidateRoutes={candidateRoutes}
+        selectedCandidateId={selectedCandidateId}
+        safeHavens={safeHavens}
+        customPlaces={customPlaces}
+        onSelectCoordinate={handleSelectCoordinate}
+        onSelectFeature={handleSelectPlace}
+        onRoutePointAdd={handleRoutePointAdd}
+        onSelectCandidate={setSelectedCandidateId}
+        onApplyCandidate={handleApplyCandidate}
+        onOpenDesigner={() => setDesignerOpen(true)}
+        onOpenSnapshot={handleOpenSnapshot}
+        snapshotAvailable={routePoints.length >= 2 || Boolean(selectedCandidateId)}
+      />
 
       <AiRouteDesigner
         open={designerOpen}
