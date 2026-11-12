@@ -4,3 +4,4 @@ tools/fetch_mola.py
 tests/test_mola_store.py
 science/serve.py
 tests/test_serve.py
+tools/deploy_space.py
