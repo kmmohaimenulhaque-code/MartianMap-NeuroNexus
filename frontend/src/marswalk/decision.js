@@ -31,3 +31,22 @@ export function seasonStatuses(routeStatus, taus) {
   return { statuses, counts, longestWithin: best };
 }
 
+
+const round6 = (v) => Math.round(v * 1e6) / 1e6;
+
+/* The plan's route as an evaluate polyline: [lat, lon], at most `max` vertices, no repeated vertices. */
+export function routePolyline(plan, max = 400) {
+  const coords = plan?.geometry?.coordinates ?? [];
+  if (coords.length < 2) return [];
+  const step = Math.max(1, Math.ceil(coords.length / max));
+  const picked = coords.filter((_, i) => i % step === 0);
+  if (picked[picked.length - 1] !== coords[coords.length - 1]) picked.push(coords[coords.length - 1]);
+  const out = [];
+  for (const [lon, lat] of picked) {
+    const p = [round6(lat), round6(lon)];
+    const prev = out[out.length - 1];
+    if (!prev || prev[0] !== p[0] || prev[1] !== p[1]) out.push(p);
+  }
+  return out;
+}
+

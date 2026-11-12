@@ -8,12 +8,13 @@
 import { SheetHead } from "../components/mobile/MobileDock";
 import { encodePlanLink } from "./planLink";
 import SeasonRibbon from "./SeasonRibbon";
+import Sensitivity from "./Sensitivity";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import SourceTag from "../sources/SourceTag";
 import ConditionsStrip from "./ConditionsStrip";
 import DecisionCard from "./DecisionCard";
-import { openPrintableBrief } from "./evaBrief";
+import { openVisualBrief } from "./evaBrief";
 import { exportEvaBrief, exportGeoJson, exportProfileCsv } from "../exports/actions";
 import { planStore } from "./planStore";
 import { marswalkApi } from "./marswalkApi";
@@ -43,6 +44,7 @@ const SLIDERS = [
   ["terrain_factor_rough", "Terrain factor (rough)", 0.1],
 ];
 const round6 = (v) => Math.round(v * 1e6) / 1e6;
+const MAX_STOPS = 5; // science/marswalk/planner.py accepts 1 to 5 targets
 
 function readPref(key, fallback) {
   try {
@@ -97,7 +99,8 @@ export default function MarswalkView({ demo, onNotice }) {
   const solCtx = useSol();
   const { missionSol } = solCtx;
   const [hoverIndex, setHoverIndex] = useState(null);
-  const [linkCheck, setLinkCheck] = useState(null); // shared link: { shared, now } once the replanned id is known
+  const [linkCheck, setLinkCheck] = useState(null);
+  const [sensitivitySignal, setSensitivitySignal] = useState(0); // shared link: { shared, now } once the replanned id is known
   const planAbort = useRef(null);
   const autoPlanned = useRef(false);
   const estimateSeq = useRef(0);
@@ -246,14 +249,27 @@ export default function MarswalkView({ demo, onNotice }) {
     }
   }, [demo, base, config, targets, runPlan]);
 
-  const onMapClick = useCallback(
-    (point) => {
-      const next = [{ lat: point.lat, lon: point.lon }];
+  // Multi-stop EVA: Shift-click (desktop) or the + STOP toggle (touch) appends a stop; a plain click starts over.
+  const [addStop, setAddStop] = useState(Boolean(demo?.targets?.length > 1));
+  const setStops = useCallback(
+    (next) => {
       setTargets(next);
       setPlan(null);
-      requestEstimate(base ? [base, ...next] : []);
+      setEstimate(null);
+      requestEstimate(base && next.length ? [base, ...next] : []);
     },
     [base, requestEstimate],
+  );
+  const onMapClick = useCallback(
+    (point) => {
+      const append = (point.shift || addStop) && targets.length > 0;
+      if (append && targets.length >= MAX_STOPS) {
+        onNotice?.(`An EVA visits at most ${MAX_STOPS} stops (the planner's limit). Remove one to add another.`);
+        return;
+      }
+      setStops(append ? [...targets, { lat: point.lat, lon: point.lon }] : [{ lat: point.lat, lon: point.lon }]);
+    },
+    [addStop, targets, setStops, onNotice],
   );
 
   const onDragPoint = useCallback(
@@ -287,6 +303,11 @@ export default function MarswalkView({ demo, onNotice }) {
       if (!req) return;
       planStore.set({ pending: null });
       if (req.type === "mode") changeMode(req.value);
+      if (req.type === "sensitivity") setSensitivitySignal((n) => n + 1);
+      if (req.type === "multistop") {
+        setAddStop(true);
+        onNotice?.(`MULTI-STOP ON: each click or tap on the site map adds a stop (up to ${MAX_STOPS}), visited in order. Shift-click also works.`);
+      }
       if (req.type === "overlay") setOverlays((o) => ({ ...o, [req.value]: true }));
       if (req.type === "site" && req.value !== site) changeSite(req.value);
       if (req.type === "verify") {
@@ -340,20 +361,36 @@ export default function MarswalkView({ demo, onNotice }) {
             <strong>{base ? base.label : "locating rover…"}</strong>
             <SourceTag ledgerId={site === "gale" ? "MMGIS_MSL_WAYPOINTS" : "MMGIS_M2020_WAYPOINTS"} detail={base?.origin === "snapshot" ? "offline snapshot" : base?.retrieved} compact />
           </div>
-          <div className="mw-field">
-            <span>Target</span>
+          <div className="mw-field mw-stops" data-testid="mw-stops">
+            <span>
+              {targets.length > 1 ? `Stops (${targets.length}/${MAX_STOPS}, visited in order)` : "Target"}
+            </span>
             {targets.length ? (
-              targets.map((t, i) => (
-                <strong key={i}>
-                  {t.lat.toFixed(5)}°, {t.lon.toFixed(5)}°E{" "}
-                  <button type="button" className="mw-link" onClick={() => { setTargets([]); setPlan(null); setEstimate(null); }}>
-                    clear
-                  </button>
-                </strong>
-              ))
+              <ol>
+                {targets.map((t, i) => (
+                  <li key={`${t.lat},${t.lon},${i}`}>
+                    <b>{i + 1}</b>
+                    <strong>
+                      {t.lat.toFixed(5)}°, {t.lon.toFixed(5)}°E
+                    </strong>
+                    <button type="button" className="mw-stop-x" aria-label={`Remove stop ${i + 1}`} onClick={() => setStops(targets.filter((_, k) => k !== i))}>
+                      ×
+                    </button>
+                  </li>
+                ))}
+              </ol>
             ) : (
               <em className="mw-dim">click the map</em>
             )}
+            <div className="mw-stop-tools">
+              <button type="button" className={addStop ? "active" : undefined} aria-pressed={addStop} onClick={() => setAddStop((v) => !v)} title="When on, each click or tap adds a stop instead of replacing the target">
+                + STOP{addStop ? " · ON" : ""}
+              </button>
+              <button type="button" disabled={!targets.length} onClick={() => setStops([])}>
+                CLEAR ALL
+              </button>
+            </div>
+            <small className="mw-dim">Shift-click (desktop) or + STOP (touch) adds up to {MAX_STOPS} stops; the walk-back returns along the same route.</small>
           </div>
           <div className="mw-field" role="radiogroup" aria-label="EVA duration">
             <span>EVA duration</span>
@@ -389,7 +426,7 @@ export default function MarswalkView({ demo, onNotice }) {
             <button type="button" disabled={!plan?.plan_id} onClick={copyPlanLink} title="Copy a link that replans this exact request and checks the plan_id">
               COPY PLAN LINK
             </button>
-            <button type="button" disabled={!plan?.plan_id} onClick={() => openPrintableBrief(plan.plan_id)}>
+            <button type="button" disabled={!plan?.plan_id || !frame} onClick={() => openVisualBrief({ plan, frame, mode, conditions, siteLabel: SITES[site].label, activeSol: solCtx.sol })} title="Printable brief with the site image, route, profile and status by sol">
               PRINT BRIEF
             </button>
           </div>
@@ -486,6 +523,9 @@ export default function MarswalkView({ demo, onNotice }) {
           </div>
         )}
         <DecisionCard plan={plan} estimate={estimate} loading={planState.loading} error={planState.error} conditions={conditions} />
+        {plan?.plan_id && (
+          <Sensitivity plan={plan} evaHours={evaHours} mode={mode} overrides={overrides} config={config} sliders={SLIDERS} runSignal={sensitivitySignal} />
+        )}
         {plan?.status?.value && (
           <SeasonRibbon routeStatus={plan.status.value} lat={conditions?.dust?.cell?.latitude_deg ?? base?.lat} lon={conditions?.dust?.cell?.longitude_deg ?? base?.lon} />
         )}

@@ -78,6 +78,11 @@ def test_input_caps_and_uniform_errors(client, payload, status):
 def test_evaluate_and_config(client):
     ev = client.post("/marswalk/evaluate", json={"polyline": [[-4.70, 137.396], [-4.70, 137.404]], "eva_hours": 4})
     assert ev.status_code == 200 and ev.json()["segments"]
+    # A repeated vertex (drag dropped on its neighbour) used to make NaN and an HTTP 500.
+    dup = client.post("/marswalk/evaluate", json={"polyline": [[-4.70, 137.396], [-4.70, 137.396], [-4.70, 137.404]], "eva_hours": 4})
+    assert dup.status_code == 200 and dup.json()["summary"]["length_m"]["value"] == ev.json()["summary"]["length_m"]["value"]
+    same = client.post("/marswalk/evaluate", json={"polyline": [[-4.70, 137.396], [-4.70, 137.396]], "eva_hours": 4})
+    assert same.status_code == 422
     cfg = client.get("/marswalk/config").json()
     assert cfg["parameters"]["slope_limit_deg"]["kind"] == "planning choice"
     assert all(ledger.resolve(p["ledger_id"]) for p in cfg["parameters"].values())

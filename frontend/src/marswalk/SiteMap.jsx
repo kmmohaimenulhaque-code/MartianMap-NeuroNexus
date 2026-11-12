@@ -61,7 +61,7 @@ function ClickAndCursor({ frame, onClick, onCursor }) {
     click(event) {
       const [lat, lon] = toLatLon(event.latlng.lng, event.latlng.lat, frame);
       onCursor?.({ x: event.latlng.lng, y: event.latlng.lat }); // touch has no hover: a tap fills the readout too
-      onClick?.({ lat, lon, x: event.latlng.lng, y: event.latlng.lat });
+      onClick?.({ lat, lon, x: event.latlng.lng, y: event.latlng.lat, shift: Boolean(event.originalEvent?.shiftKey) });
     },
     mousemove(event) {
       onCursor?.({ x: event.latlng.lng, y: event.latlng.lat });

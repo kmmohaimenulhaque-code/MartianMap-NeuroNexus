@@ -15,6 +15,7 @@ export const WHEEL = [
     { id: "marswalk-demo", label: "PLAN MARSWALK" },
     { id: "compare-routes", label: "COMPARE ROUTES" },
     { id: "rover-replay", label: "ROVER REPLAY" },
+    { id: "multi-stop-eva", label: "MULTI-STOP EVA" },
   ] },
   { id: "terrain", label: ["TERRAIN", "LADDER"], icon: "terrain", items: [
     { id: "ladder-full", label: "FULL LADDER (1M)" },
@@ -40,6 +41,7 @@ export const WHEEL = [
     { id: "validation-jezero", label: "JEZERO VALIDATION" },
     { id: "sources-ledger", label: "SOURCE LEDGER" },
     { id: "verify-plan", label: "VERIFY PLAN" },
+    { id: "parameter-sensitivity", label: "SENSITIVITY" },
   ] },
   { id: "export", label: ["EXPORT", "& BRIEF"], icon: "export", items: [
     { id: "export-eva-brief", label: "EXPORT EVA BRIEF" },
@@ -52,6 +54,7 @@ export const WHEEL = [
     { id: "mission-manual", label: "OPERATIONS MANUAL" },
     { id: "command-index", label: "COMMAND INDEX" },
     { id: "backend-status", label: "DATA STATUS" },
+    { id: "judge-tour", label: "JUDGE TOUR" },
   ] },
 ];
 

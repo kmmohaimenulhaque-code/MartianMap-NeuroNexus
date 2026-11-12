@@ -107,3 +107,29 @@
 .mw-season-counts { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 6px 0 4px; font-weight: 600; letter-spacing: 0.06em; }
 .mw-axis.mw-band-label { font-size: 10px; letter-spacing: 0.04em; }
 .mw-note-i, .mw-note-x { display: none; }
+.mw-stops ol { list-style: none; margin: 2px 0 4px; padding: 0; display: flex; flex-direction: column; gap: 3px; }
+.mw-stops li { display: grid; grid-template-columns: 22px minmax(0, 1fr) 28px; align-items: center; gap: 6px; padding: 3px 4px; border: 1px solid var(--nn-border); background: var(--nn-surface-2); }
+.mw-stops li b { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--nn-steel); color: var(--nn-text-strong); font-size: 12px; }
+.mw-stops li strong { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mw-stop-x { width: 28px; height: 28px; border: 1px solid var(--nn-border); background: var(--nn-surface); color: var(--nn-text-dim); cursor: pointer; }
+.mw-stop-x:hover { color: var(--nn-red); border-color: var(--nn-red); }
+.mw-stop-tools { display: flex; gap: 6px; margin: 4px 0; }
+.mw-stop-tools button { min-height: 28px; padding: 0 10px; border: 1px solid var(--nn-border); background: var(--nn-surface-2); color: var(--nn-text-strong); font: 600 12px var(--nn-mono); letter-spacing: 0.06em; cursor: pointer; }
+.mw-stop-tools button.active { border-color: var(--nn-cyan); color: var(--nn-cyan); box-shadow: var(--nn-glow-soft); }
+.mw-stop-tools button:disabled { opacity: 0.45; cursor: not-allowed; }
+.mw-sens-run { min-height: 32px; padding: 0 12px; border: 1px solid var(--nn-cyan); background: var(--nn-surface-2); color: var(--nn-cyan); font: 600 12px var(--nn-mono); letter-spacing: 0.08em; cursor: pointer; }
+.mw-sens-run:disabled { opacity: 0.45; cursor: not-allowed; }
+.mw-sens-rows { display: flex; flex-direction: column; gap: 8px; margin: 6px 0 8px; }
+.mw-sens-row { display: flex; flex-direction: column; gap: 3px; padding-top: 6px; border-top: 1px solid var(--nn-border); }
+.mw-sens-label { color: var(--nn-text-strong); font-size: 13px; }
+.mw-sens-label small { color: var(--nn-text-dim); }
+.mw-sens-end { display: grid; grid-template-columns: 92px minmax(0, 1fr) 64px auto; align-items: center; gap: 6px; }
+.mw-sens-bound { color: var(--nn-text-dim); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mw-sens-track { position: relative; height: 10px; background: var(--nn-surface-2); border: 1px solid var(--nn-border); }
+.mw-sens-track::before { content: ""; position: absolute; left: 50%; top: -2px; bottom: -2px; width: 1px; background: var(--nn-text-dim); }
+.mw-sens-track i { position: absolute; top: 1px; bottom: 1px; }
+.mw-sens-track i.is-pos { background: var(--nn-green); }
+.mw-sens-track i.is-neg { background: var(--nn-red); }
+.mw-sens-delta { color: var(--nn-text-strong); font-size: 12px; text-align: right; white-space: nowrap; }
+.mw-sens-status { font-size: 11px; letter-spacing: 0.06em; }
+.mw-sens-why { grid-column: 1 / -1; color: var(--nn-text-dim); font-size: 11px; }

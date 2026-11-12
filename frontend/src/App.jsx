@@ -71,6 +71,7 @@ import SearchBar from "./components/console/SearchBar";
 import ArcgisLayeredMap from "./components/mars/ArcgisLayeredMap";
 import ScrollJumpButton from "./components/console/ScrollJumpButton";
 import ErrorBoundary from "./ui/ErrorBoundary";
+import JudgeTour, { TourHint } from "./components/tour/JudgeTour";
 import { decodePlanLink } from "./marswalk/planLink";
 import MobileDock, { MapViewToggle, SheetHead } from "./components/mobile/MobileDock";
 import { mobileUi as mobileUiStore, useMobileUi } from "./components/mobile/mobileStore";
@@ -220,6 +221,7 @@ export default function App() {
   const [designerOpen, setDesignerOpen] = useState(false);
 
   const [map3dOpen, setMap3dOpen] = useState(false);
+  const [tourOpen, setTourOpen] = useState(false);
   // USGS panel: the NeuroNexus ArcGIS view with the shared layers ("layered") or the USGS geologic web app ("app").
   const [usgsView, setUsgsView] = useState(() => (readStorage("nn.usgsView", "layered") === "app" ? "app" : "layered"));
   useEffect(() => writeStorage("nn.usgsView", usgsView), [usgsView]);
@@ -1758,7 +1760,7 @@ export default function App() {
     "backend-status": { run: () => setNotice(backendConnected ? "Backend online: GET /api/health answered ok." : "Backend unreachable: start it with python tools/run_backend.py (port 8002).") },
     about: { run: () => setCommandIndex({ open: true, tab: "team" }) },
     "meet-the-team": { run: () => window.open(TEAM_URL, "_blank", "noopener,noreferrer") },
-    ...buildConsoleHandlers({ appMode, switchMode, setLayerVisibility, setLegendOpen, scrollToPanel, setCommandIndex, setNotice, setSol, setDustPlaying }),
+    ...buildConsoleHandlers({ appMode, switchMode, setLayerVisibility, setLegendOpen, scrollToPanel, setCommandIndex, setNotice, setSol, setDustPlaying, startDemo, startTour: () => setTourOpen(true) }),
   };
 
   const commandRegistry = buildRegistry(commandHandlers);
@@ -2499,6 +2501,10 @@ export default function App() {
         open={manualOpen}
         onClose={() => setManualOpen(false)}
         onQuickStart={startDemo}
+        onStartTour={() => {
+          setManualOpen(false);
+          setTourOpen(true);
+        }}
         onOpenSources={(focusId) => setSourcesDrawer({ open: true, focusId })}
         onOpenCommands={() => {
           setManualOpen(false);
@@ -2511,6 +2517,22 @@ export default function App() {
       <SourcesDrawer open={sourcesDrawer.open} focusId={sourcesDrawer.focusId} onClose={() => setSourcesDrawer({ open: false, focusId: null })} />
       <RadialFeatureWheel onAction={runCommand} availability={commandAvailable} />
       <MobileDock appMode={appMode} />
+      <JudgeTour
+        open={tourOpen}
+        onClose={() => setTourOpen(false)}
+        actions={{
+          site: () => {
+            switchMode("global");
+            const gale = places.find((p) => /^gale$/i.test(p.clean_name ?? p.feature_name ?? ""));
+            if (gale) handleSelectPlace(gale);
+          },
+          plan: () => startDemo("gale"),
+          decide: () => {
+            if (window.matchMedia?.("(max-width: 767px)").matches) mobileUiStore.setSheet("mission");
+          },
+        }}
+      />
+      {!tourOpen && <TourHint onStart={() => setTourOpen(true)} />}
     </main>
     </SourcesContext.Provider>
     </SolProvider>

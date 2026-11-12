@@ -1716,3 +1716,33 @@ label:has(> .m3d-layer-tag) { flex-wrap: wrap; }
 .nn-arcgis-view .esri-view-surface--inset-outline:focus::after { outline: none; }
 .nn-arcgis-status, .nn-arcgis-note { position: absolute; left: 8px; right: 8px; bottom: 8px; z-index: 5; padding: 6px 8px; border: 1px solid #29414b; background: rgba(8, 16, 20, 0.92); color: #93a7af; font: 12px/1.4 var(--nn-mono); letter-spacing: 0.04em; }
 .nn-arcgis-status.is-error { color: var(--nn-amber); border-color: rgba(255, 196, 107, 0.4); }
+
+/* ------------------------------------------------------------------ Guided judge tour */
+.nn-tour {
+  position: fixed; left: 16px; bottom: 80px; z-index: 5200; width: min(420px, calc(100vw - 24px)); display: flex; flex-direction: column; gap: 8px;
+  padding: 12px 14px; border: 1px solid var(--nn-cyan); background: rgba(8, 16, 20, 0.97); color: var(--nn-text); font: 14px/1.45 var(--nn-mono);
+  box-shadow: 0 0 0 1px rgba(117, 230, 255, 0.15), 0 18px 44px rgba(0, 0, 0, 0.65); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+}
+.nn-tour p { margin: 0; }
+.nn-tour-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.nn-tour-head strong { color: var(--nn-cyan); letter-spacing: 0.08em; }
+.nn-tour-live { color: var(--nn-text-strong); }
+.nn-tour-foot { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+.nn-tour-dots { display: inline-flex; gap: 5px; margin-right: auto; }
+.nn-tour-dots i { width: 8px; height: 8px; border-radius: 50%; background: #29414b; }
+.nn-tour-dots i.is-on { background: var(--nn-cyan); box-shadow: var(--nn-glow-soft); }
+.nn-tour button, .nn-tour-hint button { min-height: 34px; padding: 0 12px; border: 1px solid #29414b; background: #091115; color: #cfe0e5; font: 600 12px var(--nn-mono); letter-spacing: 0.08em; cursor: pointer; }
+.nn-tour button.is-primary, .nn-tour-hint button.is-primary { border-color: var(--nn-cyan); color: var(--nn-cyan); background: #0d2028; }
+.nn-tour button:disabled { opacity: 0.4; cursor: not-allowed; }
+.nn-tour-skip { color: var(--nn-text-dim) !important; }
+.nn-tour-focus { outline: 2px solid var(--nn-cyan) !important; outline-offset: -2px; box-shadow: 0 0 0 4px rgba(117, 230, 255, 0.18), 0 0 30px rgba(117, 230, 255, 0.25) !important; transition: box-shadow 200ms; }
+.nn-tour-hint {
+  position: fixed; left: 50%; top: 96px; transform: translateX(-50%); z-index: 5100; display: flex; align-items: center; gap: 10px; max-width: calc(100vw - 16px);
+  padding: 8px 10px; border: 1px solid var(--nn-cyan-dim); background: rgba(8, 16, 20, 0.95); color: var(--nn-text-strong); font: 13px var(--nn-mono);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
+}
+.nn-manual-tour { border-color: var(--nn-cyan) !important; }
+@media (max-width: 767px) {
+  .nn-tour { left: 8px; right: 8px; width: auto; bottom: calc(var(--nn-dock-h, 56px) + 8px); }
+  .nn-tour-hint { top: auto; bottom: calc(var(--nn-dock-h, 56px) + 8px); flex-wrap: wrap; justify-content: center; }
+}

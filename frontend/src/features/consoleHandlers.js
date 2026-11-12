@@ -9,7 +9,7 @@ import { perfStore } from "../perf/perfStore";
 import { solSnapshot } from "../state/solStore";
 
 export function buildConsoleHandlers(ctx) {
-  const { appMode, switchMode, setLayerVisibility, setLegendOpen, scrollToPanel, setCommandIndex, setNotice, setSol, setDustPlaying } = ctx;
+  const { appMode, switchMode, setLayerVisibility, setLegendOpen, scrollToPanel, setCommandIndex, setNotice, setSol, setDustPlaying, startDemo, startTour } = ctx;
 
   const toMarswalk = (pending) => {
     planStore.set({ pending });
@@ -68,6 +68,12 @@ export function buildConsoleHandlers(ctx) {
     "rad-weather": { run: () => toMarswalk({ type: "scroll", scroll: "mw-conditions" }) },
     "validation-gale": { run: () => toMarswalk({ type: "site", value: "gale", scroll: "mw-validation" }) },
     "validation-jezero": { run: () => toMarswalk({ type: "site", value: "jezero", scroll: "mw-validation" }) },
+    "multi-stop-eva": { run: () => (planStore.get().plan ? toMarswalk({ type: "multistop" }) : startDemo?.("multiStop")) },
+    "parameter-sensitivity": {
+      run: () => toMarswalk({ type: "sensitivity", scroll: "mw-sensitivity" }),
+      available: () => (planStore.get().plan ? true : "Plan a Marswalk first"),
+    },
+    "judge-tour": { run: () => startTour?.() },
     "verify-plan": { run: () => toMarswalk({ type: "verify" }), available: () => (planStore.get().plan ? true : "Plan a Marswalk first") },
     "export-eva-brief": { run: run(exportEvaBrief), available: () => (planStore.get().plan ? true : "Plan a Marswalk first") },
     "export-geojson": { run: run(exportGeoJson), available: () => (planStore.get().plan ? true : "Plan a Marswalk first") },

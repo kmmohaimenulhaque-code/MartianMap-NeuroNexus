@@ -4,6 +4,8 @@ export const DEMOS = {
   gale: { id: "gale", site: "gale", label: "Gale Crater Marswalk Demo", targets: [{ lat: -4.824665, lon: 137.367297 }], evaHours: 4, groundTruth: false },
   jezero: { id: "jezero", site: "jezero", label: "Jezero Out-of-Sample Check", targets: [{ lat: 18.452465, lon: 77.232875 }], evaHours: 4, groundTruth: false },
   groundTruth: { id: "ground-truth", site: "gale", label: "Rover Ground-Truth Validation", targets: [{ lat: -4.824665, lon: 137.367297 }], evaHours: 4, groundTruth: true },
+  // Checked against the planner: 4.0 km, all stops reached in 8 h, REVIEW REQUIRED (slope segments).
+  multiStop: { id: "multi-stop", site: "gale", label: "Multi-Stop Gale EVA (3 stops, 8 h)", targets: [{ lat: -4.8222, lon: 137.38 }, { lat: -4.8265, lon: 137.3735 }, { lat: -4.824665, lon: 137.367297 }], evaHours: 8, groundTruth: false },
 };
 
 export const QUICK_STARTS = [
@@ -11,6 +13,7 @@ export const QUICK_STARTS = [
   { id: "demo-gale", label: DEMOS.gale.label, demo: "gale", note: "4-hour EVA from Curiosity's latest position (stand-in habitat) to a target 1.2 km west." },
   { id: "demo-jezero", label: DEMOS.jezero.label, demo: "jezero", note: "Same pipeline, no re-tuning. Perseverance is on the western rim: the ladder falls back to CTX and says so." },
   { id: "demo-ground-truth", label: DEMOS.groundTruth.label, demo: "groundTruth", note: "Curiosity's real drives over the planned route, with the V1-V6 validation scorecard." },
+  { id: "demo-multistop", label: DEMOS.multiStop.label, demo: "multiStop", note: "One EVA through three science stops in order; add or remove stops (up to 5) and replan." },
 ];
 
 export const GUIDES = [

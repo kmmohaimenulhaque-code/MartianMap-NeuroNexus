@@ -351,6 +351,11 @@ def evaluate_polyline(request: dict) -> dict:
     params = config.resolve(overrides)
     v = config.values(params)
     points = [resolve_point({"lat": a, "lon": b}) for a, b in line]
+    # Repeated consecutive vertices (a drag dropped on its neighbour) give zero-length segments whose
+    # slope is NaN, which broke the JSON response; drop them first.
+    points = [p for i, p in enumerate(points) if i == 0 or _distance_m(points[i - 1], p) > 1e-6]
+    if len(points) < 2:
+        raise PlanError("polyline needs at least 2 distinct vertices")
     straight = sum(_distance_m(a, b) for a, b in zip(points[:-1], points[1:], strict=True))
     if straight > 8000:
         raise PlanError("polyline longer than the 8 km cap")
