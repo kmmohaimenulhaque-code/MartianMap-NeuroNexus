@@ -118,6 +118,19 @@ npm run build      # creates frontend/dist
 npm run preview    # serves the build at http://localhost:4173 (still uses the backend on 8002)
 ```
 
+**One server for everything** (landing page, console and API on one port; used for demos and Codespaces):
+
+```bash
+cd martian-map
+git pull && git lfs pull                       # latest code and the real MOLA terrain tiles
+cd frontend && npm install && npm run build && cd ..
+python -m uvicorn science.serve:app --host 0.0.0.0 --port 7860
+```
+
+Open **http://localhost:7860** (landing page) or **http://localhost:7860/console/**. Rebuild after every pull,
+then hard-refresh the browser (Ctrl+Shift+R). If the landing images look wrong, run
+`git checkout -- frontend/public/landing/media` to restore the committed ones.
+
 ## 6. Quick demo path
 
 1. Click anywhere on the left Mars map → site data loads, and the USGS map on the right moves to the same place.
