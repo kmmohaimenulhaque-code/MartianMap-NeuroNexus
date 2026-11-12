@@ -85,7 +85,8 @@ def build() -> dict[Path, bytes]:
         sizes[key] = [img.width, img.height]
         files[MEDIA / f"{key}.webp"] = webp_bytes(img, media["w"])
     files[MEDIA_SIZES] = (json.dumps(sizes, indent=2) + "\n").encode()
-    hero = Image.open(HERO_SRC).crop(HERO_BOX)
+    # HERO_BOX is in 1920 px screenshot pixels; 2x (3840 px) captures are scaled back first.
+    hero = fit(Image.open(HERO_SRC), 1920).crop(HERO_BOX)
     files[MEDIA / "hero-hirise.webp"] = webp_bytes(hero, hero.width, 88)
     meters_per_px = HERO_STRAIGHT_LINE_M / HERO_STRAIGHT_LINE_PX
     data = headline()
