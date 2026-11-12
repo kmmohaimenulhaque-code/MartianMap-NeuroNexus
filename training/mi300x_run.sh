@@ -24,7 +24,8 @@ echo "free disk: ${FREE_GB} GB (need about 100)"
 echo "== code"
 if [ -d "$NN_WORK/martian-map/.git" ]; then git -C "$NN_WORK/martian-map" pull -q; else
   git clone -q --depth 1 -b "$BRANCH" "$REPO" "$NN_WORK/martian-map"; fi
-SCRIPT="$NN_WORK/martian-map/training/qwen3_14b_mi300x.py"
+SCRIPT_NAME="${NN_SCRIPT:-qwen3_14b_mi300x.py}"   # NN_SCRIPT=qwen3_14b_finish_demo.py runs only the demo
+SCRIPT="$NN_WORK/martian-map/training/$SCRIPT_NAME"
 
 # Find the python3 that has ROCm PyTorch (the Unsloth image may keep it in a venv or conda env).
 PY="${PYTHON:-}"
@@ -43,11 +44,12 @@ if [ -n "$PY" ]; then
   nohup setsid "$PY" -u "$SCRIPT" > "$NN_WORK/run.log" 2>&1 &
 else
   echo "== no ROCm PyTorch found (set PYTHON=/path/to/python3 to choose one): running in the rocm/pytorch container"
+  docker rm -f nn-qwen14b >/dev/null 2>&1 || true
   docker run -d --name nn-qwen14b --rm --device=/dev/kfd --device=/dev/dri --group-add video \
     --ipc=host --shm-size 64G --security-opt seccomp=unconfined \
     -e HF_TOKEN -e HF_USER -e GEMINI_API_KEY -e NN_WORK=/workspace/nn \
     -v "$NN_WORK":/workspace/nn rocm/pytorch:latest \
-    bash -c "python3 -u /workspace/nn/martian-map/training/qwen3_14b_mi300x.py > /workspace/nn/run.log 2>&1"
+    bash -c "python3 -u /workspace/nn/martian-map/training/$SCRIPT_NAME > /workspace/nn/run.log 2>&1"
 fi
 
 sleep 5

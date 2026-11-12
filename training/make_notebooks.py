@@ -495,13 +495,18 @@ pinned: false
 ---
 OpenAI-compatible endpoint for [{MODEL_REPO}](https://huggingface.co/{MODEL_REPO}): `POST /v1/chat/completions`.
 """)
-create_repo(SPACE_REPO, repo_type="space", space_sdk="docker", private=False, exist_ok=True, token=HF_TOKEN,
-            space_hardware=SPACE_HARDWARE)
-if not PUBLIC:
-    api.add_space_secret(SPACE_REPO, "HF_TOKEN", HF_TOKEN)
-upload_folder(repo_id=SPACE_REPO, repo_type="space", folder_path=str(SPACE), token=HF_TOKEN, commit_message="llama.cpp server")
 SPACE_URL = f"https://{SPACE_REPO.replace('/', '-').replace('_', '-').lower()}.hf.space"
-mark(f"Space building: https://huggingface.co/spaces/{SPACE_REPO}  endpoint: {SPACE_URL}/v1/chat/completions")
+SPACE_ERROR = None
+try:
+    create_repo(SPACE_REPO, repo_type="space", space_sdk="docker", private=False, exist_ok=True, token=HF_TOKEN,
+                space_hardware=SPACE_HARDWARE)
+    if not PUBLIC:
+        api.add_space_secret(SPACE_REPO, "HF_TOKEN", HF_TOKEN)
+    upload_folder(repo_id=SPACE_REPO, repo_type="space", folder_path=str(SPACE), token=HF_TOKEN, commit_message="llama.cpp server")
+    mark(f"Space building: https://huggingface.co/spaces/{SPACE_REPO}  endpoint: {SPACE_URL}/v1/chat/completions")
+except Exception as exc:  # e.g. 402: Docker Spaces need HF PRO; the rest of the run continues on the local server
+    SPACE_ERROR = str(exc).splitlines()[-1][:200]
+    mark(f"Space not created ({SPACE_ERROR}); continuing with the local llama.cpp server")
 ''')
 
 code(r'''
@@ -542,8 +547,8 @@ code(r'''
 # 16. Live API call 2: the Hugging Face Space endpoint (waits for the build)
 from huggingface_hub import get_space_runtime
 deadline = time.time() + SPACE_WAIT_MIN * 60
-stage = None
-while time.time() < deadline:
+stage = "NOT CREATED" if SPACE_ERROR else None
+while SPACE_ERROR is None and time.time() < deadline:
     stage = get_space_runtime(SPACE_REPO, token=HF_TOKEN).stage
     if stage in ("RUNNING", "BUILD_ERROR", "RUNTIME_ERROR"): break
     time.sleep(20)
@@ -640,9 +645,13 @@ upload_file(path_or_fileobj=str(WORK / "router_demo.json"), path_in_repo="router
 
 code(r'''
 # 18. Final model card update: Space status, endpoint and router demo results
-lines = ["", "## Inference and router demo", f"- Space: https://huggingface.co/spaces/{SPACE_REPO} "
-         f"({'RUNNING' if SPACE_OK else 'not confirmed running at publish time'})",
-         f"- Endpoint: `{SPACE_URL}/v1/chat/completions`", "",
+space_line = (f"- Space: not created ({SPACE_ERROR}). Serve the GGUF with `llama-server` (see Use above)."
+              if SPACE_ERROR else
+              f"- Space: https://huggingface.co/spaces/{SPACE_REPO} "
+              f"({'RUNNING' if SPACE_OK else 'not confirmed running at publish time'}), "
+              f"endpoint `{SPACE_URL}/v1/chat/completions`")
+lines = ["", "## Inference and router demo", space_line,
+         "- Router demo below ran against a llama.cpp server on the published GGUF" + ("" if SPACE_OK else " (local)") + ".", "",
          "| case | provider | route | fallback from | seconds |", "|---|---|---|---|---|"]
 for label, r in rows_out:
     lines.append(f"| {label} | {r['provider']} | {r['route']} | {r['fallback_from'] or '-'} | {r['seconds']} |")
@@ -709,6 +718,50 @@ def render(target: dict, text: str) -> str:
     return text
 
 
+
+FINISH_INTRO = """# Finish: live API call, router demo and model card update
+
+For a run that already published the GGUF and `eval.json` (for example when the Space step failed).
+Runs a local llama.cpp server on the published GGUF, the router demo, and updates the model card."""
+
+FINISH_INSTALL = r'''
+# 2. Helpers (no heavy installs)
+def sh(cmd, check=True):
+    print("$", cmd, flush=True)
+    r = subprocess.run(cmd, shell=True, text=True, capture_output=True)
+    if r.returncode and check:
+        print(r.stdout[-3000:], r.stderr[-3000:])
+        raise RuntimeError(f"failed: {cmd}")
+    return r
+sh(f'{sys.executable} -m pip install -q hf_transfer "huggingface_hub>=0.34" requests')
+'''
+
+FINISH_CELL = r'''
+# Load what the training run published: GGUF, eval, card
+from huggingface_hub import hf_hub_download
+EVAL = json.load(open(hf_hub_download(MODEL_REPO, "eval.json", token=HF_TOKEN)))
+card = open(hf_hub_download(MODEL_REPO, "README.md", token=HF_TOKEN)).read().split("\n## Inference and router demo")[0]
+GGUFS = []
+for q in QUANTS:
+    local = WORK / f"{RUN_NAME}-{q}.gguf"
+    GGUFS.append(local if local.exists() else pathlib.Path(hf_hub_download(MODEL_REPO, local.name, token=HF_TOKEN,
+                                                                             local_dir=str(WORK))))
+TRAIN_MIN = EVAL["train_minutes"]
+SPACE_REPO, SPACE_ERROR, SPACE_OK = f"{HF_USER}/{RUN_NAME}-api", "not attempted in this run", False
+SPACE_URL = f"https://{SPACE_REPO.replace('/', '-').replace('_', '-').lower()}.hf.space"
+if LLAMA_BUILD.poll() is None:
+    mark("waiting for llama.cpp build"); LLAMA_BUILD.wait()
+assert LLAMA_BUILD.returncode == 0, open(WORK / "llama_build.log").read()[-3000:]
+mark("GGUF: " + ", ".join(g.name for g in GGUFS))
+'''
+
+
+def finish_cells():
+    # CELLS: 1 config, 3 llama.cpp, 4 login, 5 dataset, 10 guards, 15 local call, 17 router, 18 card, 19 summary
+    return ([("markdown", FINISH_INTRO), CELLS[1], ("code", FINISH_INSTALL.strip("\n")), CELLS[3], CELLS[4], CELLS[5],
+             ("code", FINISH_CELL.strip("\n")), CELLS[10], CELLS[15], CELLS[17], CELLS[18], CELLS[19]])
+
+
 def resume_cells():
     # CELLS: 0 intro, 1 config, 2 install, 3 llama.cpp, 4 login, 5 dataset, 10 guards, 12+ merge onward
     return ([("markdown", RESUME_INTRO), CELLS[1], ("code", RESUME_INSTALL.strip("\n")), CELLS[3], CELLS[4], CELLS[5],
@@ -716,7 +769,8 @@ def resume_cells():
 
 
 def build():
-    jobs = [(n, t, CELLS) for n, t in TARGETS.items()] + [("qwen3_4b_resume_gguf", TARGETS["qwen3_4b_kaggle"], resume_cells())]
+    jobs = [(n, t, CELLS) for n, t in TARGETS.items()] + [("qwen3_4b_resume_gguf", TARGETS["qwen3_4b_kaggle"], resume_cells()),
+                                                     ("qwen3_14b_finish_demo", TARGETS["qwen3_14b_mi300x"], finish_cells())]
     for name, target, cell_list in jobs:
         cells = []
         py = []

@@ -312,13 +312,18 @@ pinned: false
 ---
 OpenAI-compatible endpoint for [{MODEL_REPO}](https://huggingface.co/{MODEL_REPO}): `POST /v1/chat/completions`.
 """)
-create_repo(SPACE_REPO, repo_type="space", space_sdk="docker", private=False, exist_ok=True, token=HF_TOKEN,
-            space_hardware=SPACE_HARDWARE)
-if not PUBLIC:
-    api.add_space_secret(SPACE_REPO, "HF_TOKEN", HF_TOKEN)
-upload_folder(repo_id=SPACE_REPO, repo_type="space", folder_path=str(SPACE), token=HF_TOKEN, commit_message="llama.cpp server")
 SPACE_URL = f"https://{SPACE_REPO.replace('/', '-').replace('_', '-').lower()}.hf.space"
-mark(f"Space building: https://huggingface.co/spaces/{SPACE_REPO}  endpoint: {SPACE_URL}/v1/chat/completions")
+SPACE_ERROR = None
+try:
+    create_repo(SPACE_REPO, repo_type="space", space_sdk="docker", private=False, exist_ok=True, token=HF_TOKEN,
+                space_hardware=SPACE_HARDWARE)
+    if not PUBLIC:
+        api.add_space_secret(SPACE_REPO, "HF_TOKEN", HF_TOKEN)
+    upload_folder(repo_id=SPACE_REPO, repo_type="space", folder_path=str(SPACE), token=HF_TOKEN, commit_message="llama.cpp server")
+    mark(f"Space building: https://huggingface.co/spaces/{SPACE_REPO}  endpoint: {SPACE_URL}/v1/chat/completions")
+except Exception as exc:  # e.g. 402: Docker Spaces need HF PRO; the rest of the run continues on the local server
+    SPACE_ERROR = str(exc).splitlines()[-1][:200]
+    mark(f"Space not created ({SPACE_ERROR}); continuing with the local llama.cpp server")
 
 # %%
 # 15. Live API call 1: local llama.cpp server on the fresh GGUF (OpenAI-compatible)
@@ -357,8 +362,8 @@ print(f"local llama-server ({sec}s):\n{ans}\nguards: {check(ans, ctx_of(demo))}"
 # 16. Live API call 2: the Hugging Face Space endpoint (waits for the build)
 from huggingface_hub import get_space_runtime
 deadline = time.time() + SPACE_WAIT_MIN * 60
-stage = None
-while time.time() < deadline:
+stage = "NOT CREATED" if SPACE_ERROR else None
+while SPACE_ERROR is None and time.time() < deadline:
     stage = get_space_runtime(SPACE_REPO, token=HF_TOKEN).stage
     if stage in ("RUNNING", "BUILD_ERROR", "RUNTIME_ERROR"): break
     time.sleep(20)
@@ -453,9 +458,13 @@ upload_file(path_or_fileobj=str(WORK / "router_demo.json"), path_in_repo="router
 
 # %%
 # 18. Final model card update: Space status, endpoint and router demo results
-lines = ["", "## Inference and router demo", f"- Space: https://huggingface.co/spaces/{SPACE_REPO} "
-         f"({'RUNNING' if SPACE_OK else 'not confirmed running at publish time'})",
-         f"- Endpoint: `{SPACE_URL}/v1/chat/completions`", "",
+space_line = (f"- Space: not created ({SPACE_ERROR}). Serve the GGUF with `llama-server` (see Use above)."
+              if SPACE_ERROR else
+              f"- Space: https://huggingface.co/spaces/{SPACE_REPO} "
+              f"({'RUNNING' if SPACE_OK else 'not confirmed running at publish time'}), "
+              f"endpoint `{SPACE_URL}/v1/chat/completions`")
+lines = ["", "## Inference and router demo", space_line,
+         "- Router demo below ran against a llama.cpp server on the published GGUF" + ("" if SPACE_OK else " (local)") + ".", "",
          "| case | provider | route | fallback from | seconds |", "|---|---|---|---|---|"]
 for label, r in rows_out:
     lines.append(f"| {label} | {r['provider']} | {r['route']} | {r['fallback_from'] or '-'} | {r['seconds']} |")
