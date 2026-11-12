@@ -158,12 +158,17 @@ if INSTALL == "mi300x":
         sh(f'{sys.executable} -m pip install -q "transformers==4.56.2" "peft==0.17.1" "accelerate>=1.10" datasets '
            '"huggingface_hub>=0.34"')
         sh(f'{sys.executable} -m pip install -q --no-deps "trl==0.23.0" unsloth unsloth_zoo', check=False)
-    try:
-        import unsloth  # noqa: F401  (PEFT fallback below if it does not import on this ROCm stack)
-        USE_UNSLOTH = True
-    except Exception as exc:
-        print("Unsloth import failed on ROCm, using PEFT:", repr(exc)[:300])
-        sh(f'{sys.executable} -m pip install -q peft datasets accelerate')
+    # Unsloth JIT-compiles C++ against torch headers, which breaks on some ROCm torch builds. bf16 LoRA with PEFT
+    # fits easily in 192 GB, so Unsloth is opt-in here: NN_UNSLOTH=1 to try it.
+    if os.environ.get("NN_UNSLOTH") == "1":
+        try:
+            import unsloth  # noqa: F401
+            USE_UNSLOTH = True
+        except Exception as exc:
+            print("Unsloth import failed on ROCm, using PEFT:", repr(exc)[:300])
+    if not USE_UNSLOTH:
+        print("Training with PEFT (bf16 LoRA).")
+        sh(f'{sys.executable} -m pip install -q "peft==0.17.1" datasets accelerate')
     import torch
     assert torch.version.hip, "torch was replaced by a non-ROCm build; restart from a clean image."
 else:
