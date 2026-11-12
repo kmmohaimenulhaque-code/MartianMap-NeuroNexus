@@ -1,0 +1,27 @@
+{
+  "total": 3395,
+  "train": 3062,
+  "eval": 333,
+  "dropped_by_rule": {
+    "duplicate": 548,
+    "banned_safety_term": 7,
+    "emoji": 6
+  },
+  "by_intent": {
+    "site_overview": 420,
+    "terrain": 330,
+    "dose": 430,
+    "weather": 400,
+    "reach": 300,
+    "planner_status": 300,
+    "missing": 220,
+    "adversarial": 240,
+    "provenance": 220,
+    "app_help": 225,
+    "mars_knowledge": 160,
+    "followup": 150
+  },
+  "planner_output_scenarios": 300,
+  "expects_missing": 957,
+  "seed": 2026
+}
