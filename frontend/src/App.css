@@ -3190,3 +3190,29 @@ a.briefing-card-link:hover {
 .intel-text strong { color: #e6f6fb; }
 .intel-text code { color: #75e6ff; font-size: 9.5px; }
 .intel-heading { margin: 9px 0 4px; color: #75e6ff; font-family: monospace; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; }
+
+/* ---------------------------------------------- left-map floating actions (AI ROUTE DESIGN + 3D MAP) */
+
+.map-floating-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  display: flex;
+  gap: 6px;
+}
+
+.map-floating-actions .map-ai-route-button {
+  position: static;
+}
+
+.map-floating-actions .mission-action {
+  min-height: 30px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+}
+
+.map-3d-button.active {
+  border-color: #75e6ff;
+  color: #e3f7ff;
+  background: #0d2028;
+}
