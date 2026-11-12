@@ -9,6 +9,7 @@ pyarrow
 xarray
 h5py
 numba
+scikit
 
 # NASA / PDS / HTTP
 pds4-tools
