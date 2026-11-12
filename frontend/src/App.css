@@ -3129,3 +3129,54 @@ a {
   .ai-designer-body, .snapshot-body { grid-template-columns: minmax(0, 1fr); }
   .ai-designer-controls, .snapshot-side { border-right: 0; border-left: 0; border-bottom: 1px solid rgba(117, 230, 255, 0.12); }
 }
+
+
+/* ---------------------------------------------- left-map AI route button */
+
+.map-panel-body--with-actions {
+  position: relative;
+}
+
+.map-ai-route-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1000; /* above Leaflet panes (400-700) and controls (800) */
+  min-height: 30px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
+}
+
+/* ---------------------------------------------- long-traverse notice */
+
+.ai-info {
+  padding: 8px 10px;
+  border: 1px solid rgba(117, 230, 255, 0.32);
+  background: rgba(9, 28, 36, 0.9);
+  color: #9fe6f7;
+  font-family: monospace;
+  font-size: 8.5px;
+  line-height: 1.55;
+}
+
+/* ---------------------------------------------- briefing hyperlinks */
+
+a.briefing-card-title,
+a.briefing-card-link {
+  display: block;
+  text-decoration: none;
+}
+
+a.briefing-card-title:hover,
+a.briefing-card-link:hover {
+  text-decoration: underline;
+}
+
+.briefing-note a {
+  color: var(--cyan);
+  text-decoration: none;
+}
+
+.briefing-note a:hover {
+  text-decoration: underline;
+}
