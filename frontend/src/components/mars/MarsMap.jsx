@@ -621,7 +621,12 @@ function CandidateRoutesLayer({ candidates = [], selectedId = null, onSelect }) 
   return (
     <>
       {ordered.map((candidate) => {
-        const positions = (candidate.coordinates ?? []).map((point) => [Number(point.latitude_deg), normaliseLongitude(point.longitude_deg)]);
+        /* Long traverses carry the full terrain-aware path separately from the
+           <=32 editor waypoints; draw the full path when it is present. */
+        const positions = (candidate.path_coordinates ?? candidate.coordinates ?? []).map((point) => [
+          Number(point.latitude_deg),
+          normaliseLongitude(point.longitude_deg),
+        ]);
 
         if (positions.length < 2) {
           return null;
