@@ -73,3 +73,42 @@ def test_frame_cap_coarsens_resolution_instead_of_growing_the_frame(monkeypatch)
     assert full[:3] == capped[:3]  # same frame
     assert full[3] == 1.0 and capped[3] > 1.0
     assert 2 * capped[2] / capped[3] <= 1500
+
+
+def test_queued_request_from_a_gone_client_is_skipped_and_bodies_survive(monkeypatch):
+    import asyncio
+
+    part = _part(monkeypatch, "marswalk")
+
+    async def run(messages, block=False):
+        queue = list(messages)
+
+        async def receive():
+            if queue:
+                return queue.pop(0)
+            if block:
+                await asyncio.sleep(10)
+            return {"type": "http.disconnect"}
+
+        gone, replay = await part._client_gone(receive)
+        return gone, (await replay()) if not gone else None
+
+    body = {"type": "http.request", "body": b'{"targets": []}', "more_body": False}
+    assert asyncio.run(run([{"type": "http.disconnect"}])) == (True, None)
+    assert asyncio.run(run([body]))[0] is True  # body read, then the client left
+    gone, first = asyncio.run(run([body], block=True))  # still connected
+    assert gone is False and first == body  # the POST body is replayed to the endpoint
+
+
+def test_queue_wait_limit_answers_busy(monkeypatch):
+    import asyncio
+
+    part = _part(monkeypatch, "terrain-image")
+    sent = []
+
+    async def send(message):
+        sent.append(message)
+
+    asyncio.run(part._send_busy(send))
+    assert sent[0]["status"] == 503 and (b"retry-after", b"5") in sent[0]["headers"]
+    assert b'"BUSY"' in sent[1]["body"]

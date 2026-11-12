@@ -20,6 +20,7 @@ from __future__ import annotations
 import asyncio
 import ctypes
 import gc
+import json
 import os
 from contextlib import asynccontextmanager
 
@@ -54,6 +55,8 @@ if PART not in PARTS:
     raise RuntimeError(f"NN_PART must be one of {sorted(PARTS)}, not {PART!r}")
 HEAVY_CONCURRENCY = max(1, int(os.environ.get("NN_HEAVY_CONCURRENCY", "1")))
 THREADS = max(HEAVY_CONCURRENCY + 1, int(os.environ.get("NN_THREADS", "2")))
+# Longest a heavy request waits for its turn before answering 503 BUSY (the proxy gives up at 120 s).
+QUEUE_MAX_S = float(os.environ.get("NN_QUEUE_MAX_S", "75"))
 # Cached terrain frames and planner layer sets are the memory that stays after a request.
 ladder.CACHE_WINDOWS = max(1, int(os.environ.get("NN_WINDOW_CACHE", "2")))
 planner.LAYER_CACHE = max(1, int(os.environ.get("NN_LAYER_CACHE", "1")))
@@ -114,11 +117,52 @@ async def app(scope, receive, send):
         return
     # Heavy requests queue here instead of running side by side: two terrain frames at once
     # would double the peak and get the instance killed.
-    async with _gate:
-        try:
-            await api(scope, receive, send)
-        finally:
-            _release_memory()
+    try:
+        await asyncio.wait_for(_gate.acquire(), timeout=QUEUE_MAX_S)
+    except TimeoutError:
+        await _send_busy(send)
+        return
+    try:
+        gone, receive = await _client_gone(receive)
+        if gone:
+            return  # the browser moved on (new mode, new frame) while this waited: skip the work
+        await api(scope, receive, send)
+    finally:
+        _gate.release()
+        _release_memory()
+
+
+async def _client_gone(receive):
+    """(disconnected?, receive) without losing the request body: the messages read are replayed.
+
+    A judge who flips terrain modes leaves abandoned requests in the queue; computing them anyway
+    pushed the request they were waiting for past the proxy's 120 s limit (HTTP 502)."""
+    first = await receive()
+    if first["type"] == "http.disconnect":
+        return True, receive
+    pending = [first]
+    try:
+        nxt = await asyncio.wait_for(receive(), timeout=0.01)
+    except TimeoutError:
+        nxt = None
+    if nxt is not None:
+        if nxt["type"] == "http.disconnect":
+            return True, receive
+        pending.append(nxt)
+
+    async def replay():
+        return pending.pop(0) if pending else await receive()
+
+    return False, replay
+
+
+async def _send_busy(send):
+    body = json.dumps({"error": "BUSY", "reason": f"{PART} is still working on earlier requests",
+                       "hint": "retry in a moment", "detail": "queue wait limit reached"}).encode()
+    await send({"type": "http.response.start", "status": 503,
+                "headers": [(b"content-type", b"application/json"), (b"retry-after", b"5"),
+                            (b"x-neuronexus-served-by", SERVED_BY.encode())]})
+    await send({"type": "http.response.body", "body": body})
 
 
 def _release_memory() -> None:
