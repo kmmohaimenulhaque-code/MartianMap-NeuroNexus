@@ -27,8 +27,24 @@ export function initPareto(root = document) {
     });
     const item = DETAILS[index];
     section.dataset.status = index === 0 ? "dominated" : "pareto";
-    section.innerHTML = `<div><span class="lp-eyebrow"><span class="lp-dot" aria-hidden="true"></span>Selected candidate</span><h3>${item.title}</h3><p>${item.status}. ${item.summary} The <button class="lp-term" type="button" data-term="edge-cost-model">edge cost model</button> keeps the trade-off deterministic.</p></div><div class="lp-pareto-bars">${item.values.map((value, i) => `<span><small>${["Distance", "Climb", "EVA time", "Risk proxy"][i]}</small><i><b style="width:${value}%"></b></i><em>${item.metrics?.[i] || ""}</em></span>`).join("")}</div>`;
+    section.innerHTML = `<div><span class="lp-eyebrow"><span class="lp-dot" aria-hidden="true"></span>Selected candidate</span><h3>${item.title}</h3><p>${item.status}. ${item.summary} The <button class="lp-term" type="button" data-term="edge-cost-model">edge cost model</button> keeps the trade-off deterministic.</p></div><div class="lp-pareto-bars">${item.values.map((value, i) => `<span><small>${["Distance", "Climb", "EVA time", "Risk proxy"][i]}</small><i><b data-w="${value}"></b></i><em>${item.metrics?.[i] || ""}</em></span>`).join("")}</div>`;
     section.dispatchEvent(new CustomEvent("nn:terms-refresh", { bubbles: true }));
+    // Bars grow from zero and the numbers count up, so every selection reads as a change.
+    requestAnimationFrame(() => section.querySelectorAll("b[data-w]").forEach((b) => (b.style.width = `${b.dataset.w}%`)));
+    section.querySelectorAll(".lp-pareto-bars em").forEach((em) => {
+      const [, num, unit] = em.textContent.match(/^([\d,.]+)(.*)$/) || [];
+      if (!num) return;
+      const target = Number(num.replace(/,/g, ""));
+      const decimals = (num.split(".")[1] || "").length;
+      const t0 = performance.now();
+      const tick = (now) => {
+        const k = Math.min(1, (now - t0) / 700);
+        const v = target * (1 - (1 - k) ** 3);
+        em.textContent = `${v.toLocaleString("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}${unit}`;
+        if (k < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
   };
 
   const filter = (value) => {

@@ -762,161 +762,6 @@ main > section {
   letter-spacing: -0.02em;
 }
 
-.lp-story {
-  position: relative;
-  z-index: 1;
-  max-width: 62ch;
-  display: grid;
-  grid-template-columns: minmax(150px, 0.7fr) minmax(0, 1fr);
-  gap: 18px;
-  padding: 12px;
-  border: 1px solid rgba(1, 255, 255, 0.22);
-  border-left: 3px solid var(--rust);
-  background: rgba(6, 12, 20, 0.66);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-/* The Apollo story is an editorial bridge below the statement, not part of the hero grid. */
-main > .lp-story {
-  width: min(1120px, calc(100% - 2 * var(--gutter)));
-  max-width: none;
-  margin: clamp(56px, 8vw, 112px) auto 0;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-  padding: 0;
-  border: 0;
-  background: transparent;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-}
-
-main > .lp-story .lp-story__media {
-  aspect-ratio: 16 / 10;
-  min-height: 0;
-  border-radius: 16px;
-}
-
-main > .lp-story .lp-story__media img {
-  min-height: 0;
-  transform: scale(1.04);
-}
-
-main > .lp-story.is-in .lp-story__media img {
-  transform: scale(1);
-}
-
-main > .lp-story .lp-story__body {
-  align-self: center;
-  padding: clamp(12px, 3vw, 36px) 0 clamp(12px, 3vw, 36px) clamp(12px, 3vw, 44px);
-}
-
-main > .lp-story h2 {
-  max-width: 18ch;
-  font-size: clamp(1.75rem, 3vw, 2.5rem);
-  line-height: 1.08;
-  letter-spacing: -0.03em;
-}
-
-main > .lp-story .lp-story__bridge {
-  max-width: 58ch;
-  margin: 14px 0;
-  color: var(--ink-2);
-  font-size: 15px;
-  line-height: 1.65;
-}
-
-main > .lp-story[data-reveal] {
-  transition: opacity 600ms cubic-bezier(0.16, 1, 0.3, 1), transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.lp-story__media {
-  position: relative;
-  min-height: 220px;
-  overflow: hidden;
-  border: 1px solid rgba(1, 255, 255, 0.18);
-  background: #08111b;
-}
-
-.lp-story__media img {
-  width: 100%;
-  height: 100%;
-  min-height: 220px;
-  object-fit: cover;
-  filter: saturate(0.75) contrast(1.05);
-  transition: transform 500ms var(--ease-out), filter 300ms var(--ease-out);
-}
-
-.lp-story:hover .lp-story__media img {
-  transform: scale(1.06);
-  filter: saturate(1.1) contrast(1.08);
-}
-
-.lp-story__body {
-  min-width: 0;
-}
-
-.lp-story__pin {
-  position: absolute;
-  z-index: 2;
-  border: 1px solid rgba(1, 255, 255, 0.5);
-  background: rgba(3, 7, 12, 0.82);
-  color: var(--teal);
-  font-size: 9px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.lp-story__pin {
-  padding: 5px 7px;
-  cursor: pointer;
-  transition: background-color var(--t-base), color var(--t-base), transform var(--t-base);
-}
-
-.lp-story__pin:hover,
-.lp-story__pin.is-selected {
-  background: var(--cyan);
-  color: var(--night);
-  transform: translateY(-2px);
-}
-
-.lp-story__pin--crater {
-  left: 12%;
-  top: 28%;
-}
-
-.lp-story__pin--turnaround {
-  right: 12%;
-  top: 58%;
-}
-
-.lp-story .lp-eyebrow {
-  margin-bottom: 10px;
-  color: var(--teal);
-  font-size: 10px;
-}
-
-.lp-story h2 {
-  max-width: 12ch;
-  margin: 0 0 10px;
-  font-size: clamp(30px, 4vw, 58px);
-  line-height: 0.98;
-  letter-spacing: -0.04em;
-}
-
-.lp-story p:not(.lp-eyebrow):not(.lp-small) {
-  max-width: 55ch;
-  margin: 0 0 10px;
-  color: var(--ink-2);
-}
-
-.lp-story .lp-small {
-  margin: 0;
-}
-
-.lp-story .lp-small a {
-  color: var(--teal);
-}
-
 .lp-pareto-filters button {
   padding: 7px 10px;
   border: 1px solid rgba(1, 255, 255, 0.22);
@@ -970,12 +815,6 @@ main > .lp-story[data-reveal] {
     align-items: end;
     column-gap: clamp(32px, 5vw, 96px);
   }
-  .lp-story {
-    grid-column: 1;
-    grid-row: 1;
-    align-self: start;
-    max-width: min(58ch, 52vw);
-  }
   .lp-hero__intro {
     grid-column: 1;
     grid-row: 1;
@@ -1007,12 +846,6 @@ main > .lp-story[data-reveal] {
 }
 
 @media (max-width: 599px) {
-  .lp-story {
-    padding: 14px;
-  }
-  .lp-story h2 {
-    font-size: 34px;
-  }
   .lp-hero__bridge {
     font-size: 12px;
   }
@@ -1619,18 +1452,6 @@ main > .lp-story[data-reveal] {
 }
 
 @media (max-width: 720px) {
-  main > .lp-story {
-    grid-template-columns: 1fr;
-  }
-  main > .lp-story .lp-story__media {
-    min-height: 180px;
-  }
-  main > .lp-story .lp-story__media img {
-    min-height: 180px;
-  }
-  main > .lp-story .lp-story__body {
-    padding: 24px 0 0;
-  }
   .lp-pareto-toolbar,
   .lp-pareto-detail {
     grid-template-columns: 1fr;
@@ -2941,8 +2762,7 @@ body.lp {
 
 .lp-pareto .lp-eyebrow,
 .lp-impact .lp-eyebrow,
-.lp-innovation .lp-eyebrow,
-main > .lp-story .lp-eyebrow {
+.lp-innovation .lp-eyebrow {
   font-family: var(--mono);
   font-size: 11px;
   letter-spacing: 0.14em;
@@ -2959,144 +2779,9 @@ main > .lp-story .lp-eyebrow {
   letter-spacing: -0.03em;
 }
 
-/* Apollo 14 story: 5 / 7 columns, reveals on scroll, the image settles from 1.04 to 1 as you scroll in. */
-main > .lp-story {
-  width: min(1180px, calc(100% - 2 * var(--gutter)));
-  margin: 0 auto;
-  padding-block: clamp(3.5rem, 7vw, 6rem);
-  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-  gap: clamp(24px, 4vw, 56px);
-  align-items: center;
-  opacity: 0;
-  transform: translateY(28px);
-  transition:
-    opacity 600ms var(--ease-story),
-    transform 600ms var(--ease-story);
-}
-
-main > .lp-story.is-in {
-  opacity: 1;
-  transform: none;
-}
-
-main > .lp-story .lp-story__media {
-  aspect-ratio: 16 / 10;
-  min-height: 0;
-  border: 1px solid var(--hair);
-  border-radius: 16px;
-  box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(1, 255, 255, 0.04);
-}
-
-main > .lp-story .lp-story__media img,
-main > .lp-story:hover .lp-story__media img {
-  height: 100%;
-  min-height: 0;
-  transform: scale(calc(1.04 - 0.04 * var(--story-p, 1)));
-  transition: transform 160ms linear, filter 400ms var(--ease-story);
-  filter: grayscale(0.2) contrast(1.05);
-}
-
-main > .lp-story:hover .lp-story__media img {
-  filter: grayscale(0) contrast(1.08);
-}
-
-.lp-story__pin {
-  position: absolute;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
-  border: 1px solid rgba(1, 255, 255, 0.45);
-  border-radius: 999px;
-  background: rgba(6, 12, 20, 0.72);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-  color: var(--txt);
-  font: 500 11px/1 var(--mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  cursor: pointer;
-  opacity: 0;
-  transform: translateY(6px);
-  transition:
-    opacity 300ms var(--ease-story),
-    transform 300ms var(--ease-story),
-    border-color 200ms;
-}
-
-.lp-story__pin::before {
-  content: "";
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--cyan);
-  box-shadow: 0 0 0 0 rgba(1, 255, 255, 0.6);
-  animation: lp-pin-pulse 2s ease-out infinite;
-}
-
 @keyframes lp-pin-pulse {
   to {
     box-shadow: 0 0 0 10px rgba(1, 255, 255, 0);
-  }
-}
-
-.lp-story__media:hover .lp-story__pin,
-.lp-story__media:focus-within .lp-story__pin,
-.lp-story__pin.is-selected {
-  opacity: 1;
-  transform: none;
-}
-
-.lp-story__pin.is-selected,
-.lp-story__pin:hover {
-  border-color: var(--cyan);
-}
-
-.lp-story__credit {
-  position: absolute;
-  left: 12px;
-  bottom: 12px;
-  padding: 4px 8px;
-  border-radius: 6px;
-  background: rgba(6, 12, 20, 0.62);
-  color: var(--slate);
-  font: 10.5px/1.2 var(--mono);
-  letter-spacing: 0.06em;
-  text-decoration: none;
-}
-
-.lp-story__credit:hover {
-  color: var(--cyan);
-}
-
-main > .lp-story h2 {
-  max-width: 18ch;
-  margin: 12px 0 16px;
-  color: var(--txt);
-  font-size: clamp(1.75rem, 3vw, 2.5rem);
-  font-weight: 700;
-  line-height: 1.08;
-}
-
-main > .lp-story p[data-apollo-copy] {
-  max-width: 58ch;
-  margin: 0 0 14px;
-  color: var(--body);
-  font-size: 16.5px;
-  line-height: 1.65;
-}
-
-main > .lp-story .lp-story__bridge {
-  color: var(--slate);
-}
-
-@media (max-width: 860px) {
-  main > .lp-story {
-    grid-template-columns: 1fr;
-  }
-
-  main > .lp-story .lp-story__body {
-    padding: 0;
   }
 }
 
@@ -3421,4 +3106,320 @@ main > .lp-story .lp-story__bridge {
   color: var(--slate);
   font: 10.5px/1.3 var(--mono);
   letter-spacing: 0.08em;
+}
+
+/* Apollo 14 scene: a pinned stage. Scroll drives --crack (cracks run), --burst (shards fly, the scene sharpens)
+   and --copy (the story rises in front). Background: NASA AS14-64-9089, animated from the still (apollo-loop). */
+.lp-moon {
+  position: relative;
+  height: 230vh;
+}
+
+.lp-moon__stage {
+  position: sticky;
+  top: 0;
+  display: grid;
+  align-items: center;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+
+.lp-moon__bg {
+  position: absolute;
+  inset: 0;
+}
+
+.lp-moon__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 30% 50%;
+  transform: scale(calc(1.08 - 0.08 * var(--burst, 0)));
+  filter: blur(calc((1 - var(--burst, 0)) * 3px)) brightness(calc(0.62 + 0.38 * var(--burst, 0)));
+}
+
+.lp-moon__bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--paper), transparent 14%, transparent 86%, var(--paper)),
+    linear-gradient(90deg, transparent 45%, rgba(6, 12, 20, 0.55));
+}
+
+.lp-moon__dust {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+}
+
+.lp-moon__glass {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.lp-moon__shard {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(1, 255, 255, 0.03) 60%, rgba(255, 255, 255, 0.05));
+  -webkit-backdrop-filter: blur(16px) saturate(130%);
+  backdrop-filter: blur(16px) saturate(130%);
+  will-change: transform, opacity;
+}
+
+.lp-moon__cracks {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  opacity: calc(1 - var(--burst, 0) * 1.8);
+  filter: drop-shadow(0 0 3px rgba(1, 255, 255, 0.55));
+}
+
+.lp-moon__cracks path {
+  fill: none;
+  stroke: rgba(236, 250, 255, 0.85);
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - var(--crack, 0));
+}
+
+.lp-moon__copy {
+  position: relative;
+  z-index: 3;
+  width: min(580px, calc(100% - 2 * var(--gutter)));
+  margin: 0 var(--gutter) 0 auto;
+  padding: clamp(22px, 3vw, 34px);
+  border: 1px solid var(--hair);
+  border-radius: 20px;
+  background: rgba(6, 12, 20, 0.58);
+  -webkit-backdrop-filter: blur(16px) saturate(130%);
+  backdrop-filter: blur(16px) saturate(130%);
+  box-shadow: 0 40px 90px -40px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  opacity: var(--copy, 0);
+  transform: translateY(calc((1 - var(--copy, 0)) * 48px));
+}
+
+.lp-moon .lp-eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--cyan);
+}
+
+.lp-moon h2 {
+  margin: 12px 0 16px;
+  color: var(--txt);
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+
+.lp-moon p[data-apollo-copy] {
+  max-width: 58ch;
+  margin: 0 0 14px;
+  color: var(--body);
+  font-size: 16.5px;
+  line-height: 1.65;
+}
+
+.lp-moon__bridge {
+  margin: 0 0 18px;
+  color: var(--slate);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.lp-moon__hud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.lp-moon__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid rgba(1, 255, 255, 0.4);
+  border-radius: 999px;
+  background: rgba(1, 255, 255, 0.06);
+  color: var(--txt);
+  font: 500 11px/1 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 200ms, color 200ms, box-shadow 200ms;
+}
+
+.lp-moon__chip::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--cyan);
+  animation: lp-pin-pulse 2s ease-out infinite;
+}
+
+.lp-moon__chip span {
+  color: var(--slate);
+}
+
+.lp-moon__chip:hover,
+.lp-moon__chip:focus-visible {
+  box-shadow: 0 0 22px rgba(1, 255, 255, 0.35);
+}
+
+.lp-moon__chip.is-selected {
+  background: var(--cyan);
+  color: #03070c;
+}
+
+.lp-moon__chip.is-selected span {
+  color: rgba(3, 7, 12, 0.7);
+}
+
+.lp-moon__chip.is-selected::before {
+  background: #03070c;
+}
+
+.lp-moon__credit {
+  color: var(--slate);
+  font: 10.5px/1.4 var(--mono);
+  letter-spacing: 0.05em;
+  text-decoration: none;
+}
+
+.lp-moon__credit:hover {
+  color: var(--cyan);
+}
+
+.lp-moon.is-still {
+  height: auto;
+}
+
+.lp-moon.is-still .lp-moon__stage {
+  position: relative;
+  min-height: 100vh;
+  height: auto;
+  padding-block: clamp(3.5rem, 7vw, 6rem);
+}
+
+.lp-moon.is-still .lp-moon__copy {
+  opacity: 1;
+  transform: none;
+}
+
+.lp-moon.is-still .lp-moon__video {
+  filter: brightness(0.75);
+  transform: none;
+}
+
+/* Phones and narrow tablets: the scene is a 72vh band (glass still shatters on scroll) and the story follows it,
+   so the copy never hides the astronaut. */
+@media (max-width: 860px) {
+  .lp-moon {
+    height: auto;
+  }
+
+  .lp-moon__stage {
+    position: relative;
+    display: block;
+    height: auto;
+    overflow: visible;
+  }
+
+  .lp-moon__bg {
+    position: relative;
+    height: 72vh;
+    height: 72svh;
+    overflow: hidden;
+  }
+
+  .lp-moon__video {
+    object-position: 24% 50%;
+  }
+
+  .lp-moon__copy {
+    margin: -12vh auto 0;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Pareto: dust motes behind, a pointer spotlight on the table and the cards, bars that grow with a glowing tip. */
+.lp-pareto {
+  position: relative;
+}
+
+.lp-table-wrap {
+  background:
+    radial-gradient(460px circle at var(--sx, -999px) var(--sy, -999px), rgba(1, 255, 255, 0.08), transparent 60%),
+    var(--ob-1);
+}
+
+.lp-pareto-detail {
+  background:
+    radial-gradient(380px circle at var(--sx, -999px) var(--sy, -999px), rgba(1, 255, 255, 0.08), transparent 60%),
+    var(--ob-2);
+}
+
+.lp-innovation__grid article,
+.lp-impact__grid article,
+.lp-innovation__grid article:hover,
+.lp-innovation__grid article:focus-within,
+.lp-impact__grid article:hover,
+.lp-impact__grid article:focus,
+.lp-impact__grid article:focus-within {
+  background:
+    radial-gradient(320px circle at var(--sx, -999px) var(--sy, -999px), rgba(1, 255, 255, 0.09), transparent 60%),
+    linear-gradient(180deg, rgba(14, 22, 28, 0.88), rgba(11, 17, 20, 0.88));
+}
+
+.lp-pareto-table tbody tr:hover th,
+.lp-pareto-table tbody tr.is-selected th {
+  color: var(--cyan);
+}
+
+.lp-pareto-bars i {
+  overflow: visible;
+}
+
+.lp-pareto-bars b,
+.lp-pareto-detail[data-status="dominated"] .lp-pareto-bars b {
+  position: relative;
+  width: 0;
+  color: var(--cyan);
+  animation: none;
+  transition: width 800ms var(--ease-story);
+}
+
+.lp-pareto-detail[data-status="dominated"] .lp-pareto-bars b {
+  color: var(--coral);
+}
+
+.lp-pareto-bars b::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -4px;
+  width: 9px;
+  height: 9px;
+  margin-top: -4.5px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 12px 2px currentColor;
 }

@@ -466,10 +466,63 @@ function stars(canvas) {
   });
 }
 
-const FX = { streams, terrain: (c) => terrain(c), "terrain-sparks": (c) => terrain(c, { rings: false, sparks: 70 }), wave, network, stars };
+/* ------------------------------------------------------------------ dust motes + spotlight */
+
+/* Drifting dust that scatters from the pointer. moondust: slow, rising lunar dust in the Apollo scene.
+   motes: fine cyan and white motes around the Pareto proof. */
+function dust(canvas, { count, rgb, rise, size }) {
+  const motes = Array.from({ length: count }, () => ({ x: Math.random(), y: Math.random(), z: 0.3 + Math.random() * 0.7, p: Math.random() * 6, ox: 0, oy: 0 }));
+  stage(canvas, (ctx, w, h, t, ptr) => {
+    const px = (ptr.x + 1) * 0.5 * w;
+    const py = (ptr.y + 1) * 0.5 * h;
+    for (const m of motes) {
+      m.y = (m.y - rise * m.z * 0.0016 + 1) % 1;
+      m.x = (m.x + Math.sin(t * 0.3 + m.p) * 0.0004 * m.z + 1) % 1;
+      let x = m.x * w + m.ox;
+      let y = m.y * h + m.oy;
+      if (ptr.active) {
+        const dx = x - px;
+        const dy = y - py;
+        const d = Math.hypot(dx, dy);
+        if (d < 140 && d > 0.5) {
+          m.ox += (dx / d) * (140 - d) * 0.04;
+          m.oy += (dy / d) * (140 - d) * 0.04;
+        }
+      }
+      m.ox *= 0.96;
+      m.oy *= 0.96;
+      x = m.x * w + m.ox;
+      y = m.y * h + m.oy;
+      const tw = 0.55 + 0.45 * Math.sin(t * 1.3 + m.p);
+      const c = typeof rgb === "function" ? rgb(m) : rgb;
+      ctx.fillStyle = `rgba(${c},${(0.15 + 0.6 * m.z) * tw})`;
+      ctx.beginPath();
+      ctx.arc(x, y, size * m.z, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }, canvas.closest("section") ?? canvas.parentElement);
+}
+
+/* A soft cyan glow that follows the pointer across tables and cards (CSS reads --sx and --sy). */
+function spotlight(doc) {
+  if (!finePointer()) return;
+  doc.addEventListener("pointermove", (e) => {
+    const el = e.target.closest?.(".lp-table-wrap, .lp-pareto-detail, .lp-impact__grid article, .lp-innovation__grid article");
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    el.style.setProperty("--sx", `${e.clientX - r.left}px`);
+    el.style.setProperty("--sy", `${e.clientY - r.top}px`);
+  });
+}
+
+const FX = { streams, terrain: (c) => terrain(c), "terrain-sparks": (c) => terrain(c, { rings: false, sparks: 70 }), wave, network, stars,
+  moondust: (c) => dust(c, { count: 140, rgb: "232,236,240", rise: 0.5, size: 1.6 }),
+  motes: (c) => dust(c, { count: 90, rgb: (m) => (m.p > 3 ? "1,255,255" : "220,236,240"), rise: 0.25, size: 1.3 }),
+};
 
 export function initFx(doc = document) {
   doc.querySelectorAll("canvas[data-fx]").forEach((c) => FX[c.dataset.fx]?.(c));
   tiltCards(doc.querySelector("[data-cards]"));
+  spotlight(doc);
   dustStorm(doc);
 }

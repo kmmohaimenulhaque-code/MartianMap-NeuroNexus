@@ -101,20 +101,29 @@
         <h2 class="lp-display" id="st1" data-split>Know the Ground Before You Walk It.</h2>
       </section>
 
-      <aside class="lp-story" data-apollo-card aria-label="Interactive Apollo 14 story">
-        <div class="lp-story__media">
-          <img src="https://images-assets.nasa.gov/image/AS14-64-9089/AS14-64-9089~orig.jpg" data-apollo-image alt="Apollo 14 view of Cone Crater terrain" />
-          <span class="lp-story__pin lp-story__pin--crater" data-apollo-pin="crater">Cone Crater rim</span>
-          <span class="lp-story__pin lp-story__pin--turnaround" data-apollo-pin="turnaround">Turnaround: 30 m short</span>
-          <a class="lp-story__credit" href="https://images-assets.nasa.gov/image/AS14-64-9089/" target="_blank" rel="noopener">LROC · NASA/GSFC/ASU · AS14-64-9089</a>
+      <section class="lp-moon" data-apollo-card aria-labelledby="apollo-title">
+        <div class="lp-moon__stage">
+          <div class="lp-moon__bg" aria-hidden="true">
+            <video class="lp-moon__video" autoplay muted loop playsinline preload="metadata" poster="/landing/media/apollo-poster.webp" data-moon-video>
+              <source src="/landing/media/apollo-loop.webm" type="video/webm" />
+              <source src="/landing/media/apollo-loop.mp4" type="video/mp4" />
+            </video>
+            <canvas class="lp-moon__dust" data-fx="moondust"></canvas>
+            <div class="lp-moon__glass" data-glass></div>
+          </div>
+          <div class="lp-moon__copy">
+            <p class="lp-eyebrow"><span class="lp-dot" aria-hidden="true"></span>A True Story · Apollo 14 · February 1971</p>
+            <h2 id="apollo-title">Thirty Meters Decided the Mission.</h2>
+            <p data-apollo-copy>In February 1971, two Apollo 14 astronauts climbed toward the rim of Cone Crater. The terrain was rugged, their orbital maps were inadequate, and every ridge looked the same. They turned back. Orbital images later showed they had stopped just 30 meters from the rim. Hope is not a navigation strategy. With no GPS, up to a 22-minute one-way signal delay, and global dust storms, the first explorers on Mars cannot afford a 30-meter mistake.</p>
+            <p class="lp-moon__bridge">The same resolution ladder now compares <button class="lp-term" type="button" data-term="hirise">HiRISE</button>, <button class="lp-term" type="button" data-term="ctx">CTX</button> and <button class="lp-term" type="button" data-term="mola">MOLA</button> before an <button class="lp-term" type="button" data-term="eva">EVA</button> reaches its <button class="lp-term" type="button" data-term="pnr">turnaround point</button>. The <button class="lp-term" type="button" data-term="p90-ratio">p90 ratio</button> shows what coarse terrain hides.</p>
+            <div class="lp-moon__hud" aria-label="Apollo 14 readouts">
+              <button type="button" class="lp-moon__chip" data-apollo-pin="crater"><span>Target</span>Cone Crater rim</button>
+              <button type="button" class="lp-moon__chip" data-apollo-pin="turnaround"><span>Turnaround</span>30 m short</button>
+            </div>
+            <a class="lp-moon__credit" href="https://images-assets.nasa.gov/image/AS14-64-9089/" target="_blank" rel="noopener">NASA · Apollo 14 · AS14-64-9089, animated from the original still</a>
+          </div>
         </div>
-        <div class="lp-story__body">
-          <p class="lp-eyebrow"><span class="lp-dot" aria-hidden="true"></span>A True Story · Apollo 14 · February 1971</p>
-          <h2>Thirty Meters Decided the Mission.</h2>
-          <p data-apollo-copy>In February 1971, two Apollo 14 astronauts climbed toward the rim of Cone Crater. The terrain was rugged, their orbital maps were inadequate, and every ridge looked the same. They turned back. Orbital images later showed they had stopped just 30 meters from the rim. Hope is not a navigation strategy. With no GPS, up to a 22-minute one-way signal delay, and global dust storms, the first explorers on Mars cannot afford a 30-meter mistake.</p>
-          <p class="lp-story__bridge">The same resolution ladder now compares <button class="lp-term" type="button" data-term="hirise">HiRISE</button>, <button class="lp-term" type="button" data-term="ctx">CTX</button> and <button class="lp-term" type="button" data-term="mola">MOLA</button> before an <button class="lp-term" type="button" data-term="eva">EVA</button> reaches its <button class="lp-term" type="button" data-term="pnr">turnaround point</button>. The <button class="lp-term" type="button" data-term="p90-ratio">p90 ratio</button> shows what coarse terrain hides.</p>
-        </div>
-      </aside>
+      </section>
 
       <!-- 3. Approach -->
       <section class="lp-approach" id="approach" aria-labelledby="ap-title">
@@ -150,6 +159,7 @@
 
       <!-- 4. Pareto proof -->
       <section class="lp-pareto" id="pareto" aria-labelledby="pareto-title">
+        <canvas class="lp-fx" data-fx="motes" aria-hidden="true"></canvas>
         <p class="lp-eyebrow" data-reveal><span class="lp-dot" aria-hidden="true"></span>Multi-Objective Pareto Proof · Gale to Escalante (2,018 ms)</p>
         <h2 class="lp-display lp-display--md" id="pareto-title" data-reveal>When the Shortest Line Is a Trap.</h2>
         <p class="lp-body" data-reveal>In 2,018 ms, deterministic multi-objective Dijkstra generates six candidates over NASA <button class="lp-term" type="button" data-term="mola">MOLA</button> terrain and cataloged USGS, IAU and <button class="lp-term" type="button" data-term="themis">THEMIS</button> evidence. Five form the non-dominated frontier; the shortest path is mathematically dominated by the cubic <button class="lp-term" type="button" data-term="edge-cost-model">slope and roughness risk proxy</button>.</p>
