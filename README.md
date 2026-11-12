@@ -23,18 +23,18 @@ Setup first: SETUP_INSTRUCTIONS.md contains the complete installation, NASA data
 Setup instructions:
 https://github.com/kmmohaimenulhaque-code/martian-map/blob/Master-Ai/SETUP_INSTRUCTIONS.md
 
-OUR CHALLENGE:
+##OUR CHALLENGE:
 
 NASA has explored Mars robotically for decades, studying its extreme environment, mapping its surface, and collecting many types of data.
 Far from home, the first astronauts to set foot on Mars will want the best map possible, with information on the details of their routes and destinations, updates on current conditions, and the data necessary to make safe and scientifically meaningful decisions.
 
-Project Description 
+##Project Description 
 
 NeuroNexus is an interactive planetary mission-planning and scientific intelligence system for Mars. It combines authoritative Mars datasets, deterministic terrain analysis, multi-objective route generation, and transparent AI interpretation to support mission planning and exploration decisions.
 
 The goal is not to declare a universally "safe" place on Mars. NeuroNexus provides transparent evidence and derived planning aids so explorers can compare terrain, environment, science opportunities, and operational constraints before deciding on a route or site.
 
-What it does
+##What it does
 
 * 2D Mars map + USGS scientific map: synchronized exploration views with 2,052 USGS/IAU named Martian features.
 * Interactive 3D Mars: ArcGIS Maps SDK SceneView using Mars 2000 coordinates, public Mars terrain/imagery services, persistent annotations, USGS feature classes, geology, landing sites, rover locations, and terrain overlays.
