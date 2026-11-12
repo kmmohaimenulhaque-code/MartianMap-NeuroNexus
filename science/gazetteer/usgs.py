@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import geopandas as gpd
+import pandas as pd
 
 
 class USGSMarsGazetteer:
@@ -45,10 +46,40 @@ class USGSMarsGazetteer:
         """Normalize longitude to the [0, 360) convention used by the dataset."""
         return float(longitude) % 360.0
 
+    @staticmethod
+    def _json_safe_value(value):
+        """Convert pandas/NumPy missing values and scalars to JSON-safe values."""
+        if value is None:
+            return None
+
+        try:
+            if pd.isna(value):
+                return None
+        except (TypeError, ValueError):
+            pass
+
+        if hasattr(value, "item"):
+            try:
+                return value.item()
+            except (ValueError, TypeError):
+                pass
+
+        return value
+
+    @classmethod
+    def _row_to_dict(cls, row) -> dict:
+        """Convert a GeoDataFrame row into a JSON-safe dictionary."""
+        values = row.drop(labels=["geometry"]).to_dict()
+
+        return {
+            key: cls._json_safe_value(value)
+            for key, value in values.items()
+        }
+
     def all(self) -> tuple[dict, ...]:
         """Return all registered USGS Mars nomenclature features."""
         return tuple(
-            row.drop(labels=["geometry"]).to_dict()
+            self._row_to_dict(row)
             for _, row in self.data.iterrows()
         )
 
@@ -66,7 +97,7 @@ class USGSMarsGazetteer:
         )
 
         return tuple(
-            row.drop(labels=["geometry"]).to_dict()
+            self._row_to_dict(row)
             for _, row in self.data[mask].iterrows()
         )
 
@@ -124,7 +155,7 @@ class USGSMarsGazetteer:
 
         row = self.data.iloc[index]
 
-        result = row.drop(labels=["geometry"]).to_dict()
+        result = self._row_to_dict(row)
 
         result["distance_km"] = float(distances_km[index])
 
@@ -193,9 +224,11 @@ class USGSMarsGazetteer:
         for index in indices:
             row = self.data.iloc[index]
 
-            item = row.drop(labels=["geometry"]).to_dict()
+            item = self._row_to_dict(row)
 
-            item["distance_km"] = float(distances_km[index])
+            item["distance_km"] = float(
+                distances_km[index]
+            )
 
             results.append(item)
 
