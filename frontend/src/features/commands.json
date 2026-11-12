@@ -594,6 +594,13 @@
       "label": "Parameter sensitivity",
       "description": "Re-evaluate the current route at each planning slider's low and high bound and show how the walk-back margin and status change.",
       "where": "MARSWALK · Decision panel · Radial Feature Wheel"
+    },
+    {
+      "id": "install-app",
+      "category": "system",
+      "label": "Install as app",
+      "description": "Install NeuroNexus as an app on desktop, phone or tablet (own window and home-screen icon). On iPhone and iPad: Share, then Add to Home Screen. Data still comes live from the server.",
+      "where": "[MENU] · Radial Feature Wheel · Command Index"
     }
   ]
 }

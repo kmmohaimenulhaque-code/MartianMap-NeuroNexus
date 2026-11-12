@@ -245,6 +245,8 @@ def assemble(window, computed, latlon, v, params, request, points, warnings, rou
         reasons.append("part of the route relies on CTX/MOLA terrain (coarser than 1 m)")
     if unavailable:
         reasons.append("part of the route has unavailable terrain")
+    if layers.CLASS_NAMES[3] in cls_stats:
+        reasons.append(f"cells above the {v['slope_limit_deg']:g} deg slope limit (3 m baseline)")
     if "REVIEW REQUIRED" in cls_stats:
         reasons.append("segments above the review slope or roughness")
     pnr_lat, pnr_lon = float(ev["lat"][tp["index"]]), float(ev["lon"][tp["index"]])

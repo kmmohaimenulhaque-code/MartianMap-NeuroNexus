@@ -1742,6 +1742,7 @@ label:has(> .m3d-layer-tag) { flex-wrap: wrap; }
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
 }
 .nn-manual-tour { border-color: var(--nn-cyan) !important; }
+.nn-manual-install-msg { color: var(--nn-cyan); }
 @media (max-width: 767px) {
   .nn-tour { left: 8px; right: 8px; width: auto; bottom: calc(var(--nn-dock-h, 56px) + 8px); }
   .nn-tour-hint { top: auto; bottom: calc(var(--nn-dock-h, 56px) + 8px); flex-wrap: wrap; justify-content: center; }

@@ -88,3 +88,15 @@ def test_evaluate_and_config(client):
     assert all(ledger.resolve(p["ledger_id"]) for p in cfg["parameters"].values())
     assert client.get("/marswalk/brief/zzzz").status_code == 400
     assert client.get("/marswalk/brief/0123456789abcdef").status_code == 404
+
+
+def test_exceeds_status_names_the_slope_limit(monkeypatch):
+    # A 31 deg plane: every cell is above the 25 deg limit, and the status must say so.
+    monkeypatch.setattr(ladder, "build_window", lambda lat, lon, hw, res, mode="ladder":
+                        synthetic_window(lambda xx, yy: -4400.0 + 0.6 * xx, lat, lon, hw, res, mode))
+    monkeypatch.setattr(planner, "_layer_cache", type(planner._layer_cache)())
+    monkeypatch.setattr(planner, "science_stops", lambda ev, points, window: [])
+    from science.weather.api.environment import app
+    body = TestClient(app).post("/marswalk/evaluate", json={"polyline": [[-4.70, 137.396], [-4.70, 137.400]], "eva_hours": 4}).json()
+    assert body["status"]["value"] == "EXCEEDS PLANNING LIMIT"
+    assert any("25 deg slope limit" in r for r in body["status"]["reasons"]), body["status"]["reasons"]

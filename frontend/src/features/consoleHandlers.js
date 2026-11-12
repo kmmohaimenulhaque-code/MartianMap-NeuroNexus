@@ -5,6 +5,7 @@
 
 import { exportEvaBrief, exportGeoJson, exportProfileCsv, exportValidation } from "../exports/actions";
 import { planStore } from "../marswalk/planStore";
+import { installStore } from "../pwa/installStore";
 import { perfStore } from "../perf/perfStore";
 import { solSnapshot } from "../state/solStore";
 
@@ -74,6 +75,7 @@ export function buildConsoleHandlers(ctx) {
       available: () => (planStore.get().plan ? true : "Plan a Marswalk first"),
     },
     "judge-tour": { run: () => startTour?.() },
+    "install-app": { run: run(() => installStore.install()) },
     "verify-plan": { run: () => toMarswalk({ type: "verify" }), available: () => (planStore.get().plan ? true : "Plan a Marswalk first") },
     "export-eva-brief": { run: run(exportEvaBrief), available: () => (planStore.get().plan ? true : "Plan a Marswalk first") },
     "export-geojson": { run: run(exportGeoJson), available: () => (planStore.get().plan ? true : "Plan a Marswalk first") },

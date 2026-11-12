@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import { installStore, useInstall } from "../pwa/installStore";
 import { useSourceLedger } from "../sources/useSourceLedger";
 import SourceTag from "../sources/SourceTag";
 import { GUIDES, QUICK_STARTS } from "./manualContent";
@@ -10,6 +11,8 @@ import "../sources/sources.css";
 export default function MissionManualDrawer({ open, onClose, onQuickStart, onOpenSources, onOpenCommands, optimizationPanel, onStartTour }) {
   const ledger = useSourceLedger();
   const [status, setStatus] = useState({ state: "idle" });
+  const install = useInstall();
+  const [installMsg, setInstallMsg] = useState("");
 
   useEffect(() => {
     if (!open) return undefined;
@@ -54,6 +57,23 @@ export default function MissionManualDrawer({ open, onClose, onQuickStart, onOpe
                 <small>Three steps: pick a site, plan a Marswalk, read the decision and the status by sol. SKIP is always visible.</small>
               </button>
             )}
+            <button
+              type="button"
+              className="nn-manual-install"
+              data-quickstart="install-app"
+              disabled={install.installed}
+              onClick={async () => setInstallMsg(await installStore.install())}
+            >
+              <strong>{install.installed ? "Installed as an app" : "Install as app"}</strong>
+              <small>
+                {install.installed
+                  ? "Running in its own window on this device."
+                  : install.ios
+                    ? "iPhone and iPad: Share, then Add to Home Screen. Data still comes live from the server."
+                    : "Own window and home-screen icon on desktop, phone or tablet. Data still comes live from the server."}
+              </small>
+              {installMsg && <small className="nn-manual-install-msg" role="status">{installMsg}</small>}
+            </button>
             {QUICK_STARTS.map((q) => (
               <button key={q.id} type="button" onClick={() => onQuickStart(q.demo)} data-quickstart={q.id}>
                 <strong>{q.label}</strong>

@@ -55,6 +55,7 @@ export const WHEEL = [
     { id: "command-index", label: "COMMAND INDEX" },
     { id: "backend-status", label: "DATA STATUS" },
     { id: "judge-tour", label: "JUDGE TOUR" },
+    { id: "install-app", label: "INSTALL APP" },
   ] },
 ];
 

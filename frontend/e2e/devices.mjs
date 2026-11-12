@@ -25,8 +25,10 @@ const check = (ok, message) => {
 // WebGL on any machine: ANGLE, GPU blocklist ignored (software rendering where there is no GPU).
 const browser = await chromium.launch({ args: ["--enable-webgl", "--ignore-gpu-blocklist", "--use-gl=angle", "--enable-unsafe-swiftshader"] });
 
-async function open(name, viewport, touch, dpr = touch ? 2 : 1) {
+async function open(name, viewport, touch, dpr = touch ? 2 : 1, { tourHint = false } = {}) {
   const context = await browser.newContext({ viewport, isMobile: touch && viewport.width < 768, hasTouch: touch, deviceScaleFactor: dpr });
+  // The first-visit tour hint would sit over the map in every shot; it is checked once on its own.
+  if (!tourHint) await context.addInitScript(() => localStorage.setItem("nn.tourHintSeen", "1"));
   await context.route(/fontshare\.com/, async (route) => {
     const response = await route.fetch();
     await route.fulfill({ response, headers: { ...response.headers(), "access-control-allow-origin": "*" } });
@@ -110,6 +112,66 @@ const cockpit = async (page, w, label) => {
     await page.waitForTimeout(1500);
   }
   check(errors.length === before, "desktop 1440: switching to MARSWALK mid-zoom raises no Leaflet error");
+
+  // Install as app: manifest linked and the app service worker registered.
+  const pwa = await page.evaluate(async () => ({
+    manifest: document.querySelector('link[rel="manifest"]')?.getAttribute("href"),
+    sw: (await navigator.serviceWorker.getRegistration())?.active?.scriptURL ?? "",
+  }));
+  check(pwa.manifest === "/manifest.webmanifest" && /\/(app|demo)-sw\.js$/.test(pwa.sw), `desktop 1440: installable (manifest + ${pwa.sw.split("/").pop()})`);
+  const cdp = await context.newCDPSession(page);
+  const { installabilityErrors } = await cdp.send("Page.getInstallabilityErrors");
+  check(installabilityErrors.length === 0, `desktop 1440: Chrome reports no installability errors${installabilityErrors.length ? ` (${installabilityErrors.map((e) => e.errorId).join(", ")})` : ""}`);
+
+  // Shared LAYERS: a layer turned on from the ArcGIS map's menu is on in the 2D map's menu too.
+  await page.click('#panel-usgs-map [role="radio"]:first-child');
+  await page.waitForSelector("[data-testid=arcgis-layered] canvas", { timeout: 90000 });
+  await page.click("[data-testid=layers-arcgis]");
+  const slope = '[data-testid=layers-arcgis] ~ .nn-layers-menu [data-layer="slope"] input[type=checkbox]';
+  if (!(await page.isChecked(slope))) await page.click(slope);
+  await page.waitForTimeout(3500);
+  await shot(page, "desktop-arcgis-layers.png");
+  await page.keyboard.press("Escape");
+  await page.mouse.click(720, 60);
+  await page.click(".map-toolbar [data-testid=layers-2d]");
+  check(await page.isChecked('.map-toolbar [data-testid=layers-2d] ~ .nn-layers-menu [data-layer="slope"] input[type=checkbox]'), "desktop 1440: SLOPE turned on in the ArcGIS LAYERS menu is on in the 2D LAYERS menu");
+  check((await box(page, '.map-toolbar [data-testid=layers-2d] ~ .nn-layers-menu [data-layer="slope"] input[type=range]'))?.visible, "desktop 1440: opacity slider shown for an active layer");
+  await page.click('.map-toolbar [data-testid=layers-2d] ~ .nn-layers-menu [data-layer="slope"] input[type=checkbox]');
+  await page.mouse.click(720, 60);
+
+  // Multi-stop EVA from the menu, then parameter sensitivity on that route.
+  await page.click("button.burger-button");
+  await page.click('[data-quickstart="demo-multistop"]');
+  await page.waitForSelector("[data-testid=decision-at-sol]", { state: "attached", timeout: 240000 });
+  await page.waitForTimeout(2500);
+  const stops = await page.locator("[data-testid=mw-stops] li").count();
+  check(stops === 3, `desktop 1440: multi-stop demo plans through ${stops} stops`);
+  await shot(page, "desktop-multistop.png");
+  await page.click("#mw-sensitivity .mw-sens-run");
+  await page.waitForSelector("#mw-sensitivity .mw-sens-row", { timeout: 180000 });
+  const rows = await page.locator("#mw-sensitivity .mw-sens-row").count();
+  check(rows >= 3, `desktop 1440: parameter sensitivity shows ${rows} parameters`);
+  await page.evaluate(() => document.querySelector("#mw-sensitivity").scrollIntoView({ block: "center" }));
+  await page.waitForTimeout(400);
+  await shot(page, "desktop-sensitivity.png");
+  await context.close();
+}
+
+/* ---------------------------------------------------------------- First visit: tour hint and the guided tour */
+{
+  const { context, page } = await open("tour", { width: 1440, height: 900 }, false, 1, { tourHint: true });
+  check((await box(page, "[data-testid=tour-hint]"))?.visible, "desktop 1440: first visit shows the tour hint");
+  await page.click("[data-testid=tour-hint] .is-primary");
+  await page.waitForSelector("[data-testid=judge-tour]");
+  await page.waitForTimeout(1600);
+  await shot(page, "desktop-tour-step1.png");
+  await page.click("[data-testid=judge-tour] .is-primary");
+  await page.waitForSelector("[data-testid=decision-at-sol]", { state: "attached", timeout: 240000 });
+  await page.click("[data-testid=judge-tour] .is-primary");
+  await page.waitForFunction(() => /On screen now/.test(document.querySelector("[data-testid=judge-tour]")?.textContent ?? ""), null, { timeout: 30000 });
+  await shot(page, "desktop-tour-decision.png");
+  await page.click("[data-testid=judge-tour] .is-primary");
+  check(!(await box(page, "[data-testid=judge-tour]")) && !(await box(page, "[data-testid=tour-hint]")), "desktop 1440: tour runs 3 steps and DONE closes it; the hint does not return");
   await context.close();
 }
 
@@ -174,8 +236,11 @@ for (const [w, h, name, file] of [[768, 1024, "iPad mini 768", null], [820, 1180
 
   // SOL pill opens the sol scrubber popover.
   await page.click(".nn-solpill-btn");
-  check((await box(page, ".nn-solpill-pop .nn-solscrub"))?.visible, "iPhone 393: SOL pill opens the sol scrubber");
-  await page.click(".nn-solpill-btn");
+  const sol = await box(page, "[data-testid=sol-popover]");
+  check(sol?.visible && sol.left >= 0 && sol.right <= 393 && (await box(page, ".nn-solpill-pop .nn-solscrub"))?.visible, `iPhone 393: SOL card opens inside the screen (${Math.round(sol?.left ?? -1)} to ${Math.round(sol?.right ?? -1)} px)`);
+  await shot(page, "mobile-sol-card.png");
+  await page.keyboard.press("Escape");
+  check(!(await box(page, "[data-testid=sol-popover]")), "iPhone 393: Esc closes the SOL card");
 
   // Sheets: blurred full-screen backdrop, 2-column KPI grid, compact source pills.
   await page.click('[data-dock="intel"]');

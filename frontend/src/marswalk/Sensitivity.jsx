@@ -38,7 +38,7 @@ export default function Sensitivity({ plan, evaHours, mode, overrides, config, s
     const polyline = routePolyline(plan);
     if (!config || polyline.length < 2) return;
     setState({ key, rows: null, base: null, loading: true, error: "" });
-    const evaluate = (ov) => () => marswalkApi.evaluate({ polyline, eva_hours: evaHours, terrain_mode: mode, overrides: ov });
+    const evaluate = (ov) => () => marswalkApi.evaluate({ polyline, eva_hours: evaHours, terrain_mode: mode, overrides: ov, res_m: plan.method?.fine_res_m });
     try {
       const base = await evaluate({ ...overrides })();
       const params = sliders.filter(([k]) => config.bounds?.[k]);
@@ -95,6 +95,11 @@ export default function Sensitivity({ plan, evaHours, mode, overrides, config, s
           <p className="mw-dim">
             Same route at current settings: margin {fmtMin(current.base?.budget?.margin_h)} · {SHORT[baseStatus] ?? baseStatus ?? "n/a"}. Bars: change in margin at each bound.
           </p>
+          {baseStatus && plan.status?.value && baseStatus !== plan.status.value && (
+            <p className="mw-dim" data-testid="sens-mismatch">
+              Note: re-evaluating the route as a simplified line ({routePolyline(plan).length} vertices) gives {SHORT[baseStatus] ?? baseStatus}, while the plan reads {SHORT[plan.status.value] ?? plan.status.value}. Read the bars as relative changes.
+            </p>
+          )}
           <div className="mw-sens-rows">
             {current.rows.map((row) => (
               <div className="mw-sens-row" key={row.key}>
