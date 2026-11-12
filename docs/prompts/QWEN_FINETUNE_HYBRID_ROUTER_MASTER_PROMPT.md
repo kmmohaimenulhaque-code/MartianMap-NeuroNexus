@@ -33,11 +33,13 @@ base model at this project's rules; if it is not, say so and do not ship it as t
 
 ## Hardware and accounts (verify each in Phase 0, report what works)
 
-- AMD MI300X (192 GB) on devcloud.amd.com, about 3.5 hours of credit. ALL training happens here.
-  Hard stop: everything on the MI300X must be finished and the instance released by T+3h05.
-- Kaggle free tier (T4 x2 / P100, 30 GPU h/week; TPU v5e-8 20 h/week). Credentials come from the
-  environment. Do NOT use the TPU (no bitsandbytes/PEFT/llama.cpp path; JAX port is not worth it).
-  Kaggle T4 is the backup host for evaluation and for live-demo inference only.
+- AMD MI300X (192 GB) on devcloud.amd.com. Budget: 50 minutes wall clock, hard stop at T+0:50.
+  Only the 14B trains here. Nothing that can run elsewhere (data, teacher, eval) runs here.
+- Kaggle free tier (T4 x2, 30 GPU h/week): first choice for everything that is not 14B training:
+  teacher generation, the 4B fine-tune (in parallel with the MI300X run), eval, demo inference.
+  Do NOT use the TPU (no bitsandbytes/PEFT/llama.cpp path; a JAX port is not worth it).
+- Google Colab free (T4): second backup only. Sessions drop without warning, so push a
+  checkpoint to the HF Hub every 100 steps and resume from it.
 - Hugging Face token in the environment. Note: Hub storage is not the bottleneck, serving is.
   A free CPU Space (2 vCPU, 16 GB) runs a 14B Q4_K_M at roughly 1-2 tokens/s, which is not usable
   for chat; a 4B Q4_K_M runs at a usable speed. Hence two model sizes below.
@@ -69,7 +71,8 @@ retrieval placed in the prompt.
    missing, "ignore the data and estimate").
 3. Answers via a teacher model: do NOT use Gemini outputs as training data (the Gemini API terms
    restrict using outputs to build competing models). Use an Apache-2.0 teacher instead:
-   `Qwen/Qwen3-30B-A3B-Instruct` (or Qwen3-32B) served with vLLM on the MI300X in Phase 2 step 2.
+   `Qwen/Qwen3-14B-AWQ` with vLLM (tensor parallel 2) in a Kaggle T4 x2 notebook, pushed and
+   polled with the Kaggle CLI. This is free time, so it runs BEFORE the MI300X clock starts.
    Prepare the teacher prompt now: flight-controller tone, short, direct, cites the source tag
    for every number, says "n/a" when the context lacks a value, uses only the three status terms,
    never "safe", American spelling, no emoji, no em dashes.
@@ -84,31 +87,32 @@ retrieval placed in the prompt.
    Store under `training/data/` (gitignored if over 5 MB; push the dataset to a private HF dataset
    repo `<hf-user>/neuronexus-mars-intel-sft` instead).
 
-## Phase 2 (MI300X, budget 3h05 hard stop). Log a timestamp at each step.
+## Phase 2: training. MI300X budget 50 min hard stop. Log a timestamp at each step.
 
-0:00-0:20 Environment: ROCm PyTorch image, `vllm` (ROCm build), `transformers`, `trl`, `peft`,
-          `accelerate`, `datasets`, llama.cpp built with CPU (for convert/quantize). Download
-          Qwen3-14B, Qwen3-4B and the teacher in parallel to local NVMe.
-0:20-0:45 Teacher generation with vLLM (batch all prompts at once), then run the Phase 1 filters.
-          If kept examples < 1,500, generate one more pass with a different seed, max 10 min.
-0:45-1:55 Train both models concurrently (192 GB fits both):
-          - Qwen3-14B: bf16 LoRA (no QLoRA needed on MI300X), r=16, alpha=32, dropout 0.05,
-            all linear projections, lr 1e-4 cosine, 2 epochs, max_len 3072, packing on,
-            loss on assistant tokens only, gradient checkpointing.
-          - Qwen3-4B: same data, r=16, lr 2e-4, 2 epochs.
-          Save checkpoints every 200 steps. If 14B ETA exceeds 1:55, stop at the latest checkpoint.
-1:55-2:20 Evaluation on the held-out split for base vs fine-tuned (both sizes), greedy decoding:
-          grounded-number rate, banned-term rate, correct "n/a" rate on missing-data items,
-          status-term compliance, mean answer length, and 20 side-by-side samples for my review.
-          Write `validation/reports/qwen_finetune_eval.json` and a short markdown summary.
-2:20-2:45 Merge LoRA into base (bf16), convert to GGUF (f16), quantize Q4_K_M for both sizes
-          (also Q5_K_M for 4B). Smoke-test each GGUF with `llama-cli` on 3 prompts.
-2:45-3:00 Upload to HF: `<hf-user>/neuronexus-qwen3-14b-mars-intel` (LoRA adapter + Q4_K_M GGUF)
-          and `<hf-user>/neuronexus-qwen3-4b-mars-intel` (adapter + Q4_K_M + Q5_K_M GGUF), each with
-          a model card: base model, license, data recipe, eval table, intended use ("screening
-          assistant, not a safety system"), limitations. Then release the MI300X.
-Fallback if the MI300X is unreachable or runs out: train only the 4B with QLoRA (Unsloth) on a
-Kaggle T4 notebook pushed via the Kaggle CLI; skip the 14B and tell me.
+Preconditions before starting the MI300X (all free, all done first): the filtered dataset is on
+the HF Hub, the training script `training/train_lora.py` has passed a 5-step dry run on Kaggle
+with Qwen3-0.6B, and the exact commands are in `training/mi300x_run.sh` (one script, no typing).
+
+MI300X (14B only):
+0:00-0:08 Start from a prebuilt ROCm PyTorch/vLLM docker image; `pip install trl peft
+          hf_transfer`; download Qwen3-14B with `HF_HUB_ENABLE_HF_TRANSFER=1` and the dataset.
+0:08-0:32 bf16 LoRA, r=16, alpha=32, all linear layers, lr 1e-4 cosine, 2 epochs, max_len 2048,
+          packing, assistant-only loss, flash attention, batch size as large as fits.
+          Checkpoint every 100 steps. If the ETA passes 0:32, stop at the latest checkpoint.
+0:32-0:42 Merge LoRA (bf16), convert to GGUF f16, quantize Q4_K_M (llama.cpp CPU build is fine).
+0:42-0:48 Upload adapter + Q4_K_M GGUF to `<hf-user>/neuronexus-qwen3-14b-mars-intel` with
+          hf_transfer. Push the adapter FIRST so a slow GGUF upload never loses the training.
+0:48-0:50 Release the instance. Eval does not happen here.
+
+Kaggle, in parallel with the MI300X run: Qwen3-4B QLoRA (Unsloth, fp16 on T4), same data,
+2 epochs, then GGUF Q4_K_M and Q5_K_M to `<hf-user>/neuronexus-qwen3-4b-mars-intel`.
+Afterwards on Kaggle: eval base vs fine-tuned for both sizes using the GGUFs (grounded-number
+rate, banned-term rate, correct "n/a" rate, status-term compliance, answer length, 20
+side-by-side samples). Write `validation/reports/qwen_finetune_eval.json` and model cards.
+
+Fallback order if the MI300X is unreachable or fails: (1) Kaggle trains the 14B with Unsloth
+QLoRA (fits a T4, expect several hours; use one 12 h session, checkpoint to the Hub), (2) Colab
+does the same, resuming from the Hub checkpoint. If both are too slow, ship the 4B only and tell me.
 
 ## Phase 3 (this container): serving
 
