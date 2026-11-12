@@ -168,11 +168,14 @@ const cockpit = async (page, w, label) => {
   await page.waitForTimeout(3000);
   const pick2d = await centerOf(".nn-arcgis-view");
   check(pick2d && !near(pick2d, [-5.3672, 137.811]), `desktop 1440: a 2D pick recenters the ArcGIS map (${pick2d})`);
+  // The 2D pick's requests can still be pending; the loading pop-up covers the maps and would eat the click.
+  await page.waitForSelector("[data-testid=loading-overlay]", { state: "detached", timeout: 90000 });
+  const before2d = await centerOf(".map-panel-body .leaflet-container");
   mb = await page.locator("[data-testid=arcgis-layered]").boundingBox();
   await page.mouse.click(mb.x + mb.width * 0.7, mb.y + mb.height * 0.3);
   await page.waitForTimeout(3000);
   const d2 = await centerOf(".map-panel-body .leaflet-container");
-  check(d2 && !near(d2, pick2d), `desktop 1440: an ArcGIS pick recenters the 2D map (${d2})`);
+  check(d2 && !near(d2, before2d), `desktop 1440: an ArcGIS pick recenters the 2D map (${before2d} -> ${d2})`);
 
   // Active selection marker on the 2D map: cyan ring at the selection, above the feature dots, clicks pass through.
   const sel = await selectionMarker(page);
