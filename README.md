@@ -5,10 +5,15 @@ NASA Space Apps Challenge 2026 · branch Master-Ai
 ## 🎬 Demo Video
 
 <div align="center">
-  <a href="https://www.youtube.com/watch?v=0MLtYKHewcA" target="_blank">
-    <img src="https://img.youtube.com/vi/0MLtYKHewcA/maxresdefault.jpg" alt="NeuroNexus: Interplanetary Survival Guide - Martian Map" width="100%" style="max-width: 900px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);">
-  </a>
-  <p><i>Click to watch the full demo</i></p>
+  <div style="position: relative; display: inline-block; max-width: 900px; width: 100%;">
+    <img src="https://img.youtube.com/vi/0MLtYKHewcA/maxresdefault.jpg" alt="NeuroNexus: Interplanetary Survival Guide - Martian Map" width="100%" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); display: block;">
+    <a href="https://www.youtube.com/watch?v=0MLtYKHewcA" target="_blank" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80px; height: 80px; background-color: rgba(255,0,0,0.8); border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; transition: all 0.3s ease;">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 5v14l11-7z"/>
+      </svg>
+    </a>
+  </div>
+  <p style="margin-top: 12px; font-size: 14px; color: #666;"><i>Click play button to watch the full demo on YouTube</i></p>
 </div>
 
 ---
