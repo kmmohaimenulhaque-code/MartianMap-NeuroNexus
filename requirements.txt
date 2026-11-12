@@ -9,6 +9,7 @@ pyarrow
 xarray
 h5py
 numba
+scikit-image
 
 
 # NASA / PDS / HTTP
