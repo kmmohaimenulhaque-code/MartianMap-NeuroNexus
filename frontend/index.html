@@ -6,7 +6,7 @@
       /* Old console links (query parameters or a console hash such as #mw=...) now live at /console/. Runs before paint. */
       (function () {
         var landing = /^#(top|main|approach|reel|features|proof|principles|challenge|data|team|finale|play\/[a-z0-9-]+)?$/;
-        var q = location.search.replace(/^\?/, "").split("&").filter(function (p) { return p && !/^utm_/.test(p); });
+        var q = location.search.replace(/^\?/, "").split("&").filter(function (p) { return p && !/^(utm_|__|embed=)/.test(p); }); // host parameters (Hugging Face __theme, embed) stay on the landing page
         if (q.length || (location.hash && !landing.test(location.hash))) {
           location.replace("/console/" + location.search + location.hash);
         }
