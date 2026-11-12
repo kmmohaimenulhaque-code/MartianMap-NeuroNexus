@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Icon from "../../ui/Icon";
 import { mobileUi, useMobileUi } from "./mobileStore";
 
@@ -125,27 +126,47 @@ export function MapViewToggle({ is3dOpen = false, onSet3d }) {
   );
 }
 
-/* SOL pill for the phone header: tap to open the full sol scrubber in a floating popover. */
+/* SOL pill for the phone header: tap to open the sol scrubber in a card just below the HUD. The card is portaled
+   to <body> so no header row, map control or stacking context can clip or cover it (iOS Safari did). */
 export function SolPill({ sol, seasonLs, children }) {
   const [open, setOpen] = useState(false);
+  const [top, setTop] = useState(88);
   const ref = useRef(null);
+  const popRef = useRef(null);
   useEffect(() => {
     if (!open) return undefined;
-    const away = (event) => !ref.current?.contains(event.target) && setOpen(false);
+    const away = (event) => !ref.current?.contains(event.target) && !popRef.current?.contains(event.target) && setOpen(false);
+    const esc = (event) => event.key === "Escape" && setOpen(false);
     window.addEventListener("pointerdown", away);
-    return () => window.removeEventListener("pointerdown", away);
+    window.addEventListener("keydown", esc);
+    return () => {
+      window.removeEventListener("pointerdown", away);
+      window.removeEventListener("keydown", esc);
+    };
   }, [open]);
   return (
     <div className="nn-solpill" ref={ref}>
-      <button type="button" className="nn-solpill-btn" aria-expanded={open} aria-label={`Active sol ${sol ?? ""}; open the sol scrubber`} onClick={() => setOpen((v) => !v)}>
+      <button type="button" className="nn-solpill-btn" aria-expanded={open} aria-label={`Active sol ${sol ?? ""}; open the sol scrubber`} onClick={() => {
+          const below = document.querySelector(".site-field .field-header") ?? document.querySelector(".topbar");
+          setTop(Math.round((below?.getBoundingClientRect().bottom ?? 84) + 6));
+          setOpen((v) => !v);
+        }}>
         SOL {sol ?? "n/a"}
       </button>
-      {open && (
-        <div className="nn-solpill-pop" role="dialog" aria-label="Active sol">
-          {children}
-          {seasonLs != null && <small>MY34 scenario · Ls {seasonLs.toFixed(0)}°</small>}
-        </div>
-      )}
+      {open &&
+        createPortal(
+          <div className="nn-solpill-pop" ref={popRef} role="dialog" aria-label="Active sol" style={{ top }} data-testid="sol-popover">
+            <div className="nn-solpill-head">
+              <strong>ACTIVE SOL · MY34 SCENARIO</strong>
+              <button type="button" className="nn-solpill-close" aria-label="Close the sol scrubber" onClick={() => setOpen(false)}>
+                <Icon name="close" size={14} />
+              </button>
+            </div>
+            {children}
+            <small>{seasonLs != null ? `Ls ${seasonLs.toFixed(0)}° · the sol drives dust, conditions, THEMIS season and rover position` : "Season loading"}</small>
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }

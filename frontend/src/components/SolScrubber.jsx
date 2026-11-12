@@ -12,7 +12,7 @@ export default function SolScrubber() {
     <div className="nn-solscrub" role="group" aria-label="Active sol">
       <span className="nn-solscrub-label">ACTIVE SOL</span>
       <button type="button" aria-label="Previous sol" onClick={() => setSol((s) => s - 1)}>
-        <Icon name="play" size={12} className="nn-flip" />
+        <Icon name="stepPrev" size={12} />
       </button>
       <input
         type="range"
@@ -24,7 +24,7 @@ export default function SolScrubber() {
         onChange={(e) => setSol(Number(e.target.value))}
       />
       <button type="button" aria-label="Next sol" onClick={() => setSol((s) => s + 1)}>
-        <Icon name="play" size={12} />
+        <Icon name="stepNext" size={12} />
       </button>
       {setPlaying && (
         <button type="button" aria-pressed={playing} aria-label={playing ? "Pause" : "Play"} onClick={() => setPlaying(!playing)}>

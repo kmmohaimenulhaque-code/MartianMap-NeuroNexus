@@ -1,6 +1,7 @@
 /* Loads data for the global map's context layers only when a layer is switched on. */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+import { useDustFrame } from "../../state/dustFrames";
 
 import { missionSolAt } from "../../state/solMath";
 
@@ -62,15 +63,8 @@ export function useContextLayerData(visibility, location, sol) {
     };
   }, [needFootprints, lat, lon]);
 
-  const needDust = want("dust");
-  useEffect(() => {
-    if (!needDust) return undefined;
-    const controller = new AbortController();
-    getJson(`/api/dust/map?sol=${sol}`, controller.signal)
-      .then((body) => setData((d) => ({ ...d, dust: body })))
-      .catch((e) => e.name !== "AbortError" && setStatus((s) => ({ ...s, dust: `unavailable: ${e.message}` })));
-    return () => controller.abort();
-  }, [needDust, sol]);
+  // Dust frames come from the shared cache (state/dustFrames.js): no per-view refetch during playback.
+  const dustFrame = useDustFrame(sol, want("dust"));
 
   /* Where Curiosity was at the console's activeSol (MY34): last waypoint at or before that mission sol. */
   const mslSol = needTraverses && sol != null ? missionSolAt("msl", sol) : null;
@@ -91,5 +85,7 @@ export function useContextLayerData(visibility, location, sol) {
     };
   }, [mslSol, sol]);
 
-  return { data, status };
+  const merged = useMemo(() => ({ ...data, dust: dustFrame.data }), [data, dustFrame.data]);
+  const mergedStatus = useMemo(() => (dustFrame.error ? { ...status, dust: `unavailable: ${dustFrame.error}` } : status), [status, dustFrame.error]);
+  return { data: merged, status: mergedStatus };
 }

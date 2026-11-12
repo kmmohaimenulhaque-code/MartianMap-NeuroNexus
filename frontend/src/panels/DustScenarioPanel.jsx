@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import { fetchDustMap, fetchDustSeries } from "../services/marsEnvironmentApi";
+import { fetchDustSeries } from "../services/marsEnvironmentApi";
+import { useDustFrame } from "../state/dustFrames";
 import NeonHeatmap from "../ui/NeonHeatmap";
 import NeonLineChart from "../ui/NeonLineChart";
 import { ProvenanceTag } from "../ui/StatTriplet";
@@ -27,10 +28,7 @@ function levelFor(tau, levels) {
 export default function DustScenarioPanel({ location, sol, onSolChange, onSelectCoordinate, fallbackDust, playing, onPlayingChange }) {
   const [series, setSeries] = useState(null);
   const [seriesError, setSeriesError] = useState("");
-  const [maps, setMaps] = useState({});
-  const [mapError, setMapError] = useState("");
   const [mapExpanded, setMapExpanded] = useState(false);
-  const pending = useRef(new Set());
 
   const lat = location?.latitude_deg;
   const lon = location?.longitude_deg;
@@ -49,24 +47,10 @@ export default function DustScenarioPanel({ location, sol, onSolChange, onSelect
     return () => controller.abort();
   }, [lat, lon]);
 
-  // Global maps are cached per sol; while playing, only every 4th sol is fetched.
-  const mapSol = playing ? Math.max(1, sol - ((sol - 1) % 4)) : sol;
-  useEffect(() => {
-    if (maps[mapSol] || pending.current.has(mapSol)) return;
-    pending.current.add(mapSol);
-    fetchDustMap(mapSol)
-      .then((data) => {
-        setMapError("");
-        setMaps((current) => {
-          const keys = Object.keys(current);
-          const next = keys.length > 80 ? {} : { ...current };
-          next[mapSol] = data;
-          return next;
-        });
-      })
-      .catch((error) => setMapError(error.message))
-      .finally(() => pending.current.delete(mapSol));
-  }, [mapSol, maps]);
+  // Global maps come from the shared frame cache; while a frame loads, the last ready one stays on screen.
+  const frame = useDustFrame(sol);
+  const mapSol = frame.sol ?? sol;
+  const mapError = frame.error;
 
   /* Playback runs in SolProvider so the sol keeps moving in every mode. */
 
@@ -94,7 +78,7 @@ export default function DustScenarioPanel({ location, sol, onSolChange, onSelect
     const value = series?.ls_deg?.[Math.round(s) - 1];
     return Number.isFinite(value) ? `Ls ${value.toFixed(0)}°` : `sol ${Math.round(s)}`;
   };
-  const currentMap = maps[mapSol];
+  const currentMap = frame.data;
 
   return (
     <div className="dust-panel">

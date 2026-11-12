@@ -132,14 +132,6 @@
   .mode-word { display: none; }
   .topbar .nn-solpill { grid-area: sol; display: block; position: relative; }
   .nn-solpill-btn { min-height: 32px; padding: 0 8px; border: 1px solid #29414b; background: #091115; color: var(--nn-cyan); font: 600 11px var(--nn-mono); letter-spacing: 0.06em; white-space: nowrap; cursor: pointer; }
-  .nn-solpill-pop {
-    position: fixed; left: 8px; right: 8px; top: calc(48px + env(safe-area-inset-top, 0px)); z-index: 3700; display: flex; flex-direction: column; gap: 6px;
-    padding: 10px; border: 1px solid #29414b; background: rgba(8, 16, 20, 0.97); box-shadow: 0 14px 34px rgba(0, 0, 0, 0.6);
-    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
-  }
-  .nn-solpill-pop .nn-solscrub { min-width: 0; width: 100%; }
-  .nn-solpill-pop .nn-solscrub button { width: 40px; height: 40px; }
-  .nn-solpill-pop small { color: var(--nn-text-dim); font-size: 12px; }
   .topbar button[aria-label="Open mission command index"], .topbar .burger-button { width: 38px !important; min-width: 38px !important; height: 38px; min-height: 38px !important; padding: 0; justify-self: end; }
   .topbar button[aria-label="Open mission command index"] { grid-area: idx; }
   .topbar .burger-button { grid-area: burger; border-color: var(--nn-cyan) !important; box-shadow: 0 0 14px rgba(117, 230, 255, 0.4); }
@@ -311,3 +303,23 @@
 @media (min-width: 1200px) and (max-width: 1279px) {
   .mw-shell { grid-template-columns: 270px minmax(0, 1fr) 290px; grid-template-rows: minmax(0, 1fr) 180px; grid-template-areas: "left center right" "left bottom right"; height: 100%; }
 }
+
+/* Phone SOL card (portaled to <body>, positioned below the HUD by script). */
+.nn-solpill-pop {
+  position: fixed; left: 8px; right: 8px; z-index: 3800; display: flex; flex-direction: column; gap: 8px;
+  padding: 10px 12px 12px; border: 1px solid #29414b; background: rgba(8, 16, 20, 0.97); box-shadow: 0 14px 34px rgba(0, 0, 0, 0.6);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); color: var(--nn-text); font-family: var(--nn-mono);
+}
+.nn-solpill-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.nn-solpill-head strong { color: var(--nn-cyan); font-size: 12px; letter-spacing: 0.08em; }
+.nn-solpill-close { display: inline-grid; place-items: center; width: 36px; height: 36px; border: 1px solid #29414b; background: #091115; color: #cfe0e5; cursor: pointer; }
+.nn-solpill-pop .nn-solscrub { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px 44px; grid-template-areas: "label label label label" "prev range next play" "value value value value"; gap: 8px; min-width: 0; width: 100%; align-items: center; }
+.nn-solpill-pop .nn-solscrub-label { grid-area: label; display: none; }
+.nn-solpill-pop .nn-solscrub > button:nth-of-type(1) { grid-area: prev; }
+.nn-solpill-pop .nn-solscrub > input[type="range"] { grid-area: range; width: 100%; min-width: 0; height: 32px; }
+.nn-solpill-pop .nn-solscrub > button:nth-of-type(2) { grid-area: next; }
+.nn-solpill-pop .nn-solscrub > button:nth-of-type(3) { grid-area: play; }
+.nn-solpill-pop .nn-solscrub > button { width: 44px; height: 44px; color: var(--nn-cyan); }
+.nn-solpill-pop .nn-solscrub > button .nn-icon { width: 16px; height: 16px; }
+.nn-solpill-pop .nn-solscrub-value { grid-area: value; font-size: 16px; }
+.nn-solpill-pop small { color: var(--nn-text-dim); font-size: 12px; line-height: 1.4; }

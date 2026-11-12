@@ -4,7 +4,9 @@
  * AI Route Designer. The Ls table is the MGCM's own (GET /api/dust/meta).
  */
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+
+import { dustFrameFailed, loadDustFrame, peekDustFrame, prefetchDustFrames } from "./dustFrames";
 
 import { lsAt, missionSolAt, my34SolToUtc, seasonName } from "./solMath";
 import { SolContext, setSolSnapshot } from "./solStore";
@@ -26,9 +28,28 @@ export function SolProvider({ sol, setSol, playing = false, setPlaying, children
     return () => controller.abort();
   }, []);
 
+  // Playback: advance 2 sols per 120 ms tick, but only once the next dust frame is in the shared cache, so the
+  // maps play in step with the slider. After about 1.5 s without the frame (slow or failed request) it moves on.
+  const solRef = useRef(sol);
+  useEffect(() => {
+    solRef.current = sol;
+  }, [sol]);
   useEffect(() => {
     if (!playing) return undefined;
-    const timer = window.setInterval(() => setSol((current) => (current >= 668 ? 1 : current + 2)), 120);
+    let waited = 0;
+    prefetchDustFrames(solRef.current, 24);
+    const timer = window.setInterval(() => {
+      const current = solRef.current ?? 1;
+      const next = current >= 668 ? 1 : current + 2;
+      if (peekDustFrame(next) || dustFrameFailed(next) || waited >= 12) {
+        waited = 0;
+        prefetchDustFrames(next, 24);
+        setSol(next);
+      } else {
+        waited += 1;
+        loadDustFrame(next).catch(() => {});
+      }
+    }, 120);
     return () => window.clearInterval(timer);
   }, [playing, setSol]);
 

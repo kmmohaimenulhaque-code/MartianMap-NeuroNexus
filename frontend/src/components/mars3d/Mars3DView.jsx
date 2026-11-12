@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import "./mars3d.css";
 import { capPhonePixelRatio, requireModules } from "./arcgisLoader";
 import Globe2DFallback from "./Globe2DFallback";
+import { loadDustFrame } from "../../state/dustFrames";
 import { createLabelOverlay } from "./labelOverlay";
 import Mars3DLegend from "./Mars3DLegend";
 import SourceTag from "../../sources/SourceTag";
@@ -682,13 +683,17 @@ export default function Mars3DView({
     return () => controller.abort();
   }, [ready, visible.dtmFootprints, footLat, footLon]);
 
+  // Dust frames come from the shared cache; the 7,200-cell layer is rebuilt at most about twice a second during playback.
+  const dustBuiltAt = useRef(0);
   useEffect(() => {
     if (!ready || !visible.dust) return undefined;
-    const controller = new AbortController();
+    let live = true;
     const stops = ["--nn-surface-2", "--nn-cyan", "--nn-amber"].map((t) => cssVar(t) || "#808080");
-    fetch(`/api/dust/map?sol=${sol}`, { signal: controller.signal })
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
-      .then((d) => {
+    const timer = setTimeout(() => {
+      loadDustFrame(sol)
+        .then((d) => {
+          if (!live) return;
+          dustBuiltAt.current = performance.now();
         const graphics = [];
         const dLat = Math.abs(d.lat[1] - d.lat[0]);
         const dLon = Math.abs(d.lon[1] - d.lon[0]);
@@ -706,9 +711,13 @@ export default function Mars3DView({
           }
         }
         rebuild("dust", graphics);
-      })
-      .catch(() => {});
-    return () => controller.abort();
+        })
+        .catch(() => {});
+    }, Math.max(0, 450 - (performance.now() - dustBuiltAt.current)));
+    return () => {
+      live = false;
+      clearTimeout(timer);
+    };
   }, [ready, visible.dust, sol]);
 
   const smoothFlyTo = (lat, lon, km) => {

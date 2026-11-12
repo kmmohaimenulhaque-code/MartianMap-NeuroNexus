@@ -8,6 +8,8 @@ export const ICON_PATHS = {
   star: "M12 4l2.4 5.1 5.6.7-4.1 3.8 1.1 5.5L12 16.4 7 19.1l1.1-5.5L4 9.8l5.6-.7z",
   play: "M8 5l11 7-11 7z",
   pause: "M8 5v14M16 5v14",
+  stepNext: "M6 5l10 7-10 7zM18 5v14",
+  stepPrev: "M18 5L8 12l10 7zM6 5v14",
   fly: "M3 12h13M12 6l6 6-6 6M20 5v14",
   layers: "M12 4l9 5-9 5-9-5zM3 14l9 5 9-5",
   route: "M6 19a2 2 0 1 1 0-4a2 2 0 0 1 0 4zM18 9a2 2 0 1 1 0-4a2 2 0 0 1 0 4zM7.5 15.5L16.5 8.5",
