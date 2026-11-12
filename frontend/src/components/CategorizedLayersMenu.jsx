@@ -4,6 +4,7 @@
  * highlighted), an opacity slider for overlays, any load status and its source tag.
  */
 
+import FloatingCard from "../ui/FloatingCard";
 import Icon from "../ui/Icon";
 import { useEffect, useRef, useState } from "react";
 
@@ -15,15 +16,22 @@ export default function CategorizedLayersMenu({ map = "2d", onLink, status = {},
   const { visibility, opacity } = useLayers();
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
+  const menuRef = useRef(null);
   useEffect(() => {
     if (!open) return undefined;
-    const onDown = (event) => ref.current && !ref.current.contains(event.target) && setOpen(false);
-    const onKey = (event) => event.key === "Escape" && setOpen(false);
+    // The menu is drawn on <body>; clicks in it, or in a source card opened from it, keep it open.
+    const onDown = (event) => !ref.current?.contains(event.target) && !menuRef.current?.contains(event.target) && !event.target.closest?.(".nn-floating") && setOpen(false);
+    // Capture phase: Esc closes only this menu, not the drawer or sheet around it.
+    const onKey = (event) => {
+      if (event.key !== "Escape") return;
+      event.stopPropagation();
+      setOpen(false);
+    };
     document.addEventListener("pointerdown", onDown);
-    document.addEventListener("keydown", onKey);
+    document.addEventListener("keydown", onKey, true);
     return () => {
       document.removeEventListener("pointerdown", onDown);
-      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("keydown", onKey, true);
     };
   }, [open]);
   const activeCount = LAYER_CATEGORIES.flatMap((c) => c.layers).filter((l) => l.kind === "map" && l.maps.includes(map) && visibility[l.id]).length;
@@ -38,10 +46,10 @@ export default function CategorizedLayersMenu({ map = "2d", onLink, status = {},
         data-testid={`layers-${map}`}
         onClick={() => setOpen((v) => !v)}
       >
-        {compact ? <Icon name="layers" size={18} /> : <>LAYERS ({activeCount}) ▾</>}
+        {compact ? <Icon name="layers" size={18} /> : <><Icon name="layers" size={15} className="nn-layers-icon" /><span className="nn-layers-word">LAYERS ({activeCount}) ▾</span></>}
       </button>
       {open && (
-        <div className={`nn-layers-menu nn-layers-menu--${align}`} role="menu" aria-label={`Layers shared by the 2D, ArcGIS and 3D maps (this map: ${MAPS[map]})`}>
+        <FloatingCard as="div" ref={menuRef} anchorRef={ref} align={align === "left" ? "left" : "right"} className={`nn-layers-menu nn-layers-menu--${align}`} role="menu" data-testid={`layers-menu-${map}`} aria-label={`Layers shared by the 2D, ArcGIS and 3D maps (this map: ${MAPS[map]})`}>
           <p className="nn-layers-note">Shared by the 2D, ARCGIS and 3D maps: a layer turned on here is on everywhere it can be drawn.</p>
           {LAYER_CATEGORIES.map((category) => (
             <details key={category.id} open>
@@ -88,7 +96,7 @@ export default function CategorizedLayersMenu({ map = "2d", onLink, status = {},
               )}
             </details>
           ))}
-        </div>
+        </FloatingCard>
       )}
     </div>
   );

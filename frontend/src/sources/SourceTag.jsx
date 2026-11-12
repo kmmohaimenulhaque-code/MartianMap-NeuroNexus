@@ -7,10 +7,13 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 
+import { useOverflowFlag } from "../ui/useOverflowFlag";
+
 import { CLASS_MEANINGS, classKey, isToggleKey, tagText } from "./ledgerStore";
 import { useSourcesDrawer } from "./SourcesContext";
 import { useSourceLedger } from "./useSourceLedger";
 import "./sources.css";
+import FloatingCard from "../ui/FloatingCard";
 import Icon from "../ui/Icon";
 
 export default function SourceTag({ ledgerId, evidence, detail, compact = false, basis, className = "" }) {
@@ -18,6 +21,8 @@ export default function SourceTag({ ledgerId, evidence, detail, compact = false,
   const { openSources } = useSourcesDrawer();
   const [open, setOpen] = useState(false);
   const wrapRef = useRef(null);
+  const popRef = useRef(null);
+  const textRef = useOverflowFlag();
   const popId = useId();
   const entry = ledger.resolve(ledgerId);
   const unregistered = ledger.status === "ready" && !entry;
@@ -26,16 +31,19 @@ export default function SourceTag({ ledgerId, evidence, detail, compact = false,
   useEffect(() => {
     if (!open) return undefined;
     const onDown = (event) => {
-      if (wrapRef.current && !wrapRef.current.contains(event.target)) setOpen(false);
+      if (!wrapRef.current?.contains(event.target) && !popRef.current?.contains(event.target)) setOpen(false);
     };
+    // Capture phase: Esc closes only this card, not the drawer or sheet it was opened from.
     const onKey = (event) => {
-      if (event.key === "Escape") setOpen(false);
+      if (event.key !== "Escape") return;
+      event.stopPropagation();
+      setOpen(false);
     };
     document.addEventListener("mousedown", onDown);
-    document.addEventListener("keydown", onKey);
+    document.addEventListener("keydown", onKey, true);
     return () => {
       document.removeEventListener("mousedown", onDown);
-      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("keydown", onKey, true);
     };
   }, [open]);
 
@@ -61,10 +69,10 @@ export default function SourceTag({ ledgerId, evidence, detail, compact = false,
         }}
       >
         <Icon name="tag" size={12} className="nn-tag-icon" />
-        <span className="nn-tag-text">{text}</span>
+        <span className="nn-tag-text" ref={textRef} title={text}>{text}</span>
       </button>
       {open && (
-        <span className="nn-tag-pop" role="dialog" id={popId} aria-label={`Source ${ledgerId}`}>
+        <FloatingCard ref={popRef} anchorRef={wrapRef} className="nn-tag-pop" role="dialog" id={popId} aria-label={`Source ${ledgerId}`}>
           {entry ? (
             <>
               <strong>{entry.product_title}</strong>
@@ -111,7 +119,7 @@ export default function SourceTag({ ledgerId, evidence, detail, compact = false,
           >
             View in ledger →
           </button>
-        </span>
+        </FloatingCard>
       )}
     </span>
   );

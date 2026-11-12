@@ -63,6 +63,10 @@ Captured by the Playwright e2e tour (`node frontend/e2e/screenshots.mjs`), which
 
 **Dust playback that plays.** Pressing play on the SOL scrubber used to restart a fetch every tick, so the dust map lagged. Frames now go through one shared cache with prefetch 24 sols ahead, and the ticker advances only when the next frame is ready (or after 1.4 s if it cannot load). On a throttled 4 Mbps link every one of 20 played sols drew its own dust frame (2 of 20 before). On phones the SOL pill opens a full SOL card (previous, slider, next, play) inside the screen.
 
+**All maps follow one selection.** A coordinate picked on the 2D map, the ArcGIS map or the 3D globe (or found by search) moves the other maps to it; the map you clicked keeps its own zoom, and no map zooms out to follow. The USGS APP view re-syncs its extent to the same point.
+
+**Readability.** Text is 1 px larger across the console (Switzer throughout), the side columns are wider (about 21% of the window each), and buttons, chips, titles and labels stay on one line: where a line is longer than its box, the box scrolls sideways and fades at its edge. Popovers (METHOD, source chips) and the LAYERS menus are drawn on top of the page, so a panel never clips them, and they stay inside the window.
+
 | Feature | Where | Notes |
 | --- | --- | --- |
 | Multi-stop EVA | MARSWALK EVA setup (+ STOP, Shift-click), [MENU] quick start, Radial Feature Wheel, Command Index | Up to 5 stops visited in order; the walk-back returns along the same route. |

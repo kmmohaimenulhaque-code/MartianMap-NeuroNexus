@@ -326,3 +326,108 @@
 .nn-solpill-pop .nn-solscrub > button .nn-icon { width: 16px; height: 16px; }
 .nn-solpill-pop .nn-solscrub-value { grid-area: value; font-size: 16px; }
 .nn-solpill-pop small { color: var(--nn-text-dim); font-size: 12px; line-height: 1.4; }
+
+/* ------------------------------------------------------------------ Readability (laptops, desktops, tablets)
+ * Text is 1 px larger everywhere (tokens and stylesheets). The side columns get more width back from the maps,
+ * and interface chrome (buttons, chips, titles, labels) stays on one line: where a line is longer than its box,
+ * the box scrolls sideways instead of wrapping. Prose (explanations, notes) still wraps.
+ */
+@media (min-width: 768px) {
+  .nn-hscroll, .mission-actions, .map-legend, .nn-tag-text {
+    overflow-x: auto; overflow-y: hidden; scrollbar-width: thin; scrollbar-color: #29414b transparent; overscroll-behavior-x: contain;
+  }
+  .nn-hscroll::-webkit-scrollbar, .mission-actions::-webkit-scrollbar, .map-legend::-webkit-scrollbar, .nn-tag-text::-webkit-scrollbar { height: 3px; }
+  .nn-hscroll::-webkit-scrollbar-thumb, .mission-actions::-webkit-scrollbar-thumb, .map-legend::-webkit-scrollbar-thumb, .nn-tag-text::-webkit-scrollbar-thumb { background: #29414b; }
+
+  /* Top bar: one row of actions; it scrolls when the window is too narrow for all of them. */
+  .topbar-row { flex-wrap: nowrap; min-width: 0; }
+  .topbar .mission-state > div:last-child { flex-wrap: nowrap !important; min-width: 0; gap: 10px; }
+  .mission-actions { flex-wrap: nowrap; min-width: 0; flex: 0 1 auto; }
+  .mission-action, .mode-switch button, .nn-seg button, .status-dot, .topbar button { white-space: nowrap; flex-shrink: 0; }
+
+  /* Source chips: one line; long names scroll inside the chip (the popover has the full entry). */
+  .nn-tag { white-space: nowrap; overflow-wrap: normal; min-width: 0; max-width: 100%; }
+  .nn-tag-text { min-width: 0; display: block; }
+
+  /* Map panels: one-line titles; the less important subtitle and title text give way in narrow panels. */
+  .map-panel { container-type: inline-size; }
+  .map-panel-title, .map-panel-title > * { white-space: nowrap; }
+  .map-panel-title { flex-wrap: nowrap; min-width: 0; }
+  .map-panel-title > span, .map-panel-title > small { min-width: 0; overflow: hidden; }
+  .nn-usgs-title { flex-wrap: nowrap; }
+  .nn-usgs-tools { flex-wrap: nowrap; flex-shrink: 0; }
+  .map-toolbar { flex-wrap: nowrap; }
+  .map-toolbar > * { flex-shrink: 0; }
+  .map-toolbar button, .map-toolbar .mission-action { white-space: nowrap; }
+
+  /* Labels and section heads in the side columns: one line. */
+  .left-column :is(h2, h3, h4, label, dt, .panel-kicker, .panel-title, .metric-label, .state-label),
+  .right-column :is(h2, h3, h4, label, dt, .panel-kicker, .panel-title, .metric-label, .state-label) { white-space: nowrap; }
+}
+@container (max-width: 520px) {
+  .map-panel-title > small { display: none; }
+}
+@container (max-width: 380px) {
+  .nn-usgs-title > span { display: none; }
+}
+@container (max-width: 470px) {
+  .map-toolbar .map-ai-route-button { display: none; }
+}
+
+/* Laptops and desktops: give the side columns (most of the text) more width. */
+@media (min-width: 1200px) {
+  .workspace { grid-template-columns: clamp(300px, 21vw, 380px) minmax(0, 1fr) clamp(310px, 22vw, 400px); }
+}
+@media (min-width: 768px) {
+  .nn-tag .nn-tag-text { white-space: nowrap !important; overflow-wrap: normal !important; }
+}
+@media (min-width: 768px) {
+  /* One-line chips must not widen their panel: let flex and grid items shrink below their content. */
+  :is(.left-column, .right-column, .route-console, .mw-left, .mw-right, .mw-bottom) :is(div, section, figure, header, li, .nn-tag-list, .nn-tag-wrap) { min-width: 0; }
+  .nn-tag-list, .nn-tag-wrap { max-width: 100%; }
+  .nn-tag-wrap { display: inline-flex; }
+  /* A chip whose name is longer than its box fades at the right edge to show it scrolls. */
+  .nn-tag-text[data-overflow] { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 18px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 18px), transparent); cursor: ew-resize; }
+  .nn-tag-text[data-overflow][data-scrolled-end] { -webkit-mask-image: none; mask-image: none; }
+}
+@media (min-width: 768px) {
+  .topbar .mission-state > div:last-child > .topbar-row:first-child { flex: 0 0 auto; }
+  .topbar .mission-state > div:last-child > .topbar-row:last-child { flex: 0 1 auto; min-width: 0; margin-left: auto; }
+  .topbar .mission-actions { justify-content: flex-start; }
+}
+@media (min-width: 768px) {
+  /* Label + value rows: the pieces may sit on two lines, but each piece stays on one line. */
+  :is(.dust-head, .morph-head, .dust-chart-title, .science-block-foot, .field-header > div:first-child) { flex-wrap: wrap; row-gap: 2px; }
+  :is(.dust-head, .morph-head, .dust-chart-title, .science-block-foot) > *, .field-header :is(span, strong, small) { white-space: nowrap; }
+  .science-block-foot > * { min-width: 0; }
+  .science-source-link { overflow-x: auto; scrollbar-width: none; }
+  .dust-kpis > div > * { white-space: nowrap; overflow-x: auto; scrollbar-width: none; }
+}
+@media (min-width: 768px) {
+  .map-legend { flex-wrap: nowrap; white-space: nowrap; }
+  .map-legend > * { flex: 0 0 auto; }
+  .mission-actions[data-overflow] { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent); }
+  .mission-actions[data-overflow][data-scrolled-end] { -webkit-mask-image: none; mask-image: none; }
+  .nn-layers-icon { display: none; vertical-align: -3px; }
+}
+/* Narrow USGS panel: LAYERS becomes its icon (the count stays in its accessible name and the menu). */
+@container (max-width: 330px) {
+  .nn-usgs-tools .nn-layers-word { display: none; }
+  .nn-usgs-tools .nn-layers-icon { display: inline-block; }
+  .nn-usgs-tools .nn-seg button { padding: 0 7px; letter-spacing: 0.03em; }
+}
+@media (max-width: 767px) {
+  .nn-layers-menu.nn-floating { left: 6px !important; right: 6px !important; top: calc(86px + env(safe-area-inset-top, 0px)) !important; width: auto !important; max-height: 60dvh !important; }
+}
+@media (min-width: 768px) {
+  .morph-windows { flex-wrap: wrap; justify-content: flex-end; }
+  .morph-windows button { white-space: nowrap; }
+}
+@media (min-width: 768px) {
+  /* MARSWALK map: the hover readout stays on one line and leaves room for the scale bar and north arrow. */
+  .mw-readout { max-width: calc(100% - 190px); white-space: nowrap; overflow-x: auto; scrollbar-width: none; }
+}
+@media (min-width: 768px) {
+  .nn-layers-menu.nn-floating { width: min(560px, calc(100vw - 16px)); }
+  .nn-layer-main { white-space: nowrap; overflow-x: auto; scrollbar-width: none; }
+}

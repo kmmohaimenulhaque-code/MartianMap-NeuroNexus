@@ -4,9 +4,11 @@ import Icon from "../../ui/Icon";
 import SolScrubber from "../SolScrubber";
 import { SolPill } from "../mobile/MobileDock";
 import { useSol } from "../../state/solStore";
+import { useOverflowFlag } from "../../ui/useOverflowFlag";
 
 /* Extracted from App.jsx (T7.8); state stays in App and arrives as props. */
 export default function TopBar({ appMode, backendConnected, commandIndex, comparedRoutes, handleOpenOrbital, handleOpenSnapshot, handleSelectPlace, manualOpen, places, query, routePoints, selectedCandidateId, setCommandIndex, setDesignerOpen, setIntelligenceOpen, setManualOpen, setQuery, suggestions, switchMode }) {
+  const actionsRef = useOverflowFlag();
   const { sol, seasonLs } = useSol();
   return (
     <header className="topbar">
@@ -113,7 +115,7 @@ export default function TopBar({ appMode, backendConnected, commandIndex, compar
             <SolPill sol={sol} seasonLs={seasonLs}>
               <SolScrubber />
             </SolPill>
-            <div className="mission-actions">
+            <div className="mission-actions" ref={actionsRef}>
               <button type="button" className="mission-action" onClick={() => setDesignerOpen(true)}>
                 AI ROUTE DESIGN
               </button>

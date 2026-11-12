@@ -27,6 +27,7 @@ const cssVar = (name) => (typeof document === "undefined" ? "" : getComputedStyl
 export default function ArcgisLayeredMap({ center, halfWidthKm = 40, features = [], contextData = {}, thermalObs = [], routePoints = [], safeHavens = [], onSelectCoordinate }) {
   const containerRef = useRef(null);
   const viewRef = useRef(null);
+  const ownPickRef = useRef(null);
   const layersRef = useRef({});
   const graphicRef = useRef(null);
   const mediaRef = useRef(null);
@@ -48,8 +49,9 @@ export default function ArcgisLayeredMap({ center, halfWidthKm = 40, features = 
     requireModules([
       "esri/Map", "esri/views/MapView", "esri/layers/TileLayer", "esri/layers/FeatureLayer", "esri/layers/GraphicsLayer", "esri/Graphic",
       "esri/layers/MediaLayer", "esri/layers/support/ImageElement", "esri/layers/support/ExtentAndRotationGeoreference", "esri/geometry/Extent",
+      "esri/core/reactiveUtils",
     ])
-      .then(([EsriMap, MapView, TileLayer, FeatureLayer, GraphicsLayer, Graphic, MediaLayer, ImageElement, Georeference, Extent]) => {
+      .then(([EsriMap, MapView, TileLayer, FeatureLayer, GraphicsLayer, Graphic, MediaLayer, ImageElement, Georeference, Extent, reactiveUtils]) => {
         if (destroyed || !containerRef.current) return;
         graphicRef.current = Graphic;
         // Dust and the terrain heatmaps are single images (MediaLayer), not thousands of polygons.
@@ -74,7 +76,15 @@ export default function ArcgisLayeredMap({ center, halfWidthKm = 40, features = 
         view.ui.move("zoom", "top-left");
         view.on("click", (event) => {
           const mp = event.mapPoint;
-          if (mp) selectRef.current?.({ latitude_deg: Number(mp.y.toFixed(6)), longitude_deg: Number((((mp.x % 360) + 360) % 360).toFixed(6)) });
+          if (!mp) return;
+          const pick = { latitude_deg: Number(mp.y.toFixed(6)), longitude_deg: Number((((mp.x % 360) + 360) % 360).toFixed(6)) };
+          ownPickRef.current = `${pick.latitude_deg.toFixed(4)},${pick.longitude_deg.toFixed(4)}`;
+          selectRef.current?.(pick);
+        });
+        // Current center for the device tests (and anyone inspecting the page): "lat,lon" in degrees, east 0-360.
+        reactiveUtils.watch(() => view.stationary, (still) => {
+          if (still && view.center && containerRef.current)
+            containerRef.current.dataset.center = `${view.center.y.toFixed(4)},${(((view.center.x % 360) + 360) % 360).toFixed(4)}`;
         });
         viewRef.current = view;
         view.when(() => !destroyed && setReady(true), (e) => !destroyed && setError(e?.message ?? "ArcGIS view failed"));
@@ -103,11 +113,16 @@ export default function ArcgisLayeredMap({ center, halfWidthKm = 40, features = 
   useEffect(() => {
     if (!ready || lat == null || lon == null) return;
     const view = viewRef.current;
-    const dDeg = (halfWidthKm / 3389.5) * (180 / Math.PI);
-    view
-      .goTo({ target: { type: "extent", xmin: lon180(lon) - dDeg, xmax: lon180(lon) + dDeg, ymin: Number(lat) - dDeg, ymax: Number(lat) + dDeg, spatialReference: MARS_SR } }, { animate: false })
-      .catch(() => {});
     rebuild("selection", [{ geometry: pt(lat, lon), symbol: { type: "simple-marker", style: "circle", size: 14, color: [0, 0, 0, 0], outline: { color: [117, 230, 255, 1], width: 2 } } }]);
+    const key = `${Number(lat).toFixed(4)},${(((Number(lon) % 360) + 360) % 360).toFixed(4)}`;
+    if (ownPickRef.current === key) return; // picked on this map: keep the user's view, the other maps follow
+    // A plain { type: "extent" } target is silently ignored by goTo, so frame ±halfWidthKm with center + scale
+    // (scale = ground metres across the view / screen metres across it at 96 dpi).
+    const screenM = Math.max(200, Math.min(view.width || 0, view.height || 0) || 400) * (0.0254 / 96);
+    const frame = (2 * halfWidthKm * 1000) / screenM;
+    // Keep a zoom the user chose; only the opening (global) view is reframed to ±halfWidthKm.
+    const scale = view.scale > frame * 4 ? frame : view.scale;
+    view.goTo({ center: [lon180(lon), Number(lat)], scale }, { animate: false }).catch(() => {});
   }, [ready, lat, lon, halfWidthKm]);
 
   /* ------------------------------------------------------------ visibility + shared opacity */

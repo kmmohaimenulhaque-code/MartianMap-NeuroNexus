@@ -56,6 +56,9 @@ function routeCoordinates(route) {
 
 /* Maps in the middle of a fly-to (MapFocus); MapResizeHandler waits for the flight to end. */
 const FLYING = new WeakSet();
+// The last coordinate picked by clicking this map: its own picks do not move its camera.
+const OWN_PICK = new WeakMap();
+const pickKey = (lat, lon) => `${Number(lat).toFixed(4)},${(((Number(lon) % 360) + 360) % 360).toFixed(4)}`;
 
 function MapResizeHandler() {
   const map = useMap();
@@ -112,18 +115,34 @@ function MapFocus({ selectedFeature, selectedLocation }) {
       return;
     }
 
+    // A point picked on this map keeps this map's camera; a point picked elsewhere (ArcGIS, 3D, search) is
+    // centered. Never zoom out to show it.
+    const at = selectedLocation ? pointPosition(selectedLocation) : null;
+    if (at && OWN_PICK.get(map) === pickKey(at[0], at[1])) return;
+    const zoom = Math.max(map.getZoom(), 1.6);
     FLYING.add(map);
     map.once("zoomend", () => FLYING.delete(map));
-    map.flyTo(position, 1.6, {
+    map.flyTo(position, zoom, {
       duration: 0.8,
     });
   }, [selectedFeature, selectedLocation, map]);
+
+  // Current center for the device tests: "lat,lon" in degrees, east 0-360.
+  useEffect(() => {
+    const mark = () => {
+      const c = map.getCenter();
+      map.getContainer().dataset.center = `${c.lat.toFixed(4)},${(((c.lng % 360) + 360) % 360).toFixed(4)}`;
+    };
+    mark();
+    map.on("moveend", mark);
+    return () => map.off("moveend", mark);
+  }, [map]);
 
   return null;
 }
 
 function MapClickCapture({ enabled, interactive, onRoutePoint, onCoordinateSelect, setDraftLocation }) {
-  useMapEvents({
+  const map = useMapEvents({
     click(event) {
       if (!interactive || !enabled) {
         return;
@@ -138,6 +157,7 @@ function MapClickCapture({ enabled, interactive, onRoutePoint, onCoordinateSelec
       setDraftLocation?.(point);
 
       if (onCoordinateSelect) {
+        OWN_PICK.set(map, pickKey(point.lat, point.lng));
         onCoordinateSelect(point);
       }
 

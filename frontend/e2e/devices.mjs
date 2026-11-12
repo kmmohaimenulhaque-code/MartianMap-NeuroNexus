@@ -127,17 +127,47 @@ const cockpit = async (page, w, label) => {
   await page.click('#panel-usgs-map [role="radio"]:first-child');
   await page.waitForSelector("[data-testid=arcgis-layered] canvas", { timeout: 90000 });
   await page.click("[data-testid=layers-arcgis]");
-  const slope = '[data-testid=layers-arcgis] ~ .nn-layers-menu [data-layer="slope"] input[type=checkbox]';
+  const slope = '[data-testid=layers-menu-arcgis] [data-layer="slope"] input[type=checkbox]';
   if (!(await page.isChecked(slope))) await page.click(slope);
   await page.waitForTimeout(3500);
   await shot(page, "desktop-arcgis-layers.png");
   await page.keyboard.press("Escape");
   await page.mouse.click(720, 60);
   await page.click(".map-toolbar [data-testid=layers-2d]");
-  check(await page.isChecked('.map-toolbar [data-testid=layers-2d] ~ .nn-layers-menu [data-layer="slope"] input[type=checkbox]'), "desktop 1440: SLOPE turned on in the ArcGIS LAYERS menu is on in the 2D LAYERS menu");
-  check((await box(page, '.map-toolbar [data-testid=layers-2d] ~ .nn-layers-menu [data-layer="slope"] input[type=range]'))?.visible, "desktop 1440: opacity slider shown for an active layer");
-  await page.click('.map-toolbar [data-testid=layers-2d] ~ .nn-layers-menu [data-layer="slope"] input[type=checkbox]');
+  check(await page.isChecked('[data-testid=layers-menu-2d] [data-layer="slope"] input[type=checkbox]'), "desktop 1440: SLOPE turned on in the ArcGIS LAYERS menu is on in the 2D LAYERS menu");
+  check((await box(page, '[data-testid=layers-menu-2d] [data-layer="slope"] input[type=range]'))?.visible, "desktop 1440: opacity slider shown for an active layer");
+  await page.click('[data-testid=layers-menu-2d] [data-layer="slope"] input[type=checkbox]');
   await page.mouse.click(720, 60);
+
+  // Map sync: a pick on the 2D map recenters the ArcGIS map; a pick on the ArcGIS map recenters the 2D map.
+  const centerOf = (s) => page.evaluate((s) => document.querySelector(s)?.dataset.center?.split(",").map(Number), s);
+  const near = (a, b) => a && b && Math.abs(a[0] - b[0]) < 0.05 && Math.abs(((a[1] - b[1] + 540) % 360) - 180) < 0.05;
+  let mb = await page.locator(".map-panel-body .leaflet-container").boundingBox();
+  await page.mouse.click(mb.x + mb.width * 0.3, mb.y + mb.height * 0.45);
+  await page.waitForTimeout(3000);
+  const pick2d = await centerOf(".nn-arcgis-view");
+  check(pick2d && !near(pick2d, [-5.3672, 137.811]), `desktop 1440: a 2D pick recenters the ArcGIS map (${pick2d})`);
+  mb = await page.locator("[data-testid=arcgis-layered]").boundingBox();
+  await page.mouse.click(mb.x + mb.width * 0.7, mb.y + mb.height * 0.3);
+  await page.waitForTimeout(3000);
+  const d2 = await centerOf(".map-panel-body .leaflet-container");
+  check(d2 && !near(d2, pick2d), `desktop 1440: an ArcGIS pick recenters the 2D map (${d2})`);
+
+  // Search: Enter picks the first suggestion and closes the list.
+  await page.fill(".search-box input", "Jezero");
+  await page.waitForSelector(".suggestions button", { timeout: 15000 });
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(1500);
+  check(!(await page.$(".suggestions")), "desktop 1440: Enter in search selects and closes the suggestions");
+
+  // METHOD popover in the left column: drawn on the page, fully inside the window.
+  const method = page.locator(".left-column .nn-pop-trigger", { hasText: "METHOD" }).first();
+  await method.scrollIntoViewIfNeeded();
+  await method.hover();
+  await page.waitForTimeout(400);
+  const card = await box(page, ".nn-pop-card");
+  check(card?.visible && card.left >= 0 && card.top >= 0 && card.right <= 1440 && card.bottom <= 900, "desktop 1440: METHOD popover is inside the window, not clipped by the panel");
+  await page.mouse.move(720, 450);
 
   // Multi-stop EVA from the menu, then parameter sensitivity on that route.
   await page.click("button.burger-button");
@@ -180,7 +210,7 @@ for (const [w, h, name, file] of [[768, 1024, "iPad mini 768", null], [820, 1180
   const { context, page } = await open(name, { width: w, height: h }, true);
   await cockpit(page, w, name);
   check((await overlappingButtons(page)) === 0, `${name}: no overlapping header buttons`);
-  check((await clippedButtons(page)).length === 0, `${name}: no clipped buttons`);
+  { const c = await clippedButtons(page); check(c.length === 0, `${name}: no clipped buttons${c.length ? ` (${c.join(", ")})` : ""}`); }
   const map = await box(page, ".map-panel-body .leaflet-container");
   check(map.height >= 180, `${name}: 2D map keeps ${Math.round(map.height)} px of height`);
   if (file) await shot(page, file);

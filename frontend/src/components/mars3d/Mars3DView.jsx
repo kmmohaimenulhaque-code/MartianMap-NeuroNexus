@@ -338,10 +338,11 @@ export default function Mars3DView({
       "esri/widgets/DirectLineMeasurement3D",
       "esri/widgets/AreaMeasurement3D",
       "esri/widgets/ElevationProfile",
+      "esri/core/reactiveUtils",
     ])
       .then((mods) => {
         if (destroyed) return;
-        const [EsriMap, SceneView, TileLayer, ElevationLayer, FeatureLayer, GraphicsLayer, Graphic, DirectLine, AreaMeasure, ElevationProfile] = mods;
+        const [EsriMap, SceneView, TileLayer, ElevationLayer, FeatureLayer, GraphicsLayer, Graphic, DirectLine, AreaMeasure, ElevationProfile, reactiveUtils] = mods;
         modulesRef.current = { Graphic, DirectLine, AreaMeasure, ElevationProfile };
         const draped = () => new GraphicsLayer({ elevationInfo: { mode: "on-the-ground" } });
         const elevation = new ElevationLayer({ url: SERVICES.elevation });
@@ -436,6 +437,11 @@ export default function Mars3DView({
         }
         savedView.siteKey = `${start.latitude_deg},${start.longitude_deg}`;
         viewRef.current = view;
+        // Camera target for the device tests: "lat,lon" in degrees, east 0-360.
+        reactiveUtils.watch(() => view.stationary, (still) => {
+          const c = view.center;
+          if (still && c && containerRef.current) containerRef.current.dataset.center = `${c.y.toFixed(4)},${(((c.x % 360) + 360) % 360).toFixed(4)}`;
+        });
         overlayRef.current = labelContainerRef.current ? createLabelOverlay(view, labelContainerRef.current) : null;
 
         // Landing sites are multipoint features, which the 3D FeatureLayer cannot draw:
