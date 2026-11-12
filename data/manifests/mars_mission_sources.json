@@ -1,0 +1,48 @@
+{
+  "manifest": "NeuroNexus crewed-Mars mission context sources",
+  "type": "source_ledger_reference",
+  "sources": [
+    {
+      "topic": "humans_to_mars",
+      "title": "Humans to Mars",
+      "publisher": "NASA",
+      "url": "https://www.nasa.gov/humans-in-space/humans-to-mars/",
+      "used_for": ["oxygen", "food", "water", "power", "long-duration mission context"]
+    },
+    {
+      "topic": "space_radiation",
+      "title": "Hazard: Space Radiation",
+      "publisher": "NASA",
+      "url": "https://www.nasa.gov/hrp/hazard-space-radiation/",
+      "used_for": ["GCR", "solar particle events", "radiation monitoring context"]
+    },
+    {
+      "topic": "mars_surface_radiation",
+      "title": "Radiation Measurements on Mars",
+      "publisher": "NASA Science",
+      "url": "https://science.nasa.gov/resource/radiation-measurements-on-mars/",
+      "used_for": ["historical Curiosity RAD surface reference", "~210 µGy/day historical context"]
+    },
+    {
+      "topic": "eva",
+      "title": "Extravehicular Activity and Human Surface Mobility",
+      "publisher": "NASA",
+      "url": "https://www.nasa.gov/suits-and-rovers/",
+      "used_for": ["EVA terminology", "surface mobility", "spacesuit context"]
+    },
+    {
+      "topic": "mars_eva",
+      "title": "Technology development for human exploration of Mars",
+      "publisher": "NASA Technical Reports Server",
+      "url": "https://ntrs.nasa.gov/api/citations/20260001086/downloads/20260001086.pdf?attachment=true",
+      "used_for": ["surface mobility", "life support / ECLSS context"]
+    },
+    {
+      "topic": "martian_dust",
+      "title": "Establishing Crew Exposure Limits of Martian Dust",
+      "publisher": "NASA",
+      "url": "https://www.nasa.gov/general/establishing-crew-exposure-limits-of-martian-dust/",
+      "used_for": ["crew dust exposure context", "research uncertainty"]
+    }
+  ]
+}

@@ -5,9 +5,7 @@ from math import atan, cos, degrees, radians, sqrt
 
 import numpy as np
 
-from science.terrain.mola128_resolver import (
-    MOLA128Resolver,
-)
+from science.spatial.mola_unified import MolaUnified
 
 
 MARS_RADIUS_M = 3_396_000.0
@@ -27,14 +25,14 @@ class WaypointTerrain:
 
 
 def _read_elevation(
-    resolver: MOLA128Resolver,
+    mola: MolaUnified,
     latitude_deg: float,
     longitude_deg: float,
 ) -> float:
     return float(
-        resolver.elevation(
-            latitude=latitude_deg,
-            longitude=longitude_deg % 360.0,
+        mola.elevation_at(
+            latitude_deg,
+            longitude_deg % 360.0,
         )
     )
 
@@ -43,27 +41,25 @@ def sample_waypoint(
     latitude_deg: float,
     longitude_deg: float,
     *,
-    resolver: MOLA128Resolver | None = None,
+    mola: MolaUnified | None = None,
 ) -> WaypointTerrain:
     """
-    Analyze only a 3x3 MOLA neighborhood around a single waypoint.
+    Analyze only a 3x3 MOLA neighbourhood around a single waypoint.
+
+    The elevation source is the unified MOLA engine, which automatically
+    selects global MEGDR coverage or polar MEGDR coverage according to
+    latitude.
 
     This is intentionally local. It must never construct a route-sized
     raster or corridor.
     """
 
-    if not (
-        -88.0 <= latitude_deg <= 88.0
-    ):
+    if not (-90.0 <= latitude_deg <= 90.0):
         raise ValueError(
-            "Local MOLA waypoint analysis is limited "
-            "to latitudes between -88 and 88 degrees."
+            "Waypoint latitude must be between -90 and 90 degrees."
         )
 
-    resolver = (
-        resolver
-        or MOLA128Resolver()
-    )
+    mola = mola or MolaUnified()
 
     longitude_deg = longitude_deg % 360.0
 
@@ -85,38 +81,27 @@ def sample_waypoint(
         dtype=np.float64,
     )
 
+    if np.any(latitudes < -90.0) or np.any(latitudes > 90.0):
+        raise ValueError(
+            "Waypoint neighbourhood crosses the planetary latitude boundary."
+        )
+
     values = np.empty(
         (3, 3),
         dtype=np.float64,
     )
 
-    for row, latitude in enumerate(
-        latitudes
-    ):
-        if not (
-            -88.0 <= latitude <= 88.0
-        ):
-            raise ValueError(
-                "Waypoint neighborhood crosses "
-                "the supported MOLA latitude range."
-            )
-
-        for col, longitude in enumerate(
-            longitudes
-        ):
+    for row, latitude in enumerate(latitudes):
+        for col, longitude in enumerate(longitudes):
             values[row, col] = _read_elevation(
-                resolver,
+                mola,
                 float(latitude),
                 float(longitude),
             )
 
-    center_elevation = float(
-        values[1, 1]
-    )
+    center_elevation = float(values[1, 1])
 
-    center_lat_rad = radians(
-        latitude_deg
-    )
+    center_lat_rad = radians(latitude_deg)
 
     north_spacing_m = (
         MARS_RADIUS_M
@@ -168,9 +153,7 @@ def sample_waypoint(
         + 360.0
     ) % 360.0
 
-    roughness_m = float(
-        values.std()
-    )
+    roughness_m = float(values.std())
 
     return WaypointTerrain(
         elevation_m=center_elevation,

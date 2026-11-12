@@ -6,7 +6,7 @@ from science.terrain.mola128 import MOLA128Tile
 
 
 class MOLA128Resolver:
-    ROOT = Path("/tmp/neuronexus-mola")
+    ROOT = Path("data/raw/mola/meg128/topography")
 
     LON_BANDS = {
         0: "000",

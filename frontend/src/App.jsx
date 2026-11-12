@@ -6,6 +6,8 @@ import MarsTopographicMap from './components/mars/MarsTopographicMap'
 import MarsBriefingPanel from './components/mars/MarsBriefingPanel'
 import RoverPhotosPanel from './components/mars/RoverPhotosPanel'
 import SiteSciencePanel from './components/mars/SiteSciencePanel'
+import MissionOpsPanel from './components/mission/MissionOpsPanel'
+import MissionOpsPanel from './components/mission/MissionOpsPanel'
 
 import {
   fetchEnvironmentByPlace,
@@ -1320,7 +1322,17 @@ export default function App() {
           </Panel>
 
 
-          <MissionSystemsPanel />
+          <Panel
+            eyebrow="MISSION / OPERATIONS"
+            title="Crewed Mars console"
+          >
+            <MissionOpsPanel
+              selectedFeature={place}
+              sol={DEFAULT_SOL}
+              environment={environment}
+              routePlan={routePlan}
+            />
+          </Panel>
 
 
           <Panel

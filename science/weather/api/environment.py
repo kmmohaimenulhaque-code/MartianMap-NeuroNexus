@@ -22,6 +22,10 @@ from science.terrain.api import (
     router as terrain_router,
 )
 
+from science.mission.api import (
+    router as mission_router,
+)
+
 from science.weather.models.environment_assessment import (
     assess_environment,
 )
@@ -47,6 +51,11 @@ app = FastAPI(
 
 app.include_router(
     terrain_router
+)
+
+
+app.include_router(
+    mission_router,
 )
 
 
