@@ -10,7 +10,7 @@
 # - `HF_USER` - optional, read from the token if unset
 #
 # **Pipeline**: setup -> dataset (3,062 train / 333 held-out rows, from the repo's real NASA data) ->
-# LoRA training, time-boxed to `TRAIN_BUDGET_MIN` -> adapter to the Hub -> eval base vs fine-tuned ->
+# LoRA training (time-boxed only where `TRAIN_BUDGET_MIN` is set) -> adapter to the Hub -> eval base vs fine-tuned ->
 # merge -> GGUF -> publish -> Hugging Face Space (llama.cpp server, OpenAI-compatible) -> live API calls ->
 # smart router demo (fine-tuned Qwen for explanation, Gemini for tool calling, automatic fallbacks).
 #
@@ -34,7 +34,7 @@ EPOCHS = 2
 LR = 2e-4
 BATCH, GRAD_ACCUM = 4, 4
 LORA_R = 16
-TRAIN_BUDGET_MIN = 150      # training stops at the latest step after this many minutes
+TRAIN_BUDGET_MIN = None      # None = train to the end; a number stops at the latest step after that many minutes
 EVAL_N = 40                 # held-out rows scored for base and fine-tuned
 QUANTS = ["Q4_K_M", "Q5_K_M"]
 PUBLIC = True               # model repo visibility; the Space reads it without a token when public
@@ -158,6 +158,8 @@ print(json.load(open(paths["stats.json"]))["by_intent"])
 
 # %%
 # 6. Load the base model and attach LoRA
+import transformers
+DTYPE_KW = "dtype" if tuple(int(x) for x in transformers.__version__.split(".")[:2]) >= (4, 56) else "torch_dtype"
 TARGETS = ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
 if USE_UNSLOTH:
     from unsloth import FastLanguageModel
@@ -170,7 +172,7 @@ else:
     from transformers import AutoModelForCausalLM, AutoTokenizer
     from peft import LoraConfig, get_peft_model
     tok = AutoTokenizer.from_pretrained(BASE_MODEL, token=HF_TOKEN)
-    model = AutoModelForCausalLM.from_pretrained(BASE_MODEL, torch_dtype=torch.bfloat16, device_map={"": 0},
+    model = AutoModelForCausalLM.from_pretrained(BASE_MODEL, **{DTYPE_KW: torch.bfloat16}, device_map={"": 0},
                                                  attn_implementation="sdpa", token=HF_TOKEN)
     model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
     model.enable_input_require_grads()
@@ -199,7 +201,8 @@ lens = sorted(len(x) for x in train_ds["input_ids"])
 mark(f"tokenized {len(train_ds)} rows, median {lens[len(lens) // 2]} tokens, max {lens[-1]}")
 
 # %%
-# 8. Train, time-boxed. Stops cleanly at TRAIN_BUDGET_MIN and keeps the latest weights.
+# 8. Train. If TRAIN_BUDGET_MIN is set, stops cleanly at it and keeps the latest weights.
+import inspect, math
 from transformers import Trainer, TrainingArguments, TrainerCallback, DataCollatorForSeq2Seq
 bf16 = torch.cuda.is_bf16_supported()
 class Budget(TrainerCallback):
@@ -209,18 +212,26 @@ class Budget(TrainerCallback):
         el = (time.time() - self.t) / 60
         if state.global_step == 10:
             eta = el / 10 * state.max_steps
-            print(f"ETA {eta:.1f} min for {state.max_steps} steps (budget {TRAIN_BUDGET_MIN} min)", flush=True)
-        if el > TRAIN_BUDGET_MIN:
+            print(f"ETA {eta:.1f} min for {state.max_steps} steps (budget {TRAIN_BUDGET_MIN or 'none'} min)", flush=True)
+        if TRAIN_BUDGET_MIN and el > TRAIN_BUDGET_MIN:
             print(f"Budget reached at step {state.global_step}/{state.max_steps}; stopping.", flush=True)
             control.should_training_stop = True
 
-args = TrainingArguments(
+total_steps = math.ceil(len(train_ds) / (BATCH * GRAD_ACCUM)) * EPOCHS
+# Keyword names drift across transformers versions (warmup_ratio was removed in v5): pass only what this version takes.
+targs = dict(
     output_dir=str(WORK / "ckpt"), num_train_epochs=EPOCHS, per_device_train_batch_size=BATCH,
-    gradient_accumulation_steps=GRAD_ACCUM, learning_rate=LR, lr_scheduler_type="cosine", warmup_ratio=0.03,
-    weight_decay=0.0, logging_steps=10, save_strategy="steps", save_steps=100, save_total_limit=2,
+    gradient_accumulation_steps=GRAD_ACCUM, learning_rate=LR, lr_scheduler_type="cosine",
+    warmup_steps=max(1, math.ceil(0.03 * total_steps)), weight_decay=0.0, logging_steps=10,
+    save_strategy="steps", save_steps=100, save_total_limit=2,
     bf16=bf16, fp16=not bf16, optim="adamw_8bit" if LOAD_IN_4BIT else "adamw_torch_fused",
     group_by_length=True, report_to="none", seed=3407, dataloader_num_workers=2,
     gradient_checkpointing=not USE_UNSLOTH, remove_unused_columns=False)
+accepted = set(inspect.signature(TrainingArguments.__init__).parameters)
+dropped = sorted(k for k in targs if k not in accepted)
+if dropped:
+    print("TrainingArguments: skipping unsupported", dropped)
+args = TrainingArguments(**{k: v for k, v in targs.items() if k in accepted})
 trainer = Trainer(model=model, args=args, train_dataset=train_ds, callbacks=[Budget()],
                   data_collator=DataCollatorForSeq2Seq(tok, padding=True, label_pad_token_id=-100, pad_to_multiple_of=8))
 T_TRAIN = time.time()
@@ -361,7 +372,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel
 MERGED = WORK / "merged"
 dev = {"": 0} if PLATFORM == "mi300x" else {"": "cpu"}
-base = AutoModelForCausalLM.from_pretrained(BASE_MODEL, torch_dtype=torch.bfloat16 if PLATFORM == "mi300x" else torch.float16,
+base = AutoModelForCausalLM.from_pretrained(BASE_MODEL, **{DTYPE_KW: torch.bfloat16 if PLATFORM == "mi300x" else torch.float16},
                                             device_map=dev, low_cpu_mem_usage=True, token=HF_TOKEN)
 merged = PeftModel.from_pretrained(base, str(ADAPTER)).merge_and_unload()
 merged.save_pretrained(str(MERGED), safe_serialization=True, max_shard_size="5GB")
