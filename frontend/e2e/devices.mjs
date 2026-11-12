@@ -96,7 +96,7 @@ const cockpit = async (page, w, label) => {
     const cs = getComputedStyle(a);
     return { color: cs.color, bg: cs.backgroundColor };
   });
-  check(zoom.color === "rgb(117, 230, 255)" && /rgba?\(9, 17, 21/.test(zoom.bg), `desktop 1440: Leaflet zoom buttons are dark cyan (${zoom.color} on ${zoom.bg})`);
+  check(zoom.color === "rgb(1, 255, 255)" && /rgba?\(9, 17, 21/.test(zoom.bg), `desktop 1440: Leaflet zoom buttons are dark cyan (${zoom.color} on ${zoom.bg})`);
   // Leaflet: unmounting the map during an animated zoom must not throw (late _onZoomTransitionEnd timer).
   const before = errors.length;
   for (let i = 0; i < 3; i += 1) {

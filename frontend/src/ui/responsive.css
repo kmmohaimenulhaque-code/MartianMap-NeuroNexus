@@ -453,13 +453,13 @@
   .topbar .nn-solpill-btn { padding: 0 8px; letter-spacing: 0.03em; }
 }
 
-/* Laptops, desktops, tablets: a deeper cyan for text and accents. The live status dot and the selected-site
- * signal keep the bright cyan, so "online" and "selected" still read at a glance. */
+/* Laptops, desktops, tablets: one exact cyan, #01FFFF, for text and accents, the SYSTEM ONLINE status and
+ * the selected-site signal alike. */
 @media (min-width: 768px) {
-  :root { --nn-cyan: #139dc0; --cyan: #139dc0; }
-  #root .status-dot { color: #75e6ff; }
-  #root .status-dot > span { background: #75e6ff; }
-  #root .signal { color: #75e6ff; }
+  :root { --nn-cyan: #01ffff; --cyan: #01ffff; }
+  #root .status-dot { color: #01ffff; }
+  #root .status-dot > span { background: #01ffff; box-shadow: 0 0 13px rgba(1, 255, 255, 0.75); }
+  #root .signal { color: #01ffff; text-shadow: 0 0 12px rgba(1, 255, 255, 0.7); }
   /* Thermal context summary without a box: a quiet left rule instead. */
   .site-thermal-summary { border: 0; border-left: 1px solid rgba(117, 230, 255, 0.18); background: none; padding: 2px 0 2px 10px; }
 }
