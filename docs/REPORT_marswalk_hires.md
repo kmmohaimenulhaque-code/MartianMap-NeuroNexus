@@ -110,7 +110,7 @@ Backend warm: traverse 0.015 s (was 15–20 s), conditions 0.003 s, places 1.26 
 
 ## 9. Live demo and exact commands
 
-Live static demo: https://mhaquehaque-martianmap-neuronexus.static.hf.space (Space page: https://huggingface.co/spaces/Mhaquehaque/MartianMap-NeuroNexus). 3,394 real recorded responses, bannered as not live.
+Live static demo: https://mhaquehaque-martianmap-neuronexus.static.hf.space (Space page: https://huggingface.co/spaces/Mhaquehaque/MartianMap-NeuroNexus). 3,414 real recorded responses, bannered as not live.
 
 
 ```bash

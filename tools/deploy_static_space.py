@@ -14,6 +14,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -62,6 +63,12 @@ def main(argv: list[str] | None = None) -> int:
     commit = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True, check=True).stdout.strip()
     build_frontend(manifest["recorded_at"])
     shutil.copytree(PACK, SITE / "demo-pack", dirs_exist_ok=True)
+    # Static Spaces redirect folder URLs ("/console/") to huggingface.co, so link the pages' index.html directly.
+    for page in [*SITE.glob("**/index.html"), *SITE.glob("assets/*.js")]:
+        text = page.read_text(encoding="utf-8")
+        fixed = re.sub(r"/(console|tutorials)/(?=[\"'`?#])", r"/\1/index.html", text)
+        if fixed != text:
+            page.write_text(fixed, encoding="utf-8")
     (SITE / "README.md").write_text(README.format(commit=commit[:12], count=manifest["count"], recorded_at=manifest["recorded_at"]), encoding="utf-8")
     files = sum(1 for p in SITE.rglob("*") if p.is_file())
     print(f"site: {SITE} ({files} files, demo pack {manifest['count']} responses)")

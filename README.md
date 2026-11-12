@@ -81,7 +81,7 @@ Two ways to run it, and they are not the same thing:
 
 | | Local / Docker | Hugging Face static Space |
 |---|---|---|
-| What runs | The FastAPI backend computes every value live and deterministically from NASA/USGS COGs and PDS data | No backend: a precomputed demo pack replays 3,394 responses recorded from the real backend |
+| What runs | The FastAPI backend computes every value live and deterministically from NASA/USGS COGs and PDS data | No backend: a precomputed demo pack replays 3,414 responses recorded from the real backend |
 | Use it for | Any site, route or sol; the numbers judged as science | An instant, zero-setup preview |
 | Limits | Needs the setup in SETUP_INSTRUCTIONS.md | Only the recorded requests answer; the app shows a banner, and it is not live data |
 
