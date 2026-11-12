@@ -1,6 +1,6 @@
 # What this branch adds over Master-Ai
 
-Branch: `v4-argon-landing-routing` (built on `feature/mission-console-v2-Qwen-Gem`) (94 commits, 14 to 29 Oct 2026). Compared with `Master-Ai`
+Branch: `v4-argon-landing-routing`. Compared with `Master-Ai`
 (last commit 13 Oct 2026, "Add Python dependencies to requirements.txt").
 
 The two branches share no Git history, so this compares their file trees: 378 files differ outside `data/` and
