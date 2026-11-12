@@ -58,7 +58,7 @@ The main console brings USGS/IAU site identity and coordinates, applicable rover
 
 ### Historical THEMIS thermal evidence
 
-![Gale thermal panel showing nearest historical brightness temperature, minimum, maximum, mean, sample counts, search radius, observation years, and seasonal coverage](assets/screenshots/historical-themis-thermal.png)
+![Gale thermal panel showing nearest historical brightness temperature, minimum, maximum, mean, sample counts, search radius, observation years, and seasonal coverage](assets/screenshots/historical-thermal-context.png)
 
 The THEMIS panel keeps the nearest historical brightness temperature separate from the minimum, maximum, and mean shown directly beneath it in Kelvin and Celsius. Historical sample counts, the 50 km search radius, observation years, and seasonal coverage are available beside the thermal series.
 
