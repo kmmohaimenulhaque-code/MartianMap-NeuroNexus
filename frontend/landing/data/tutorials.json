@@ -1067,12 +1067,61 @@
           0.72,
           0.82
         ],
-        "caption": "One integrated map: open LAYERS, or double right-click anywhere for the radial wheel of every feature.",
+        "caption": "LAYERS stacks MOLA elevation, HiRISE, slope and MY34 dust on every map; double right-click opens the radial wheel.",
         "taps": [
           {
             "cursor": [
               0.746,
               0.169
+            ]
+          },
+          {
+            "focus": [
+              0.47,
+              0.18,
+              0.3,
+              0.36
+            ],
+            "cursor": [
+              0.4953,
+              0.2515
+            ]
+          },
+          {
+            "focus": [
+              0.47,
+              0.18,
+              0.3,
+              0.36
+            ],
+            "cursor": [
+              0.4953,
+              0.4253
+            ]
+          },
+          {
+            "focus": [
+              0.47,
+              0.18,
+              0.3,
+              0.36
+            ],
+            "cursor": [
+              0.4953,
+              0.4759
+            ]
+          },
+          {
+            "media": "sollayers",
+            "focus": [
+              0.15,
+              0.5,
+              0.25,
+              0.16
+            ],
+            "cursor": [
+              0.214,
+              0.604
             ]
           },
           {
@@ -1113,7 +1162,7 @@
           0.3,
           0.26
         ],
-        "caption": "Route Design: set START and DESTINATION, generate, save, APPLY a route and see it draped on the 3D globe.",
+        "caption": "Route Design: set START and DESTINATION, generate, save, APPLY a route, draped on the 3D globe (Viking MDIM color).",
         "taps": [
           {
             "cursor": [
