@@ -26,7 +26,7 @@ Evidence classes: **OBSERVED**: A real instrument measurement from a mission arc
 | `MSL_RAD_RDR` | NASA / Mars Science Laboratory / Radiation Assessment Detector | Radiation Assessment Detector surface measurements (Gale crater) | INGESTED (ARCHIVED, LAG) |  | 2026-10-20 | [link](https://pds-ppi.igpp.ucla.edu/) |
 | `MSL_REMS_OUTREACH` | NASA / JPL / CAB (Centro de Astrobiologia) | REMS weather outreach feed | QUERIED LIVE (OUTREACH) | outreach use only (feed disclaimer) | 2026-10-20 | [link](https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json) |
 | `NASA_JPL_CAD` | NASA / JPL Solar System Dynamics | Small-Body Database Close-Approach Data API | QUERIED LIVE |  |  | [link](https://ssd-api.jpl.nasa.gov/doc/cad.html) |
-| `NASA_MMGIS` | NASA | Nasa Mmgis | QUERIED LIVE |  |  | [link](https://mars.nasa.gov/mmgis/) |
+| `NASA_MMGIS` | NASA | NASA Multi-Mission Geographic Information System (MMGIS) rover layers | QUERIED LIVE |  |  | [link](https://mars.nasa.gov/mmgis/) |
 | `PDS_PLACES_M2020` | NASA PDS Geosciences Node | Mars 2020 rover PLACES bundle | CATALOGED NOT INGESTED |  |  | [link](https://pds-geosciences.wustl.edu/missions/mars2020/places.htm) |
 | `PDS_PLACES_MSL` | NASA PDS Imaging Node | MSL PLACES localization bundle | CATALOGED NOT INGESTED |  |  | [link](https://pds.nasa.gov/data/pds4/releases/img/msl_places-20260317/) |
 | `THEMIS` | NASA / Mars Odyssey / THEMIS / Arizona State University | THEMIS IR predicted brightness temperature observations | INGESTED |  |  | [link](https://themis.asu.edu/) |
@@ -35,41 +35,41 @@ Evidence classes: **OBSERVED**: A real instrument measurement from a mission arc
 
 | id | organization | product | ingestion | license | verified | link |
 | --- | --- | --- | --- | --- | --- | --- |
-| `APXS` | NASA / Mars Science Laboratory / APXS | Apxs | CATALOGED NOT INGESTED |  |  |  |
-| `CHEMCAM` | NASA / Mars Science Laboratory / ChemCam | Chemcam | CATALOGED NOT INGESTED |  |  |  |
-| `CHEMIN` | NASA / Mars Science Laboratory / CheMin | Chemin | CATALOGED NOT INGESTED |  |  |  |
-| `CRISM` | NASA / Mars Reconnaissance Orbiter / CRISM | Crism | CATALOGED NOT INGESTED |  |  | [link](https://science.nasa.gov/mission/mars-reconnaissance-orbiter/crism/) |
-| `CTX` | NASA / Mars Reconnaissance Orbiter / CTX | Ctx | INGESTED |  | 2026-10-20 |  |
-| `ESA_EXOMARS` | European Space Agency | Esa Exomars | QUERIED LIVE |  |  | [link](https://www.esa.int/rssfeed/Science_Exploration/Human_and_Robotic_Exploration/Exploration/ExoMars) |
-| `ESA_MARS_EXPRESS` | European Space Agency | Esa Mars Express | QUERIED LIVE |  |  | [link](https://www.esa.int/rssfeed/Science_Exploration/Space_Science/Mars_Express) |
-| `ESRI_MARS` | Esri / ArcGIS | Esri Mars | QUERIED LIVE |  |  |  |
-| `GRS` | NASA / Mars Odyssey / GRS | Grs | CATALOGED NOT INGESTED |  |  |  |
-| `HIRISE` | NASA / Mars Reconnaissance Orbiter / HiRISE | Hirise | INGESTED |  | 2026-10-20 |  |
-| `MARCI` | NASA / Mars Reconnaissance Orbiter / MARCI | Marci | CATALOGED NOT INGESTED |  |  |  |
-| `MARS2020_MEDA` | NASA / Mars 2020 / MEDA | Mars2020 Meda | CATALOGED NOT INGESTED |  |  |  |
-| `MAVEN` | NASA / MAVEN | Maven | CATALOGED NOT INGESTED |  |  |  |
-| `MCS` | NASA / Mars Reconnaissance Orbiter / MCS | Mcs | CATALOGED NOT INGESTED |  |  |  |
-| `MSL_REMS` | NASA / Mars Science Laboratory / REMS | Msl Rems | QUERIED LIVE (OUTREACH) |  | 2026-10-20 |  |
+| `APXS` | NASA / Mars Science Laboratory / APXS | MSL APXS (Alpha Particle X-ray Spectrometer) | CATALOGED NOT INGESTED |  |  |  |
+| `CHEMCAM` | NASA / Mars Science Laboratory / ChemCam | MSL ChemCam (Chemistry and Camera) | CATALOGED NOT INGESTED |  |  |  |
+| `CHEMIN` | NASA / Mars Science Laboratory / CheMin | MSL CheMin (Chemistry and Mineralogy X-ray diffraction) | CATALOGED NOT INGESTED |  |  |  |
+| `CRISM` | NASA / Mars Reconnaissance Orbiter / CRISM | MRO CRISM (Compact Reconnaissance Imaging Spectrometer for Mars) | CATALOGED NOT INGESTED |  |  | [link](https://science.nasa.gov/mission/mars-reconnaissance-orbiter/crism/) |
+| `CTX` | NASA / Mars Reconnaissance Orbiter / CTX | MRO Context Camera (CTX) controlled stereo DTMs, about 20 m | INGESTED |  | 2026-10-20 |  |
+| `ESA_EXOMARS` | European Space Agency | ESA ExoMars news feed (RSS) | QUERIED LIVE |  |  | [link](https://www.esa.int/rssfeed/Science_Exploration/Human_and_Robotic_Exploration/Exploration/ExoMars) |
+| `ESA_MARS_EXPRESS` | European Space Agency | ESA Mars Express news feed (RSS) | QUERIED LIVE |  |  | [link](https://www.esa.int/rssfeed/Science_Exploration/Space_Science/Mars_Express) |
+| `ESRI_MARS` | Esri / ArcGIS | Esri OnMars map services: Viking MDIM 2.1 mosaic, MOLA/HRSC color DEM, 200 m DEM | QUERIED LIVE |  |  |  |
+| `GRS` | NASA / Mars Odyssey / GRS | Mars Odyssey GRS (Gamma Ray Spectrometer) | CATALOGED NOT INGESTED |  |  |  |
+| `HIRISE` | NASA / Mars Reconnaissance Orbiter / HiRISE | MRO HiRISE 1 m DTMs and orthoimages | INGESTED |  | 2026-10-20 |  |
+| `MARCI` | NASA / Mars Reconnaissance Orbiter / MARCI | MRO MARCI (Mars Color Imager) | CATALOGED NOT INGESTED |  |  |  |
+| `MARS2020_MEDA` | NASA / Mars 2020 / MEDA | Mars 2020 MEDA (Mars Environmental Dynamics Analyzer) | CATALOGED NOT INGESTED |  |  |  |
+| `MAVEN` | NASA / MAVEN | MAVEN (Mars Atmosphere and Volatile EvolutioN) mission | CATALOGED NOT INGESTED |  |  |  |
+| `MCS` | NASA / Mars Reconnaissance Orbiter / MCS | MRO MCS (Mars Climate Sounder) atmospheric profiles | CATALOGED NOT INGESTED |  |  |  |
+| `MSL_REMS` | NASA / Mars Science Laboratory / REMS | Rover Environmental Monitoring Station (REMS) measurements | QUERIED LIVE (OUTREACH) |  | 2026-10-20 |  |
 | `MSL_SAM_GALE_VMR` | NASA | MSL SAM QMS atmospheric volume mixing ratios at Gale crater (Franz et al. 2017) | REFERENCE ONLY |  | 2026-10-20 | [link](https://doi.org/10.1016/j.pss.2017.01.014) |
-| `NASA_CURIOSITY` | NASA / Mars Science Laboratory | Nasa Curiosity | REFERENCE ONLY |  |  | [link](https://science.nasa.gov/mission/msl-curiosity/) |
-| `NASA_EVA` | NASA | Nasa Eva | REFERENCE ONLY |  |  | [link](https://www.nasa.gov/suits-and-rovers/) |
-| `NASA_HUMANS_TO_MARS` | NASA | Nasa Humans To Mars | REFERENCE ONLY |  |  | [link](https://www.nasa.gov/humans-in-space/humans-to-mars/) |
+| `NASA_CURIOSITY` | NASA / Mars Science Laboratory | Mars Science Laboratory (Curiosity) mission page | REFERENCE ONLY |  |  | [link](https://science.nasa.gov/mission/msl-curiosity/) |
+| `NASA_EVA` | NASA | NASA spacesuits and rovers (EVA) overview | REFERENCE ONLY |  |  | [link](https://www.nasa.gov/suits-and-rovers/) |
+| `NASA_HUMANS_TO_MARS` | NASA | NASA Humans to Mars program overview | REFERENCE ONLY |  |  | [link](https://www.nasa.gov/humans-in-space/humans-to-mars/) |
 | `NASA_IMAGE_LIBRARY` | NASA | NASA Image and Video Library | REFERENCE ONLY |  |  | [link](https://images.nasa.gov/) |
 | `NASA_MARS` | NASA | Mars photojournal feed | REFERENCE ONLY |  |  | [link](https://science.nasa.gov/mars/) |
-| `NASA_MARS_EVA_TECHNOLOGY` | NASA Technical Reports Server | Nasa Mars Eva Technology | REFERENCE ONLY |  |  | [link](https://ntrs.nasa.gov/api/citations/20260001086/downloads/20260001086.pdf?attachment=true) |
-| `NASA_MARS_WATER_MAPS` | NASA / Mars Water Maps | Nasa Mars Water Maps | REFERENCE ONLY |  |  | [link](https://ammos.nasa.gov/marswatermaps/?mission=MWR) |
-| `NASA_MARTIAN_DUST` | NASA | Nasa Martian Dust | REFERENCE ONLY |  |  | [link](https://www.nasa.gov/general/establishing-crew-exposure-limits-of-martian-dust/) |
-| `NASA_PDS` | NASA Planetary Data System | Nasa Pds | QUERIED LIVE |  |  | [link](https://pds.nasa.gov/) |
-| `NASA_PERSEVERANCE` | NASA / Mars 2020 | Nasa Perseverance | REFERENCE ONLY |  |  | [link](https://science.nasa.gov/mission/mars-2020-perseverance/) |
-| `NASA_SPACE_RADIATION` | NASA Human Research Program | Nasa Space Radiation | REFERENCE ONLY |  |  | [link](https://www.nasa.gov/hrp/hazard-space-radiation/) |
-| `NASA_SWIM` | NASA / SWIM research programme | Nasa Swim | REFERENCE ONLY |  |  | [link](https://swim.psi.edu/SWIM4MIMProducts.php) |
-| `PLANETARY_SOCIETY` | The Planetary Society | Planetary Society | QUERIED LIVE |  |  | [link](https://www.planetary.org/rss/articles) |
-| `SHARAD` | NASA / Mars Reconnaissance Orbiter / SHARAD | Sharad | CATALOGED NOT INGESTED |  |  |  |
-| `SPICE` | NASA / NAIF | Spice | CATALOGED NOT INGESTED |  |  |  |
+| `NASA_MARS_EVA_TECHNOLOGY` | NASA Technical Reports Server | NASA technical report on Mars EVA technology (NTRS 20260001086) | REFERENCE ONLY |  |  | [link](https://ntrs.nasa.gov/api/citations/20260001086/downloads/20260001086.pdf?attachment=true) |
+| `NASA_MARS_WATER_MAPS` | NASA / Mars Water Maps | Mars Water Maps (AMMOS) | REFERENCE ONLY |  |  | [link](https://ammos.nasa.gov/marswatermaps/?mission=MWR) |
+| `NASA_MARTIAN_DUST` | NASA | Establishing crew exposure limits for Martian dust | REFERENCE ONLY |  |  | [link](https://www.nasa.gov/general/establishing-crew-exposure-limits-of-martian-dust/) |
+| `NASA_PDS` | NASA Planetary Data System | NASA Planetary Data System archives (MOLA MEGDR, Viking MDIM 2.1) | QUERIED LIVE |  |  | [link](https://pds.nasa.gov/) |
+| `NASA_PERSEVERANCE` | NASA / Mars 2020 | Mars 2020 (Perseverance) mission page | REFERENCE ONLY |  |  | [link](https://science.nasa.gov/mission/mars-2020-perseverance/) |
+| `NASA_SPACE_RADIATION` | NASA Human Research Program | Human Research Program: space radiation hazard | REFERENCE ONLY |  |  | [link](https://www.nasa.gov/hrp/hazard-space-radiation/) |
+| `NASA_SWIM` | NASA / SWIM research programme | Subsurface Water Ice Mapping (SWIM) products | REFERENCE ONLY |  |  | [link](https://swim.psi.edu/SWIM4MIMProducts.php) |
+| `PLANETARY_SOCIETY` | The Planetary Society | The Planetary Society articles feed (RSS) | QUERIED LIVE |  |  | [link](https://www.planetary.org/rss/articles) |
+| `SHARAD` | NASA / Mars Reconnaissance Orbiter / SHARAD | MRO SHARAD (Shallow Radar) | CATALOGED NOT INGESTED |  |  |  |
+| `SPICE` | NASA / NAIF | NAIF SPICE ephemeris and geometry kernels | CATALOGED NOT INGESTED |  |  |  |
 | `USGS_ASTROGEOLOGY_STAC` | USGS Astrogeology Science Center | Astrogeology STAC API (analysis-ready planetary data) | QUERIED LIVE | public domain (USGS) | 2026-10-20 | [link](https://stac.astrogeology.usgs.gov/docs/) |
 | `USGS_IAU_GAZETTEER` | USGS Astrogeology / International Astronomical Union | Gazetteer of Planetary Nomenclature (Mars, 2,052 features) | INGESTED |  |  | [link](https://planetarynames.wr.usgs.gov/) |
 | `USGS_SIM_3292` | USGS Astrogeology | SIM 3292 Geologic Map of Mars, 1:20M (Tanaka et al., 2014) | QUERIED LIVE |  |  | [link](https://pubs.usgs.gov/sim/3292/) |
-| `USGS_SIM_3292_ARCGIS` | USGS / ArcGIS | Usgs Sim 3292 Arcgis | QUERIED LIVE |  |  | [link](https://services.arcgis.com/v01gqwM5QqNysAAi/arcgis/rest/services/Tanaka_et_al_2014_Mars_Global_Map_Features/FeatureServer) |
+| `USGS_SIM_3292_ARCGIS` | USGS / ArcGIS | SIM 3292 FeatureServer (geologic units, contacts, structures, landing sites) | QUERIED LIVE |  |  | [link](https://services.arcgis.com/v01gqwM5QqNysAAi/arcgis/rest/services/Tanaka_et_al_2014_Mars_Global_Map_Features/FeatureServer) |
 
 ## MODELED
 

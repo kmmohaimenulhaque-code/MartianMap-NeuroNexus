@@ -6,13 +6,13 @@ Sources whose data NeuroNexus actually reads (ingested or queried live), from th
 
 | id | mission / instrument | product | how it is used | status |
 | --- | --- | --- | --- | --- |
-| `CTX` | Mars Reconnaissance Orbiter / CTX | Ctx |  | INGESTED |
+| `CTX` | Mars Reconnaissance Orbiter / CTX | MRO Context Camera (CTX) controlled stereo DTMs, about 20 m | /terrain/hires/*; /marswalk/* (CTX rung of the terrain ladder, through CTX_STAC_DTM); validation (science/validation) | INGESTED |
 | `CTX_MOLA_SHOTS` | Mars Global Surveyor / MOLA | mola_csv assets of 2023 CTX DTM items (latitude, longitude, radius in m) | validation V2 | INGESTED |
 | `CTX_STAC_DTM` | Mars Reconnaissance Orbiter / CTX | MRO CTX controlled USGS DTMs (collection mro_ctx_controlled_usgs_dtms, Ames Stereo Pipeline, pc_align to MOLA) | /terrain/hires/*; /marswalk/* | INGESTED |
-| `ESA_EXOMARS` | European Space Agency | Esa Exomars |  | QUERIED LIVE |
-| `ESA_MARS_EXPRESS` | European Space Agency | Esa Mars Express |  | QUERIED LIVE |
-| `ESRI_MARS` | Esri / ArcGIS | Esri Mars |  | QUERIED LIVE |
-| `HIRISE` | Mars Reconnaissance Orbiter / HiRISE | Hirise |  | INGESTED |
+| `ESA_EXOMARS` | European Space Agency | ESA ExoMars news feed (RSS) | GET /briefing/mars (Mars news briefing) | QUERIED LIVE |
+| `ESA_MARS_EXPRESS` | European Space Agency | ESA Mars Express news feed (RSS) | GET /briefing/mars (Mars news briefing) | QUERIED LIVE |
+| `ESRI_MARS` | Esri / ArcGIS | Esri OnMars map services: Viking MDIM 2.1 mosaic, MOLA/HRSC color DEM, 200 m DEM | ArcGIS layered map and 3D globe basemaps and 3D terrain relief (browser display only, not used in analysis) | QUERIED LIVE |
+| `HIRISE` | Mars Reconnaissance Orbiter / HiRISE | MRO HiRISE 1 m DTMs and orthoimages | /terrain/hires/*; /marswalk/* (HiRISE rung of the terrain ladder, through HIRISE_STAC_DTM and HIRISE_STAC_ORTHO); HiRISE DTM footprints layer; validation (science/validation) | INGESTED |
 | `HIRISE_STAC_DTM` | Mars Reconnaissance Orbiter / HiRISE | MRO HiRISE SOCET DTMs (collection mro_hirise_socet_dtms) | /terrain/hires/*; /marswalk/*; validation V1-V6 | INGESTED |
 | `HIRISE_STAC_ORTHO` | Mars Reconnaissance Orbiter / HiRISE | HiRISE orthoimages paired with the SOCET DTMs | GET /terrain/hires/image?layer=ortho | INGESTED |
 | `M2020_MEDA_OUTREACH` | Mars 2020 / MEDA | MEDA weather outreach feed | GET /conditions?site=jezero | QUERIED LIVE (STALE) |
@@ -22,15 +22,15 @@ Sources whose data NeuroNexus actually reads (ingested or queried live), from th
 | `MMGIS_MSL_WAYPOINTS` | Mars Science Laboratory | Curiosity end-of-drive waypoints (MSL_waypoints.json) with rover attitude | GET /rovers/msl/*; validation V1-V6 | QUERIED LIVE |
 | `MOLA_MEGDR` | Mars Global Surveyor / MOLA | MOLA MEGDR 128 pixels/degree topography (MGS-M-MOLA-5-MEGDR-L3-V1.0) | tools/fetch_mola.py (size-checked, sha256 logged); memory-mapped | INGESTED |
 | `MSL_RAD_RDR` | Mars Science Laboratory / RAD | Radiation Assessment Detector surface measurements (Gale crater) | GET /conditions; MARSWALK conditions strip; validation V7 | INGESTED (ARCHIVED, LAG) |
-| `MSL_REMS` | Mars Science Laboratory / REMS | Msl Rems | GET /conditions | QUERIED LIVE (OUTREACH) |
+| `MSL_REMS` | Mars Science Laboratory / REMS | Rover Environmental Monitoring Station (REMS) measurements | GET /conditions | QUERIED LIVE (OUTREACH) |
 | `MSL_REMS_OUTREACH` | Mars Science Laboratory / REMS | REMS weather outreach feed | GET /conditions; validation V7 | QUERIED LIVE (OUTREACH) |
-| `NASA_AMES_MGCM` | NASA Ames Research Center | Mars Global Climate Model MY34 dust scenario |  | INGESTED |
-| `NASA_JPL_CAD` | NASA / JPL Solar System Dynamics | Small-Body Database Close-Approach Data API |  | QUERIED LIVE |
-| `NASA_MMGIS` | NASA | Nasa Mmgis |  | QUERIED LIVE |
-| `NASA_PDS` | NASA Planetary Data System | Nasa Pds |  | QUERIED LIVE |
-| `PLANETARY_SOCIETY` | The Planetary Society | Planetary Society |  | QUERIED LIVE |
-| `THEMIS` | 2001 Mars Odyssey / THEMIS | THEMIS IR predicted brightness temperature observations |  | INGESTED |
+| `NASA_AMES_MGCM` | NASA Ames Research Center | Mars Global Climate Model MY34 dust scenario | GET /dust/map, /dust/timeseries, /dust/meta; GET /conditions (modeled dust and season); MY34 dust optical depth layer and ACTIVE SOL slider | INGESTED |
+| `NASA_JPL_CAD` | NASA / JPL Solar System Dynamics | Small-Body Database Close-Approach Data API | GET /orbital/mars-close-approaches (ORBITAL TRACKING panel) | QUERIED LIVE |
+| `NASA_MMGIS` | NASA | NASA Multi-Mission Geographic Information System (MMGIS) rover layers | GET /rovers/{msl,m2020}/*; GET /mars3d/traverses (through the MMGIS_* traverse and waypoint entries) | QUERIED LIVE |
+| `NASA_PDS` | NASA Planetary Data System | NASA Planetary Data System archives (MOLA MEGDR, Viking MDIM 2.1) | tools/fetch_mola.py downloads MOLA MEGDR from PDS Geosciences; Viking MDIM 2.1 imagery layer (ArcGIS and 3D maps) | QUERIED LIVE |
+| `PLANETARY_SOCIETY` | The Planetary Society | The Planetary Society articles feed (RSS) | GET /briefing/mars (Mars news briefing, Mars articles only) | QUERIED LIVE |
+| `THEMIS` | 2001 Mars Odyssey / THEMIS | THEMIS IR predicted brightness temperature observations | GET /thermal/nearest, /thermal/history, /thermal/landing-site, /thermal/coverage, /thermal/samples; THEMIS thermal heatmap and observation layer | INGESTED |
 | `USGS_ASTROGEOLOGY_STAC` | USGS Astrogeology Science Center | Astrogeology STAC API (analysis-ready planetary data) | GET /terrain/sources; science/hires/stac.py | QUERIED LIVE |
-| `USGS_IAU_GAZETTEER` | USGS Astrogeology / International Astronomical Union | Gazetteer of Planetary Nomenclature (Mars, 2,052 features) |  | INGESTED |
-| `USGS_SIM_3292` | USGS Astrogeology | SIM 3292 Geologic Map of Mars, 1:20M (Tanaka et al., 2014) |  | QUERIED LIVE |
-| `USGS_SIM_3292_ARCGIS` | USGS / ArcGIS | Usgs Sim 3292 Arcgis |  | QUERIED LIVE |
+| `USGS_IAU_GAZETTEER` | USGS Astrogeology / International Astronomical Union | Gazetteer of Planetary Nomenclature (Mars, 2,052 features) | GET /places, /places/search, /places/suggest, /places/nearby, /places/nearest; GET /environment/by-place; IAU named features layer and labels | INGESTED |
+| `USGS_SIM_3292` | USGS Astrogeology | SIM 3292 Geologic Map of Mars, 1:20M (Tanaka et al., 2014) | USGS geologic map web app (USGS APP panel, synced with GET /usgs/sync); GET /usgs/source | QUERIED LIVE |
+| `USGS_SIM_3292_ARCGIS` | USGS / ArcGIS | SIM 3292 FeatureServer (geologic units, contacts, structures, landing sites) | POST /usgs/route-snapshot (USGS SNAPSHOT: units crossed, contacts, structures); geologic units, contacts and structures layers (ArcGIS and 3D maps) | QUERIED LIVE |
