@@ -255,3 +255,19 @@
   .topbar .brand-block h1 { font-size: 15px; letter-spacing: 0.05em; }
   .topbar .brand-logo { width: 26px; height: 26px; }
 }
+
+/* 3D globe on phones: fill the screen above the dock; one sideways-scrolling toolbar row. */
+@media (max-width: 767px) {
+  .m3d-shell.m3d-docked { top: env(safe-area-inset-top, 0px) !important; bottom: var(--nn-dock-h) !important; height: auto !important; min-height: 0; }
+  .m3d-shell .m3d-drag { display: none; }
+  .m3d-shell .m3d-bar { flex-wrap: nowrap; gap: 6px; padding: 6px 60px 6px 8px; }
+  .m3d-shell .m3d-close { position: absolute; top: 6px; right: 8px; z-index: 2; min-width: 44px; min-height: 44px; }
+  .m3d-shell .m3d-title { flex: 0 0 auto; max-width: 34vw; }
+  .m3d-shell .m3d-title span { display: none; }
+  .m3d-shell .m3d-actions { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; min-width: 0; overscroll-behavior-x: contain; }
+  .m3d-shell .m3d-actions::-webkit-scrollbar { display: none; }
+  .m3d-shell .m3d-actions > * { flex: 0 0 auto; }
+  .m3d-shell .m3d-btn { min-height: 40px; white-space: nowrap; }
+  .m3d-shell .m3d-view, .m3d-shell canvas { touch-action: none; }
+  .m3d-shell .m3d-body .m3d-webgl-chip { top: 8px; bottom: auto; font-size: 11px; }
+}

@@ -56,7 +56,9 @@ def test_brief_round_trip(client):
     assert all(ledger.resolve(v["ledger_id"]) for v in brief["values"].values())
     assert {s["ledger_id"] for s in brief["sources"]} >= {"NEURONEXUS_METABOLIC_PROXY", "HIRISE_STAC_DTM"}
     page = client.get(f"/marswalk/brief/{plan_id}?format=html")
-    assert page.status_code == 200 and "Sources used" in page.text and "🏷️" in page.text
+    assert page.status_code == 200 and "Sources used" in page.text and "Radiation screening" in page.text
+    assert "🏷" not in page.text  # no emoji in printed output
+    assert brief["dose"]["ledger_id"] == "NEURONEXUS_DOSE_SCREENING"
 
 
 @pytest.mark.parametrize("payload,status", [

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import "./mars3d.css";
-import { requireModules } from "./arcgisLoader";
+import { capPhonePixelRatio, enableSoftwareWebGLFallback, requireModules } from "./arcgisLoader";
 import { createLabelOverlay } from "./labelOverlay";
 import Mars3DLegend from "./Mars3DLegend";
 import SourceTag from "../../sources/SourceTag";
@@ -251,6 +251,7 @@ export default function Mars3DView({
 
   const [ready, setReady] = useState(false);
   const [loadError, setLoadError] = useState("");
+  const [webglMode] = useState(() => enableSoftwareWebGLFallback());
   const [fullscreen, setFullscreen] = useState(false);
   const [height, setHeight] = useState(() => Math.round(Math.min(560, window.innerHeight * 0.58)));
   const [sidePanel, setSidePanel] = useState(null); // "layers" | "legend" | "pez" | "routes" | null
@@ -394,10 +395,11 @@ export default function Mars3DView({
                   tilt: 45,
                 },
         });
-        // Phones: cap the WebGL render scale at an effective devicePixelRatio of 2 (iOS Safari WebGL memory limit).
-        if (window.innerWidth < 768 && window.devicePixelRatio > 2 && "resolutionScale" in view) {
-          view.resolutionScale = 2 / window.devicePixelRatio;
-          if (view.resolutionScale < 1) containerRef.current?.setAttribute("data-resolution-scale", view.resolutionScale.toFixed(3)); // only when the SDK accepted it
+        // Phones: cap the canvas pixel ratio at 2 (iOS Safari WebGL memory limit). SceneView sizes its canvas by
+        // min(devicePixelRatio, qualitySettings.maximumPixelRatio) once the idle high-quality pass is off (arcgisLoader).
+        if (capPhonePixelRatio() && view.qualitySettings) {
+          view.qualitySettings.maximumPixelRatio = 2;
+          containerRef.current?.setAttribute("data-max-pixel-ratio", "2");
         }
         savedView.siteKey = `${start.latitude_deg},${start.longitude_deg}`;
         viewRef.current = view;
@@ -1280,6 +1282,11 @@ export default function Mars3DView({
 
         {!ready && !loadError && <div className="m3d-status">LOADING ARCGIS MARS SCENE…</div>}
         {loadError && <div className="m3d-status m3d-error">3D VIEW UNAVAILABLE · {loadError}</div>}
+        {ready && webglMode === "software" && (
+          <div className="m3d-webgl-chip" data-testid="m3d-software-webgl" title="This browser renders WebGL without hardware acceleration; the globe is the same, only slower.">
+            SOFTWARE WEBGL · no hardware acceleration
+          </div>
+        )}
         {toast && (
           <div className="m3d-toast" role="status">
             {toast}

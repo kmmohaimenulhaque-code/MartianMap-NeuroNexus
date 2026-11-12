@@ -7,8 +7,47 @@
 export const ARCGIS_VERSION = "4.33";
 
 let sdkPromise = null;
+let webglMode = null;
+
+/*
+ * The SDK's SceneView creates its WebGL2 context with failIfMajorPerformanceCaveat: true and refuses to start
+ * when the browser renders WebGL in software (hardware acceleration off, VMs, remote desktops, some
+ * locked-down machines). The globe does not need a GPU, only WebGL, so the 3D view drops that one flag and
+ * renders in software instead of failing. It returns "hardware", "software" or "none" so the view can say
+ * which one it got. The rendering itself is unchanged.
+ */
+export function enableSoftwareWebGLFallback() {
+  if (webglMode) return webglMode;
+  try {
+    const probe = document.createElement("canvas");
+    if (probe.getContext("webgl2", { failIfMajorPerformanceCaveat: true })) webglMode = "hardware";
+    else if (document.createElement("canvas").getContext("webgl2")) webglMode = "software";
+    else webglMode = "none";
+  } catch {
+    webglMode = "none";
+  }
+  if (webglMode === "software") {
+    const original = HTMLCanvasElement.prototype.getContext;
+    HTMLCanvasElement.prototype.getContext = function getContext(type, options, ...rest) {
+      if ((type === "webgl2" || type === "webgl") && options?.failIfMajorPerformanceCaveat) {
+        return original.call(this, type, { ...options, failIfMajorPerformanceCaveat: false }, ...rest);
+      }
+      return original.call(this, type, options, ...rest);
+    };
+  }
+  return webglMode;
+}
+
+/* Phones above 2x density: the idle high-quality pass renders at the full physical pixel ratio (3x on recent
+   iPhones) and ignores qualitySettings.maximumPixelRatio, which risks the iOS Safari WebGL memory limit. */
+export const capPhonePixelRatio = () => typeof window !== "undefined" && window.innerWidth < 768 && window.devicePixelRatio > 2;
 
 export function loadArcGIS() {
+  enableSoftwareWebGLFallback();
+  if (!sdkPromise && capPhonePixelRatio()) {
+    const config = globalThis.esriConfig ?? {};
+    globalThis.esriConfig = { ...config, has: { ...config.has, "disable-feature:high-quality-idle": true } };
+  }
   if (sdkPromise) {
     return sdkPromise;
   }

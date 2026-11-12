@@ -628,3 +628,4 @@
   background: rgba(3, 7, 10, 0.72);
   letter-spacing: 0.06em;
 }
+.m3d-webgl-chip { position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); z-index: 5; padding: 4px 10px; border: 1px solid var(--nn-amber, #ffc46b); background: rgba(8, 16, 20, 0.92); color: var(--nn-amber, #ffc46b); font: 600 12px var(--nn-mono, inherit); letter-spacing: 0.06em; white-space: nowrap; pointer-events: none; }

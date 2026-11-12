@@ -23,14 +23,14 @@ const check = (ok, message) => {
 
 const browser = await chromium.launch();
 
-async function open(name, viewport, touch) {
-  const context = await browser.newContext({ viewport, isMobile: touch, hasTouch: touch, deviceScaleFactor: touch ? 2 : 1 });
+async function open(name, viewport, touch, dpr = touch ? 2 : 1) {
+  const context = await browser.newContext({ viewport, isMobile: touch, hasTouch: touch, deviceScaleFactor: dpr });
   await context.route(/fontshare\.com/, async (route) => {
     const response = await route.fetch();
     await route.fulfill({ response, headers: { ...response.headers(), "access-control-allow-origin": "*" } });
   });
   const page = await context.newPage();
-  page.on("pageerror", (e) => e.name !== "webgl:major-performance-caveat-detected" && errors.push(`${name} ${e.name}: ${e.message}`));
+  page.on("pageerror", (e) => errors.push(`${name} ${e.name}: ${e.message}`));
   await page.goto(BASE, { waitUntil: "domcontentloaded" });
   await page.waitForFunction(() => /ONLINE/.test(document.querySelector(".status-dot")?.textContent ?? ""), null, { timeout: 120000 });
   await page.waitForSelector(".leaflet-container", { timeout: 60000 });
@@ -69,6 +69,19 @@ const shot = async (page, name) => {
   const right = await box(page, ".right-column");
   check(left?.visible && right?.visible && left.left < 20 && right.right <= 1440, "desktop 1440: 3-column cockpit, both side columns on screen");
   check(!(await box(page, ".nn-dock"))?.width, "desktop 1440: no mobile dock");
+  // Leaflet: unmounting the map during an animated zoom must not throw (late _onZoomTransitionEnd timer).
+  const before = errors.length;
+  for (let i = 0; i < 3; i += 1) {
+    await page.evaluate(() => new Promise((done) => {
+      document.querySelector(".map-panel-body .leaflet-control-zoom-in").click();
+      setTimeout(() => { [...document.querySelectorAll(".mode-switch button")][1].click(); done(); }, 90);
+    }));
+    await page.waitForTimeout(700);
+    await page.evaluate(() => [...document.querySelectorAll(".mode-switch button")][0].click());
+    await page.waitForSelector(".map-panel-body .leaflet-control-zoom-in", { timeout: 60000 });
+    await page.waitForTimeout(1500);
+  }
+  check(errors.length === before, "desktop 1440: switching to MARSWALK mid-zoom raises no Leaflet error");
   await context.close();
 }
 
@@ -93,7 +106,7 @@ const shot = async (page, name) => {
 
 /* ---------------------------------------------------------------- iPhone 15 393 x 852 */
 {
-  const { context, page } = await open("iphone", { width: 393, height: 852 }, true);
+  const { context, page } = await open("iphone", { width: 393, height: 852 }, true, 3);
   check(await noOverflow(page), "iPhone 393: no horizontal overflow");
   check((await overlappingButtons(page)) === 0, "iPhone 393: no overlapping header or dock buttons");
   const dockButtons = await page.$$eval(".nn-dock button", (els) => els.map((e) => e.getBoundingClientRect()).map((r) => Math.min(r.width, r.height)));
@@ -133,10 +146,20 @@ const shot = async (page, name) => {
   await page.keyboard.press("Escape");
 
   await page.click(".map-3d-button");
-  await page.waitForTimeout(12000);
-  check(await noOverflow(page), "iPhone 393: 3D globe panel opens without overflow (headless has no GPU, so the globe itself is not rendered here)");
-  await page.keyboard.press("Escape");
-  await page.click(".map-3d-button").catch(() => {});
+  await page.waitForSelector("[data-testid=m3d-software-webgl], .m3d-view canvas", { timeout: 120000 });
+  await page.waitForTimeout(15000);
+  const globe = await page.evaluate(() => {
+    const c = document.querySelector(".m3d-view canvas");
+    return { error: document.querySelector(".m3d-error")?.textContent ?? null, width: c?.width ?? 0, css: c?.getBoundingClientRect().width ?? 0 };
+  });
+  check(!globe.error && globe.width > 0, "iPhone 393: 3D globe renders (software WebGL here, no GPU)");
+  check(globe.width <= Math.round(globe.css * 2) + 1, `iPhone 393 at 3x: globe canvas ${globe.width} px for ${Math.round(globe.css)} css px (capped at 2x)`);
+  check(await noOverflow(page), "iPhone 393: 3D globe without overflow");
+  await shot(page, "mobile-globe-ios.png");
+  const close = await box(page, ".m3d-close");
+  check(close && close.left >= 0 && close.right <= 393 && close.top >= 0, "iPhone 393: the 3D close button is on screen");
+  await page.click(".m3d-close");
+  await page.waitForSelector(".m3d-shell", { state: "detached", timeout: 10000 });
 
   await page.click("button.burger-button");
   await page.click('[data-quickstart="demo-gale"]');
