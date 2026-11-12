@@ -63,7 +63,7 @@
   .topbar .brand-kicker, .topbar .brand-block > span, .topbar .status-word, .topbar .mode-word, .topbar .perf-pill { display: none !important; }
   .topbar .brand-block h1 { margin: 0; font-size: clamp(16px, 2.2vw, 22px); white-space: nowrap; }
   .topbar .brand-block { padding-left: 46px; }
-  .topbar .mode-switch button { min-height: 32px; padding: 0 8px; font-size: 11px; letter-spacing: 0.04em; }
+  .topbar .mode-switch button { min-height: 32px; padding: 0 8px; font-size: 12px; letter-spacing: 0.04em; }
   .topbar .mission-state > div:first-child .nn-solscrub { min-width: 230px; }
   .topbar .search-hint { display: none; }
   .topbar .mission-state, .topbar .mission-state > div:last-child, .topbar .mission-state > div:last-child > .topbar-row { display: contents !important; }
@@ -89,7 +89,7 @@
   .map-panel-body { min-height: 0; }
   .map-panel-scroll > .map-panel-body { flex: 1 0 clamp(200px, 30dvh, 420px); }
   .map-panel-title small { display: none; }
-  .map-legend { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; white-space: nowrap; font-size: 11px; }
+  .map-legend { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; white-space: nowrap; font-size: 12px; }
   .map-legend > div { flex: 0 0 auto; }
   .evidence-bar { grid-template-columns: repeat(2, max-content) minmax(0, 1fr) max-content; gap: 12px; padding: 6px 12px; }
   .evidence-bar .evidence-warning strong { display: none; }
@@ -128,10 +128,10 @@
   .topbar .brand-logo { position: static; transform: none; width: 28px; height: 28px; }
   .topbar .status-dot { grid-area: status; gap: 0; padding: 0; border: 0; }
   .topbar .mode-switch { grid-area: mode; justify-self: center; }
-  .topbar .mode-switch button { min-height: 32px; padding: 0 7px; font-size: 11px; letter-spacing: 0.04em; }
+  .topbar .mode-switch button { min-height: 32px; padding: 0 7px; font-size: 12px; letter-spacing: 0.04em; }
   .mode-word { display: none; }
   .topbar .nn-solpill { grid-area: sol; display: block; position: relative; }
-  .nn-solpill-btn { min-height: 32px; padding: 0 8px; border: 1px solid #29414b; background: #091115; color: var(--nn-cyan); font: 600 11px var(--nn-mono); letter-spacing: 0.06em; white-space: nowrap; cursor: pointer; }
+  .nn-solpill-btn { min-height: 32px; padding: 0 8px; border: 1px solid #29414b; background: #091115; color: var(--nn-cyan); font: 600 12px var(--nn-mono); letter-spacing: 0.06em; white-space: nowrap; cursor: pointer; }
   .topbar button[aria-label="Open mission command index"], .topbar .burger-button { width: 38px !important; min-width: 38px !important; height: 38px; min-height: 38px !important; padding: 0; justify-self: end; }
   .topbar button[aria-label="Open mission command index"] { grid-area: idx; }
   .topbar .burger-button { grid-area: burger; border-color: var(--nn-cyan) !important; box-shadow: 0 0 14px rgba(117, 230, 255, 0.4); }
@@ -149,7 +149,7 @@
   .nn-phone-mapbar .search-hint { display: none; }
   .nn-phone-mapbar .suggestions { position: fixed; left: 6px; right: 6px; top: calc(86px + env(safe-area-inset-top, 0px)); max-height: 55dvh; overflow-y: auto; }
   .nn-mapview-toggle { display: inline-flex; flex: 0 0 auto; border: 1px solid var(--nn-sheet-border); }
-  .nn-mapview-toggle button { min-height: 34px; padding: 0 7px; border: 0; background: #091115; color: #93a7af; font: 600 11px var(--nn-mono); letter-spacing: 0.04em; cursor: pointer; white-space: nowrap; }
+  .nn-mapview-toggle button { min-height: 34px; padding: 0 7px; border: 0; background: #091115; color: #93a7af; font: 600 12px var(--nn-mono); letter-spacing: 0.04em; cursor: pointer; white-space: nowrap; }
   .nn-mapview-toggle button + button { border-left: 1px solid var(--nn-sheet-border); }
   .nn-mapview-toggle button.is-active { color: var(--nn-cyan); background: #0d2028; box-shadow: inset 0 0 0 1px var(--nn-cyan-dim); }
   .nn-icon-btn { display: inline-grid; place-items: center; width: 34px; min-width: 34px; height: 34px; min-height: 34px !important; padding: 0 !important; }
@@ -164,7 +164,7 @@
   #panel-usgs-map .map-panel-title > span, #panel-usgs-map .nn-usgs-tools .nn-layers { display: none; }
   #panel-usgs-map .nn-seg button { min-height: 32px; }
   .map-panel-body { min-height: 0; }
-  .map-legend { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; gap: 12px; padding: 4px 10px; font-size: 11px; white-space: nowrap; }
+  .map-legend { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; gap: 12px; padding: 4px 10px; font-size: 12px; white-space: nowrap; }
   .map-legend > div { flex: 0 0 auto; }
   .leaflet-container { touch-action: none; }
   .leaflet-touch .leaflet-bar a { width: 32px; height: 32px; line-height: 32px; font-size: 18px; }
@@ -176,10 +176,10 @@
     margin: 0 -8px 6px; padding: 14px 12px 8px; background: var(--nn-sheet-bg); border-bottom: 1px solid var(--nn-sheet-border);
     touch-action: none; cursor: grab;
   }
-  .nn-sheet-head strong { flex: 1 1 0; min-width: 0; color: var(--nn-cyan); font: 700 11px var(--nn-mono); letter-spacing: 0.08em; }
+  .nn-sheet-head strong { flex: 1 1 0; min-width: 0; color: var(--nn-cyan); font: 700 12px var(--nn-mono); letter-spacing: 0.08em; }
   .nn-sheet-pill { position: absolute; top: 5px; left: 50%; width: 44px; height: 4px; margin-left: -22px; border-radius: 2px; background: #3a5560; }
   .nn-sheet-close, .nn-sheet-action { min-height: 40px; }
-  .nn-sheet-close { display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; border: 1px solid var(--nn-sheet-border); background: #091115; color: #cfe0e5; font: 600 11px var(--nn-mono); letter-spacing: 0.08em; cursor: pointer; }
+  .nn-sheet-close { display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; border: 1px solid var(--nn-sheet-border); background: #091115; color: #cfe0e5; font: 600 12px var(--nn-mono); letter-spacing: 0.08em; cursor: pointer; }
   .left-column, .right-column, .route-console, .mw-left, .mw-right, .mw-bottom {
     position: fixed; z-index: 3500; left: 0; right: 0; bottom: var(--nn-dock-h); max-height: 78dvh; overflow-y: auto;
     overscroll-behavior: contain; -webkit-overflow-scrolling: touch; background: var(--nn-sheet-bg); border: 1px solid var(--nn-sheet-border);
@@ -198,7 +198,7 @@
   .mission-shell[data-sheet="intel"] .mw-bottom { visibility: visible; transform: none; transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0s; }
 
   .left-column .nn-tag, .right-column .nn-tag, .route-console .nn-tag, .mw-left .nn-tag, .mw-right .nn-tag, .mw-bottom .nn-tag {
-    display: inline-flex; width: auto; max-width: 100%; font-size: 11px; line-height: 1.2; padding: 2px 7px; border-radius: 3px;
+    display: inline-flex; width: auto; max-width: 100%; font-size: 12px; line-height: 1.2; padding: 2px 7px; border-radius: 3px;
     background: rgba(117, 230, 255, 0.08); border: 1px solid rgba(117, 230, 255, 0.28);
   }
   .left-column .nn-tag-list, .right-column .nn-tag-list { gap: 3px; }
@@ -217,12 +217,12 @@
   .mw-center { position: absolute; inset: 0; border: 0; }
   .mw-bottom { height: min(330px, 60dvh); display: flex; flex-direction: column; overflow: hidden; }
   .mw-bottom .mw-profile { flex: 1 1 auto; min-height: 0; }
-  .mw-note { top: 12px; left: 56px; right: 8px; max-width: none; display: flex; align-items: center; gap: 6px; padding: 4px 8px; font-size: 11px; line-height: 1.3; }
+  .mw-note { top: 12px; left: 56px; right: 8px; max-width: none; display: flex; align-items: center; gap: 6px; padding: 4px 8px; font-size: 12px; line-height: 1.3; }
   .mw-note-text { flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .mw-note.is-open .mw-note-text { white-space: normal; }
-  .mw-note .mw-note-i, .mw-note .mw-note-x { display: inline-grid; place-items: center; flex: 0 0 auto; width: 24px; height: 24px; padding: 0; border: 1px solid #29414b; background: #091115; color: var(--nn-cyan); font: 600 11px var(--nn-mono); cursor: pointer; }
-  .mw-readout { left: 0; right: 0; bottom: 0; max-width: none; padding: 4px 8px; border-width: 1px 0 0; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .mw-scale { bottom: 30px; right: 8px; font-size: 11px; }
+  .mw-note .mw-note-i, .mw-note .mw-note-x { display: inline-grid; place-items: center; flex: 0 0 auto; width: 24px; height: 24px; padding: 0; border: 1px solid #29414b; background: #091115; color: var(--nn-cyan); font: 600 12px var(--nn-mono); cursor: pointer; }
+  .mw-readout { left: 0; right: 0; bottom: 0; max-width: none; padding: 4px 8px; border-width: 1px 0 0; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mw-scale { bottom: 30px; right: 8px; font-size: 12px; }
 
   /* Bottom tactical dock */
   .nn-dock {
@@ -233,7 +233,7 @@
   }
   .nn-dock button {
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-width: 44px; min-height: 44px;
-    border: 0; border-top: 2px solid transparent; background: transparent; color: #93a7af; font: 600 11px var(--nn-mono); letter-spacing: 0.08em; cursor: pointer;
+    border: 0; border-top: 2px solid transparent; background: transparent; color: #93a7af; font: 600 12px var(--nn-mono); letter-spacing: 0.08em; cursor: pointer;
     -webkit-tap-highlight-color: transparent; touch-action: manipulation;
   }
   .nn-dock button.is-active { color: var(--nn-cyan); border-top-color: var(--nn-cyan); background: linear-gradient(180deg, rgba(117, 230, 255, 0.1), transparent); }
@@ -247,10 +247,10 @@
   .m3d-shell .m3d-bar { position: relative; flex-wrap: nowrap; gap: 6px; min-height: 40px; padding: 3px 6px; }
   .m3d-shell .m3d-title { flex: 1 1 auto; min-width: 64px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .m3d-shell .m3d-fly svg { display: none; }
-  .m3d-shell .m3d-title strong { font-size: 11px; }
+  .m3d-shell .m3d-title strong { font-size: 12px; }
   .m3d-shell .m3d-title strong::after { content: " (3D)"; color: var(--nn-cyan); }
   .m3d-shell .m3d-actions { flex: 0 0 auto; flex-wrap: nowrap; gap: 4px; }
-  .m3d-shell .m3d-btn { min-height: 34px; padding: 0 7px; font-size: 11px; white-space: nowrap; }
+  .m3d-shell .m3d-btn { min-height: 34px; padding: 0 7px; font-size: 12px; white-space: nowrap; }
   .m3d-shell .m3d-tools-toggle { display: inline-flex; align-items: center; order: 2; }
   .m3d-shell .m3d-tools { display: none; }
   .m3d-shell .m3d-tools.is-open {
@@ -259,7 +259,7 @@
   }
   .m3d-shell .m3d-tools.is-open > * { order: 0; width: 100%; min-height: 40px; justify-content: flex-start; }
   .m3d-shell .m3d-view, .m3d-shell canvas { touch-action: none; }
-  .m3d-shell .m3d-readout { flex-wrap: nowrap; overflow: hidden; white-space: nowrap; font-size: 11px; }
+  .m3d-shell .m3d-readout { flex-wrap: nowrap; overflow: hidden; white-space: nowrap; font-size: 12px; }
 }
 @media (max-width: 359px) {
   .topbar button[aria-label="Open mission command index"] { display: none; }
@@ -314,7 +314,7 @@
   -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); color: var(--nn-text); font-family: var(--nn-mono);
 }
 .nn-solpill-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.nn-solpill-head strong { color: var(--nn-cyan); font-size: 11px; letter-spacing: 0.08em; }
+.nn-solpill-head strong { color: var(--nn-cyan); font-size: 12px; letter-spacing: 0.08em; }
 .nn-solpill-close { display: inline-grid; place-items: center; width: 36px; height: 36px; border: 1px solid #29414b; background: #091115; color: #cfe0e5; cursor: pointer; }
 .nn-solpill-pop .nn-solscrub { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px 44px; grid-template-areas: "label label label label" "prev range next play" "value value value value"; gap: 8px; min-width: 0; width: 100%; align-items: center; }
 .nn-solpill-pop .nn-solscrub-label { grid-area: label; display: none; }
@@ -444,4 +444,11 @@
   .left-column, .mw-left { position: relative; z-index: 20; box-shadow: 10px 0 28px -4px rgba(0, 0, 0, 0.68), 1px 0 0 rgba(117, 230, 255, 0.12); }
   .right-column, .mw-right { position: relative; z-index: 20; box-shadow: -10px 0 28px -4px rgba(0, 0, 0, 0.68), -1px 0 0 rgba(117, 230, 255, 0.12); }
   .site-field, .mw-center, .route-console, .mw-bottom { box-shadow: 0 -8px 24px -4px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(117, 230, 255, 0.12); }
+}
+@media (max-width: 767px) {
+  .left-column .panel-body > :is(.site-split, .place-title, .coordinate-block, .rule) { grid-column: 1 / -1; }
+}
+@media (max-width: 380px) {
+  .topbar .mode-switch button { padding: 0 7px; letter-spacing: 0.03em; }
+  .topbar .nn-solpill-btn { padding: 0 8px; letter-spacing: 0.03em; }
 }

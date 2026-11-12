@@ -2064,7 +2064,7 @@ export default function App() {
             background: "rgba(36,14,16,0.95)",
             color: "#ffb0b0",
             fontFamily: "var(--nn-font)",
-            fontSize: "11px",
+            fontSize: "12px",
             boxShadow: "0 10px 30px rgba(0,0,0,0.45)",
           }}
         >
@@ -2079,7 +2079,7 @@ export default function App() {
               background: "transparent",
               color: "#ffb0b0",
               cursor: "pointer",
-              fontSize: "11px",
+              fontSize: "12px",
               lineHeight: 1,
               padding: "2px 6px",
             }}

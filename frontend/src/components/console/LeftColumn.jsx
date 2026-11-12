@@ -4,6 +4,44 @@ import ThermalHeatmapCard from "../ThermalHeatmapCard";
 import SolConditionsCard from "../SolConditionsCard";
 import RoverPhotosPanel from "../mars/RoverPhotosPanel";
 
+/* Second column of the Selected site panel: the thermal numbers at a glance, linked to the full THEMIS panel. */
+function ThermalSummary({ thermalPanel, loading }) {
+  const stat = (key) => thermalPanel.stats.find((m) => m.key === key)?.value ?? "n/a";
+  const rows = [
+    [/outside/i.test(thermalPanel.nearest.label) ? "Nearest (ref)" : "Nearest", thermalPanel.nearest.value],
+    ["Mean", stat("mean")],
+    ["Min / max", `${stat("min")} / ${stat("max")}`],
+    ["Evidence", thermalPanel.evidence.label],
+    ["Radius", thermalPanel.coverage.searchRadius],
+  ];
+  const na = (v) => v == null || /^(n\/a|n\/a \/ n\/a)$/i.test(String(v));
+  return (
+    <aside className="site-thermal-summary" aria-label="Thermal context summary">
+      <span className="site-thermal-kicker">THERMAL CONTEXT</span>
+      {loading && !thermalPanel.hasHistorical ? (
+        <small className="site-thermal-note">Loading…</small>
+      ) : (
+        <dl>
+          {rows.map(([label, value]) => (
+            <div key={label}>
+              <dt>{label}</dt>
+              <dd className={na(value) ? "is-na" : undefined}>{value ?? "n/a"}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      {!thermalPanel.hasHistorical && !loading && <small className="site-thermal-note">No samples in the search radius</small>}
+      <button
+        type="button"
+        className="site-thermal-link"
+        onClick={() => document.getElementById("panel-thermal")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+      >
+        FULL DETAILS ↓
+      </button>
+    </aside>
+  );
+}
+
 /* Extracted from App.jsx (T7.8); state stays in App and arrives as props. */
 export default function LeftColumn({ activeCustomPlace, displayName, displayType, loading, namedFeature, selectedLocation, solar, thermal, thermalPanel }) {
   return (
@@ -32,44 +70,50 @@ export default function LeftColumn({ activeCustomPlace, displayName, displayType
 
         <div className="rule" />
 
-        <Metric
-          label="Selection source"
-          value={namedFeature ? "USGS / IAU FEATURE" : activeCustomPlace ? "USER PLACE" : selectedLocation ? "COORDINATE SELECTION" : "n/a"}
-        />
-
-        {namedFeature ? (
-          <>
+        <div className="site-split">
+          <div className="site-split-main">
             <Metric
-              label="Diameter"
-              value={namedFeature.diameter_km == null ? "n/a" : `${Number(namedFeature.diameter_km).toFixed(2)} km`}
-              detail="USGS / IAU nomenclature"
+              label="Selection source"
+              value={namedFeature ? "USGS / IAU FEATURE" : activeCustomPlace ? "USER PLACE" : selectedLocation ? "COORDINATE SELECTION" : "n/a"}
             />
 
-            <Metric label="Approval" value={namedFeature.approval_status} />
+            {namedFeature ? (
+              <>
+                <Metric
+                  label="Diameter"
+                  value={namedFeature.diameter_km == null ? "n/a" : `${Number(namedFeature.diameter_km).toFixed(2)} km`}
+                  detail="USGS / IAU nomenclature"
+                />
 
-            <Metric label="Quadrangle" value={namedFeature.quadrangle_name} detail={namedFeature.quadrangle_code} />
-          </>
-        ) : (
-          <div
-            style={{
-              marginTop: "4px",
+                <Metric label="Approval" value={namedFeature.approval_status} />
 
-              padding: "9px",
+                <Metric label="Quadrangle" value={namedFeature.quadrangle_name} detail={namedFeature.quadrangle_code} />
+              </>
+            ) : (
+              <div
+                style={{
+                  marginTop: "4px",
 
-              border: "1px dashed #29414b",
+                  padding: "9px",
 
-              background: "#091115",
+                  border: "1px dashed #29414b",
 
-              color: "#71848c",
+                  background: "#091115",
 
-              fontSize: "11px",
+                  color: "#71848c",
 
-              lineHeight: 1.5,
-            }}
-          >
-            Exact coordinate selected. Nearby USGS nomenclature, when available, is context only.
+                  fontSize: "12px",
+
+                  lineHeight: 1.5,
+                }}
+              >
+                Exact coordinate selected. Nearby USGS nomenclature, when available, is context only.
+              </div>
+            )}
           </div>
-        )}
+
+          <ThermalSummary thermalPanel={thermalPanel} loading={loading} />
+        </div>
       </Panel>
 
       <Panel eyebrow="IMAGERY / ROVER" title="Applicable rover photos" sources={["NASA_IMAGE_LIBRARY"]}>

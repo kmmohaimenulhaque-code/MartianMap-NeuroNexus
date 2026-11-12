@@ -572,7 +572,7 @@ function ComparisonLegend({ routes }) {
 
           fontFamily: "var(--nn-font)",
 
-          fontSize: "11px",
+          fontSize: "12px",
 
           letterSpacing: "0.06em",
         }}
@@ -606,7 +606,7 @@ function ComparisonLegend({ routes }) {
 
                 fontFamily: "var(--nn-font)",
 
-                fontSize: "11px",
+                fontSize: "12px",
               }}
             >
               <span
@@ -1044,7 +1044,7 @@ export default function MarsMap({
 
             fontFamily: "var(--nn-font)",
 
-            fontSize: "11px",
+            fontSize: "12px",
 
             letterSpacing: "0.06em",
 

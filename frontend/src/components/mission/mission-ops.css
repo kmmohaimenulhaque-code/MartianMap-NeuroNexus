@@ -16,7 +16,7 @@
   color: #788a92;
   padding: 6px 7px;
   font-family: var(--nn-font);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.08em;
   cursor: pointer;
 }
@@ -38,20 +38,20 @@
 
 .mission-sim-banner span {
   color: #75e6ff;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.06em;
 }
 
 .mission-sim-banner strong {
   font-family: var(--nn-font);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.08em;
 }
 
 .mission-sim-banner small {
   grid-column: 1 / -1;
   color: #66767e;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.08em;
 }
 
@@ -72,7 +72,7 @@
 .mission-section-title {
   display: block;
   color: #6f828b;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -81,13 +81,13 @@
   display: block;
   margin-top: 4px;
   font-family: var(--nn-font);
-  font-size: 11px; white-space: normal; overflow-wrap: anywhere;}
+  font-size: 12px; white-space: normal; overflow-wrap: anywhere;}
 
 .mission-stat small {
   display: block;
   margin-top: 3px;
   color: #64757d;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .mission-section {
@@ -119,7 +119,7 @@
 
 .mission-row span {
   color: #74868e;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .mission-row strong {
@@ -127,7 +127,7 @@
   text-align: right;
   color: #ccd6da;
   font-family: var(--nn-font);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.3;
 }
 
@@ -161,13 +161,13 @@
 .mission-crew-row strong,
 .mission-vehicle-row strong {
   font-family: var(--nn-font);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .mission-crew-row small,
 .mission-vehicle-row small {
   color: #677981;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.25;
 }
 
@@ -175,7 +175,7 @@
 .mission-vehicle-row span {
   color: #91a2a9;
   font-family: var(--nn-font);
-  font-size: 11px;
+  font-size: 12px;
   white-space: nowrap;
 }
 
@@ -185,7 +185,7 @@
   border: 1px solid rgba(255, 196, 107, 0.18);
   background: #110e0a;
   color: #9d8d7c;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.45;
 }
 
@@ -217,21 +217,21 @@
 }
 
 .hazard-eyebrow {
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.06em;
   opacity: 0.48;
 }
 
 .hazard-panel-header h2 {
   margin: 6px 0 5px;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: -0.02em;
 }
 
 .hazard-panel-header p {
   margin: 0;
   max-width: 650px;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.5;
   opacity: 0.48;
 }
@@ -242,7 +242,7 @@
   border-radius: 999px;
   border: 1px solid rgba(126, 255, 168, 0.2);
   color: #9dffbe;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.06em;
 }
 
@@ -255,7 +255,7 @@
   margin-top: 11px;
   padding: 11px 12px;
   border-radius: 10px;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.5;
 }
 
@@ -298,13 +298,13 @@
 .hazard-site-strip span {
   display: block;
   margin-bottom: 4px;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.06em;
   opacity: 0.42;
 }
 
 .hazard-site-strip strong {
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .hazard-section {
@@ -313,7 +313,7 @@
 
 .hazard-section-title {
   margin-bottom: 10px;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.06em;
   opacity: 0.46;
 }
@@ -341,7 +341,7 @@
 }
 
 .asteroid-top strong {
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.35;
 }
 
@@ -349,7 +349,7 @@
   flex: 0 0 auto;
   padding: 3px 5px;
   border-radius: 999px;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.08em;
   border: 1px solid rgba(126, 255, 168, 0.12);
   color: #a7efb9;
@@ -370,28 +370,28 @@
 }
 
 .hazard-signal-label {
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.08em;
   opacity: 0.4;
 }
 
 .hazard-signal-value {
   margin-top: 4px;
-  font-size: 11px;
+  font-size: 12px;
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
 }
 
 .hazard-signal-source {
   margin-top: 3px;
-  font-size: 11px;
+  font-size: 12px;
   opacity: 0.4;
   overflow-wrap: anywhere;
 }
 
 .asteroid-footnote {
   margin-top: 8px;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.4;
   opacity: 0.4;
 }
@@ -423,7 +423,7 @@
 }
 
 .hazard-card-top strong {
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.3;
 }
 
@@ -431,7 +431,7 @@
   padding: 3px 5px;
   border-radius: 999px;
   border: 1px solid rgba(126, 255, 168, 0.12);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.07em;
   color: #a7efb9;
   opacity: 0.7;
@@ -439,14 +439,14 @@
 
 .hazard-applicability {
   margin-top: 7px;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.08em;
   opacity: 0.43;
 }
 
 .hazard-card p {
   margin: 8px 0 0;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.5;
   opacity: 0.62;
 }
@@ -454,7 +454,7 @@
 .hazard-plan-title {
   margin-top: 11px;
   margin-bottom: 7px;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.06em;
   opacity: 0.45;
 }
@@ -469,7 +469,7 @@
   display: grid;
   grid-template-columns: 10px 1fr;
   gap: 5px;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.4;
   opacity: 0.68;
 }
@@ -489,7 +489,7 @@
   display: block;
   text-decoration: none;
   color: #9bdcab;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.35;
   overflow-wrap: anywhere;
   opacity: 0.66;
@@ -513,7 +513,7 @@
 }
 
 .defence-step-phase {
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.06em;
   color: #a4efb8;
   margin-bottom: 8px;
@@ -526,7 +526,7 @@
 }
 
 .defence-action {
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.38;
   opacity: 0.58;
 }
@@ -550,13 +550,13 @@
 }
 
 .ai-ready-box strong {
-  font-size: 11px;
+  font-size: 12px;
   color: #a3eeb5;
 }
 
 .ai-ready-box p {
   margin: 7px 0 0;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.5;
   opacity: 0.58;
 }
@@ -609,7 +609,7 @@
   padding: 1px 5px;
   border: 1px solid currentColor;
   font-family: var(--nn-font);
-  font-size: 11px;
+  font-size: 12px;
   font-style: normal;
   letter-spacing: 0.08em;
   opacity: 0.9;
@@ -627,7 +627,7 @@
 .mission-src {
   color: #5f8b99;
   font-family: var(--nn-font);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.06em;
   text-decoration: none;
 }
@@ -638,7 +638,7 @@
   display: block;
   margin-top: 3px;
   color: #5f737a;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.5;
 }
 
@@ -652,7 +652,7 @@
 .mission-section-title a {
   color: #5f8b99;
   font-family: var(--nn-font);
-  font-size: 11px;
+  font-size: 12px;
   text-decoration: none;
   letter-spacing: 0.06em;
 }
@@ -667,7 +667,7 @@
   gap: 3px 10px;
   padding-top: 4px;
   color: #66797f;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .mission-vehicle-detail strong { font-family: var(--nn-font); color: #cfe0e5; }
@@ -677,8 +677,8 @@
 .mission-crew-row .warn { color: #ffc46b; }
 
 .mission-edit { display: flex; flex-direction: column; gap: 6px; padding: 4px 0; }
-.mission-edit label { display: grid; grid-template-columns: 148px 1fr; align-items: center; gap: 8px; color: #83979d; font-size: 11px; }
-.mission-edit input { background: #060c10; border: 1px solid #29414b; color: #d6e6ec; font-family: var(--nn-font); font-size: 11px; padding: 5px 6px; }
+.mission-edit label { display: grid; grid-template-columns: 148px 1fr; align-items: center; gap: 8px; color: #83979d; font-size: 12px; }
+.mission-edit input { background: #060c10; border: 1px solid #29414b; color: #d6e6ec; font-family: var(--nn-font); font-size: 12px; padding: 5px 6px; }
 
 .mission-edit-toggle {
   margin-top: 7px;
@@ -687,7 +687,7 @@
   background: #0a1318;
   color: #9fd8e8;
   font-family: var(--nn-font);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.06em;
   padding: 7px;
   cursor: pointer;
@@ -704,10 +704,10 @@
   background: rgba(8, 20, 26, 0.75);
 }
 
-.mission-orbital-strip span { display: block; color: #75e6ff; font-family: var(--nn-font); font-size: 11px; letter-spacing: 0.06em; }
-.mission-orbital-strip strong { display: block; color: #d6e6ec; font-size: 11px; }
-.mission-orbital-strip small { display: block; color: #66797f; font-size: 11px; }
-.mission-orbital-strip button { border: 1px solid #29414b; background: #0a1318; color: #9fd8e8; font-family: var(--nn-font); font-size: 11px; letter-spacing: 0.06em; padding: 7px 9px; cursor: pointer; }
+.mission-orbital-strip span { display: block; color: #75e6ff; font-family: var(--nn-font); font-size: 12px; letter-spacing: 0.06em; }
+.mission-orbital-strip strong { display: block; color: #d6e6ec; font-size: 12px; }
+.mission-orbital-strip small { display: block; color: #66797f; font-size: 12px; }
+.mission-orbital-strip button { border: 1px solid #29414b; background: #0a1318; color: #9fd8e8; font-family: var(--nn-font); font-size: 12px; letter-spacing: 0.06em; padding: 7px 9px; cursor: pointer; }
 
 /* Containment: nothing in the right panel may cross its right edge. */
 .mission-ops-panel, .mission-ops-panel * { box-sizing: border-box; min-width: 0; }

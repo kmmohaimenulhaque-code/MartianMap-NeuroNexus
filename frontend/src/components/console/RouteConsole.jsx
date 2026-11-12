@@ -127,7 +127,7 @@ export default function RouteConsole({
 
             fontFamily: "var(--nn-font)",
 
-            fontSize: "11px",
+            fontSize: "12px",
 
             letterSpacing: "0.08em",
 
@@ -154,7 +154,7 @@ export default function RouteConsole({
 
             fontFamily: "var(--nn-font)",
 
-            fontSize: "11px",
+            fontSize: "12px",
 
             letterSpacing: "0.08em",
 
@@ -179,7 +179,7 @@ export default function RouteConsole({
 
           fontFamily: "var(--nn-font)",
 
-          fontSize: "11px",
+          fontSize: "12px",
         }}
       >
         <span>

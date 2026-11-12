@@ -254,7 +254,7 @@ for (const [w, h, name, file] of [[768, 1024, "iPad mini 768", null], [820, 1180
   });
   check(sheet.visible && sheet.left === 0 && sheet.right === 393 && sheet.height <= 852 * 0.78 + 1, "iPhone 393: INTEL bottom sheet, at most 78% of the height");
   check(/blur\(5px\)/.test(sheetStyle.blur) && sheetStyle.top === 0, "iPhone 393: full-screen blurred backdrop behind the sheet");
-  check(sheetStyle.grid === 2 && sheetStyle.tag === "11px", "iPhone 393: 2-column KPI grid and 11 px source pills");
+  check(sheetStyle.grid === 2 && sheetStyle.tag === "12px", "iPhone 393: 2-column KPI grid and 12 px source pills");
   await shot(page, "mobile-intel-sheet-ios.png");
   await page.click(".left-column .nn-sheet-close");
   await page.waitForTimeout(400);
