@@ -3615,3 +3615,81 @@ body.lp {
     margin-bottom: 10px;
   }
 }
+
+/* Quick Guide: the header's second pill, same size as Enter Console, dark glass with a cyan edge. */
+.lp-header .lp-guide-btn {
+  border-color: rgba(1, 255, 255, 0.45);
+  background: rgba(6, 12, 20, 0.55);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: var(--txt);
+}
+
+.lp-header .lp-guide-btn .lp-dot {
+  color: var(--cyan);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .lp-header .lp-guide-btn:hover {
+    border-color: var(--cyan);
+    box-shadow: 0 0 22px rgba(1, 255, 255, 0.3);
+  }
+}
+
+.lp-guide-btn__icon {
+  display: none;
+  width: 14px;
+  height: 14px;
+  fill: var(--cyan);
+}
+
+/* Phones: shorter labels so the wordmark, both pills and the menu always fit in one row. */
+@media (max-width: 480px) {
+  .lp-header__right {
+    gap: 6px;
+  }
+
+  .lp-guide-btn__q,
+  .lp-hide-xs {
+    display: none;
+  }
+
+  .lp-wordmark {
+    font-size: 15px;
+  }
+
+  .lp-header .lp-pill {
+    padding: 0 12px;
+  }
+}
+
+/* Narrowest phones: Quick Guide becomes a round play button the size of the menu button. */
+@media (max-width: 360px) {
+  .lp-header .lp-guide-btn {
+    justify-content: center;
+    width: 44px;
+    padding: 0;
+  }
+
+  .lp-guide-btn__label,
+  .lp-header .lp-guide-btn .lp-dot {
+    display: none;
+  }
+
+  .lp-guide-btn__icon {
+    display: block;
+  }
+
+  .lp-menu-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .lp-wordmark {
+    font-size: 13.5px;
+  }
+
+  .lp-header__right {
+    gap: 4px;
+  }
+}

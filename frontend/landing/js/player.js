@@ -47,7 +47,7 @@ export function createPlayer(root, spec, { sizes, tokens, consolePath }) {
       <div class="pl-shell">
         <div class="pl-top">
           <div>
-            <p class="lp-eyebrow lp-eyebrow--dark">${reel ? `Reel &middot; ${reelIndex + 1} of ${spec.tutorials.length}` : "Tutorial"}</p>
+            <p class="lp-eyebrow lp-eyebrow--dark">${reel ? `Reel &middot; ${reelIndex + 1} of ${spec.tutorials.length}` : t === spec.guide ? "The challenge, answered" : "Tutorial"}</p>
             <h2 class="pl-title" id="lp-player-title">${escapeHtml(t.title)}</h2>
           </div>
           <button class="pl-btn" type="button" data-pl-close>Close</button>
@@ -64,7 +64,7 @@ export function createPlayer(root, spec, { sizes, tokens, consolePath }) {
             <button class="pl-btn" type="button" data-pl-prev aria-label="Previous step">${ICON.prev}</button>
             <button class="pl-btn" type="button" data-pl-toggle aria-label="Pause">${ICON.pause}</button>
             <button class="pl-btn" type="button" data-pl-next aria-label="Next step">${ICON.next}</button>
-            <a class="pl-btn pl-btn--try" href="${consolePath}?tutorial=${encodeURIComponent(t.id)}">Try It in the Console</a>
+            <a class="pl-btn pl-btn--try" href="${t === spec.guide ? consolePath : `${consolePath}?tutorial=${encodeURIComponent(t.id)}`}">${t === spec.guide ? "Enter the Console" : "Try It in the Console"}</a>
           </div>
           <p class="pl-note">Built from real screenshots of the NeuroNexus console. Arrow keys step, Space pauses, Esc closes.</p>
         </div>
@@ -126,7 +126,7 @@ export function createPlayer(root, spec, { sizes, tokens, consolePath }) {
   };
 
   const open = (id, from, { reel = false } = {}) => {
-    const t = reel ? spec.tutorials[0] : spec.tutorials.find((x) => x.id === id);
+    const t = reel ? spec.tutorials[0] : spec.tutorials.find((x) => x.id === id) ?? (spec.guide?.id === id ? spec.guide : null);
     if (!t) return;
     returnFocus = from || document.activeElement;
     reelIndex = reel ? 0 : -1;

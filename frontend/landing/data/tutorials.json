@@ -1019,5 +1019,68 @@
         }
       ]
     }
-  ]
+  ],
+  "guide": {
+    "id": "quick-guide",
+    "title": "Quick Guide",
+    "tags": [
+      "Map",
+      "Route",
+      "Marswalk"
+    ],
+    "summary": "How NeuroNexus answers the challenge in five steps.",
+    "glossary": [],
+    "steps": [
+      {
+        "media": "layers",
+        "focus": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "caption": "One integrated map: HiRISE, CTX, MOLA, dust, geology and rovers, layered."
+      },
+      {
+        "media": "solstorm",
+        "focus": [
+          0.2,
+          0.14,
+          0.36,
+          0.62
+        ],
+        "caption": "Conditions follow the sol: dust, RAD dose and weather update every map."
+      },
+      {
+        "media": "designer",
+        "focus": [
+          0.27,
+          0.28,
+          0.65,
+          0.6
+        ],
+        "caption": "Route Design scores walks for time, terrain, science and operations."
+      },
+      {
+        "media": "marswalk",
+        "focus": [
+          0.33,
+          0.13,
+          0.67,
+          0.82
+        ],
+        "caption": "MARSWALK plans the EVA with a turnaround point and walk-back margin."
+      },
+      {
+        "media": "exports",
+        "focus": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "caption": "Every number carries its NASA source, checked against rover ground truth."
+      }
+    ]
+  }
 }

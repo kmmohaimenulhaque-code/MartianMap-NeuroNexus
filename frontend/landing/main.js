@@ -40,6 +40,10 @@ renderCards(doc.querySelector("[data-cards]"), spec, { sizes, tokens, consolePat
 initApolloStory(doc);
 initPareto(doc);
 initParetoScene(doc);
+doc.querySelector("[data-quick-guide]")?.addEventListener("click", (e) => {
+  e.preventDefault();
+  player.open("quick-guide", e.currentTarget);
+});
 doc.querySelector("[data-play-reel]")?.addEventListener("click", (e) => player.openReel(e.currentTarget));
 
 initIntro();

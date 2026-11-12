@@ -23,6 +23,21 @@ const walk = (dir) =>
 const COPY_FILES = [join(FRONTEND, "index.html"), join(FRONTEND, "tutorials/index.html"), ...walk(join(FRONTEND, "landing"))];
 
 describe("tutorials.json", () => {
+  it("has a five-step Quick Guide of about 15 to 20 seconds, outside the card list", () => {
+    const g = spec.guide;
+    expect(g.id).toBe("quick-guide");
+    expect(g.steps).toHaveLength(5);
+    expect(spec.tutorials.some((t) => t.id === g.id)).toBe(false);
+    // Same timing rule as landing/js/stage.js stepDuration.
+    const ms = g.steps.reduce((sum, st) => sum + Math.max(3400, 1500 + st.caption.split(/\s+/).length * 230 + (st.cursor ? 1500 : 0)), 0);
+    expect(ms).toBeGreaterThanOrEqual(15000);
+    expect(ms).toBeLessThanOrEqual(22000);
+    for (const st of g.steps) {
+      expect(spec.media[st.media], st.media).toBeTruthy();
+      expect(st.caption.split(/\s+/).length).toBeLessThanOrEqual(20);
+    }
+  });
+
   it("has fifteen tutorials with unique ids", () => {
     const ids = spec.tutorials.map((t) => t.id);
     expect(ids.length).toBe(15);
