@@ -5,6 +5,8 @@ import './utils/leafletGuards.js'
 // First: the shard cookie must exist before any /api request leaves the page.
 import './shard.js'
 import './apiOrigin.js'
+// Before the tracker: cold or busy servers are retried as one tracked request.
+import './state/retryFetch.js'
 // After apiOrigin.js: the tracker wraps the origin-rewriting fetch, so it sees every backend request.
 import './state/fetchTracker.js'
 import './pwa/retireAppWorker.js'
