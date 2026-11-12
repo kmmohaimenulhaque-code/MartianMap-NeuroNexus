@@ -8,6 +8,69 @@ import { useEffect, useRef, useState } from "react";
  * from the model's own guesses. The Gemini API key stays server-side.
  */
 
+/*
+ * Minimal Markdown rendering for model replies: headings, bullet lists and
+ * **bold** / `code`. Built from React elements (no innerHTML), so model text
+ * can never inject markup.
+ */
+function renderInline(text, keyPrefix) {
+  const pieces = String(text).split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
+  return pieces.map((piece, index) => {
+    if (piece.startsWith("**") && piece.endsWith("**") && piece.length > 4) {
+      return <strong key={`${keyPrefix}-${index}`}>{piece.slice(2, -2)}</strong>;
+    }
+    if (piece.startsWith("`") && piece.endsWith("`") && piece.length > 2) {
+      return <code key={`${keyPrefix}-${index}`}>{piece.slice(1, -1)}</code>;
+    }
+    return piece;
+  });
+}
+
+function ModelText({ text }) {
+  const blocks = [];
+  let list = null;
+  String(text ?? "")
+    .split(/\r?\n/)
+    .forEach((raw, index) => {
+      const line = raw.trimEnd();
+      const bullet = /^\s*(?:[*-]|\d+\.)\s+(.*)$/.exec(line);
+      if (bullet) {
+        if (!list) {
+          list = [];
+          blocks.push({ type: "list", items: list, key: `l-${index}` });
+        }
+        list.push({ text: bullet[1], key: `i-${index}` });
+        return;
+      }
+      list = null;
+      if (!line.trim()) {
+        return;
+      }
+      const heading = /^#{1,6}\s+(.*)$/.exec(line);
+      blocks.push(heading ? { type: "heading", text: heading[1], key: `h-${index}` } : { type: "paragraph", text: line, key: `p-${index}` });
+    });
+
+  return blocks.map((block) => {
+    if (block.type === "list") {
+      return (
+        <ul key={block.key}>
+          {block.items.map((item) => (
+            <li key={item.key}>{renderInline(item.text, item.key)}</li>
+          ))}
+        </ul>
+      );
+    }
+    if (block.type === "heading") {
+      return (
+        <div key={block.key} className="intel-heading">
+          {renderInline(block.text, block.key)}
+        </div>
+      );
+    }
+    return <p key={block.key}>{renderInline(block.text, block.key)}</p>;
+  });
+}
+
 const SUGGESTIONS = [
   "Explain the trade-offs between these routes using the available evidence.",
   "Summarise the current Mars-orbit small-body monitoring picture.",
@@ -116,7 +179,9 @@ export default function MarsIntelligence({ open, onClose, status, onAsk, mission
           {messages.map((message, index) => (
             <article key={index} className={`intel-message ${message.role}${message.error ? " error" : ""}`}>
               <span className="intel-role">{message.role === "user" ? "YOU" : "MARS INTELLIGENCE"}</span>
-              <div className="intel-text">{message.content}</div>
+              <div className="intel-text">
+                {message.role === "assistant" && !message.error ? <ModelText text={message.content} /> : message.content}
+              </div>
               {message.tools?.length > 0 && (
                 <details className="intel-tools">
                   <summary>
