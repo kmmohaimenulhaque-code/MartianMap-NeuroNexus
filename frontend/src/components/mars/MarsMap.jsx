@@ -1,1124 +1,542 @@
-import {
-  useEffect,
-  useState,
-} from 'react'
+import { useEffect, useState } from "react";
 
-import {
-  CircleMarker,
-  ImageOverlay,
-  MapContainer,
-  Polyline,
-  Popup,
-  Tooltip,
-  useMap,
-  useMapEvents,
-} from 'react-leaflet'
+import { CircleMarker, ImageOverlay, MapContainer, Polyline, Popup, Tooltip, useMap, useMapEvents } from "react-leaflet";
 
-import {
-  CRS,
-  Transformation,
-} from 'leaflet'
+import { CRS, Transformation } from "leaflet";
 
-import 'leaflet/dist/leaflet.css'
-
+import "leaflet/dist/leaflet.css";
 
 const MARS_BOUNDS = [
   [-90, 0],
   [90, 360],
-]
-
+];
 
 const MARS_CRS = {
   ...CRS.Simple,
 
-  transformation:
-    new Transformation(
-      1,
-      0,
-      -1,
-      90,
-    ),
+  transformation: new Transformation(1, 0, -1, 90),
 
   scale(zoom) {
-    return Math.pow(
-      2,
-      zoom,
-    )
+    return Math.pow(2, zoom);
   },
+};
+
+const COMPARISON_COLOURS = ["#75e6ff", "#ff9f68", "#8cf0b1", "#c99bff"];
+
+function normaliseLongitude(longitude) {
+  return ((Number(longitude) % 360) + 360) % 360;
 }
 
-
-const COMPARISON_COLOURS = [
-  '#75e6ff',
-  '#ff9f68',
-  '#8cf0b1',
-  '#c99bff',
-]
-
-
-function normaliseLongitude(
-  longitude,
-) {
-  return (
-    (
-      Number(
-        longitude,
-      ) % 360
-    ) +
-    360
-  ) % 360
+function marsPosition(feature) {
+  return [Number(feature.latitude_deg ?? feature.lat), normaliseLongitude(feature.longitude_deg ?? feature.longitude ?? feature.lon ?? feature.lng)];
 }
 
-
-function marsPosition(
-  feature,
-) {
-  return [
-    Number(
-      feature.latitude_deg ??
-        feature.lat,
-    ),
-
-    normaliseLongitude(
-      feature.longitude_deg ??
-        feature.longitude ??
-        feature.lon ??
-        feature.lng,
-    ),
-  ]
+function pointPosition(point) {
+  return [Number(point.latitude_deg ?? point.lat), normaliseLongitude(point.longitude_deg ?? point.longitude ?? point.lon ?? point.lng)];
 }
 
-
-function pointPosition(
-  point,
-) {
-  return [
-    Number(
-      point.latitude_deg ??
-        point.lat,
-    ),
-
-    normaliseLongitude(
-      point.longitude_deg ??
-        point.longitude ??
-        point.lon ??
-        point.lng,
-    ),
-  ]
+function validPosition(position) {
+  return Array.isArray(position) && position.length === 2 && Number.isFinite(position[0]) && Number.isFinite(position[1]);
 }
 
+function routeCoordinates(route) {
+  const planned = route?.plan?.planned_route?.coordinates ?? route?.plan?.route?.coordinates;
 
-function validPosition(
-  position,
-) {
-  return (
-    Array.isArray(
-      position,
-    ) &&
-    position.length === 2 &&
-    Number.isFinite(
-      position[0],
-    ) &&
-    Number.isFinite(
-      position[1],
-    )
-  )
-}
-
-
-function routeCoordinates(
-  route,
-) {
-  const planned =
-    route?.plan
-      ?.planned_route
-      ?.coordinates ??
-    route?.plan
-      ?.route
-      ?.coordinates
-
-  if (
-    Array.isArray(
-      planned,
-    ) &&
-    planned.length >
-      1
-  ) {
-    return planned
+  if (Array.isArray(planned) && planned.length > 1) {
+    return planned;
   }
 
-  const points =
-    route?.points ??
-    []
+  const points = route?.points ?? [];
 
-  return points.map(
-    (point) => [
-      Number(
-        point.latitude_deg,
-      ),
-      normaliseLongitude(
-        point.longitude_deg,
-      ),
-    ],
-  )
+  return points.map((point) => [Number(point.latitude_deg), normaliseLongitude(point.longitude_deg)]);
 }
 
-
-function featureColor(
-  featureType = '',
-) {
-  const type =
-    String(
-      featureType,
-    )
-      .split(',')[0]
-      .trim()
+function featureColor(featureType = "") {
+  const type = String(featureType).split(",")[0].trim();
 
   const colors = {
-    Crater: '#d9c2a5',
-    Vallis: '#72d9ff',
-    Mons: '#ff9f68',
-    Fossa: '#9fe3a8',
-    Mensa: '#e7d06f',
-    Planum: '#c99bff',
-    Patera: '#ff718d',
-    Chaos: '#75e6ff',
-    Rupes: '#ffbf69',
-    Chasma: '#80aaff',
-    Dorsum: '#c5a27b',
-    Terra: '#f0c6a0',
-    Planitia: '#9cc2b5',
-  }
+    Crater: "#d9c2a5",
+    Vallis: "#72d9ff",
+    Mons: "#ff9f68",
+    Fossa: "#9fe3a8",
+    Mensa: "#e7d06f",
+    Planum: "#c99bff",
+    Patera: "#ff718d",
+    Chaos: "#75e6ff",
+    Rupes: "#ffbf69",
+    Chasma: "#80aaff",
+    Dorsum: "#c5a27b",
+    Terra: "#f0c6a0",
+    Planitia: "#9cc2b5",
+  };
 
-  return (
-    colors[type] ??
-    '#d5d9dc'
-  )
+  return colors[type] ?? "#d5d9dc";
 }
-
 
 function MapResizeHandler() {
-  const map =
-    useMap()
+  const map = useMap();
 
   useEffect(() => {
-    const container =
-      map.getContainer()
+    const container = map.getContainer();
 
-    const resizeObserver =
-      new ResizeObserver(
-        () => {
-          map.invalidateSize(
-            {
-              animate:
-                false,
-            },
-          )
-        },
-      )
+    const resizeObserver = new ResizeObserver(() => {
+      map.invalidateSize({
+        animate: false,
+      });
+    });
 
-    resizeObserver.observe(
-      container,
-    )
+    resizeObserver.observe(container);
 
-    map.invalidateSize(
-      {
-        animate:
-          false,
-      },
-    )
+    map.invalidateSize({
+      animate: false,
+    });
 
     return () => {
-      resizeObserver.disconnect()
-    }
-  }, [
-    map,
-  ])
+      resizeObserver.disconnect();
+    };
+  }, [map]);
 
-  return null
+  return null;
 }
 
-
-function MapFocus({
-  selectedFeature,
-  selectedLocation,
-}) {
-  const map =
-    useMap()
+function MapFocus({ selectedFeature, selectedLocation }) {
+  const map = useMap();
 
   useEffect(() => {
-    const source =
-      selectedFeature ??
-      selectedLocation
+    const source = selectedFeature ?? selectedLocation;
 
     if (!source) {
-      return
+      return;
     }
 
-    const position =
-      pointPosition(
-        source,
-      )
+    const position = pointPosition(source);
 
-    if (
-      !validPosition(
-        position,
-      )
-    ) {
-      return
+    if (!validPosition(position)) {
+      return;
     }
 
-    map.flyTo(
-      position,
-      1.6,
-      {
-        duration:
-          0.8,
-      },
-    )
-  }, [
-    selectedFeature,
-    selectedLocation,
-    map,
-  ])
+    map.flyTo(position, 1.6, {
+      duration: 0.8,
+    });
+  }, [selectedFeature, selectedLocation, map]);
 
-  return null
+  return null;
 }
 
-
-function MapClickCapture({
-  enabled,
-  interactive,
-  onRoutePoint,
-  onCoordinateSelect,
-  setDraftLocation,
-}) {
+function MapClickCapture({ enabled, interactive, onRoutePoint, onCoordinateSelect, setDraftLocation }) {
   useMapEvents({
     click(event) {
-      if (
-        !interactive ||
-        !enabled
-      ) {
-        return
+      if (!interactive || !enabled) {
+        return;
       }
 
       const point = {
-        lat:
-          event.latlng.lat,
+        lat: event.latlng.lat,
 
-        lng:
-          normaliseLongitude(
-            event.latlng.lng,
-          ),
+        lng: normaliseLongitude(event.latlng.lng),
+      };
+
+      setDraftLocation?.(point);
+
+      if (onCoordinateSelect) {
+        onCoordinateSelect(point);
       }
 
-      setDraftLocation?.(
-        point,
-      )
-
-      if (
-        onCoordinateSelect
-      ) {
-        onCoordinateSelect(
-          point,
-        )
-      }
-
-      if (
-        onRoutePoint
-      ) {
+      if (onRoutePoint) {
         onRoutePoint({
-          latitude_deg:
-            point.lat,
+          latitude_deg: point.lat,
 
-          longitude_deg:
-            point.lng,
-        })
+          longitude_deg: point.lng,
+        });
       }
     },
-  })
+  });
 
-  return null
+  return null;
 }
 
-
-function RoutePointMarker({
-  point,
-  label,
-  color,
-}) {
+function RoutePointMarker({ point, label, color }) {
   if (!point) {
-    return null
+    return null;
   }
 
-  const position =
-    pointPosition(
-      point,
-    )
+  const position = pointPosition(point);
 
-  if (
-    !validPosition(
-      position,
-    )
-  ) {
-    return null
+  if (!validPosition(position)) {
+    return null;
   }
 
   return (
     <CircleMarker
-      center={
-        position
-      }
+      center={position}
       radius={7}
       pathOptions={{
         color,
         weight: 2,
-        fillColor:
-          color,
-        fillOpacity:
-          1,
+        fillColor: color,
+        fillOpacity: 1,
       }}
     >
-      <Tooltip
-        direction="top"
-        offset={[
-          0,
-          -7,
-        ]}
-      >
-        <strong>
-          {label}
-        </strong>
-
+      <Tooltip direction="top" offset={[0, -7]}>
+        <strong>{label}</strong>
         <br />
-
-        {Number(
-          point.latitude_deg ??
-            point.lat,
-        ).toFixed(4)}
-        °,
-
-        {' '}
-
-        {normaliseLongitude(
-          point.longitude_deg ??
-            point.lng,
-        ).toFixed(4)}
+        {Number(point.latitude_deg ?? point.lat).toFixed(4)}
+        °, {normaliseLongitude(point.longitude_deg ?? point.lng).toFixed(4)}
         °E
       </Tooltip>
     </CircleMarker>
-  )
+  );
 }
 
-
-function RouteWaypoints({
-  routePoints,
-}) {
-  if (
-    !Array.isArray(
-      routePoints,
-    ) ||
-    !routePoints.length
-  ) {
-    return null
+function RouteWaypoints({ routePoints }) {
+  if (!Array.isArray(routePoints) || !routePoints.length) {
+    return null;
   }
 
   return (
     <>
-      {routePoints.map(
-        (
-          point,
-          index,
-        ) => {
-          const isStart =
-            index === 0
+      {routePoints.map((point, index) => {
+        const isStart = index === 0;
 
-          const isEnd =
-            index ===
-            routePoints.length -
-              1
+        const isEnd = index === routePoints.length - 1;
 
-          const color =
-            isStart
-              ? '#62f59a'
-              : isEnd
-                ? '#ff647c'
-                : '#75e6ff'
+        const color = isStart ? "#62f59a" : isEnd ? "#ff647c" : "#75e6ff";
 
-          return (
-            <RoutePointMarker
-              key={`${point.latitude_deg}:${point.longitude_deg}:${index}`}
-              point={
-                point
-              }
-              label={
-                isStart
-                  ? 'ROUTE START'
-                  : isEnd
-                    ? 'DESTINATION'
-                    : `WAYPOINT P${index}`
-              }
-              color={
-                color
-              }
-            />
-          )
-        },
-      )}
+        return (
+          <RoutePointMarker
+            key={`${point.latitude_deg}:${point.longitude_deg}:${index}`}
+            point={point}
+            label={isStart ? "ROUTE START" : isEnd ? "DESTINATION" : `WAYPOINT P${index}`}
+            color={color}
+          />
+        );
+      })}
     </>
-  )
+  );
 }
 
+function CustomPlacesLayer({ places, safeHavens, routeMode, interactive, onRoutePoint, onUserPlaceSelect, onSafeHavenSelect }) {
+  const savedPlaces = Array.isArray(places) ? places : [];
 
-function CustomPlacesLayer({
-  places,
-  safeHavens,
-  routeMode,
-  interactive,
-  onRoutePoint,
-  onUserPlaceSelect,
-  onSafeHavenSelect,
-}) {
-  const savedPlaces =
-    Array.isArray(
-      places,
-    )
-      ? places
-      : []
-
-  const havens =
-    Array.isArray(
-      safeHavens,
-    )
-      ? safeHavens
-      : []
+  const havens = Array.isArray(safeHavens) ? safeHavens : [];
 
   return (
     <>
-      {savedPlaces.map(
-        (
-          place,
-        ) => {
-          const lat =
-            Number(
-              place.latitude_deg ??
-                place.lat,
-            )
+      {savedPlaces.map((place) => {
+        const lat = Number(place.latitude_deg ?? place.lat);
 
-          const lng =
-            normaliseLongitude(
-              place.longitude_deg ??
-                place.lng,
-            )
+        const lng = normaliseLongitude(place.longitude_deg ?? place.lng);
 
-          if (
-            !Number.isFinite(
-              lat,
-            ) ||
-            !Number.isFinite(
-              lng,
-            )
-          ) {
-            return null
-          }
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+          return null;
+        }
 
-          return (
-            <CircleMarker
-              key={
-                place.id
-              }
-              center={[
-                lat,
-                lng,
-              ]}
-              radius={6}
-              pathOptions={{
-                color:
-                  '#75e6ff',
-                fillColor:
-                  '#75e6ff',
-                fillOpacity:
-                  0.95,
-                weight: 2,
-              }}
-              eventHandlers={{
-                click: (
-                  event,
-                ) => {
-                  event
-                    .originalEvent
-                    ?.stopPropagation?.()
+        return (
+          <CircleMarker
+            key={place.id}
+            center={[lat, lng]}
+            radius={6}
+            pathOptions={{
+              color: "#75e6ff",
+              fillColor: "#75e6ff",
+              fillOpacity: 0.95,
+              weight: 2,
+            }}
+            eventHandlers={{
+              click: (event) => {
+                event.originalEvent?.stopPropagation?.();
 
-                  if (
-                    !interactive
-                  ) {
-                    return
-                  }
+                if (!interactive) {
+                  return;
+                }
 
-                  if (
-                    routeMode
-                  ) {
-                    onRoutePoint?.({
-                      latitude_deg:
-                        lat,
+                if (routeMode) {
+                  onRoutePoint?.({
+                    latitude_deg: lat,
 
-                      longitude_deg:
-                        lng,
+                    longitude_deg: lng,
 
-                      label:
-                        place.name,
-                    })
+                    label: place.name,
+                  });
 
-                    return
-                  }
+                  return;
+                }
 
-                  onUserPlaceSelect?.(
-                    place,
-                  )
-                },
-              }}
-            >
-              <Tooltip
-                direction="top"
-                offset={[
-                  0,
-                  -4,
-                ]}
-              >
-                <strong>
-                  {
-                    place.name
-                  }
-                </strong>
+                onUserPlaceSelect?.(place);
+              },
+            }}
+          >
+            <Tooltip direction="top" offset={[0, -4]}>
+              <strong>{place.name}</strong>
+              <br />
+              USER CREATED PLACE
+            </Tooltip>
+          </CircleMarker>
+        );
+      })}
 
-                <br />
+      {havens.map((haven) => {
+        const lat = Number(haven.latitude_deg ?? haven.lat);
 
-                USER CREATED PLACE
-              </Tooltip>
-            </CircleMarker>
-          )
-        },
-      )}
+        const lng = normaliseLongitude(haven.longitude_deg ?? haven.lng);
 
-      {havens.map(
-        (
-          haven,
-        ) => {
-          const lat =
-            Number(
-              haven.latitude_deg ??
-                haven.lat,
-            )
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+          return null;
+        }
 
-          const lng =
-            normaliseLongitude(
-              haven.longitude_deg ??
-                haven.lng,
-            )
+        return (
+          <CircleMarker
+            key={haven.id}
+            center={[lat, lng]}
+            radius={7}
+            pathOptions={{
+              color: "#9dffbe",
+              fillColor: "#9dffbe",
+              fillOpacity: 0.92,
+              weight: 2,
+            }}
+            eventHandlers={{
+              click: (event) => {
+                event.originalEvent?.stopPropagation?.();
 
-          if (
-            !Number.isFinite(
-              lat,
-            ) ||
-            !Number.isFinite(
-              lng,
-            )
-          ) {
-            return null
-          }
+                if (!interactive) {
+                  return;
+                }
 
-          return (
-            <CircleMarker
-              key={
-                haven.id
-              }
-              center={[
-                lat,
-                lng,
-              ]}
-              radius={7}
-              pathOptions={{
-                color:
-                  '#9dffbe',
-                fillColor:
-                  '#9dffbe',
-                fillOpacity:
-                  0.92,
-                weight: 2,
-              }}
-              eventHandlers={{
-                click: (
-                  event,
-                ) => {
-                  event
-                    .originalEvent
-                    ?.stopPropagation?.()
+                if (routeMode) {
+                  onRoutePoint?.({
+                    latitude_deg: lat,
 
-                  if (
-                    !interactive
-                  ) {
-                    return
-                  }
+                    longitude_deg: lng,
 
-                  if (
-                    routeMode
-                  ) {
-                    onRoutePoint?.({
-                      latitude_deg:
-                        lat,
+                    label: haven.name,
+                  });
 
-                      longitude_deg:
-                        lng,
+                  return;
+                }
 
-                      label:
-                        haven.name,
-                    })
-
-                    return
-                  }
-
-                  onSafeHavenSelect?.(
-                    haven,
-                  )
-                },
-              }}
-            >
-              <Tooltip
-                direction="top"
-                offset={[
-                  0,
-                  -4,
-                ]}
-              >
-                <strong>
-                  {
-                    haven.name
-                  }
-                </strong>
-
-                <br />
-
-                SAFE HAVEN
-              </Tooltip>
-            </CircleMarker>
-          )
-        },
-      )}
+                onSafeHavenSelect?.(haven);
+              },
+            }}
+          >
+            <Tooltip direction="top" offset={[0, -4]}>
+              <strong>{haven.name}</strong>
+              <br />
+              SAFE HAVEN
+            </Tooltip>
+          </CircleMarker>
+        );
+      })}
     </>
-  )
+  );
 }
 
+function CoordinateCreator({ draftLocation, setDraftLocation, onCreateUserPlace, onCreateSafeHaven }) {
+  const [name, setName] = useState("");
 
-function CoordinateCreator({
-  draftLocation,
-  setDraftLocation,
-  onCreateUserPlace,
-  onCreateSafeHaven,
-}) {
-  const [
-    name,
-    setName,
-  ] = useState('')
-
-  const [
-    havenName,
-    setHavenName,
-  ] = useState('')
+  const [havenName, setHavenName] = useState("");
 
   useEffect(() => {
-    if (
-      !draftLocation
-    ) {
-      setName('')
-      setHavenName('')
+    if (!draftLocation) {
+      setName("");
+      setHavenName("");
     }
-  }, [
-    draftLocation,
-  ])
+  }, [draftLocation]);
 
-  if (
-    !draftLocation
-  ) {
-    return null
+  if (!draftLocation) {
+    return null;
   }
 
-  const latitude =
-    Number(
-      draftLocation.lat ??
-        draftLocation.latitude_deg,
-    )
+  const latitude = Number(draftLocation.lat ?? draftLocation.latitude_deg);
 
-  const longitude =
-    normaliseLongitude(
-      draftLocation.lng ??
-        draftLocation.longitude_deg,
-    )
+  const longitude = normaliseLongitude(draftLocation.lng ?? draftLocation.longitude_deg);
 
-  if (
-    !Number.isFinite(
-      latitude,
-    ) ||
-    !Number.isFinite(
-      longitude,
-    )
-  ) {
-    return null
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+    return null;
   }
 
   function createPlace() {
-    const trimmed =
-      name.trim()
+    const trimmed = name.trim();
 
-    if (
-      !trimmed
-    ) {
-      return
+    if (!trimmed) {
+      return;
     }
 
     onCreateUserPlace?.({
-      latitude_deg:
-        latitude,
+      latitude_deg: latitude,
 
-      longitude_deg:
-        longitude,
+      longitude_deg: longitude,
 
-      lat:
-        latitude,
+      lat: latitude,
 
-      lng:
-        longitude,
+      lng: longitude,
 
-      name:
-        trimmed,
-    })
+      name: trimmed,
+    });
 
-    setDraftLocation?.(
-      null,
-    )
+    setDraftLocation?.(null);
   }
-
 
   function createSafeHaven() {
-    const trimmed =
-      havenName.trim()
+    const trimmed = havenName.trim();
 
     onCreateSafeHaven?.({
-      latitude_deg:
-        latitude,
+      latitude_deg: latitude,
 
-      longitude_deg:
-        longitude,
+      longitude_deg: longitude,
 
-      lat:
-        latitude,
+      lat: latitude,
 
-      lng:
-        longitude,
+      lng: longitude,
 
-      name:
-        trimmed,
-    })
+      name: trimmed,
+    });
 
-    setDraftLocation?.(
-      null,
-    )
+    setDraftLocation?.(null);
   }
-
 
   return (
     <Popup
-      position={[
-        latitude,
-        longitude,
-      ]}
-      closeOnClick={
-        false
-      }
+      position={[latitude, longitude]}
+      closeOnClick={false}
       eventHandlers={{
-        remove: () =>
-          setDraftLocation?.(
-            null,
-          ),
+        remove: () => setDraftLocation?.(null),
       }}
     >
       <div className="nn-map-create-popup">
-        <strong>
-          LOCATION SELECTED
-        </strong>
+        <strong>LOCATION SELECTED</strong>
 
         <span>
-          {latitude.toFixed(
-            5,
-          )}
-          {' / '}
-          {longitude.toFixed(
-            5,
-          )}
+          {latitude.toFixed(5)}
+          {" / "}
+          {longitude.toFixed(5)}
         </span>
 
         <label>
           USER PLACE
-
-          <input
-            type="text"
-            maxLength={
-              48
-            }
-            value={
-              name
-            }
-            placeholder="Name this place"
-            onChange={(
-              event,
-            ) =>
-              setName(
-                event.target
-                  .value,
-              )
-            }
-          />
+          <input type="text" maxLength={48} value={name} placeholder="Name this place" onChange={(event) => setName(event.target.value)} />
         </label>
 
-        <button
-          type="button"
-          disabled={
-            !name.trim()
-          }
-          onClick={
-            createPlace
-          }
-        >
+        <button type="button" disabled={!name.trim()} onClick={createPlace}>
           SAVE PLACE
         </button>
 
         <label>
           SAFE HAVEN
-
-          <input
-            type="text"
-            maxLength={
-              48
-            }
-            value={
-              havenName
-            }
-            placeholder="Optional name"
-            onChange={(
-              event,
-            ) =>
-              setHavenName(
-                event.target
-                  .value,
-              )
-            }
-          />
+          <input type="text" maxLength={48} value={havenName} placeholder="Optional name" onChange={(event) => setHavenName(event.target.value)} />
         </label>
 
-        <button
-          type="button"
-          onClick={
-            createSafeHaven
-          }
-        >
+        <button type="button" onClick={createSafeHaven}>
           ADD SAFE HAVEN
         </button>
       </div>
     </Popup>
-  )
+  );
 }
 
-
-function ComparisonRoutesLayer({
-  routes,
-}) {
-  if (
-    !Array.isArray(
-      routes,
-    ) ||
-    !routes.length
-  ) {
-    return null
+function ComparisonRoutesLayer({ routes }) {
+  if (!Array.isArray(routes) || !routes.length) {
+    return null;
   }
 
   return (
     <>
-      {routes.map(
-        (
-          route,
-          routeIndex,
-        ) => {
-          const colour =
-            route.colour ??
-            COMPARISON_COLOURS[
-              routeIndex %
-                COMPARISON_COLOURS.length
-            ]
+      {routes.map((route, routeIndex) => {
+        const colour = route.colour ?? COMPARISON_COLOURS[routeIndex % COMPARISON_COLOURS.length];
 
-          const coordinates =
-            routeCoordinates(
-              route,
-            )
+        const coordinates = routeCoordinates(route);
 
-          if (
-            coordinates.length <
-            2
-          ) {
-            return null
-          }
+        if (coordinates.length < 2) {
+          return null;
+        }
 
-          return (
-            <Polyline
-              key={
-                route.id ??
-                `comparison-${routeIndex}`
-              }
-              positions={
-                coordinates
-              }
-              pathOptions={{
-                color:
-                  colour,
+        return (
+          <Polyline
+            key={route.id ?? `comparison-${routeIndex}`}
+            positions={coordinates}
+            pathOptions={{
+              color: colour,
 
-                weight:
-                  5,
+              weight: 5,
 
-                opacity:
-                  0.92,
+              opacity: 0.92,
 
-                lineCap:
-                  'round',
+              lineCap: "round",
 
-                lineJoin:
-                  'round',
-              }}
-            >
-              <Tooltip
-                sticky
-              >
-                <strong>
-                  {
-                    route.name ??
-                    `ROUTE ${routeIndex + 1}`
-                  }
-                </strong>
+              lineJoin: "round",
+            }}
+          >
+            <Tooltip sticky>
+              <strong>{route.name ?? `ROUTE ${routeIndex + 1}`}</strong>
+              <br />
+              {coordinates.length} plotted points
+            </Tooltip>
+          </Polyline>
+        );
+      })}
 
-                <br />
+      {routes.map((route, routeIndex) => {
+        const colour = route.colour ?? COMPARISON_COLOURS[routeIndex % COMPARISON_COLOURS.length];
 
-                {
-                  coordinates.length
-                }{' '}
-                plotted points
-              </Tooltip>
-            </Polyline>
-          )
-        },
-      )}
+        const points = route.points ?? [];
 
-      {routes.map(
-        (
-          route,
-          routeIndex,
-        ) => {
-          const colour =
-            route.colour ??
-            COMPARISON_COLOURS[
-              routeIndex %
-                COMPARISON_COLOURS.length
-            ]
+        return (
+          <RouteWaypoints
+            key={`${route.id ?? routeIndex}-markers`}
+            routePoints={points.map((point) => ({
+              ...point,
 
-          const points =
-            route.points ??
-            []
-
-          return (
-            <RouteWaypoints
-              key={`${route.id ?? routeIndex}-markers`}
-              routePoints={
-                points.map(
-                  (
-                    point,
-                  ) => ({
-                    ...point,
-
-                    comparisonColour:
-                      colour,
-                  }),
-                )
-              }
-            />
-          )
-        },
-      )}
+              comparisonColour: colour,
+            }))}
+          />
+        );
+      })}
     </>
-  )
+  );
 }
 
-
-function ComparisonLegend({
-  routes,
-}) {
-  if (
-    !Array.isArray(
-      routes,
-    ) ||
-    !routes.length
-  ) {
-    return null
+function ComparisonLegend({ routes }) {
+  if (!Array.isArray(routes) || !routes.length) {
+    return null;
   }
 
   return (
     <div
       style={{
-        position:
-          'absolute',
+        position: "absolute",
 
-        zIndex:
-          1200,
+        zIndex: 1200,
 
-        top:
-          '10px',
+        top: "10px",
 
-        left:
-          '10px',
+        left: "10px",
 
-        minWidth:
-          '190px',
+        minWidth: "190px",
 
-        padding:
-          '9px 10px',
+        padding: "9px 10px",
 
-        border:
-          '1px solid rgba(117,230,255,0.2)',
+        border: "1px solid rgba(117,230,255,0.2)",
 
-        background:
-          'rgba(6,12,16,0.88)',
+        background: "rgba(6,12,16,0.88)",
 
-        backdropFilter:
-          'blur(12px)',
+        backdropFilter: "blur(12px)",
 
-        WebkitBackdropFilter:
-          'blur(12px)',
+        WebkitBackdropFilter: "blur(12px)",
 
-        boxShadow:
-          '0 10px 30px rgba(0,0,0,0.35)',
+        boxShadow: "0 10px 30px rgba(0,0,0,0.35)",
       }}
     >
       <div
         style={{
-          marginBottom:
-            '7px',
+          marginBottom: "7px",
 
-          color:
-            '#75e6ff',
+          color: "#75e6ff",
 
-          fontFamily:
-            'monospace',
+          fontFamily: "monospace",
 
-          fontSize:
-            '8px',
+          fontSize: "8px",
 
-          letterSpacing:
-            '0.12em',
+          letterSpacing: "0.12em",
         }}
       >
         ROUTE COMPARISON
@@ -1126,117 +544,156 @@ function ComparisonLegend({
 
       <div
         style={{
-          display:
-            'grid',
+          display: "grid",
 
-          gap:
-            '6px',
+          gap: "6px",
         }}
       >
-        {routes.map(
-          (
-            route,
-            index,
-          ) => {
-            const colour =
-              route.colour ??
-              COMPARISON_COLOURS[
-                index %
-                  COMPARISON_COLOURS.length
-              ]
+        {routes.map((route, index) => {
+          const colour = route.colour ?? COMPARISON_COLOURS[index % COMPARISON_COLOURS.length];
 
-            return (
-              <div
-                key={
-                  route.id ??
-                  index
-                }
+          return (
+            <div
+              key={route.id ?? index}
+              style={{
+                display: "flex",
+
+                alignItems: "center",
+
+                gap: "7px",
+
+                minWidth: 0,
+
+                color: "#b4c5ca",
+
+                fontFamily: "monospace",
+
+                fontSize: "9px",
+              }}
+            >
+              <span
                 style={{
-                  display:
-                    'flex',
+                  flex: "0 0 auto",
 
-                  alignItems:
-                    'center',
+                  width: "18px",
 
-                  gap:
-                    '7px',
+                  height: "3px",
 
-                  minWidth:
-                    0,
+                  background: colour,
 
-                  color:
-                    '#b4c5ca',
+                  boxShadow: `0 0 8px ${colour}`,
+                }}
+              />
 
-                  fontFamily:
-                    'monospace',
+              <span
+                style={{
+                  overflow: "hidden",
 
-                  fontSize:
-                    '9px',
+                  textOverflow: "ellipsis",
+
+                  whiteSpace: "nowrap",
                 }}
               >
-                <span
-                  style={{
-                    flex:
-                      '0 0 auto',
-
-                    width:
-                      '18px',
-
-                    height:
-                      '3px',
-
-                    background:
-                      colour,
-
-                    boxShadow:
-                      `0 0 8px ${colour}`,
-                  }}
-                />
-
-                <span
-                  style={{
-                    overflow:
-                      'hidden',
-
-                    textOverflow:
-                      'ellipsis',
-
-                    whiteSpace:
-                      'nowrap',
-                  }}
-                >
-                  {
-                    route.name ??
-                    `ROUTE ${index + 1}`
-                  }
-                </span>
-              </div>
-            )
-          },
-        )}
+                {route.name ?? `ROUTE ${index + 1}`}
+              </span>
+            </div>
+          );
+        })}
       </div>
     </div>
-  )
+  );
 }
 
+/*
+ * AI ROUTE CANDIDATES
+ *
+ * Every generated candidate stays visible at once. The selected candidate is
+ * drawn thicker and above the others so it is unmistakable, and each polyline
+ * uses the same colour as its card in the AI Route Design workspace.
+ */
+function CandidateRoutesLayer({ candidates = [], selectedId = null, onSelect }) {
+  if (!Array.isArray(candidates) || !candidates.length) {
+    return null;
+  }
+
+  const ordered = [...candidates].sort((a, b) => Number(a.id === selectedId) - Number(b.id === selectedId));
+
+  return (
+    <>
+      {ordered.map((candidate) => {
+        const positions = (candidate.coordinates ?? []).map((point) => [Number(point.latitude_deg), normaliseLongitude(point.longitude_deg)]);
+
+        if (positions.length < 2) {
+          return null;
+        }
+
+        const selected = candidate.id === selectedId;
+
+        return (
+          <Polyline
+            key={candidate.id}
+            positions={positions}
+            pathOptions={{
+              color: candidate.colour ?? "#75e6ff",
+              weight: selected ? 5 : 2.4,
+              opacity: selected ? 1 : 0.55,
+              dashArray: selected ? undefined : "6 5",
+              lineCap: "round",
+              lineJoin: "round",
+            }}
+            eventHandlers={{
+              click: (event) => {
+                event.originalEvent?.stopPropagation?.();
+                onSelect?.(candidate.id);
+              },
+            }}
+          >
+            <Tooltip sticky>
+              <strong>{candidate.name}</strong>
+              <br />
+              {candidate.metrics?.distance_km == null ? "UNAVAILABLE" : `${Number(candidate.metrics.distance_km).toFixed(2)} km`}
+              {" · "}
+              {candidate.metrics?.estimated_eva_hours == null ? "UNAVAILABLE" : `${Number(candidate.metrics.estimated_eva_hours).toFixed(2)} h EVA`}
+              <br />
+              {candidate.pareto_label ?? ""}
+            </Tooltip>
+          </Polyline>
+        );
+      })}
+
+      {ordered
+        .filter((candidate) => candidate.id === selectedId)
+        .map((candidate) =>
+          (candidate.coordinates ?? []).map((point, index) => (
+            <CircleMarker
+              key={`${candidate.id}-${index}`}
+              center={[Number(point.latitude_deg), normaliseLongitude(point.longitude_deg)]}
+              radius={index === 0 || index === candidate.coordinates.length - 1 ? 5 : 3}
+              pathOptions={{
+                color: "#04080b",
+                weight: 1,
+                fillColor: index === 0 ? "#62f59a" : index === candidate.coordinates.length - 1 ? "#ff647c" : (candidate.colour ?? "#75e6ff"),
+                fillOpacity: 1,
+              }}
+            />
+          )),
+        )}
+    </>
+  );
+}
 
 export default function MarsMap({
   features = [],
 
-  selectedFeature =
-    null,
+  selectedFeature = null,
 
-  selectedLocation =
-    null,
+  selectedLocation = null,
 
-  customPlaces =
-    [],
+  customPlaces = [],
 
-  savedPlaces =
-    [],
+  savedPlaces = [],
 
-  safeHavens =
-    [],
+  safeHavens = [],
 
   onSelect,
 
@@ -1248,583 +705,287 @@ export default function MarsMap({
 
   onCreateSafeHaven,
 
-  routeMode =
-    false,
+  routeMode = false,
 
-  routePoints =
-    [],
+  routePoints = [],
 
-  routeStart =
-    null,
+  routeStart = null,
 
-  routeEnd =
-    null,
+  routeEnd = null,
 
-  routePlan =
-    null,
+  routePlan = null,
 
-  route =
-    null,
+  route = null,
 
   onMapLocationSelect,
 
   onMapCoordinateSelect,
 
-  comparisonRoutes =
-    [],
+  comparisonRoutes = [],
 
-  comparisonMode =
-    false,
+  comparisonMode = false,
 
-  interactive =
-    true,
+  candidateRoutes = [],
+
+  selectedCandidateId = null,
+
+  onSelectCandidate,
+
+  interactive = true,
 }) {
-  const [
-    draftLocation,
-    setDraftLocation,
-  ] = useState(
-    null,
-  )
+  const [draftLocation, setDraftLocation] = useState(null);
 
-  const places =
-    customPlaces
-      .length
-      ? customPlaces
-      : savedPlaces
+  const places = customPlaces.length ? customPlaces : savedPlaces;
 
   const plannedRouteCoordinates =
-    routePlan
-      ?.planned_route
-      ?.coordinates ??
-    routePlan
-      ?.route
-      ?.coordinates ??
-    route
-      ?.planned_route
-      ?.coordinates ??
-    route
-      ?.route
-      ?.coordinates ??
-    []
+    routePlan?.planned_route?.coordinates ?? routePlan?.route?.coordinates ?? route?.planned_route?.coordinates ?? route?.route?.coordinates ?? [];
 
-  const liveRouteCoordinates =
-    routePoints.map(
-      (point) => [
-        Number(
-          point.latitude_deg,
-        ),
+  const liveRouteCoordinates = routePoints.map((point) => [Number(point.latitude_deg), normaliseLongitude(point.longitude_deg)]);
 
-        normaliseLongitude(
-          point.longitude_deg,
-        ),
-      ],
-    )
+  const hasPlannedRoute = Array.isArray(plannedRouteCoordinates) && plannedRouteCoordinates.length > 1;
 
-  const hasPlannedRoute =
-    Array.isArray(
-      plannedRouteCoordinates,
-    ) &&
-    plannedRouteCoordinates.length >
-      1
+  const routeToDisplay = hasPlannedRoute ? plannedRouteCoordinates : liveRouteCoordinates;
 
-  const routeToDisplay =
-    hasPlannedRoute
-      ? plannedRouteCoordinates
-      : liveRouteCoordinates
-
-  function handleCoordinateSelect(
-    point,
-  ) {
-    setDraftLocation(
-      point,
-    )
+  function handleCoordinateSelect(point) {
+    setDraftLocation(point);
 
     /*
      * Preferred API for exact-coordinate science.
      */
-    if (
-      onMapCoordinateSelect
-    ) {
-      onMapCoordinateSelect(
-        point,
-      )
+    if (onMapCoordinateSelect) {
+      onMapCoordinateSelect(point);
 
-      return
+      return;
     }
 
     /*
      * Backwards-compatible API:
      * App can make the route/coordinate decision itself.
      */
-    if (
-      onMapLocationSelect
-    ) {
+    if (onMapLocationSelect) {
       onMapLocationSelect({
-        latitude_deg:
-          point.lat,
+        latitude_deg: point.lat,
 
-        longitude_deg:
-          point.lng,
-      })
+        longitude_deg: point.lng,
+      });
     }
   }
 
-
-  function handleRoutePoint(
-    point,
-  ) {
-    setDraftLocation(
-      null,
-    )
+  function handleRoutePoint(point) {
+    setDraftLocation(null);
 
     onMapLocationSelect?.({
-      latitude_deg:
-        point.latitude_deg,
+      latitude_deg: point.latitude_deg,
 
-      longitude_deg:
-        point.longitude_deg,
+      longitude_deg: point.longitude_deg,
 
-      label:
-        point.label ??
-        null,
-    })
+      label: point.label ?? null,
+    });
   }
 
+  const effectiveStart = routeStart ?? routePoints[0] ?? null;
 
-  const effectiveStart =
-    routeStart ??
-    routePoints[0] ??
-    null
+  const effectiveEnd = routeEnd ?? (routePoints.length ? routePoints[routePoints.length - 1] : null);
 
-  const effectiveEnd =
-    routeEnd ??
-    (
-      routePoints.length
-        ? routePoints[
-            routePoints.length -
-              1
-          ]
-        : null
-    )
-
-  const effectiveInteractive =
-    Boolean(
-      interactive,
-    )
+  const effectiveInteractive = Boolean(interactive);
 
   return (
     <div
       style={{
-        position:
-          'relative',
+        position: "relative",
 
-        width:
-          '100%',
+        width: "100%",
 
-        height:
-          '100%',
+        height: "100%",
       }}
     >
       <MapContainer
-        center={[
-          0,
-          180,
-        ]}
+        center={[0, 180]}
         zoom={0}
         minZoom={0}
         maxZoom={7}
-        crs={
-          MARS_CRS
-        }
-        maxBounds={
-          MARS_BOUNDS
-        }
-        maxBoundsViscosity={
-          1
-        }
-        scrollWheelZoom={
-          effectiveInteractive
-        }
-        zoomControl={
-          effectiveInteractive
-        }
-        doubleClickZoom={
-          effectiveInteractive
-        }
-        dragging={
-          effectiveInteractive
-        }
-        touchZoom={
-          effectiveInteractive
-        }
-        boxZoom={
-          effectiveInteractive
-        }
-        keyboard={
-          effectiveInteractive
-        }
+        crs={MARS_CRS}
+        maxBounds={MARS_BOUNDS}
+        maxBoundsViscosity={1}
+        scrollWheelZoom={effectiveInteractive}
+        zoomControl={effectiveInteractive}
+        doubleClickZoom={effectiveInteractive}
+        dragging={effectiveInteractive}
+        touchZoom={effectiveInteractive}
+        boxZoom={effectiveInteractive}
+        keyboard={effectiveInteractive}
         preferCanvas
         style={{
-          width:
-            '100%',
+          width: "100%",
 
-          height:
-            '100%',
+          height: "100%",
 
-          background:
-            '#090c0f',
+          background: "#090c0f",
         }}
       >
         <MapResizeHandler />
 
-        <ImageOverlay
-          url="/mars-mola-global.jpg"
-          bounds={
-            MARS_BOUNDS
-          }
-          opacity={1}
-        />
+        <ImageOverlay url="/mars-mola-global.jpg" bounds={MARS_BOUNDS} opacity={1} />
 
-        <MapFocus
-          selectedFeature={
-            selectedFeature
-          }
-          selectedLocation={
-            selectedLocation
-          }
-        />
+        <MapFocus selectedFeature={selectedFeature} selectedLocation={selectedLocation} />
 
         {!comparisonMode && (
           <MapClickCapture
-            enabled={
-              true
-            }
-            interactive={
-              effectiveInteractive
-            }
-            onRoutePoint={
-              routeMode
-                ? handleRoutePoint
-                : null
-            }
-            onCoordinateSelect={
-              routeMode
-                ? null
-                : handleCoordinateSelect
-            }
-            setDraftLocation={
-              setDraftLocation
-            }
+            enabled={true}
+            interactive={effectiveInteractive}
+            onRoutePoint={routeMode ? handleRoutePoint : null}
+            onCoordinateSelect={routeMode ? null : handleCoordinateSelect}
+            setDraftLocation={setDraftLocation}
           />
         )}
 
-        {!comparisonMode &&
-          routeToDisplay.length >
-            1 && (
-            <Polyline
-              positions={
-                routeToDisplay
-              }
-              pathOptions={{
-                color:
-                  '#75e6ff',
+        {!comparisonMode && routeToDisplay.length > 1 && (
+          <Polyline
+            positions={routeToDisplay}
+            pathOptions={{
+              color: "#75e6ff",
 
-                weight:
-                  4,
+              weight: 4,
 
-                opacity:
-                  0.95,
+              opacity: 0.95,
 
-                lineCap:
-                  'round',
+              lineCap: "round",
 
-                lineJoin:
-                  'round',
-              }}
-            />
-          )}
-
-        {!comparisonMode && (
-          <RouteWaypoints
-            routePoints={
-              routePoints
-            }
+              lineJoin: "round",
+            }}
           />
         )}
 
-        {!comparisonMode &&
-          effectiveStart &&
-          routePoints.length ===
-            0 && (
-            <RoutePointMarker
-              point={
-                effectiveStart
-              }
-              label="ROUTE START"
-              color="#62f59a"
-            />
-          )}
+        {!comparisonMode && <CandidateRoutesLayer candidates={candidateRoutes} selectedId={selectedCandidateId} onSelect={onSelectCandidate} />}
 
-        {!comparisonMode &&
-          effectiveEnd &&
-          routePoints.length ===
-            0 && (
-            <RoutePointMarker
-              point={
-                effectiveEnd
-              }
-              label="DESTINATION"
-              color="#ff647c"
-            />
-          )}
+        {!comparisonMode && <RouteWaypoints routePoints={routePoints} />}
 
-        {comparisonMode && (
-          <ComparisonRoutesLayer
-            routes={
-              comparisonRoutes
-            }
-          />
+        {!comparisonMode && effectiveStart && routePoints.length === 0 && (
+          <RoutePointMarker point={effectiveStart} label="ROUTE START" color="#62f59a" />
         )}
 
-        {effectiveInteractive &&
-          !comparisonMode && (
+        {!comparisonMode && effectiveEnd && routePoints.length === 0 && <RoutePointMarker point={effectiveEnd} label="DESTINATION" color="#ff647c" />}
+
+        {comparisonMode && <ComparisonRoutesLayer routes={comparisonRoutes} />}
+
+        {effectiveInteractive && !comparisonMode && (
           <CustomPlacesLayer
-            places={
-              places
-            }
-            safeHavens={
-              safeHavens
-            }
-            routeMode={
-              routeMode
-            }
-            interactive={
-              effectiveInteractive
-            }
-            onRoutePoint={
-              handleRoutePoint
-            }
-            onUserPlaceSelect={
-              onUserPlaceSelect
-            }
-            onSafeHavenSelect={
-              onSafeHavenSelect
-            }
+            places={places}
+            safeHavens={safeHavens}
+            routeMode={routeMode}
+            interactive={effectiveInteractive}
+            onRoutePoint={handleRoutePoint}
+            onUserPlaceSelect={onUserPlaceSelect}
+            onSafeHavenSelect={onSafeHavenSelect}
           />
         )}
 
-        {features.map(
-          (
-            feature,
-          ) => {
-            const position =
-              marsPosition(
-                feature,
-              )
+        {features.map((feature, featureIndex) => {
+          const position = marsPosition(feature);
 
-            if (
-              !validPosition(
-                position,
-              )
-            ) {
-              return null
-            }
+          if (!validPosition(position)) {
+            return null;
+          }
 
-            const featureName =
-              String(
-                feature.feature_name ??
-                  '',
-              )
+          const featureName = String(feature.feature_name ?? "");
 
-            const selected =
-              Boolean(
-                selectedFeature &&
-                String(
-                  selectedFeature.feature_name ??
-                    '',
-                ) ===
-                  featureName,
-              )
+          const selected = Boolean(selectedFeature && String(selectedFeature.feature_name ?? "") === featureName);
 
-            const markerColor =
-              featureColor(
-                feature.feature_type,
-              )
+          const markerColor = featureColor(feature.feature_type);
 
-            return (
-              <CircleMarker
-                key={[
-                  feature.feature_name,
-                  feature.latitude_deg,
-                  feature.longitude_deg,
-                ].join(
-                  ':',
-                )}
-                center={
-                  position
-                }
-                radius={
-                  selected
-                    ? 5
-                    : 2.2
-                }
-                pathOptions={{
-                  color:
-                    selected
-                      ? '#75e6ff'
-                      : markerColor,
+          return (
+            <CircleMarker
+              /* The gazetteer can contain two entries with the same name and
+                 coordinate, so the index disambiguates without altering data. */
+              key={[feature.feature_name, feature.latitude_deg, feature.longitude_deg, featureIndex].join(":")}
+              center={position}
+              radius={selected ? 5 : 2.2}
+              pathOptions={{
+                color: selected ? "#75e6ff" : markerColor,
 
-                  weight:
-                    selected
-                      ? 2
-                      : 0.7,
+                weight: selected ? 2 : 0.7,
 
-                  opacity:
-                    selected
-                      ? 1
-                      : 0.78,
+                opacity: selected ? 1 : 0.78,
 
-                  fillColor:
-                    markerColor,
+                fillColor: markerColor,
 
-                  fillOpacity:
-                    selected
-                      ? 1
-                      : 0.72,
-                }}
-                eventHandlers={{
-                  click: (
-                    event,
-                  ) => {
-                    event
-                      .originalEvent
-                      ?.stopPropagation?.()
+                fillOpacity: selected ? 1 : 0.72,
+              }}
+              eventHandlers={{
+                click: (event) => {
+                  event.originalEvent?.stopPropagation?.();
 
-                    if (
-                      !effectiveInteractive ||
-                      comparisonMode
-                    ) {
-                      return
-                    }
-
-                    setDraftLocation(
-                      null,
-                    )
-
-                    if (
-                      routeMode
-                    ) {
-                      handleRoutePoint({
-                        latitude_deg:
-                          feature.latitude_deg,
-
-                        longitude_deg:
-                          feature.longitude_deg,
-
-                        label:
-                          feature.feature_name,
-                      })
-
-                      return
-                    }
-
-                    onSelect?.(
-                      feature,
-                    )
-                  },
-                }}
-              >
-                <Tooltip
-                  direction="top"
-                  offset={[
-                    0,
-                    -4,
-                  ]}
-                >
-                  <strong>
-                    {
-                      feature.feature_name
-                    }
-                  </strong>
-
-                  <br />
-
-                  {
-                    feature.feature_type
+                  if (!effectiveInteractive || comparisonMode) {
+                    return;
                   }
-                </Tooltip>
-              </CircleMarker>
-            )
-          },
-        )}
 
-        {!comparisonMode &&
-          effectiveInteractive &&
-          !routeMode && (
+                  setDraftLocation(null);
+
+                  if (routeMode) {
+                    handleRoutePoint({
+                      latitude_deg: feature.latitude_deg,
+
+                      longitude_deg: feature.longitude_deg,
+
+                      label: feature.feature_name,
+                    });
+
+                    return;
+                  }
+
+                  onSelect?.(feature);
+                },
+              }}
+            >
+              <Tooltip direction="top" offset={[0, -4]}>
+                <strong>{feature.feature_name}</strong>
+
+                <br />
+
+                {feature.feature_type}
+              </Tooltip>
+            </CircleMarker>
+          );
+        })}
+
+        {!comparisonMode && effectiveInteractive && !routeMode && (
           <CoordinateCreator
-            draftLocation={
-              draftLocation
-            }
-            setDraftLocation={
-              setDraftLocation
-            }
-            onCreateUserPlace={
-              onCreateUserPlace
-            }
-            onCreateSafeHaven={
-              onCreateSafeHaven
-            }
+            draftLocation={draftLocation}
+            setDraftLocation={setDraftLocation}
+            onCreateUserPlace={onCreateUserPlace}
+            onCreateSafeHaven={onCreateSafeHaven}
           />
         )}
       </MapContainer>
 
-      {comparisonMode && (
-        <ComparisonLegend
-          routes={
-            comparisonRoutes
-          }
-        />
-      )}
+      {comparisonMode && <ComparisonLegend routes={comparisonRoutes} />}
 
-      {!comparisonMode &&
-        routeMode && (
+      {!comparisonMode && routeMode && (
         <div
           style={{
-            position:
-              'absolute',
+            position: "absolute",
 
-            zIndex:
-              1200,
+            zIndex: 1200,
 
-            top:
-              '10px',
+            top: "10px",
 
-            right:
-              '10px',
+            right: "10px",
 
-            padding:
-              '7px 9px',
+            padding: "7px 9px",
 
-            border:
-              '1px solid rgba(117,230,255,0.23)',
+            border: "1px solid rgba(117,230,255,0.23)",
 
-            background:
-              'rgba(7,13,17,0.88)',
+            background: "rgba(7,13,17,0.88)",
 
-            color:
-              '#75e6ff',
+            color: "#75e6ff",
 
-            fontFamily:
-              'monospace',
+            fontFamily: "monospace",
 
-            fontSize:
-              '8px',
+            fontSize: "8px",
 
-            letterSpacing:
-              '0.09em',
+            letterSpacing: "0.09em",
 
-            pointerEvents:
-              'none',
+            pointerEvents: "none",
           }}
         >
           ROUTE PLANNING ACTIVE
@@ -1833,5 +994,5 @@ export default function MarsMap({
         </div>
       )}
     </div>
-  )
+  );
 }
