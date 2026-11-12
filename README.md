@@ -315,6 +315,40 @@ flowchart TB
     ROUTING -. "Deterministic route metrics remain authoritative" .-> INTELUI
     ENV -. "Scientific context and evidence status" .-> OPSUI
 ```
+# Simplified Architecture Mermaid Diagram 
+
+```mermaid
+flowchart TB
+    USER["Mission Operator"] --> APP
+
+    subgraph FRONTEND["PRESENTATION LAYER · React 19 + Vite"]
+        APP["App.jsx<br/>Shared Mission State"]
+        MAPS["2D + Topo + 3D Maps"]
+        ROUTE["Route Design & Comparison"]
+        OPS["Science & Mission Panels"]
+        INTEL["Mars Intelligence"]
+        NOTES["Field Notes & Exports"]
+        APP --> MAPS & ROUTE & OPS & INTEL & NOTES
+    end
+
+    subgraph BACKEND["FASTAPI BACKEND · Port 8002"]
+        API["Domain Routers"]
+        ENGINES["Scientific Engines<br/>Terrain · Routing · Thermal · Hazards<br/>Environment · Simulation"]
+        PROV["Provenance & Evidence Classification"]
+        API --> ENGINES
+        API --> PROV
+    end
+
+    subgraph DATA["DATA LAYER"]
+        LOCAL["Local Scientific Data<br/>MOLA · THEMIS · GCM · Gazetteer"]
+        EXT["External Services<br/>ArcGIS · MMGIS · JPL · NASA Feeds · Gemini"]
+    end
+
+    APP <-->|"REST / JSON"| API
+    ENGINES --> LOCAL
+    ENGINES --> EXT
+    INTEL -.->|"Grounded interpretation only"| ENGINES
+```
 
 # Stack
 
