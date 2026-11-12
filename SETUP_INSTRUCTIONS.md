@@ -1,8 +1,21 @@
 # NeuroNexus - Martian Map · Setup Instructions
 
-NASA Space Apps Challenge 2026 · branch `Master-Ai`
+NASA Space Apps Challenge 2026 · branch `landing-core-features`
 
-The app has two parts that run at the same time:
+## Quick start (one server: landing page, console and API on port 7860)
+
+After the one-time setup in steps 1 to 4 below:
+
+```bash
+git pull && cd frontend && npm run build && cd ..
+python -m uvicorn science.serve:app --host 0.0.0.0 --port 7860
+```
+
+Open **http://localhost:7860** (landing page) or **http://localhost:7860/console/** (mission console).
+Rebuild after every pull, then hard-refresh the browser (Ctrl+Shift+R).
+Check everything (tests, lint, build) with `bash tools/check.sh` (step 7).
+
+For development you can instead run the backend and the Vite dev server separately (steps 4 and 5):
 
 | Part | Tech | Port | URL |
 |---|---|---|---|
@@ -23,7 +36,7 @@ The frontend forwards `/api/*` to the backend on port 8002, so **start the backe
 ## 2. Get the code and the NASA data
 
 ```bash
-git clone --branch Master-Ai https://github.com/kmmohaimenulhaque-code/martian-map.git
+git clone --branch landing-core-features https://github.com/kmmohaimenulhaque-code/martian-map.git
 cd martian-map
 
 git lfs install
@@ -69,10 +82,24 @@ write this (If you are working from terminal/CLI/codespaces)
 ```
 nano .env
 ```
-And paste inside .env file
+And paste inside .env file (only `GEMINI_API_KEY` is needed; the rest are optional fallbacks)
 ```
-GEMINI_API_KEY=PASTE_YOUR_API_KEY 
+GEMINI_API_KEY=PASTE_YOUR_API_KEY
+
+# Optional: model and provider
+# GEMINI_MODEL=gemini-3.6-flash
+# AI_PROVIDER=auto                 # auto = Gemini first, then the fallbacks below; gemini = Gemini only
+
+# Optional fallback providers, tried in this order when Gemini fails (only those with a key)
+# GROQ_API_KEY=...
+# MISTRAL_API_KEY=...
+# NVIDIA_API_KEY=...
+# GITHUB_MODELS_TOKEN=...          # a GitHub token with Models read access
+# COHERE_API_KEY=...
+# OPENROUTER_API_KEY=...
 ```
+Leave the `*_MODEL` overrides out unless you need them: the defaults are current, live models.
+Full list with model overrides: `.env.example`.
 You can obtain a Gemini API key from Google AI Studio.
 #NB: Gemini-powered functionality can be tested by providing a valid Gemini API key in the backend .env file. No API key is required to explore the core terrain, mapping, USGS, 3D, environmental, routing, and visualization features.
 
@@ -145,8 +172,15 @@ then hard-refresh the browser (Ctrl+Shift+R). If the landing images look wrong, 
 ## 7. Run the tests (optional)
 
 ```bash
-python -m pytest tests -q                      # repository root
-cd frontend && node --test "tests/*.test.js"    # keep the quotes
+bash tools/check.sh      # repository root: pytest, frontend lint (0 errors), vitest and build
+```
+
+With the one-server app running on port 7860 it also runs the landing-page and device checks
+(Playwright with Chromium: `npx playwright install chromium` once). Individually:
+
+```bash
+python -m pytest -q
+cd frontend && npm run lint && npm test && npm run build
 ```
 
 ## Troubleshooting
