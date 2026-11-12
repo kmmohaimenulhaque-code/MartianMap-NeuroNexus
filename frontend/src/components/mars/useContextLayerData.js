@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { useDustFrame } from "../../state/dustFrames";
+import { useTerrainGrid } from "../layers/sharedLayerData";
 
 import { missionSolAt } from "../../state/solMath";
 
@@ -65,6 +66,7 @@ export function useContextLayerData(visibility, location, sol) {
 
   // Dust frames come from the shared cache (state/dustFrames.js): no per-view refetch during playback.
   const dustFrame = useDustFrame(sol, want("dust"));
+  const grid = useTerrainGrid(location, want("slope") || want("roughness") || want("walkability"));
 
   /* Where Curiosity was at the console's activeSol (MY34): last waypoint at or before that mission sol. */
   const mslSol = needTraverses && sol != null ? missionSolAt("msl", sol) : null;
@@ -85,7 +87,12 @@ export function useContextLayerData(visibility, location, sol) {
     };
   }, [mslSol, sol]);
 
-  const merged = useMemo(() => ({ ...data, dust: dustFrame.data }), [data, dustFrame.data]);
-  const mergedStatus = useMemo(() => (dustFrame.error ? { ...status, dust: `unavailable: ${dustFrame.error}` } : status), [status, dustFrame.error]);
+  const merged = useMemo(() => ({ ...data, dust: dustFrame.data, grid: grid.data }), [data, dustFrame.data, grid.data]);
+  const mergedStatus = useMemo(() => {
+    const out = { ...status };
+    if (dustFrame.error) out.dust = `unavailable: ${dustFrame.error}`;
+    if (grid.error) for (const id of ["slope", "roughness", "walkability"]) out[id] = `unavailable: ${grid.error}`;
+    return out;
+  }, [status, dustFrame.error, grid.error]);
   return { data: merged, status: mergedStatus };
 }

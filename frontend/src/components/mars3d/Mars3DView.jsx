@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import "./mars3d.css";
 import { capPhonePixelRatio, requireModules } from "./arcgisLoader";
 import Globe2DFallback from "./Globe2DFallback";
 import { loadDustFrame } from "../../state/dustFrames";
+import { layerStore, useLayers } from "../layers/layerStore";
 import { createLabelOverlay } from "./labelOverlay";
 import Mars3DLegend from "./Mars3DLegend";
 import SourceTag from "../../sources/SourceTag";
@@ -70,6 +71,26 @@ const LAYERS = [
   { key: "ancient", group: "EXPLORATION", label: "Ancient habitability evidence (not present-day)", status: "OBSERVED", on: false },
   { key: "walkability", group: "EXPLORATION", label: "Walkability · NeuroNexus-derived terrain score", status: "DERIVED", on: false },
 ];
+
+/* 3D layer keys <-> shared layer ids (components/layers/layerCatalog.js). */
+const SHARED_ID = { colorDem: "mola", dtmFootprints: "hiriseFootprints", landing: "landingSites", themis: "themisObs", route: "routes", candidates: "routes", places: "routes" };
+function sharedTo3d(v) {
+  const out = Object.fromEntries(LAYERS.map((l) => [l.key, Boolean(v[SHARED_ID[l.key] ?? l.key])]));
+  out.traverses = Boolean(v.mslTraverse || v.m2020Traverse);
+  out.swim = false;
+  return out;
+}
+function threeDToShared(next, prev) {
+  const patch = {};
+  for (const key of Object.keys(next)) {
+    if (Boolean(next[key]) === Boolean(prev[key]) || key === "swim") continue;
+    if (key === "traverses") {
+      patch.mslTraverse = Boolean(next[key]);
+      patch.m2020Traverse = Boolean(next[key]);
+    } else patch[SHARED_ID[key] ?? key] = Boolean(next[key]);
+  }
+  return patch;
+}
 
 /* Canonical ledger id behind each 3D layer (rendered as a tag in the layer list). */
 const LAYER_LEDGER = {
@@ -277,7 +298,16 @@ export default function Mars3DView({
   }
   const [showScience, setShowScience] = useState(true);
   const [mapMode, setMapMode] = useState(false);
-  const [visible, setVisible] = useState(() => Object.fromEntries(LAYERS.map((l) => [l.key, l.on])));
+  // Layer state is shared with the 2D map and the ArcGIS view: read through the 3D key mapping, write back to the store.
+  const { visibility: sharedVisibility, opacity: sharedOpacity } = useLayers();
+  const visible = useMemo(() => sharedTo3d(sharedVisibility), [sharedVisibility]);
+  const setVisible = useCallback(
+    (update) => {
+      const next = typeof update === "function" ? update(visible) : update;
+      layerStore.setMany(threeDToShared(next, visible));
+    },
+    [visible],
+  );
   const [readout, setReadout] = useState(null);
   const [tool, setTool] = useState("");
   const [toast, setToast] = useState("");
@@ -644,10 +674,15 @@ export default function Mars3DView({
     Object.entries(show).forEach(([key, on]) => {
       if (L[key] && key !== "terrain" && key !== "labels") L[key].visible = Boolean(on);
     });
+    // Shared opacity (same value on every map); overlay symbols are drawn opaque so the layer opacity is the only fade.
+    const op = (id) => sharedOpacity[id] ?? 1;
+    if (L.colorDem) L.colorDem.opacity = op("mola");
+    if (L.units) L.units.opacity = op("units");
+    for (const [key, id] of [["dust", "dust"], ["slope", "slope"], ["roughness", "roughness"], ["walkability", "walkability"]]) if (L[key]) L[key].opacity = op(id);
     const ground = view.map.ground.layers;
     if (visible.terrain && !ground.includes(L.elevation)) ground.add(L.elevation);
     else if (!visible.terrain && ground.includes(L.elevation)) ground.remove(L.elevation);
-  }, [ready, visible]);
+  }, [ready, visible, sharedOpacity]);
 
   /* ------------------------------------------------------------ DTM footprints and modeled dust */
   const footLat = selectedLocation?.latitude_deg;
@@ -706,7 +741,7 @@ export default function Mars3DView({
             const y0 = d.lat[r] - dLat / 2;
             graphics.push({
               geometry: { type: "polygon", rings: [[[x0, y0], [x0 + dLon, y0], [x0 + dLon, y0 + dLat], [x0, y0 + dLat], [x0, y0]]], spatialReference: MARS_SR },
-              symbol: { type: "simple-fill", color: [rr, gg, bb, 0.55], outline: { width: 0 } },
+              symbol: { type: "simple-fill", color: [rr, gg, bb, 1], outline: { width: 0 } },
             });
           }
         }
@@ -958,7 +993,7 @@ export default function Mars3DView({
   useEffect(() => {
     if (!ready) return;
     const cells = grid.data?.cells ?? [];
-    const fill = (rgb) => ({ type: "simple-fill", color: [...rgb, 0.5], outline: { width: 0 } });
+    const fill = (rgb) => ({ type: "simple-fill", color: [...rgb, 0.92], outline: { width: 0 } });
     rebuild(
       "slope",
       cells.map((c) => ({ geometry: cellPolygon(c), symbol: fill(ramp(c.slope_deg, 0, 20)) })),

@@ -4,10 +4,12 @@
  * modeled MY34 dust optical depth. Colors come from tokens.css.
  */
 
+import { useLayers } from "../layers/layerStore";
+import { dustImage, gridImage, walkRamp } from "../layers/sharedLayerData";
 import { useMemo, useState } from "react";
 import { CircleMarker, ImageOverlay, Polyline, Popup, Rectangle, Tooltip, useMap, useMapEvents } from "react-leaflet";
 
-import { cssVar, rampColor } from "../../marswalk/walkabilityRamp";
+import { cssVar } from "../../marswalk/walkabilityRamp";
 
 const lon360 = (lon) => ((Number(lon) % 360) + 360) % 360;
 
@@ -23,25 +25,6 @@ function splitAtSeam(coords) {
   return parts.filter((p) => p.length > 1);
 }
 
-function dustImage(dust, stops) {
-  if (typeof document === "undefined" || !dust?.tau?.length) return null;
-  const rows = dust.tau.length;
-  const cols = dust.tau[0].length;
-  const canvas = document.createElement("canvas");
-  canvas.width = cols;
-  canvas.height = rows;
-  const ctx = canvas.getContext("2d");
-  for (let r = 0; r < rows; r += 1) {
-    for (let c = 0; c < cols; c += 1) {
-      const v = dust.tau[r][c];
-      if (v == null) continue;
-      ctx.fillStyle = rampColor((Math.log1p(v) / Math.log1p(2)) * 100, stops);
-      ctx.fillRect(c, rows - 1 - r, 1, 1); // data row 0 is the southernmost latitude
-    }
-  }
-  return canvas.toDataURL("image/png");
-}
-
 function useViewport() {
   const map = useMap();
   const [bounds, setBounds] = useState(() => map.getBounds());
@@ -49,7 +32,8 @@ function useViewport() {
   return bounds;
 }
 
-export default function ContextLayers({ visibility, data }) {
+export default function ContextLayers({ visibility, data, thermalObs = [] }) {
+  const { opacity } = useLayers();
   const colors = useMemo(
     () => ({
       msl: cssVar("--nn-rover-msl") || "#888",
@@ -63,6 +47,10 @@ export default function ContextLayers({ visibility, data }) {
   );
   const bounds = useViewport();
   const dustUrl = useMemo(() => (visibility.dust ? dustImage(data.dust, colors.dust) : null), [visibility.dust, data.dust, colors.dust]);
+  const gridImages = useMemo(
+    () => Object.fromEntries(["slope", "roughness", "walkability"].map((id) => [id, visibility[id] ? gridImage(data.grid, id) : null])),
+    [visibility.slope, visibility.roughness, visibility.walkability, data.grid], // eslint-disable-line react-hooks/exhaustive-deps
+  );
   const visibleWaypoints = useMemo(() => {
     if (!visibility.waypoints || !data.waypoints) return [];
     const out = [];
@@ -77,7 +65,21 @@ export default function ContextLayers({ visibility, data }) {
 
   return (
     <>
-      {dustUrl && <ImageOverlay url={dustUrl} bounds={[[-90, 0], [90, 360]]} opacity={0.55} />}
+      {dustUrl && <ImageOverlay url={dustUrl} bounds={[[-90, 0], [90, 360]]} opacity={opacity.dust ?? 0.55} />}
+      {["slope", "roughness", "walkability"].map((id) =>
+        gridImages[id] ? <ImageOverlay key={`${id}-${gridImages[id].url.length}`} url={gridImages[id].url} bounds={gridImages[id].bounds} opacity={opacity[id] ?? 0.55} className="nn-grid-overlay" /> : null,
+      )}
+      {visibility.themisObs &&
+        thermalObs
+          .filter((o) => o.latitude_deg != null && o.longitude_deg != null)
+          .map((o, i) => {
+            const [r, g, b] = walkRamp(o.brightness_temperature_k, 170, 290);
+            return (
+              <CircleMarker key={`themis-${o.product_id ?? i}`} center={[o.latitude_deg, lon360(o.longitude_deg)]} radius={5} pathOptions={{ color: "#081014", weight: 1, fillColor: `rgb(${r}, ${g}, ${b})`, fillOpacity: 0.95 }}>
+                <Tooltip>{`THEMIS ${o.product_id ?? ""} · ${o.brightness_temperature_k?.toFixed?.(1) ?? "n/a"} K (historical observation)`}</Tooltip>
+              </CircleMarker>
+            );
+          })}
       {["msl", "m2020"].map((rover) =>
         visibility[rover === "msl" ? "mslTraverse" : "m2020Traverse"] && data.traverses?.[rover]
           ? splitAtSeam(data.traverses[rover]).map((part, i) => (

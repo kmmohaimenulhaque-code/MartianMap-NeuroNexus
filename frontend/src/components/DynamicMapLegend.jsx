@@ -21,12 +21,13 @@ function Swatch({ kind, token }) {
   }
   if (kind === "ramp-mola") return <i className="nn-sw nn-sw--ramp nn-sw--ramp-mola" />;
   if (kind === "ramp-dust") return <i className="nn-sw nn-sw--ramp nn-sw--ramp-dust" />;
+  if (kind === "ramp-walk") return <i className="nn-sw nn-sw--ramp nn-sw--ramp-walk" />;
   return <i className="nn-sw nn-sw--dot" style={{ background: color }} />;
 }
 
 /* Button (docked=false) or the legend body docked in the map's bottom-left corner (docked). */
-export default function DynamicMapLegend({ visibility, open, onToggle, docked = false, compact = false }) {
-  const layers = activeLayers(visibility);
+export default function DynamicMapLegend({ visibility, open, onToggle, docked = false, compact = false, map = "2d" }) {
+  const layers = activeLayers(visibility, map);
   if (!docked) {
     return (
       <div className="nn-legend">

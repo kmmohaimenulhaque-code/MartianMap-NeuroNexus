@@ -159,7 +159,10 @@
   .mission-shell[data-mapview="2d"] #panel-usgs-map, .mission-shell[data-mapview="split"] #panel-usgs-map,
   .mission-shell[data-mapview="usgs"] .maps-grid > .map-panel:first-child { display: none; }
   .map-panel { border: 0; }
-  .map-panel-title, .map-toolbar { display: none !important; }
+  .maps-grid > .map-panel:first-child .map-panel-title, .map-toolbar { display: none !important; }
+  #panel-usgs-map .map-panel-title { padding: 4px 8px; justify-content: flex-end; }
+  #panel-usgs-map .map-panel-title > span, #panel-usgs-map .nn-usgs-tools .nn-layers { display: none; }
+  #panel-usgs-map .nn-seg button { min-height: 32px; }
   .map-panel-body { min-height: 0; }
   .map-legend { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; gap: 12px; padding: 4px 10px; font-size: 11px; white-space: nowrap; }
   .map-legend > div { flex: 0 0 auto; }

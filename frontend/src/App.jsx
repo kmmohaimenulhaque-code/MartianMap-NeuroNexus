@@ -55,7 +55,7 @@ import CategorizedLayersMenu from "./components/CategorizedLayersMenu";
 import DynamicMapLegend from "./components/DynamicMapLegend";
 import ContextLayers from "./components/mars/ContextLayers";
 import { useContextLayerData } from "./components/mars/useContextLayerData";
-import { DEFAULT_VISIBILITY } from "./components/layers/layerCatalog";
+import { layerStore, useLayers } from "./components/layers/layerStore";
 import { DEMOS } from "./components/manualContent";
 import SourcesDrawer from "./sources/SourcesDrawer";
 import { SourcesContext } from "./sources/SourcesContext";
@@ -68,11 +68,12 @@ import EvidenceBar from "./components/console/EvidenceBar";
 import LeftColumn from "./components/console/LeftColumn";
 import TopBar from "./components/console/TopBar";
 import SearchBar from "./components/console/SearchBar";
+import ArcgisLayeredMap from "./components/mars/ArcgisLayeredMap";
 import ScrollJumpButton from "./components/console/ScrollJumpButton";
 import ErrorBoundary from "./ui/ErrorBoundary";
 import { decodePlanLink } from "./marswalk/planLink";
 import MobileDock, { MapViewToggle, SheetHead } from "./components/mobile/MobileDock";
-import { useMobileUi } from "./components/mobile/mobileStore";
+import { mobileUi as mobileUiStore, useMobileUi } from "./components/mobile/mobileStore";
 
 import "./ui/tokens.css";
 import "./App.css";
@@ -122,17 +123,15 @@ export default function App() {
   const [marswalkDemo, setMarswalkDemo] = useState({ key: 0, demo: sharedPlan });
   const [manualOpen, setManualOpen] = useState(false);
   const [legendOpen, setLegendOpen] = useState(false);
-  const [layerVisibility, setLayerVisibility] = useState(() => ({ ...DEFAULT_VISIBILITY, ...readStorage("nn.layers", {}) }));
+  // Shared by the 2D map, the ArcGIS view and the 3D globe (components/layers/layerStore.js).
+  const { visibility: layerVisibility } = useLayers();
+  const setLayerVisibility = layerStore.setVisibility;
   const [sourcesDrawer, setSourcesDrawer] = useState({ open: false, focusId: null });
   const sourcesContext = useMemo(() => ({ openSources: (focusId) => setSourcesDrawer({ open: true, focusId }) }), []);
 
   useEffect(() => {
     writeStorage("nn.appMode", appMode);
   }, [appMode]);
-
-  useEffect(() => {
-    writeStorage("nn.layers", layerVisibility);
-  }, [layerVisibility]);
 
   const perf = usePerfSettings();
   const [globeWasOpen, setGlobeWasOpen] = useState(false);
@@ -221,6 +220,9 @@ export default function App() {
   const [designerOpen, setDesignerOpen] = useState(false);
 
   const [map3dOpen, setMap3dOpen] = useState(false);
+  // USGS panel: the NeuroNexus ArcGIS view with the shared layers ("layered") or the USGS geologic web app ("app").
+  const [usgsView, setUsgsView] = useState(() => (readStorage("nn.usgsView", "layered") === "app" ? "app" : "layered"));
+  useEffect(() => writeStorage("nn.usgsView", usgsView), [usgsView]);
 
   const switchMode = useCallback(
     (next) => {
@@ -237,6 +239,22 @@ export default function App() {
       setAppMode(next);
     },
     [appMode, map3dOpen, globeWasOpen],
+  );
+
+  /* LAYERS "link" rows: go to where that information lives (MARSWALK, the USGS app, a left-panel card). */
+  const handleLayerLink = useCallback(
+    (action) => {
+      if (action === "marswalk") return switchMode("marswalk");
+      if (action === "usgs") setUsgsView("app");
+      const target = { usgs: "panel-usgs-map", thermal: "panel-thermal", solar: "panel-solar" }[action];
+      if (window.matchMedia?.("(max-width: 767px)").matches) {
+        if (action === "usgs") mobileUiStore.setMapView("usgs");
+        else mobileUiStore.setSheet("intel");
+      }
+      document.getElementById(target)?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return undefined;
+    },
+    [switchMode],
   );
 
   const startDemo = useCallback(
@@ -2103,13 +2121,7 @@ export default function App() {
             <div className="nn-phone-mapbar">
               <SearchBar query={query} suggestions={suggestions} onQueryChange={setQuery} onSelect={handleSelectPlace} />
               <MapViewToggle is3dOpen={map3dOpen} onSet3d={setMap3dOpen} />
-              <CategorizedLayersMenu
-                compact
-                visibility={layerVisibility}
-                status={contextLayers.status}
-                onToggle={(id) => setLayerVisibility((v) => ({ ...v, [id]: !v[id] }))}
-                onLink={(action) => action === "marswalk" && switchMode("marswalk")}
-              />
+              <CategorizedLayersMenu compact map={map3dOpen ? "3d" : mobileUi.mapView === "usgs" ? "arcgis" : "2d"} status={contextLayers.status} onLink={handleLayerLink} />
               <DynamicMapLegend compact visibility={layerVisibility} open={legendOpen} onToggle={() => setLegendOpen((v) => !v)} />
             </div>
 
@@ -2150,15 +2162,7 @@ export default function App() {
                   >
                     3D MAP
                   </button>
-                  <CategorizedLayersMenu
-                    visibility={layerVisibility}
-                    status={contextLayers.status}
-                    onToggle={(id) => setLayerVisibility((v) => ({ ...v, [id]: !v[id] }))}
-                    onLink={(action) => {
-                      if (action === "marswalk") switchMode("marswalk");
-                      else document.getElementById({ usgs: "panel-usgs-map", thermal: "panel-thermal", solar: "panel-solar" }[action])?.scrollIntoView({ behavior: "smooth", block: "center" });
-                    }}
-                  />
+                  <CategorizedLayersMenu map="2d" status={contextLayers.status} onLink={handleLayerLink} />
                   <DynamicMapLegend visibility={layerVisibility} open={legendOpen} onToggle={() => setLegendOpen((v) => !v)} />
                 </div>
 
@@ -2205,7 +2209,7 @@ export default function App() {
 
                   interactive={true}
                 >
-                  <ContextLayers visibility={layerVisibility} data={contextLayers.data} />
+                  <ContextLayers visibility={layerVisibility} data={contextLayers.data} thermalObs={environment?.thermal?.observations ?? []} />
                 </MarsMap>
               </div>
 
@@ -2261,23 +2265,46 @@ export default function App() {
             </div>
 
             <div className="map-panel" id="panel-usgs-map">
-              <div className="map-panel-title">
+              <div className="map-panel-title nn-usgs-title">
                 <span>USGS SCIENTIFIC MAP</span>
 
-                <small>ARCGIS / TOPOGRAPHY / GEOLOGY / MEASUREMENTS</small>
+                <div className="nn-usgs-tools">
+                  <div className="nn-seg" role="radiogroup" aria-label="USGS panel view">
+                    <button type="button" role="radio" aria-checked={usgsView === "layered"} className={usgsView === "layered" ? "is-active" : undefined} onClick={() => setUsgsView("layered")} title="NeuroNexus ArcGIS view: USGS SIM 3292 geology plus the shared layers">
+                      LAYERED
+                    </button>
+                    <button type="button" role="radio" aria-checked={usgsView === "app"} className={usgsView === "app" ? "is-active" : undefined} onClick={() => setUsgsView("app")} title="The USGS geologic map web application (separate site, synced to the selection)">
+                      USGS APP
+                    </button>
+                  </div>
+                  {usgsView === "layered" && <CategorizedLayersMenu map="arcgis" status={contextLayers.status} onLink={handleLayerLink} />}
+                </div>
               </div>
 
               <div className="map-panel-body">
-                <MarsTopographicMap
-                  syncTarget={selectedLocation}
-                  syncUrl={usgsSync.key && !usgsSync.error ? usgsSync.url : null}
-                  syncStatus={usgsSyncStatus}
-                  syncError={usgsSync.error}
-                  halfWidthKm={USGS_SYNC_HALF_WIDTH_KM}
-                  snapshotAvailable={comparedRoutes.length >= 2 || routePoints.length >= 2 || Boolean(selectedCandidateId)}
-                  onOpenSnapshot={handleOpenSnapshot}
-                  onRequestSync={requestUsgsSync}
-                />
+                {usgsView === "layered" ? (
+                  <ArcgisLayeredMap
+                    center={selectedLocation}
+                    halfWidthKm={USGS_SYNC_HALF_WIDTH_KM}
+                    features={layerVisibility.features ? places : []}
+                    contextData={contextLayers.data}
+                    thermalObs={environment?.thermal?.observations ?? []}
+                    routePoints={routePoints}
+                    safeHavens={safeHavens}
+                    onSelectCoordinate={handleSelectCoordinate}
+                  />
+                ) : (
+                  <MarsTopographicMap
+                    syncTarget={selectedLocation}
+                    syncUrl={usgsSync.key && !usgsSync.error ? usgsSync.url : null}
+                    syncStatus={usgsSyncStatus}
+                    syncError={usgsSync.error}
+                    halfWidthKm={USGS_SYNC_HALF_WIDTH_KM}
+                    snapshotAvailable={comparedRoutes.length >= 2 || routePoints.length >= 2 || Boolean(selectedCandidateId)}
+                    onOpenSnapshot={handleOpenSnapshot}
+                    onRequestSync={requestUsgsSync}
+                  />
+                )}
               </div>
             </div>
           </div>

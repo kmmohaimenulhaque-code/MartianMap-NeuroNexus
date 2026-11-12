@@ -1,3 +1,4 @@
+import { featureColor } from "../layers/sharedLayerData";
 import { useEffect, useMemo, useState } from "react";
 
 import { CircleMarker, ImageOverlay, MapContainer, Polyline, Popup, Tooltip, useMap, useMapEvents } from "react-leaflet";
@@ -53,27 +54,8 @@ function routeCoordinates(route) {
   return points.map((point) => [Number(point.latitude_deg), normaliseLongitude(point.longitude_deg)]);
 }
 
-function featureColor(featureType = "") {
-  const type = String(featureType).split(",")[0].trim();
-
-  const colors = {
-    Crater: "#b9cfd6",
-    Vallis: "#72d9ff",
-    Mons: "#4ea8de",
-    Fossa: "#9fe3a8",
-    Mensa: "#e7d06f",
-    Planum: "#3fbcd4",
-    Patera: "#ff718d",
-    Chaos: "#75e6ff",
-    Rupes: "#b9cfd6",
-    Chasma: "#80aaff",
-    Dorsum: "#c5a27b",
-    Terra: "#f0c6a0",
-    Planitia: "#9cc2b5",
-  };
-
-  return colors[type] ?? "#d5d9dc";
-}
+/* Maps in the middle of a fly-to (MapFocus); MapResizeHandler waits for the flight to end. */
+const FLYING = new WeakSet();
 
 function MapResizeHandler() {
   const map = useMap();
@@ -81,7 +63,20 @@ function MapResizeHandler() {
   useEffect(() => {
     const container = map.getContainer();
 
+    // A resize during a fly-to would fire moveend, and the max-bounds check would pan and cancel the flight
+    // halfway (the map then stayed zoomed out). While flying, apply the resize once the flight ends.
+    let pending = false;
     const resizeObserver = new ResizeObserver(() => {
+      if (FLYING.has(map)) {
+        if (!pending) {
+          pending = true;
+          map.once("zoomend", () => {
+            pending = false;
+            map.invalidateSize({ animate: false });
+          });
+        }
+        return;
+      }
       map.invalidateSize({
         animate: false,
       });
@@ -117,6 +112,8 @@ function MapFocus({ selectedFeature, selectedLocation }) {
       return;
     }
 
+    FLYING.add(map);
+    map.once("zoomend", () => FLYING.delete(map));
     map.flyTo(position, 1.6, {
       duration: 0.8,
     });

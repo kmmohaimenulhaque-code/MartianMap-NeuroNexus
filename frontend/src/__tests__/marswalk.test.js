@@ -67,12 +67,16 @@ describe("EVA brief", () => {
 });
 
 describe("categorized layers and legend", () => {
-  it("has the four categories and a legend entry for every map layer", () => {
-    expect(LAYER_CATEGORIES.map((c) => c.label)).toEqual(["Topography and Elevation", "Geology and Science Context", "Atmosphere and Environment", "Missions and Ground Truth"]);
+  it("has the five categories, a legend entry and at least one map for every map layer", () => {
+    expect(LAYER_CATEGORIES.map((c) => c.label)).toEqual(["Topography and Elevation", "Geology and Science Context", "Atmosphere and Environment", "Missions and Ground Truth", "Exploration Context"]);
     for (const c of LAYER_CATEGORIES) {
       for (const layer of c.layers) {
         expect(resolveIn(index, layer.ledgerId)).not.toBeNull();
-        if (layer.kind === "map") expect(LEGEND[layer.id]?.length).toBeGreaterThan(0);
+        if (layer.kind === "map") {
+          expect(LEGEND[layer.id]?.length, layer.id).toBeGreaterThan(0);
+          expect(layer.maps.length, layer.id).toBeGreaterThan(0);
+          expect(layer.maps.every((m) => ["2d", "arcgis", "3d"].includes(m)), layer.id).toBe(true);
+        }
       }
     }
   });

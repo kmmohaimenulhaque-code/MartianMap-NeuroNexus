@@ -80,7 +80,8 @@ await context.route((url) => url.pathname.startsWith("/api/"), async (route) => 
 });
 // Every map layer on, so each layer's data request is recorded (the visitor's default set is a subset).
 await context.addInitScript(() => {
-  const all = ["mola", "hiriseFootprints", "features", "waypoints", "dust", "landingSites", "mslTraverse", "m2020Traverse", "routes"];
+  const all = ["mola", "imagery", "terrain", "hiriseFootprints", "slope", "roughness", "walkability", "features", "labels", "units", "contacts", "structures",
+    "waypoints", "themisObs", "dust", "landingSites", "rovers", "mslTraverse", "m2020Traverse", "routes", "zones", "iceRegions", "ancient"];
   localStorage.setItem("nn.layers", JSON.stringify(Object.fromEntries(all.map((k) => [k, true]))));
 });
 const page = await context.newPage();
