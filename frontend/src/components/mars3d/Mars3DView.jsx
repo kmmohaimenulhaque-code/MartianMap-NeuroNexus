@@ -62,7 +62,7 @@ const LAYERS = [
   { key: "rovers", group: "ROVERS", label: "Rover locations · latest traverse position", status: "OBSERVED", on: true },
   { key: "traverses", group: "ROVERS", label: "Rover traverses · Curiosity, Perseverance (NASA MMGIS)", status: "OBSERVED", on: true },
   { key: "route", group: "MISSION", label: "Active route and waypoints", status: "DERIVED", on: true },
-  { key: "candidates", group: "MISSION", label: "AI candidate routes", status: "DERIVED", on: true },
+  { key: "candidates", group: "MISSION", label: "Route candidates", status: "DERIVED", on: true },
   { key: "places", group: "MISSION", label: "Safe Havens and custom places (user-defined)", status: "DERIVED", on: true },
   { key: "dust", group: "ATMOSPHERE", label: "MY34 dust optical depth τ tint (modeled, follows the sol)", status: "MODELED", on: false },
   { key: "themis", group: "SCIENCE", label: "THEMIS thermal observations near the site", status: "OBSERVED", on: false },
@@ -1283,7 +1283,7 @@ export default function Mars3DView({
           {/* On phones the tools fold into the 3D TOOLS menu; on wider screens the wrapper is display: contents. */}
           <div className={`m3d-tools${toolsOpen ? " is-open" : ""}`} onClick={(event) => event.target.closest("button") && setToolsOpen(false)}>
           <button type="button" className="m3d-btn m3d-primary" onClick={onOpenDesigner}>
-            AI ROUTE DESIGN
+            ROUTE DESIGN
           </button>
           <button type="button" className={`m3d-btn${mapMode ? " active" : ""}`} aria-pressed={mapMode} onClick={toggleMapMode}>
             MAP

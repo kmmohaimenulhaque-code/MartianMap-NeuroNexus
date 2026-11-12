@@ -66,6 +66,9 @@ def build() -> dict:
     for k in range(1, SHARDS + 1):
         rewrites += _rules(k, [{"type": "cookie", "key": "nn_shard", "value": str(k)}])
     rewrites += _rules(1, None)  # no or invalid cookie
+    # Pages: landing at /, console at /console/, tutorial gallery at /tutorials/ (existing files are served first).
+    rewrites.append({"source": "/console/(.*)", "destination": "/console/index.html"})
+    rewrites.append({"source": "/tutorials/(.*)", "destination": "/tutorials/index.html"})
     rewrites.append({"source": "/((?!api/|terrain/).*)", "destination": "/index.html"})
     return {"$schema": "https://openapi.vercel.sh/vercel.json", "rewrites": rewrites}
 

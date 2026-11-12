@@ -26,7 +26,7 @@ export default function MobileDock({ appMode }) {
   const tabs = [
     { id: null, label: "MAP", icon: "globe", hint: "Full-screen map" },
     { id: "intel", label: marswalk ? "PROFILE" : "INTEL", icon: "info", hint: marswalk ? "Elevation and slope profile" : "Site, rover photos, THEMIS, conditions" },
-    { id: "route", label: marswalk ? "EVA" : "ROUTE", icon: "route", hint: marswalk ? "EVA setup" : "Route console and AI route design" },
+    { id: "route", label: marswalk ? "EVA" : "ROUTE", icon: "route", hint: marswalk ? "EVA setup" : "Route console and route design" },
     { id: "mission", label: "MISSION", icon: "validate", hint: marswalk ? "Decision, ground truth, validation" : "Dust, morphology, gases, mission" },
   ];
 

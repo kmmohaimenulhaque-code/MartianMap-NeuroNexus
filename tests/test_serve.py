@@ -25,3 +25,12 @@ def test_console_and_spa_fallback(client):
     assert "NeuroNexus" in client.get("/marswalk").text
     assert client.get("/assets/app.js").status_code == 200
     assert client.get("/assets/missing.js").status_code == 404
+
+
+def test_fallback_pages_follow_the_three_entries():
+    from science.serve import fallback_page
+
+    assert fallback_page("console/settings") == "console/index.html"
+    assert fallback_page("/console") == "console/index.html"
+    assert fallback_page("tutorials/terrain-ladder") == "tutorials/index.html"
+    assert fallback_page("marswalk") == "index.html"

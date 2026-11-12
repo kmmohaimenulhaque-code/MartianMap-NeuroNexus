@@ -88,7 +88,7 @@ const page = await context.newPage();
 const step = (msg) => console.log(`tour ${msg}`);
 const idle = (ms = 1500) => page.waitForTimeout(ms);
 
-await page.goto(BASE, { waitUntil: "domcontentloaded" });
+await page.goto(`${BASE.replace(/\/$/, "")}/console/`, { waitUntil: "domcontentloaded" }); // console moved to /console/ (landing page at /)
 await page.waitForFunction(() => document.body.innerText.includes("SYSTEM ONLINE"), null, { timeout: 90000 });
 await page.waitForSelector("[data-testid=thermal-sol-readout]", { timeout: 90000 });
 await idle(3000);

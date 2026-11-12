@@ -1162,10 +1162,10 @@ export default function App() {
 
   function handleSaveCandidate(candidate, { name: givenName = null } = {}) {
     if ((candidate.coordinates ?? []).length < 2) return null;
-    const name = givenName ?? promptRouteName(candidate.name ?? `AI route ${savedRoutes.length + 1}`);
+    const name = givenName ?? promptRouteName(candidate.name ?? `Designed route ${savedRoutes.length + 1}`);
     if (!name) return null;
     const record = saveRouteRecord({ name, points: candidate.coordinates, generation: candidateGeneration(candidate) });
-    setNotice(`Saved "${name}" from the AI Route Designer.`);
+    setNotice(`Saved "${name}" from the Route Designer.`);
     return record;
   }
 
@@ -1175,7 +1175,7 @@ export default function App() {
     const prefix = window.prompt("Name prefix for the saved candidates:", "AI");
     if (prefix === null) return;
     candidates.forEach((candidate) => handleSaveCandidate(candidate, { name: `${prefix.trim() || "AI"} · ${candidate.name}`.slice(0, 80) }));
-    setNotice(`Saved ${candidates.length} AI candidates as named routes (the first ${MAX_COMPARE_ROUTES} are selected for comparison).`);
+    setNotice(`Saved ${candidates.length} route candidates as named routes (the first ${MAX_COMPARE_ROUTES} are selected for comparison).`);
   }
 
   function handleRenameRoute(routeId) {
@@ -1707,7 +1707,7 @@ export default function App() {
     "save-route": { run: handleSaveRoute, available: () => (routePoints.length >= 2 ? true : "Plan or apply a route with at least 2 waypoints first") },
     "save-candidates": {
       run: handleSaveAllCandidates,
-      available: () => (routeCandidates?.candidates?.length ? true : "Generate AI route candidates first"),
+      available: () => (routeCandidates?.candidates?.length ? true : "Generate route candidates first"),
     },
     "verify-routes": {
       run: () => savedRoutes.forEach((route) => verifyRouteReproducibility(route.id)),
@@ -1950,7 +1950,7 @@ export default function App() {
     }
     const candidate = candidateRoutes.find((item) => item.id === selectedCandidateId);
     if (candidate?.coordinates?.length >= 2) {
-      return { ...candidate, name: candidate.name ?? "AI candidate" };
+      return { ...candidate, name: candidate.name ?? "Route candidate" };
     }
     const saved = savedRoutes[savedRoutes.length - 1];
     if (saved?.points?.length >= 2) {
@@ -1962,7 +1962,7 @@ export default function App() {
   function handleExportRouteCsv() {
     const route = routeForCsvExport();
     if (!route) {
-      setError("No route to export yet · plan a route, apply an AI candidate or save a route first.");
+      setError("No route to export yet · plan a route, apply a route candidate or save a route first.");
       return;
     }
     const slug = String(route.name ?? "route")
@@ -2148,9 +2148,9 @@ export default function App() {
                     type="button"
                     className="mission-action map-ai-route-button"
                     onClick={() => setDesignerOpen(true)}
-                    aria-label="Open AI Route Design"
+                    aria-label="Open Route Design"
                   >
-                    AI ROUTE DESIGN
+                    ROUTE DESIGN
                   </button>
 
                   <button
@@ -2217,7 +2217,7 @@ export default function App() {
                 sheetHead={
                   <SheetHead title="ROUTE CONSOLE">
                     <button type="button" className="mission-action nn-sheet-action" onClick={() => setDesignerOpen(true)}>
-                      AI ROUTE DESIGN
+                      ROUTE DESIGN
                     </button>
                   </SheetHead>
                 }

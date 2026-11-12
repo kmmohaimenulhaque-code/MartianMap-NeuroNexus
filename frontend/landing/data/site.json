@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "note": "Links and names shown on the landing page. Confirm the challenge title against the official 2026 Space Apps challenge list before submission. blob/HEAD links follow the repository default branch: make the submission branch the default.",
+  "consolePath": "/console/",
+  "tourPath": "/console/?tour=judge",
+  "tutorialsPath": "/tutorials/",
+  "challengeTitle": "Interplanetary Survival Guide: Martian Map",
+  "challengeStatement": [
+    "the best map possible",
+    "details of their routes and destinations",
+    "updates on current conditions",
+    "the data necessary to make safe and scientifically meaningful decisions"
+  ],
+  "repoUrl": "https://github.com/kmmohaimenulhaque-code/martian-map",
+  "teamPageUrl": "https://www.spaceappschallenge.org/2026/find-a-team/neuronexus1/",
+  "demoVideoUrl": "https://www.youtube.com/watch?v=0MLtYKHewcA",
+  "staticDemoUrl": "https://mhaquehaque-neuronexus-marswalk.static.hf.space",
+  "validationDocUrl": "https://github.com/kmmohaimenulhaque-code/martian-map/blob/HEAD/docs/VALIDATION.md",
+  "dataDocUrl": "https://github.com/kmmohaimenulhaque-code/martian-map/blob/HEAD/docs/submission/NASA_DATA_USED.md",
+  "team": []
+}

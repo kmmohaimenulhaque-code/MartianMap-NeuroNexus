@@ -50,6 +50,15 @@ DIST = Path(os.environ.get("NEURONEXUS_DIST", Path(__file__).resolve().parents[1
 API_PASSTHROUGH = ("/terrain/",)
 
 
+def fallback_page(path: str) -> str:
+    """Page for an unknown extension-less path: the landing page lives at /, the console at /console/ and the
+    tutorial gallery at /tutorials/ (three Vite entries)."""
+    head = path.lstrip("/").split("/", 1)[0]
+    if head in ("console", "tutorials"):
+        return f"{head}/index.html"
+    return "index.html"
+
+
 class ConsoleFiles(StaticFiles):
     """Static console; unknown extension-less paths fall back to index.html."""
 
@@ -58,7 +67,7 @@ class ConsoleFiles(StaticFiles):
             return await super().get_response(path, scope)
         except HTTPException as exc:
             if exc.status_code == 404 and "." not in path.rsplit("/", 1)[-1]:
-                return await super().get_response("index.html", scope)
+                return await super().get_response(fallback_page(path), scope)
             # Mounted bare (no exception middleware), so answer instead of raising.
             return PlainTextResponse(str(exc.detail), status_code=exc.status_code)
 

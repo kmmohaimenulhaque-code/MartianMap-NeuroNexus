@@ -142,7 +142,7 @@
     {
       "id": "ai-route-design",
       "category": "route",
-      "label": "AI Route Designer",
+      "label": "Route Designer",
       "shortcut": "A",
       "description": "Deterministic multi-objective route candidates (EVA, terrain, science, operational) over NASA MOLA terrain.",
       "how": "Set a start and a destination, adjust objective weights, Generate, then Apply a candidate.",
@@ -181,15 +181,15 @@
     {
       "id": "save-candidates",
       "category": "saved",
-      "label": "Save AI route candidates",
-      "description": "Save every AI Route Designer candidate as a named, reproducible route (single candidates: SAVE AS ROUTE on each card).",
-      "where": "AI Route Designer"
+      "label": "Save route candidates",
+      "description": "Save every Route Designer candidate as a named, reproducible route (single candidates: SAVE AS ROUTE on each card).",
+      "where": "Route Designer"
     },
     {
       "id": "verify-routes",
       "category": "saved",
       "label": "Verify route reproducibility",
-      "description": "AI routes: replay the stored generation request and compare geometry vertex by vertex. Manual routes: re-run the deterministic MOLA evaluation and compare the statistics.",
+      "description": "Designed routes: replay the stored generation request and compare geometry vertex by vertex. Manual routes: re-run the deterministic MOLA evaluation and compare the statistics.",
       "where": "Command Index, comparison cards"
     },
     {

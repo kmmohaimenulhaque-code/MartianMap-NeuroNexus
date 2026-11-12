@@ -28,7 +28,7 @@ def _route(path: str, cookie: str | None) -> str:
         if has and (cookie is None or has[0]["value"] != cookie):
             continue
         pattern = "^" + re.escape(rule["source"]).replace(r":path\*", ".*") + "$"
-        if rule["source"].startswith("/(("):
+        if rule["source"].startswith("/((") or rule["source"].endswith("(.*)"):
             pattern = "^" + rule["source"] + "$"
         if re.match(pattern, path):
             return rule["destination"]
@@ -63,3 +63,10 @@ def test_blueprint_creates_exactly_the_routed_services():
     expected = [n.split("-", 1)[0] if n.startswith("usgs-") else n.split("-", 1)[1] for n in gen.service_names()
                 if not n.startswith("core-")]
     assert parts == [{"window": "terrain-window", "image": "terrain-image"}.get(x, x) for x in expected]
+
+
+def test_pages_route_to_their_own_entry():
+    # Landing at /, console at /console/, gallery at /tutorials/ (real files are served before rewrites).
+    assert _route("/console/anything", None) == "/console/index.html"
+    assert _route("/tutorials/x", None) == "/tutorials/index.html"
+    assert _route("/about", None) == "/index.html"

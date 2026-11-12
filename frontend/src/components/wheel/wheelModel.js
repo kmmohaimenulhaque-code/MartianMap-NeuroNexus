@@ -11,7 +11,7 @@ export const WHEEL = [
     { id: "focus-usgs", label: "USGS GEOLOGY" },
   ] },
   { id: "route", label: ["ROUTE", "& EVA"], icon: "route", items: [
-    { id: "ai-route-design", label: "AI ROUTE DESIGN" },
+    { id: "ai-route-design", label: "ROUTE DESIGN" },
     { id: "marswalk-demo", label: "PLAN MARSWALK" },
     { id: "compare-routes", label: "COMPARE ROUTES" },
     { id: "rover-replay", label: "ROVER REPLAY" },

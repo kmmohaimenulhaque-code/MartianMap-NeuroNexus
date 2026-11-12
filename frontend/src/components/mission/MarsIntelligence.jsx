@@ -137,7 +137,7 @@ const SUGGESTIONS = [
   },
   {
     group: "ROUTES",
-    items: ["Compare my saved routes on slope, roughness and EVA time.", "Explain the trade-offs between the AI route candidates."],
+    items: ["Compare my saved routes on slope, roughness and EVA time.", "Explain the trade-offs between the route candidates."],
   },
   {
     group: "MARS SCIENCE",

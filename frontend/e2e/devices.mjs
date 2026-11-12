@@ -33,7 +33,7 @@ async function open(name, viewport, touch, dpr = touch ? 2 : 1) {
   });
   const page = await context.newPage();
   page.on("pageerror", (e) => errors.push(`${name} ${e.name}: ${e.message}`));
-  await page.goto(BASE, { waitUntil: "domcontentloaded" });
+  await page.goto(`${BASE.replace(/\/$/, "")}/console/`, { waitUntil: "domcontentloaded" }); // console moved to /console/ (landing page at /)
   await page.waitForFunction(() => /ONLINE/.test(document.querySelector(".status-dot")?.textContent ?? ""), null, { timeout: 120000 });
   await page.waitForSelector(".leaflet-container", { timeout: 60000 });
   await page.waitForTimeout(2500);
@@ -267,7 +267,7 @@ for (const [w, h, name, file] of [[768, 1024, "iPad mini 768", null], [820, 1180
   const visibleLabels = await page.evaluate(() =>
     [...document.querySelectorAll("button")].filter((e) => e.offsetParent && getComputedStyle(e).visibility !== "hidden" && !e.closest(".map-legend")).map((e) => (e.getAttribute("aria-label") || e.textContent).trim()).filter(Boolean));
   const dupes = visibleLabels.filter((t, i) => visibleLabels.indexOf(t) !== i && !/^Zoom/.test(t));
-  check(dupes.length === 0 && !visibleLabels.some((t) => /USGS SNAPSHOT|AI ROUTE DESIGN/.test(t)), `iPhone 393: no duplicated buttons${dupes.length ? ` (${dupes.join(", ")})` : ""}`);
+  check(dupes.length === 0 && !visibleLabels.some((t) => /USGS SNAPSHOT|ROUTE DESIGN/.test(t)), `iPhone 393: no duplicated buttons${dupes.length ? ` (${dupes.join(", ")})` : ""}`);
   check(!(await box(page, ".nn-wheel-chip"))?.visible, "iPhone 393: no floating WHEEL chip (WHEEL is in the dock)");
   const zoom = await page.evaluate(() => {
     const a = document.querySelector(".map-panel-body .leaflet-control-zoom-in");

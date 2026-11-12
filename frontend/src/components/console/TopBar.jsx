@@ -19,7 +19,7 @@ export default function TopBar({ appMode, backendConnected, commandIndex, compar
 
         <h1>NEURONEXUS</h1>
 
-        <span>MARTIAN MAP / MISSION CONTROL</span>
+        <span>MARTIAN MAP / MISSION CONSOLE</span>
       </div>
 
       <SearchBar query={query} suggestions={suggestions} onQueryChange={setQuery} onSelect={handleSelectPlace} />
@@ -117,7 +117,7 @@ export default function TopBar({ appMode, backendConnected, commandIndex, compar
             </SolPill>
             <div className="mission-actions" ref={actionsRef}>
               <button type="button" className="mission-action" onClick={() => setDesignerOpen(true)}>
-                AI ROUTE DESIGN
+                ROUTE DESIGN
               </button>
 
               <button type="button" className="mission-action" onClick={() => setIntelligenceOpen(true)}>

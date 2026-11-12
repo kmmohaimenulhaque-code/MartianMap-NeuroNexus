@@ -1,13 +1,20 @@
 import { Panel } from "./Panel";
 
 /* Extracted from App.jsx (T7.8); state stays in App and arrives as props. */
+
+/* The backend reports enums such as "evidence_available"; show them as plain words ("Evidence available"). */
+function humanStatus(value) {
+  if (value === null || value === undefined || value === "") return "n/a";
+  const text = String(value).replace(/_/g, " ").trim().toLowerCase();
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
 export default function InterpretationPanel({ environment, siteScience }) {
   return (
     <Panel eyebrow="ASSESSMENT / EVIDENCE" title="Interpretation" id="panel-interpretation" sources={["NN_TERRAIN_RISK_PROXY"]}>
       <div className="assessment-status">
         <span>STATUS</span>
 
-        <strong>{environment?.assessment?.assessment_status ?? "n/a"}</strong>
+        <strong>{humanStatus(environment?.assessment?.assessment_status)}</strong>
       </div>
 
       <div className="source-note">

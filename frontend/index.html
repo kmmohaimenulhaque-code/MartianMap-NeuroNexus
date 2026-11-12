@@ -1,22 +1,263 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="no-js">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      /* Old console links (query parameters or a console hash such as #mw=...) now live at /console/. Runs before paint. */
+      (function () {
+        var landing = /^#(top|main|approach|reel|features|proof|principles|challenge|data|team|finale|play\/[a-z0-9-]+)?$/;
+        var q = location.search.replace(/^\?/, "").split("&").filter(function (p) { return p && !/^utm_/.test(p); });
+        if (q.length || (location.hash && !landing.test(location.hash))) {
+          location.replace("/console/" + location.search + location.hash);
+        }
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>NeuroNexus: Know the Ground Before You Walk It</title>
+    <meta name="description" content="NeuroNexus turns NASA's sharpest Mars terrain into walking plans for future astronauts, checks the map against what NASA's rovers really felt, and shows how sure every number is." />
+    <meta name="theme-color" content="#f2f0ec" />
+    <meta name="color-scheme" content="light" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="NeuroNexus: Know the Ground Before You Walk It" />
+    <meta property="og:description" content="A Mars EVA planning console built on NASA HiRISE, CTX and MOLA terrain, validated against Curiosity and Perseverance." />
+    <meta property="og:image" content="/landing/media/hero-hirise.webp" />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/png" sizes="192x192" href="/pwa/icon-192.png" />
     <link rel="apple-touch-icon" href="/pwa/apple-touch-icon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#081014" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="NeuroNexus" />
-    <meta name="format-detection" content="telephone=no" />
     <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
-    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700&display=swap" />
-    <title>NeuroNexus · Martian Map</title>
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600&display=swap" />
+    <link rel="preload" as="image" href="/landing/media/hero-hirise.webp" fetchpriority="high" />
   </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+  <body class="lp">
+    <a class="lp-skip" href="#main">Skip to Content</a>
+
+    <header class="lp-header" data-header>
+      <a class="lp-wordmark" href="#top" aria-label="NeuroNexus, back to top">NEURONEXUS</a>
+      <div class="lp-header__right">
+        <a class="lp-pill lp-pill--dark lp-magnetic" href="/console/" data-console-link><span class="lp-dot" aria-hidden="true"></span>Enter Console</a>
+        <button class="lp-menu-btn lp-magnetic" type="button" aria-expanded="false" aria-controls="lp-menu" data-menu-open>
+          <span class="lp-sr">Open Menu</span>
+          <span class="lp-menu-btn__dots" aria-hidden="true"><i></i><i></i></span>
+        </button>
+      </div>
+    </header>
+
+    <div class="lp-menu" id="lp-menu" role="dialog" aria-modal="true" aria-label="Menu" hidden data-menu>
+      <div class="lp-menu__panel">
+        <div class="lp-menu__top">
+          <span class="lp-eyebrow">Menu</span>
+          <button class="lp-menu-close" type="button" data-menu-close>Close</button>
+        </div>
+        <nav class="lp-menu__primary" aria-label="Console">
+          <a href="/console/" data-console-link><span>Enter the Mission Console</span><svg class="lp-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" /></svg></a>
+          <a href="/console/?tour=judge"><span>Take the 90-Second Tour</span><svg class="lp-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" /></svg></a>
+          <a href="/tutorials/"><span>All Tutorials</span><svg class="lp-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" /></svg></a>
+          <a href="#features" data-menu-close-link><span>Core Features</span><svg class="lp-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" /></svg></a>
+        </nav>
+        <nav class="lp-menu__secondary" aria-label="Project">
+          <a href="#approach" data-menu-close-link>How It Works</a>
+          <a href="#proof" data-menu-close-link>Validation</a>
+          <a href="#challenge" data-menu-close-link>The Challenge</a>
+          <a href="#data" data-menu-close-link>Data Sources</a>
+          <a href="#team" data-menu-close-link>Team</a>
+          <a href="#principles" data-menu-close-link>AI Use</a>
+          <a href="#reel" data-menu-close-link>Watch the Reel</a>
+          <a data-link="demoVideoUrl" href="#" rel="noopener">Demo Video</a>
+          <a data-link="repoUrl" href="#" rel="noopener">GitHub Repository</a>
+          <a data-link="staticDemoUrl" href="#" rel="noopener">Offline Demo</a>
+        </nav>
+        <p class="lp-menu__status" aria-live="polite"><span class="lp-live" data-status-dot></span><span data-status-text>Science servers: checking...</span></p>
+      </div>
+    </div>
+
+    <main id="main">
+      <!-- 1. Hero -->
+      <section class="lp-hero" id="top" aria-labelledby="hero-title">
+        <h1 class="lp-hero__intro" id="hero-title" data-reveal>
+          NeuroNexus turns NASA's sharpest Mars terrain into walking plans for future astronauts, and shows how sure every number is.
+        </h1>
+        <figure class="lp-lens" data-lens>
+          <div class="lp-lens__card" data-tilt>
+            <canvas class="lp-lens__canvas" data-lens-canvas aria-hidden="true"></canvas>
+            <img class="lp-lens__fallback" src="/landing/media/hero-hirise.webp" width="608" height="600" alt="Shaded 1 m terrain of the Gale crater demo walk, with the planned route drawn in green." data-lens-fallback />
+            <span class="lp-chip lp-chip--in" data-lens-chip-in>HiRISE 1 m</span>
+            <span class="lp-chip lp-chip--out">MOLA 463 m</span>
+          </div>
+          <figcaption class="lp-lens__caption">
+            <span>Drag or move across the card.</span> Inside the lens: <button class="lp-term" type="button" data-term="hirise">HiRISE</button> terrain at 1 m. Outside: the same ground averaged to the <button class="lp-term" type="button" data-term="mola">MOLA</button> 463 m grid. Gale crater, the console's demo walk.
+          </figcaption>
+        </figure>
+        <div class="lp-cue" aria-hidden="true"><span>+</span><span>Scroll to Explore</span><span>+</span></div>
+      </section>
+
+      <!-- 2. Statement -->
+      <section class="lp-statement" aria-labelledby="st1">
+        <svg class="lp-brush" viewBox="0 0 1200 400" preserveAspectRatio="none" aria-hidden="true" data-brush>
+          <path d="M-40 300 C 180 120, 420 80, 600 190 S 980 360, 1240 120" />
+        </svg>
+        <h2 class="lp-display" id="st1" data-split>Know the Ground Before You Walk It.</h2>
+      </section>
+
+      <!-- 3. Approach -->
+      <section class="lp-approach" id="approach" aria-labelledby="ap-title">
+        <p class="lp-eyebrow" data-reveal><span class="lp-dot" aria-hidden="true"></span>Our Approach</p>
+        <h2 class="lp-lead" id="ap-title" data-reveal>
+          Orbital maps blur the short, steep pitches a person would actually walk on. NeuroNexus stacks NASA's
+          <button class="lp-term" type="button" data-term="hirise">HiRISE</button>, <button class="lp-term" type="button" data-term="ctx">CTX</button> and
+          <button class="lp-term" type="button" data-term="mola">MOLA</button> terrain, checks it against the tilt Curiosity and Perseverance really felt, and turns it into an
+          <button class="lp-term" type="button" data-term="eva">EVA</button> plan with a <button class="lp-term" type="button" data-term="pnr">turnaround point</button>.
+        </h2>
+        <p class="lp-body" data-reveal>Every value carries its source. Missing data stays missing. Planning limits are labeled as planning limits, never as safety limits.</p>
+        <a class="lp-pill lp-magnetic" href="#features" data-reveal><span class="lp-dot" aria-hidden="true"></span>See How It Works</a>
+      </section>
+
+      <!-- 4. Reel band -->
+      <section class="lp-reel" id="reel" aria-label="Feature reel">
+        <button class="lp-reel__band" type="button" data-play-reel aria-label="Play the feature reel: every tutorial in sequence">
+          <span class="lp-marquee" aria-hidden="true">
+            <span class="lp-marquee__track" data-marquee></span>
+          </span>
+        </button>
+      </section>
+
+      <!-- 5. Core features + tutorials -->
+      <section class="lp-features" id="features" aria-labelledby="ft-title">
+        <div class="lp-features__head">
+          <h2 class="lp-display lp-display--md" id="ft-title" data-split>Core Features</h2>
+          <p class="lp-meta" data-reveal>Each one is a real part of the console. Watch a short tutorial built from the live interface, then try it yourself.</p>
+        </div>
+        <ol class="lp-cards" data-cards></ol>
+        <a class="lp-pill lp-magnetic lp-features__all" href="/tutorials/"><span class="lp-dot" aria-hidden="true"></span>See All Tutorials</a>
+      </section>
+
+      <!-- 6. Proof -->
+      <section class="lp-proof" id="proof" aria-labelledby="pf-title">
+        <p class="lp-eyebrow" data-reveal><span class="lp-dot" aria-hidden="true"></span>The Proof</p>
+        <h2 class="lp-proof__number" id="pf-title"><span data-count="gale.mola_ratio" data-decimals="2">0.00</span><span class="lp-proof__x">x</span></h2>
+        <p class="lp-lead" data-reveal>
+          Curiosity tilted on ground <strong data-fill="gale.mola_ratio"></strong> times steeper than the global
+          <button class="lp-term" type="button" data-term="mola">MOLA</button> map shows. On 3 m
+          <button class="lp-term" type="button" data-term="hirise">HiRISE</button> terrain the
+          <button class="lp-term" type="button" data-term="p90-ratio">p90 ratio</button> is <strong data-fill="gale.hirise_ratio"></strong>: the map matches what the rover felt.
+        </p>
+        <dl class="lp-stats" data-reveal>
+          <div><dt>Gale, MOLA only</dt><dd><span data-fill="gale.mola_ratio"></span>x</dd><dd class="lp-small"><button class="lp-term" type="button" data-term="ci95">95% CI</button> <span data-fill="gale.mola_ci95"></span>, n = <span data-fill="gale.mola_n"></span></dd></div>
+          <div><dt>Gale, HiRISE 3 m</dt><dd><span data-fill="gale.hirise_ratio"></span>x</dd><dd class="lp-small">95% CI <span data-fill="gale.hirise_ci95"></span>, n = <span data-fill="gale.hirise_n"></span></dd></div>
+          <div><dt>Jezero, <button class="lp-term" type="button" data-term="out-of-sample">out of sample</button></dt><dd><span data-fill="jezero.mola_ratio"></span>x to <span data-fill="jezero.hirise_ratio"></span>x</dd><dd class="lp-small">Same code, no retuning</dd></div>
+          <div><dt>Plans reproduced</dt><dd><span data-fill="gale.reproducible"></span></dd><dd class="lp-small">Byte-identical on rerun</dd></div>
+        </dl>
+        <p class="lp-small lp-proof__note" data-reveal>
+          <button class="lp-term" type="button" data-term="ground-truth">Ground truth</button>: <button class="lp-term" type="button" data-term="imu-tilt">rover tilt</button> from NASA MMGIS end-of-drive waypoints.
+          Validation run <span data-fill="run_id"></span>. Rovers drive, they do not walk, and rocks under 1 to 2 m are below the terrain models.
+          <a data-link="validationDocUrl" href="#" rel="noopener">Read the full method</a>
+        </p>
+      </section>
+
+      <!-- 7. Statement 2 + principles -->
+      <section class="lp-statement lp-statement--two" id="principles" aria-labelledby="st2">
+        <svg class="lp-brush lp-brush--rust" viewBox="0 0 1200 400" preserveAspectRatio="none" aria-hidden="true" data-brush>
+          <path d="M1240 90 C 980 260, 760 330, 560 210 S 160 60, -40 260" />
+        </svg>
+        <h2 class="lp-display" id="st2" data-split>Where NASA Data Becomes a Walking Plan.</h2>
+        <ul class="lp-principles">
+          <li data-reveal><span class="lp-num">01</span><h3>Planning Limits Are Not Safety Limits</h3><p>Every status reads Within Planning Limits, Review Required or Exceeds Planning Limit. Nothing is ever called safe.</p></li>
+          <li data-reveal><span class="lp-num">02</span><h3>Missing Data Stays Missing</h3><p>Where there is no evidence, the console shows n/a or Unavailable instead of inventing a value.</p></li>
+          <li data-reveal><span class="lp-num">03</span><h3>AI May Explain, Never Invent</h3><p>A deterministic engine owns every route and number. <button class="lp-term" type="button" data-term="mars-intelligence">Mars Intelligence</button> answers through <button class="lp-term" type="button" data-term="tool-call">tool calls</button> and labels each answer as AI interpretation.</p></li>
+        </ul>
+      </section>
+
+      <!-- 8. Challenge -->
+      <section class="lp-challenge" id="challenge" aria-labelledby="ch-title">
+        <p class="lp-eyebrow" data-reveal><span class="lp-dot" aria-hidden="true"></span>NASA Space Apps Challenge 2026</p>
+        <h2 class="lp-display lp-display--md" id="ch-title" data-split>Interplanetary Survival Guide: Martian Map</h2>
+        <div class="lp-trace" data-reveal>
+          <div class="lp-trace__row lp-trace__row--head" aria-hidden="true"><span>The Challenge Asks For</span><span>NeuroNexus Answers With</span><span>NASA Data</span></div>
+          <details class="lp-trace__row" open>
+            <summary><q>the best map possible</q></summary>
+            <p>Terrain resolution ladder; synchronized 2D, USGS geology and 3D maps.</p>
+            <p class="lp-small">HiRISE, CTX, MOLA; USGS SIM 3292; IAU Gazetteer</p>
+          </details>
+          <details class="lp-trace__row">
+            <summary><q>details of their routes and destinations</q></summary>
+            <p>MARSWALK planner, Route Design, multi-stop EVAs, comparison, EVA brief and exports.</p>
+            <p class="lp-small">MOLA, HiRISE, CTX; MMGIS rover traverses</p>
+          </details>
+          <details class="lp-trace__row">
+            <summary><q>updates on current conditions</q></summary>
+            <p>One active sol drives modeled dust, archived RAD dose, rover weather, THEMIS history and live close approaches, each labeled.</p>
+            <p class="lp-small">NASA Ames Mars GCM, MSL RAD, REMS, MEDA, THEMIS, JPL CAD</p>
+          </details>
+          <details class="lp-trace__row">
+            <summary><q>the data necessary to make safe and scientifically meaningful decisions</q></summary>
+            <p>Planning statuses with plain reasons, sensitivity, site science and evidence classes. NeuroNexus shows the data behind each decision and never labels ground safe.</p>
+            <p class="lp-small">All of the above, with a source tag on every value</p>
+          </details>
+        </div>
+      </section>
+
+      <!-- 9. Data band -->
+      <section class="lp-data" id="data" aria-labelledby="dt-title">
+        <h2 class="lp-eyebrow" id="dt-title"><span class="lp-dot" aria-hidden="true"></span>Built on Open Data From</h2>
+        <div class="lp-ticker" aria-hidden="true"><div class="lp-ticker__track" data-ticker></div></div>
+        <p class="lp-body lp-data__list">
+          NASA MOLA, MRO HiRISE and CTX, Mars Odyssey THEMIS, MSL RAD and REMS, Mars 2020 MEDA, NASA Ames Mars GCM, NASA MMGIS rover traverses,
+          NASA/JPL Close-Approach Data, NASA Image and Video Library, USGS Astrogeology and the IAU Gazetteer, USGS SIM 3292, ESA Mars Express, Esri ArcGIS Mars services.
+          <a data-link="dataDocUrl" href="#" rel="noopener">See how each one is used</a>
+        </p>
+      </section>
+
+      <!-- 10. Team -->
+      <section class="lp-team" id="team" aria-labelledby="tm-title">
+        <p class="lp-eyebrow" data-reveal><span class="lp-dot" aria-hidden="true"></span>Team</p>
+        <h2 class="lp-display lp-display--md" id="tm-title" data-split>Team NeuroNexus</h2>
+        <ul class="lp-team__list" data-team></ul>
+        <p class="lp-body" data-reveal>Six members, one console. <a data-link="teamPageUrl" href="#" rel="noopener">Meet the team on Space Apps</a></p>
+      </section>
+
+      <!-- 11. Finale -->
+      <section class="lp-finale" id="finale" aria-labelledby="fn-title" data-finale>
+        <div class="lp-finale__globe" data-globe aria-hidden="true">
+          <img class="lp-finale__poster" src="/mars-mola-global.jpg" alt="" width="1440" height="720" loading="lazy" decoding="async" data-globe-poster />
+        </div>
+        <div class="lp-finale__copy">
+          <p class="lp-eyebrow lp-eyebrow--dark"><span class="lp-dot" aria-hidden="true"></span>Ready</p>
+          <h2 class="lp-display lp-display--dark" id="fn-title" data-split>Step Onto Mars.</h2>
+          <div class="lp-finale__cta">
+            <a class="lp-pill lp-pill--cyan lp-magnetic" href="/console/" data-console-link><span class="lp-dot" aria-hidden="true"></span>Enter the Mission Console</a>
+            <a class="lp-pill lp-pill--ghost lp-magnetic" href="/console/?tour=judge"><span class="lp-dot" aria-hidden="true"></span>Take the 90-Second Tour</a>
+          </div>
+        </div>
+        <div class="lp-ticker lp-ticker--dark" aria-hidden="true"><div class="lp-ticker__track" data-continue></div></div>
+      </section>
+    </main>
+
+    <!-- 12. Footer -->
+    <footer class="lp-footer">
+      <div class="lp-footer__grid">
+        <div>
+          <p class="lp-wordmark lp-wordmark--footer">NEURONEXUS</p>
+          <p class="lp-small">Interplanetary Survival Guide: Martian Map. NASA Space Apps Challenge 2026.</p>
+        </div>
+        <nav aria-label="Footer">
+          <a href="/console/" data-console-link>Mission Console</a>
+          <a href="/tutorials/">Tutorials</a>
+          <a data-link="repoUrl" href="#" rel="noopener">GitHub</a>
+          <a data-link="validationDocUrl" href="#" rel="noopener">Validation</a>
+          <a data-link="dataDocUrl" href="#" rel="noopener">Data Sources</a>
+          <a data-link="teamPageUrl" href="#" rel="noopener">Space Apps Team Page</a>
+        </nav>
+        <div class="lp-small">
+          <p>AI use: Google Gemini answers questions inside the console; Claude assisted with writing code. Tutorials are real console screenshots, not generated images.</p>
+          <p>Mars data courtesy of NASA, USGS and their partners. NASA does not endorse any non-U.S. Government entity and is not responsible for information contained on non-U.S. Government websites.</p>
+          <p>&copy; 2026 Team NeuroNexus. Type: Switzer by Indian Type Foundry (Fontshare).</p>
+        </div>
+      </div>
+    </footer>
+
+    <div class="lp-player" role="dialog" aria-modal="true" aria-labelledby="lp-player-title" hidden data-player></div>
+    <div class="lp-termcard" role="tooltip" hidden data-termcard></div>
+
+    <script type="module" src="/landing/main.js"></script>
   </body>
 </html>

@@ -95,7 +95,7 @@ export const LINE_STYLES = {
   curiosity: { label: "Curiosity traverse (NASA MMGIS)", colour: "#8cf0b1", width: 3, status: "OBSERVED" },
   perseverance: { label: "Perseverance traverse (NASA MMGIS)", colour: "#a7d8ff", width: 3, status: "OBSERVED" },
   route: { label: "Active route", colour: "#01ffff", width: 4, status: "DERIVED" },
-  candidate: { label: "AI candidate route (color per candidate; selected = solid)", colour: "#3fbcd4", width: 3, dashed: true, status: "DERIVED" },
+  candidate: { label: "Route candidate (color per candidate; selected = solid)", colour: "#3fbcd4", width: 3, dashed: true, status: "DERIVED" },
   contact: { label: "USGS geologic contact", colour: "#e5e7eb", width: 1, dashed: true, status: "DERIVED" },
   structure: { label: "USGS geologic structure", colour: "#4ea8de", width: 1.5, status: "DERIVED" },
 };

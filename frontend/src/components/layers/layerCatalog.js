@@ -56,7 +56,7 @@ export const LAYER_CATEGORIES = [
       { id: "rovers", kind: "map", label: "Rover locations (latest position)", ledgerId: "NASA_MMGIS", on: true, maps: ["3d"] },
       { id: "mslTraverse", kind: "map", label: "Curiosity traverse", ledgerId: "MMGIS_MSL_TRAVERSE", on: true, maps: ALL },
       { id: "m2020Traverse", kind: "map", label: "Perseverance traverse", ledgerId: "MMGIS_M2020_TRAVERSE", on: true, maps: ALL },
-      { id: "routes", kind: "map", label: "Planned routes, AI candidates and safe havens", ledgerId: "NN_ROUTE_ENGINE", on: true, maps: ALL },
+      { id: "routes", kind: "map", label: "Planned routes, route candidates and safe havens", ledgerId: "NN_ROUTE_ENGINE", on: true, maps: ALL },
     ],
   },
   {

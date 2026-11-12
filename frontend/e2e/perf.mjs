@@ -32,7 +32,7 @@ async function run(preset) {
   await context.addInitScript((p) => localStorage.setItem("nn.browserOptimization.v2", JSON.stringify({ preset: p, custom: {} })), preset);
   const page = await context.newPage();
   const t0 = Date.now();
-  await page.goto(BASE, { waitUntil: "domcontentloaded" });
+  await page.goto(`${BASE.replace(/\/$/, "")}/console/`, { waitUntil: "domcontentloaded" }); // console moved to /console/ (landing page at /)
   await page.waitForFunction(() => document.body.innerText.includes("SYSTEM ONLINE"), null, { timeout: 120000 });
   await page.waitForSelector("[data-testid=thermal-sol-readout]", { timeout: 120000 });
   const readyMs = Date.now() - t0;

@@ -562,6 +562,14 @@
       "destination": "https://neuronexus-v4-core-a.onrender.com/terrain/:path*"
     },
     {
+      "source": "/console/(.*)",
+      "destination": "/console/index.html"
+    },
+    {
+      "source": "/tutorials/(.*)",
+      "destination": "/tutorials/index.html"
+    },
+    {
       "source": "/((?!api/|terrain/).*)",
       "destination": "/index.html"
     }

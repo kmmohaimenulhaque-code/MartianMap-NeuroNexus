@@ -56,7 +56,7 @@ const setSol = async (sol) => {
 };
 
 try {
-  await page.goto(BASE, { waitUntil: "domcontentloaded" });
+  await page.goto(`${BASE.replace(/\/$/, "")}/console/`, { waitUntil: "domcontentloaded" }); // console moved to /console/ (landing page at /)
   await page.waitForFunction(() => document.body.innerText.includes("SYSTEM ONLINE"), null, { timeout: 60000 });
   await page.waitForSelector("[data-testid=thermal-sol-readout]", { timeout: 60000 });
   await page.waitForTimeout(2500);
@@ -101,7 +101,7 @@ try {
     const r = els.map((e) => e.getBoundingClientRect()).filter((b) => b.width);
     return r.some((a, i) => r.some((b, j) => i < j && a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom));
   });
-  check(!overlap, "AI ROUTE DESIGN, 3D MAP, LAYERS and MAP LEGEND do not overlap");
+  check(!overlap, "ROUTE DESIGN, 3D MAP, LAYERS and MAP LEGEND do not overlap");
   const rightOverflow = await page.$eval(".right-column", (col) => {
     const edge = col.getBoundingClientRect().right;
     return [...col.querySelectorAll("input, a, .mission-row")].some((e) => e.getBoundingClientRect().right > edge + 1);
