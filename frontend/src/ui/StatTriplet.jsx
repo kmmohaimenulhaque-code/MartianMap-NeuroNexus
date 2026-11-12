@@ -44,7 +44,7 @@ export function StatTable({ columns = ["AT SITE", "MIN", "MEAN", "MAX"], rows, b
   );
 }
 
-/* Kept for existing imports: now a visible 🏷️ SourceTag resolved from the canonical ledger. */
+/* Kept for existing imports: now a visible SourceTag resolved from the canonical ledger. */
 export function ProvenanceTag({ dataClass, source, ledgerId }) {
   return <SourceTag ledgerId={ledgerId ?? "UNREGISTERED"} evidence={dataClass} detail={ledgerId ? undefined : source} />;
 }

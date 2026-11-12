@@ -5,6 +5,7 @@ import NeonHeatmap from "../ui/NeonHeatmap";
 import NeonLineChart from "../ui/NeonLineChart";
 import { ProvenanceTag } from "../ui/StatTriplet";
 import { fmt } from "../ui/format";
+import Icon from "../ui/Icon";
 
 /*
  * DUST SCENARIO — NASA Ames MGCM MY34 (MODELED).
@@ -67,11 +68,7 @@ export default function DustScenarioPanel({ location, sol, onSolChange, onSelect
       .finally(() => pending.current.delete(mapSol));
   }, [mapSol, maps]);
 
-  useEffect(() => {
-    if (!playing) return undefined;
-    const timer = window.setInterval(() => onSolChange((current) => (current >= MAX_SOL ? 1 : current + 2)), 120);
-    return () => window.clearInterval(timer);
-  }, [playing, onSolChange]);
+  /* Playback runs in SolProvider so the sol keeps moving in every mode. */
 
   const levels = series?.levels;
   const tau = series?.tau?.[sol - 1] ?? (Number.isFinite(Number(fallbackDust?.opacity)) ? Number(fallbackDust.opacity) : null);
@@ -192,13 +189,13 @@ export default function DustScenarioPanel({ location, sol, onSolChange, onSelect
 
       <div className="dust-scrubber">
         <button type="button" onClick={() => onSolChange((s) => Math.max(1, s - 1))} aria-label="Previous sol">
-          ◀
+          <Icon name="play" size={14} className="nn-flip" />
         </button>
         <button type="button" onClick={() => onPlayingChange(!playing)} aria-pressed={playing}>
-          {playing ? "❚❚" : "▶"}
+          <Icon name={playing ? "pause" : "play"} size={14} />
         </button>
         <button type="button" onClick={() => onSolChange((s) => Math.min(MAX_SOL, s + 1))} aria-label="Next sol">
-          ▶
+          <Icon name="fly" size={14} />
         </button>
         <input
           type="range"

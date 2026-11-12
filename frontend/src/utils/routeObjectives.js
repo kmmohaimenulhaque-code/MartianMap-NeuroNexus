@@ -6,7 +6,7 @@
  * keeps working and so the weighting rule has exactly one implementation.
  */
 
-export const CANDIDATE_COLOURS = ["#75e6ff", "#ff9f68", "#8cf0b1", "#c99bff", "#ffd166", "#ff8fa3", "#7ad7f0"];
+export const CANDIDATE_COLOURS = ["#75e6ff", "#4ea8de", "#8cf0b1", "#3fbcd4", "#d8f6ff", "#a7d8ff", "#6fd3c1"];
 
 export const OBJECTIVES = [
   ["eva", "EVA burden"],

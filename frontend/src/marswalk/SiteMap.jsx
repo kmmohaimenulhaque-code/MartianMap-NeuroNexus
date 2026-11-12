@@ -88,7 +88,7 @@ function FitFrame({ extent }) {
   return null;
 }
 
-export default function SiteMap({ frame, mode, overlays, plan, estimate, editPts, onMapClick, onDragPoint, hoverIndex, rovers, grids, groundTruth }) {
+export default function SiteMap({ frame, mode, overlays, plan, estimate, editPts, onMapClick, onDragPoint, hoverIndex, rovers, grids, groundTruth, roverSolLimit = null }) {
   const [cursor, setCursor] = useState(null);
   const extent = frame.halfWidth;
   const colors = useMemo(() => {
@@ -165,8 +165,13 @@ export default function SiteMap({ frame, mode, overlays, plan, estimate, editPts
                 const [x, y] = toLocal(w.lat, w.lon, frame);
                 if (Math.abs(x) > extent || Math.abs(y) > extent) return null;
                 return (
-                  <CircleMarker key={`w-${rover.id}-${w.RMC}`} center={[y, x]} radius={2 + (w.tilt ?? 0) / 5} pathOptions={{ color: colors[rover.id], weight: 1, fillOpacity: 0.55 }}>
-                    <Tooltip>{`${rover.name} sol ${w.sol} · tilt ${w.tilt?.toFixed(1) ?? "n/a"}° (rover IMU)`}</Tooltip>
+                  <CircleMarker
+                    key={`w-${rover.id}-${w.RMC}`}
+                    center={[y, x]}
+                    radius={2 + (w.tilt ?? 0) / 5}
+                    pathOptions={{ color: colors[rover.id], weight: 1, fillOpacity: roverSolLimit != null && w.sol > roverSolLimit ? 0.12 : 0.55, opacity: roverSolLimit != null && w.sol > roverSolLimit ? 0.3 : 1 }}
+                  >
+                    <Tooltip>{`${rover.name} sol ${w.sol} · tilt ${w.tilt?.toFixed(1) ?? "n/a"}° (rover IMU)${roverSolLimit != null && w.sol > roverSolLimit ? " · after the active sol" : ""}`}</Tooltip>
                   </CircleMarker>
                 );
               }),

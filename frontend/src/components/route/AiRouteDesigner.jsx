@@ -135,7 +135,7 @@ function CandidateCard({ candidate, colour, active, onSelect, onApply, onSave, s
         </button>
         {onSave && (
           <button type="button" onClick={() => onSave(candidate)} title="Save this candidate as a named, reproducible route">
-            {saved ? "SAVED ✓ · SAVE AGAIN" : "SAVE AS ROUTE"}
+            {saved ? "SAVED · SAVE AGAIN" : "SAVE AS ROUTE"}
           </button>
         )}
       </div>

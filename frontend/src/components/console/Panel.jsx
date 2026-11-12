@@ -1,6 +1,6 @@
 import { SourceTags } from "../../sources/SourceTag";
 
-/* Console panel with optional 🏷️ source tags in its heading, and a labeled metric. */
+/* Console panel with optional source tags in its heading, and a labeled metric. */
 export function Panel({ eyebrow, title, children, className = "", id, sources }) {
   return (
     <section className={`panel ${className}`} id={id}>

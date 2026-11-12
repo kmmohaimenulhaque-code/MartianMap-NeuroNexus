@@ -1,4 +1,4 @@
-/* 🍔 Mission Operations Manual: quick starts, guides, live data status and the source ledger. */
+/* Mission Operations Manual: quick starts, guides, live data status and the source ledger. */
 
 import { useEffect, useState } from "react";
 
@@ -37,7 +37,7 @@ export default function MissionManualDrawer({ open, onClose, onQuickStart, onOpe
       <aside className="nn-drawer nn-manual" role="dialog" aria-modal="true" aria-label="Mission Operations Manual" onMouseDown={(e) => e.stopPropagation()}>
         <header className="nn-drawer-head">
           <div>
-            <span className="nn-drawer-kicker">🍔 MISSION OPERATIONS MANUAL</span>
+            <span className="nn-drawer-kicker">[MENU] MISSION OPERATIONS MANUAL</span>
             <h2>NeuroNexus · Marswalk</h2>
           </div>
           <button type="button" className="nn-drawer-close" onClick={onClose} aria-label="Close manual">
@@ -114,7 +114,7 @@ export default function MissionManualDrawer({ open, onClose, onQuickStart, onOpe
 
         <section className="nn-manual-section">
           <button type="button" className="nn-tag-link" onClick={onOpenCommands}>
-            Open the ☰ Command Index (Ctrl/⌘+K) →
+            Open the Command Index (Ctrl/Cmd+K) →
           </button>
         </section>
       </aside>

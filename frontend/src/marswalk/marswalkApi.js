@@ -34,7 +34,7 @@ export const marswalkApi = {
     request(`/terrain/hires/window?${qs({ lat: frame.lat, lon: frame.lon, half_width_m: frame.halfWidth, res_m: frame.res, mode, layers, grid_max: gridMax })}`, opts),
   imageUrl: (frame, mode, layer, maxSide = 1500) =>
     `${API}/terrain/hires/image?${qs({ layer, lat: frame.lat, lon: frame.lon, half_width_m: frame.halfWidth, res_m: frame.res, mode, max_side: maxSide })}`,
-  conditions: (site, opts) => request(`/conditions?${qs({ site })}`, opts),
+  conditions: (site, sol, opts) => request(`/conditions?${qs(sol ? { site, sol } : { site })}`, opts),
   validation: (opts) => request("/validation/latest", opts),
   dataStatus: (opts) => request("/data/status", opts),
 };

@@ -1,7 +1,8 @@
 /*
- * Browser Optimization store: presets (AUTO / ADAPTIVE, LOW-RAM / 4 GB, MAX FIDELITY) and individual
- * toggles. AUTO turns the low-RAM protections on when navigator.deviceMemory <= 4 or the measured
- * frame rate stays low. No setting changes a computed number: only where and when work happens.
+ * Browser Optimization store. OFF by default (MAX FIDELITY: no throttling, full WebGL, immediate
+ * rendering). Turning it ON (LOW-RAM / 4 GB) is an explicit user choice for low-end devices; AUTO is
+ * an opt-in preset that switches the protections on when navigator.deviceMemory <= 4 or the frame
+ * rate stays low. No setting changes a computed number: only where and when work happens.
  */
 
 export const TOGGLES = {
@@ -15,13 +16,13 @@ export const TOGGLES = {
 
 export const PRESETS = {
   LOW_RAM: { label: "LOW-RAM / 4 GB MODE", toggles: Object.fromEntries(Object.keys(TOGGLES).map((k) => [k, true])) },
-  MAX_FIDELITY: {
-    label: "MAX FIDELITY",
-    toggles: { workerMath: true, lazyHeavyViews: true, suspendWebGL: false, canvasCulling: false, tileCache: true, debounceDrags: false },
-  },
+  MAX_FIDELITY: { label: "MAX FIDELITY", toggles: Object.fromEntries(Object.keys(TOGGLES).map((k) => [k, false])) },
 };
 
-const KEY = "nn.browserOptimization";
+export const DEFAULT_PRESET = "MAX_FIDELITY";
+
+/* v2 key: earlier builds defaulted to AUTO; nobody inherits an optimization they did not choose. */
+const KEY = "nn.browserOptimization.v2";
 const LOW_FPS = 40;
 const LOW_FPS_SECONDS = 5;
 
@@ -35,7 +36,7 @@ function read() {
 
 function initial() {
   const saved = read();
-  return { preset: saved?.preset ?? "AUTO", custom: saved?.custom ?? {}, lowFpsStreak: 0, autoLow: false };
+  return { preset: PRESETS[saved?.preset] || saved?.preset === "AUTO" ? saved.preset : DEFAULT_PRESET, custom: saved?.custom ?? {}, lowFpsStreak: 0, autoLow: false };
 }
 
 let state = initial();
@@ -95,4 +96,11 @@ export const perfStore = {
     else state = next;
   },
   enabled: (key) => Boolean(effectiveToggles(state)[key]),
+  /* The single [BROWSER OPTIMIZATION] switch: ON = LOW-RAM preset, OFF = MAX FIDELITY. */
+  isOn: () => isOptimizationOn(state),
+  toggle: () => emit({ ...state, preset: isOptimizationOn(state) ? "MAX_FIDELITY" : "LOW_RAM", custom: {} }),
 };
+
+export function isOptimizationOn(s, memoryGb = deviceMemoryGb()) {
+  return Object.values(effectiveToggles(s, memoryGb)).some(Boolean);
+}

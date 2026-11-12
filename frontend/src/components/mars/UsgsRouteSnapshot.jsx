@@ -93,7 +93,7 @@ export default function UsgsRouteSnapshot({ open, onClose, snapshot, loading, er
                       key={`s-${index}-${pathIndex}`}
                       points={path.map((point) => point.join(",")).join(" ")}
                       fill="none"
-                      stroke="#ff9f68"
+                      stroke="#4ea8de"
                       strokeOpacity="0.8"
                       strokeWidth="1.4"
                     />
@@ -131,8 +131,8 @@ export default function UsgsRouteSnapshot({ open, onClose, snapshot, loading, er
                 ))}
                 {(snapshot.geology?.landing_sites ?? []).map((site, index) => (
                   <g key={`l-${index}`}>
-                    <rect x={site.px[0] - 4} y={site.px[1] - 4} width="8" height="8" fill="#ffd166" stroke="#04080b" />
-                    <text x={site.px[0] + 8} y={site.px[1] + 4} fontSize="11" fill="#ffd166">
+                    <rect x={site.px[0] - 4} y={site.px[1] - 4} width="8" height="8" fill="#d8f6ff" stroke="#04080b" />
+                    <text x={site.px[0] + 8} y={site.px[1] + 4} fontSize="11" fill="#d8f6ff">
                       {site.attributes?.NAME}
                     </text>
                   </g>

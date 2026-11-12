@@ -1,17 +1,17 @@
 {
   "schema": "neuronexus.ui-commands.v1",
-  "note": "Single source of truth for the ☰ Command Index and Mars Intelligence's UI guide. Every entry needs a handler in features/registry.js (enforced by a unit test).",
+  "note": "Single source of truth for the Command Index and Mars Intelligence's UI guide. Every entry needs a handler in features/registry.js (enforced by a unit test).",
   "categories": [
-    { "id": "site", "label": "Site & Navigation", "icon": "⌖" },
-    { "id": "route", "label": "Route Planning", "icon": "⟡" },
-    { "id": "saved", "label": "Saved Routes & Comparison", "icon": "⇄" },
-    { "id": "analysis", "label": "Analysis & Intelligence", "icon": "◈" },
-    { "id": "environment", "label": "Environment", "icon": "☼" },
-    { "id": "views", "label": "Views", "icon": "◉" },
-    { "id": "ops", "label": "Mission Operations", "icon": "◎" },
-    { "id": "data", "label": "Data & Export", "icon": "⇩" },
-    { "id": "workspace", "label": "Workspace", "icon": "✎" },
-    { "id": "system", "label": "System & Team", "icon": "✦" }
+    { "id": "site", "label": "Site & Navigation", "icon": "terrain" },
+    { "id": "route", "label": "Route Planning", "icon": "route" },
+    { "id": "saved", "label": "Saved Routes & Comparison", "icon": "list" },
+    { "id": "analysis", "label": "Analysis & Intelligence", "icon": "pulse" },
+    { "id": "environment", "label": "Environment", "icon": "sol" },
+    { "id": "views", "label": "Views", "icon": "views" },
+    { "id": "ops", "label": "Mission Operations", "icon": "globe" },
+    { "id": "data", "label": "Data & Export", "icon": "export" },
+    { "id": "workspace", "label": "Workspace", "icon": "edit" },
+    { "id": "system", "label": "System & Team", "icon": "system" }
   ],
   "commands": [
     { "id": "search-place", "category": "site", "label": "Search Mars place", "shortcut": "/", "description": "Search the 2,052 USGS/IAU named features.", "how": "Type in the search box at the top centre and pick a suggestion.", "where": "Top bar search box" },
@@ -29,7 +29,7 @@
     { "id": "ai-route-design", "category": "route", "label": "AI Route Designer", "shortcut": "A", "description": "Deterministic multi-objective route candidates (EVA, terrain, science, operational) over NASA MOLA terrain.", "how": "Set a start and a destination, adjust objective weights, Generate, then Apply a candidate.", "where": "Top bar, 2D map, 3D toolbar" },
 
     { "id": "compare-routes", "category": "saved", "label": "Compare saved routes", "shortcut": "C", "description": "Side-by-side comparison of up to four saved routes: map, elevation profiles, along-track MIN/MEAN/MAX table with best and worst marked, per-route and combined USGS snapshots, CSV/JSON export.", "how": "Save at least two routes, then Compare saved routes (also available from the 3D toolbar).", "where": "Route console, 3D toolbar, Command Index" },
-    { "id": "routes-3d", "category": "saved", "label": "Show saved routes on 3D globe", "description": "Open the 3D view with the ROUTES panel: every saved route drawn in its colour, with show/hide, fly-to, add-to-compare and USGS snapshot.", "where": "3D view → ⌁ ROUTES" },
+    { "id": "routes-3d", "category": "saved", "label": "Show saved routes on 3D globe", "description": "Open the 3D view with the ROUTES panel: every saved route drawn in its colour, with show/hide, fly-to, add-to-compare and USGS snapshot.", "where": "3D view → ROUTES" },
     { "id": "route-projection", "category": "saved", "label": "Route Projection", "description": "Open the 3D globe in projection mode: tick saved routes and each one is projected bold, lifted above the terrain with its name; the camera reframes to show every projected route.", "where": "3D toolbar → ◎ ROUTE PROJECTION" },
     { "id": "route-snapshot", "category": "saved", "label": "USGS route snapshot", "description": "USGS SIM 3292 geology over MOLA hillshade with the geologic units crossed. With two or more routes selected for comparison, all of them are drawn together in one frame.", "where": "Top bar, USGS map panel, 3D toolbar" },
     { "id": "save-candidates", "category": "saved", "label": "Save AI route candidates", "description": "Save every AI Route Designer candidate as a named, reproducible route (single candidates: SAVE AS ROUTE on each card).", "where": "AI Route Designer" },
@@ -65,14 +65,14 @@
 
     { "id": "field-notes", "category": "workspace", "label": "Field notes & checklist", "shortcut": "N", "description": "Persistent mission objective notes and a ten-item checklist (stored in this browser)." },
 
-    { "id": "shortcuts", "category": "system", "label": "Keyboard shortcuts", "shortcut": "?", "description": "Ctrl/⌘+K opens the Command Index anywhere. Single-key shortcuts work when no text field is focused." },
+    { "id": "shortcuts", "category": "system", "label": "Keyboard shortcuts", "shortcut": "?", "description": "Ctrl/Cmd+K opens the Command Index anywhere. Single-key shortcuts work when no text field is focused." },
     { "id": "backend-status", "category": "system", "label": "Backend status", "description": "Whether the NeuroNexus backend (FastAPI, port 8002) is reachable." },
     { "id": "about", "category": "system", "label": "About NeuroNexus", "description": "Project purpose, data sources and the NASA Space Apps Challenge 2026 context." },
     { "id": "meet-the-team", "category": "system", "label": "Meet the Team", "description": "Team NeuroNexus on the NASA Space Apps Challenge 2026 site.", "url": "https://www.spaceappschallenge.org/2026/find-a-team/neuronexus1/" },
     { "id": "marswalk-mode", "category": "views", "label": "Switch GLOBAL CONSOLE / MARSWALK", "shortcut": "M", "description": "Meter-scale EVA planning on the HiRISE → CTX → MOLA terrain ladder.", "how": "Press M or use the mode switch in the top bar.", "where": "Top bar mode switch" },
-    { "id": "marswalk-demo", "category": "views", "label": "Gale Crater Marswalk demo", "description": "Plan a 4-hour EVA from Curiosity's latest position to a target 1.2 km west, at 1 m.", "where": "🍔 → Quick start" },
-    { "id": "mission-manual", "category": "system", "label": "Mission Operations Manual", "description": "Quick starts, guides, live data status, the source ledger and Browser Optimization.", "where": "Top bar → 🍔" },
-    { "id": "sources-ledger", "category": "data", "label": "Source ledger (🏷️)", "description": "Browse, filter and export the canonical source ledger every 🏷️ tag resolves to.", "where": "Footer → SOURCE LEDGER, any tag → View in ledger" },
-    { "id": "browser-optimization", "category": "system", "label": "Browser Optimization", "description": "Presets (AUTO, LOW-RAM / 4 GB, MAX FIDELITY), worker math, lazy loading, WebGL suspension, canvas culling and a 150 MB tile cache, with live FPS and memory telemetry.", "where": "🍔 → Browser Optimization, top-bar ⚡ pill" }
+    { "id": "marswalk-demo", "category": "views", "label": "Gale Crater Marswalk demo", "description": "Plan a 4-hour EVA from Curiosity's latest position to a target 1.2 km west, at 1 m.", "where": "[MENU] → Quick start" },
+    { "id": "mission-manual", "category": "system", "label": "Mission Operations Manual", "description": "Quick starts, guides, live data status, the source ledger and Browser Optimization.", "where": "Top bar → [MENU]" },
+    { "id": "sources-ledger", "category": "data", "label": "Source ledger", "description": "Browse, filter and export the canonical source ledger every source tag resolves to.", "where": "Footer → SOURCE LEDGER, any tag → View in ledger" },
+    { "id": "browser-optimization", "category": "system", "label": "Browser Optimization", "description": "Presets (AUTO, LOW-RAM / 4 GB, MAX FIDELITY), worker math, lazy loading, WebGL suspension, canvas culling and a 150 MB tile cache, with live FPS and memory telemetry.", "where": "[MENU] → Browser Optimization, top-bar [PERF] pill, or the Radial Feature Wheel" }
   ]
 }

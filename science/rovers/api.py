@@ -1,6 +1,9 @@
 """/rovers/{rover}/waypoints, /traverse and /latest (MMGIS, with snapshot fallback)."""
 from __future__ import annotations
 
+import threading
+from functools import lru_cache
+
 import numpy as np
 from fastapi import APIRouter, Query
 
@@ -36,10 +39,13 @@ def waypoints(rover: str, sol_min: int | None = Query(None, ge=0), sol_max: int 
             "source": _source(data, meta["waypoints_ledger"])}
 
 
-@router.get("/{rover}/traverse")
-def traverse(rover: str, max_vertices: int = Query(4000, ge=50, le=200000)):
+_simplify_lock = threading.Lock()
+
+
+@lru_cache(maxsize=32)
+def _display_line(rover: str, max_vertices: int, version: str) -> tuple[list, int, float]:
+    """RDP display line for one data version; cached because the 30-step tolerance search is CPU-bound."""
     data = _data(rover)
-    meta = traverses.ROVERS[rover]
     coords = np.array([c[:2] for d in data["traverse"] for c in d["coordinates"]], dtype="float64")
     total = len(coords)
     line = coords
@@ -57,8 +63,27 @@ def traverse(rover: str, max_vertices: int = Query(4000, ge=50, le=200000)):
                 hi = mid
         idx = traverses.rdp(pts, hi)
         line, tolerance = coords[idx], hi
+    return [[round(a, 7), round(b, 7)] for a, b in line], total, tolerance
+
+
+def warm(max_vertices: tuple[int, ...] = (3000, 4000)) -> None:
+    """Precompute the display lines the console requests first (called in a background thread at startup)."""
+    for rover in traverses.ROVERS:
+        for n in max_vertices:
+            try:
+                traverse(rover, n)
+            except Exception:  # noqa: BLE001 - warming is best effort; requests still compute on demand
+                return
+
+
+@router.get("/{rover}/traverse")
+def traverse(rover: str, max_vertices: int = Query(4000, ge=50, le=200000)):
+    data = _data(rover)
+    meta = traverses.ROVERS[rover]
+    with _simplify_lock:  # one computation per (rover, budget, version); concurrent callers wait for it
+        line, total, tolerance = _display_line(rover, max_vertices, f"{data['origin']}:{data['retrieved_at']}")
     return {"rover": rover, "name": meta["name"], "evidence": "OBSERVED",
-            "geometry": {"type": "LineString", "coordinates": [[round(a, 7), round(b, 7)] for a, b in line]},
+            "geometry": {"type": "LineString", "coordinates": line},
             "vertices_full": total, "vertices_display": len(line), "display_tolerance_m": round(tolerance, 3),
             "display_only": total > max_vertices, "drives": len(data["traverse"]),
             "source": _source(data, meta["traverse_ledger"])}

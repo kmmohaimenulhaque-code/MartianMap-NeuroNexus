@@ -23,7 +23,7 @@ const MARS_CRS = {
   },
 };
 
-const COMPARISON_COLOURS = ["#75e6ff", "#ff9f68", "#8cf0b1", "#c99bff"];
+const COMPARISON_COLOURS = ["#75e6ff", "#4ea8de", "#8cf0b1", "#3fbcd4"];
 
 function normaliseLongitude(longitude) {
   return ((Number(longitude) % 360) + 360) % 360;
@@ -57,15 +57,15 @@ function featureColor(featureType = "") {
   const type = String(featureType).split(",")[0].trim();
 
   const colors = {
-    Crater: "#d9c2a5",
+    Crater: "#b9cfd6",
     Vallis: "#72d9ff",
-    Mons: "#ff9f68",
+    Mons: "#4ea8de",
     Fossa: "#9fe3a8",
     Mensa: "#e7d06f",
-    Planum: "#c99bff",
+    Planum: "#3fbcd4",
     Patera: "#ff718d",
     Chaos: "#75e6ff",
-    Rupes: "#ffbf69",
+    Rupes: "#b9cfd6",
     Chasma: "#80aaff",
     Dorsum: "#c5a27b",
     Terra: "#f0c6a0",
@@ -554,11 +554,11 @@ function ComparisonLegend({ routes }) {
 
           color: "#75e6ff",
 
-          fontFamily: "monospace",
+          fontFamily: "var(--nn-font)",
 
-          fontSize: "8px",
+          fontSize: "13px",
 
-          letterSpacing: "0.12em",
+          letterSpacing: "0.06em",
         }}
       >
         ROUTE COMPARISON
@@ -588,9 +588,9 @@ function ComparisonLegend({ routes }) {
 
                 color: "#b4c5ca",
 
-                fontFamily: "monospace",
+                fontFamily: "var(--nn-font)",
 
-                fontSize: "9px",
+                fontSize: "13px",
               }}
             >
               <span
@@ -609,11 +609,9 @@ function ComparisonLegend({ routes }) {
 
               <span
                 style={{
-                  overflow: "hidden",
+                  whiteSpace: "normal",
 
-                  textOverflow: "ellipsis",
-
-                  whiteSpace: "nowrap",
+                  overflowWrap: "anywhere",
                 }}
               >
                 {route.name ?? `ROUTE ${index + 1}`}
@@ -1028,11 +1026,11 @@ export default function MarsMap({
 
             color: "#75e6ff",
 
-            fontFamily: "monospace",
+            fontFamily: "var(--nn-font)",
 
-            fontSize: "8px",
+            fontSize: "13px",
 
-            letterSpacing: "0.09em",
+            letterSpacing: "0.06em",
 
             pointerEvents: "none",
           }}

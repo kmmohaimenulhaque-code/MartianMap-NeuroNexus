@@ -41,7 +41,7 @@ export default function SourcesDrawer({ open, focusId, onClose }) {
       <aside className="nn-drawer nn-sources" role="dialog" aria-modal="true" aria-label="Source ledger" onMouseDown={(e) => e.stopPropagation()}>
         <header className="nn-drawer-head">
           <div>
-            <span className="nn-drawer-kicker">🏷️ CANONICAL SOURCE LEDGER · neuronexus.source-ledger.v3</span>
+            <span className="nn-drawer-kicker">CANONICAL SOURCE LEDGER · neuronexus.source-ledger.v3</span>
             <h2>Sources ({ledger.entries.length})</h2>
           </div>
           <button type="button" className="nn-drawer-close" onClick={onClose} aria-label="Close source ledger">
@@ -88,7 +88,7 @@ export default function SourcesDrawer({ open, focusId, onClose }) {
             return (
               <li key={e.id} ref={focused ? focusRef : null} className={focused ? "focused" : undefined}>
                 <div className="nn-sources-row">
-                  <span className={`nn-tag nn-tag--${classKey(e.evidence_class)} nn-tag--static`}>🏷️ {e.evidence_class}</span>
+                  <span className={`nn-tag nn-tag--${classKey(e.evidence_class)} nn-tag--static`}>{e.evidence_class}</span>
                   <code>{e.id}</code>
                   <span className="nn-sources-status">{e.ingestion_status}</span>
                 </div>

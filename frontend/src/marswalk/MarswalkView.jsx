@@ -13,6 +13,7 @@ import DecisionCard from "./DecisionCard";
 import { downloadBrief, openPrintableBrief } from "./evaBrief";
 import { marswalkApi } from "./marswalkApi";
 import { perfStore } from "../perf/perfStore";
+import { useSol } from "../state/solStore";
 import { runMath, setGrids } from "../perf/workerClient";
 import { displayGrid, toLocal } from "./marswalkMath";
 import ProfileStrip from "./ProfileStrip";
@@ -69,6 +70,8 @@ export default function MarswalkView({ demo, onNotice }) {
   const [overlays, setOverlays] = useState({ hillshade: true, ortho: false, walkability: true, slope: false, source: false });
   const [groundTruth, setGroundTruth] = useState(Boolean(demo?.groundTruth));
   const [rover, setRover] = useState(null);
+  const [conditions, setConditions] = useState(null);
+  const { missionSol } = useSol();
   const [hoverIndex, setHoverIndex] = useState(null);
   const planAbort = useRef(null);
   const autoPlanned = useRef(false);
@@ -369,6 +372,7 @@ export default function MarswalkView({ demo, onNotice }) {
             rovers={groundTruth && rover ? [rover] : []}
             grids={grids}
             groundTruth={groundTruth}
+            roverSolLimit={rover ? missionSol[rover.id] : null}
           />
         ) : (
           <div className="mw-banner">{planState.error ? `UNAVAILABLE · ${planState.error}` : "Locating the rover's latest position (stand-in habitat)…"}</div>
@@ -379,8 +383,8 @@ export default function MarswalkView({ demo, onNotice }) {
         <ProfileStrip profile={plan?.profile} hoverIndex={hoverIndex} onHover={setHoverIndex} />
       </section>
       <aside className="mw-right" aria-label="Decision">
-        <DecisionCard plan={plan} estimate={estimate} loading={planState.loading} error={planState.error} />
-        <ConditionsStrip site={site} evaHours={evaHours} />
+        <DecisionCard plan={plan} estimate={estimate} loading={planState.loading} error={planState.error} conditions={conditions} />
+        <ConditionsStrip site={site} evaHours={evaHours} onConditions={setConditions} />
         <ValidationPanel site={site} />
         <section className="mw-card">
           <h3>SCIENCE STOPS</h3>

@@ -123,9 +123,9 @@ export default function RouteConsole({
 
             color: "#93a7af",
 
-            fontFamily: "monospace",
+            fontFamily: "var(--nn-font)",
 
-            fontSize: "7px",
+            fontSize: "12px",
 
             letterSpacing: "0.08em",
 
@@ -150,9 +150,9 @@ export default function RouteConsole({
 
             color: "#8cf0b1",
 
-            fontFamily: "monospace",
+            fontFamily: "var(--nn-font)",
 
-            fontSize: "7px",
+            fontSize: "12px",
 
             letterSpacing: "0.08em",
 
@@ -175,9 +175,9 @@ export default function RouteConsole({
 
           color: "#65777f",
 
-          fontFamily: "monospace",
+          fontFamily: "var(--nn-font)",
 
-          fontSize: "7px",
+          fontSize: "12px",
         }}
       >
         <span>

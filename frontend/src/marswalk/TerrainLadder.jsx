@@ -1,6 +1,7 @@
 /* TERRAIN LADDER chip + source mode: HiRISE 1 m -> CTX 20 m -> MOLA 463 m. */
 
 import SourceTag from "../sources/SourceTag";
+import Popover from "../ui/Popover";
 
 const MODES = [
   ["ladder", "LADDER", "HiRISE → CTX → MOLA"],
@@ -13,7 +14,7 @@ function ladderLabel(products) {
   if (!top) return "no terrain loaded";
   const gsd = top.family === "MOLA" ? "463 m" : `${Number(top.gsd_m ?? 0).toFixed(1)} m`;
   const name = top.family === "HIRISE" ? "HiRISE" : top.family;
-  return `${name} ${gsd} · ${String(top.product_id).slice(0, 26)}${String(top.product_id).length > 26 ? "…" : ""}`;
+  return `${name} ${gsd}`;
 }
 
 export default function TerrainLadder({ mode, onMode, products, fractions }) {
@@ -23,6 +24,12 @@ export default function TerrainLadder({ mode, onMode, products, fractions }) {
       <div className="mw-ladder-chip">
         <span>TERRAIN LADDER</span>
         <strong>{ladderLabel(products)}</strong>
+        {products?.[0]?.product_id && (
+          <Popover label="PRODUCT ID" title="Top terrain product in this frame">
+            {String(products[0].product_id)} · {products[0].family} · ground sample distance{" "}
+            {products[0].family === "MOLA" ? "463 m" : `${Number(products[0].gsd_m ?? 0).toFixed(2)} m`}
+          </Popover>
+        )}
         <SourceTag ledgerId={ledger} compact />
       </div>
       {fractions && (

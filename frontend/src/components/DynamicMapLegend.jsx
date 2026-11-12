@@ -1,4 +1,4 @@
-/* MAP LEGEND: keys for the active layers only, each with its 🏷️ source tag. */
+/* MAP LEGEND: keys for the active layers only, each with its source tag. */
 
 import SourceTag from "../sources/SourceTag";
 import { activeLayers, LEGEND } from "./layers/layerCatalog";

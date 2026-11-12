@@ -14,7 +14,7 @@ const ledger = JSON.parse(readFileSync(new URL("../../../data/manifests/source_l
 const index = buildIndex(ledger.entries);
 
 describe("walkability ramp", () => {
-  it("runs cyan -> amber -> red with falling luminance (reads in grayscale)", () => {
+  it("runs ice-cyan -> gold -> coral-red with falling luminance (reads in grayscale)", () => {
     const stops = RAMP_TOKENS.map(token);
     expect(stops.every(Boolean)).toBe(true);
     const hi = luminance(rampColor(100, stops));

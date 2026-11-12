@@ -51,9 +51,9 @@ export const GUIDES = [
   },
   {
     id: "tags",
-    title: "Reading 🏷️ source tags",
+    title: "Reading source tags",
     body: [
-      "Each tag reads 🏷️ EVIDENCE CLASS · source · product or basis. The class is always written as text.",
+      "Each tag reads EVIDENCE CLASS · source · product or basis. The class is always written as text.",
       "Click a tag (or press Enter or Space) for the ledger entry: organization, product, DOI or URL, license, retrieval date and caveats. View in ledger opens the Sources drawer.",
     ],
   },

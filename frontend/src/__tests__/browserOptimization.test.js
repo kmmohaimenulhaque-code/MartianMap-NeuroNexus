@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import catalogue from "../features/commands.json";
-import { PRESETS, TOGGLES, autoReason, effectiveToggles, reportFps } from "../perf/perfStore";
+import { DEFAULT_PRESET, PRESETS, TOGGLES, autoReason, effectiveToggles, isOptimizationOn, perfStore, reportFps } from "../perf/perfStore";
 import { heapInfo, trackBuffer } from "../perf/telemetry";
 import { CAP_BYTES, createTileCache, memoryBackend, planEviction } from "../perf/tileCache";
 import { runOnMainThread } from "../perf/workerClient";
@@ -9,6 +9,23 @@ import { runOnMainThread } from "../perf/workerClient";
 const base = { preset: "AUTO", custom: {}, lowFpsStreak: 0, autoLow: false };
 
 describe("optimization presets", () => {
+  it("is OFF by default: MAX FIDELITY with every protection off, even on a 4 GB device", () => {
+    expect(DEFAULT_PRESET).toBe("MAX_FIDELITY");
+    expect(perfStore.get().preset).toBe("MAX_FIDELITY");
+    const fresh = { preset: DEFAULT_PRESET, custom: {}, lowFpsStreak: 0, autoLow: false };
+    expect(Object.values(effectiveToggles(fresh, 4)).some(Boolean)).toBe(false);
+    expect(isOptimizationOn(fresh, 2)).toBe(false);
+  });
+
+  it("the single switch turns the LOW-RAM protections on and back off", () => {
+    perfStore.toggle();
+    expect(perfStore.get().preset).toBe("LOW_RAM");
+    expect(perfStore.isOn()).toBe(true);
+    perfStore.toggle();
+    expect(perfStore.get().preset).toBe("MAX_FIDELITY");
+    expect(perfStore.isOn()).toBe(false);
+  });
+
   it("AUTO turns the low-RAM protections on at 4 GB or less", () => {
     expect(effectiveToggles(base, 4)).toEqual(PRESETS.LOW_RAM.toggles);
     expect(effectiveToggles(base, 8)).toEqual(PRESETS.MAX_FIDELITY.toggles);

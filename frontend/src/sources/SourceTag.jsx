@@ -1,6 +1,6 @@
 /*
- * 🏷️ SourceTag: the visible, clickable source chip every value, layer, chart and export carries.
- *   🏷️ <EVIDENCE CLASS> · <short source> [· <product/basis>]
+ * SourceTag: the visible, clickable source chip every value, layer, chart and export carries.
+ *   [tag icon] <EVIDENCE CLASS> · <short source> [· <product/basis>]
  * The class is always written as text (color is never the only signal). Click, Enter or Space opens
  * a popover with the ledger entry; "View in ledger" opens the Sources drawer.
  */
@@ -11,6 +11,7 @@ import { CLASS_MEANINGS, classKey, isToggleKey, tagText } from "./ledgerStore";
 import { useSourcesDrawer } from "./SourcesContext";
 import { useSourceLedger } from "./useSourceLedger";
 import "./sources.css";
+import Icon from "../ui/Icon";
 
 export default function SourceTag({ ledgerId, evidence, detail, compact = false, basis, className = "" }) {
   const ledger = useSourceLedger();
@@ -59,7 +60,8 @@ export default function SourceTag({ ledgerId, evidence, detail, compact = false,
           }
         }}
       >
-        {text}
+        <Icon name="tag" size={12} className="nn-tag-icon" />
+        <span className="nn-tag-text">{text}</span>
       </button>
       {open && (
         <span className="nn-tag-pop" role="dialog" id={popId} aria-label={`Source ${ledgerId}`}>

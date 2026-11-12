@@ -18,6 +18,7 @@ import {
   pointSymbol,
 } from "./mapStyle";
 import { fetchMars3dContext, fetchMars3dExplorationZones, fetchMars3dTerrainGrid, fetchMars3dTraverses } from "../../services/marsEnvironmentApi";
+import Icon from "../../ui/Icon";
 
 /*
  * INTERACTIVE 3D MARS (ArcGIS Maps SDK SceneView, Mars 2000 sphere, wkid 104971)
@@ -68,7 +69,7 @@ const LAYERS = [
   { key: "walkability", group: "EXPLORATION", label: "Walkability — NeuroNexus-derived terrain score", status: "DERIVED", on: false },
 ];
 
-/* Canonical ledger id behind each 3D layer (rendered as a 🏷️ tag in the layer list). */
+/* Canonical ledger id behind each 3D layer (rendered as a tag in the layer list). */
 const LAYER_LEDGER = {
   terrain: "MOLA_MEGDR", imagery: "NASA_PDS", colorDem: "MOLA_MEGDR", dtmFootprints: "HIRISE_STAC_DTM", slope: "MOLA_MEGDR",
   roughness: "MOLA_MEGDR", features: "USGS_IAU_GAZETTEER", labels: "USGS_IAU_GAZETTEER", units: "USGS_SIM_3292_ARCGIS",
@@ -643,7 +644,7 @@ export default function Mars3DView({
   useEffect(() => {
     if (!ready || !visible.dtmFootprints || footLat == null) return undefined;
     const controller = new AbortController();
-    const colors = { HIRISE: tokenRgb(cssVar("--nn-src-hirise") || "#c99bff"), CTX: tokenRgb(cssVar("--nn-src-ctx") || "#ff9f68") };
+    const colors = { HIRISE: tokenRgb(cssVar("--nn-src-hirise") || "#3fbcd4"), CTX: tokenRgb(cssVar("--nn-src-ctx") || "#4ea8de") };
     const draw = (products) =>
       rebuild(
         "dtmFootprints",
@@ -1180,10 +1181,10 @@ export default function Mars3DView({
         </div>
         <nav className="m3d-actions" aria-label="3D map tools">
           <button type="button" className="m3d-btn m3d-primary" onClick={onOpenDesigner}>
-            ⟡ AI ROUTE DESIGN
+            AI ROUTE DESIGN
           </button>
           <button type="button" className={`m3d-btn${mapMode ? " active" : ""}`} aria-pressed={mapMode} onClick={toggleMapMode}>
-            ◉ MAP
+            MAP
           </button>
           <button
             type="button"
@@ -1191,10 +1192,10 @@ export default function Mars3DView({
             onClick={handleCompare}
             title={compareAvailable ? "Compare saved routes" : "Save at least two routes to compare"}
           >
-            ⇄ COMPARE
+            COMPARE
           </button>
           <button type="button" className="m3d-btn" onClick={onOpenSnapshot} disabled={!snapshotAvailable}>
-            ▣ USGS SNAPSHOT
+            USGS SNAPSHOT
           </button>
           <button
             type="button"
@@ -1202,7 +1203,7 @@ export default function Mars3DView({
             aria-pressed={sidePanel === "pez"}
             onClick={() => togglePanel("pez")}
           >
-            ◇ POTENTIAL EXPLORATION ZONE
+            POTENTIAL EXPLORATION ZONE
           </button>
           <button
             type="button"
@@ -1211,7 +1212,7 @@ export default function Mars3DView({
             onClick={() => togglePanel("routes")}
             title="Saved routes on the 3D globe"
           >
-            ⌁ ROUTES ({savedRoutes.length})
+            <Icon name="route" size={14} /> ROUTES ({savedRoutes.length})
           </button>
           <button
             type="button"
@@ -1221,15 +1222,15 @@ export default function Mars3DView({
             disabled={!savedRoutes.length}
             title={savedRoutes.length ? "Project the selected saved routes on the globe" : "Save a route first"}
           >
-            ◎ ROUTE PROJECTION{projection ? ` (${projectedRoutes.length})` : ""}
+            <Icon name="globe" size={14} /> ROUTE PROJECTION{projection ? ` (${projectedRoutes.length})` : ""}
           </button>
           {Object.entries(FLY_TARGETS).map(([key, t]) => (
             <button key={key} type="button" className="m3d-btn" onClick={() => smoothFlyTo(t.lat, t.lon, t.km)} title={`Fly to ${t.label}`}>
-              ✈ {t.label}
+              <Icon name="fly" size={14} /> {t.label}
             </button>
           ))}
           <button type="button" className="m3d-btn" onClick={flyToCorridor} disabled={routePoints.length < 2} title={routePoints.length < 2 ? "Plan a route first" : "Fly along the route corridor"}>
-            ✈ ROUTE
+            <Icon name="fly" size={14} /> ROUTE
           </button>
           <button
             type="button"
@@ -1237,7 +1238,7 @@ export default function Mars3DView({
             aria-pressed={sidePanel === "layers"}
             onClick={() => togglePanel("layers")}
           >
-            ☰ LAYERS
+            <Icon name="layers" size={14} /> LAYERS
           </button>
           <button
             type="button"
@@ -1245,7 +1246,7 @@ export default function Mars3DView({
             aria-pressed={sidePanel === "legend"}
             onClick={() => togglePanel("legend")}
           >
-            ◧ LEGEND
+            <Icon name="list" size={14} /> LEGEND
           </button>
           <select
             className="m3d-btn m3d-select"
@@ -1372,7 +1373,7 @@ export default function Mars3DView({
               <>
                 {projection && (
                   <div className="m3d-projection-bar">
-                    <span>◎ ROUTE PROJECTION ON · tick routes to project them</span>
+                    <span>ROUTE PROJECTION ON · tick routes to project them</span>
                     <button type="button" onClick={() => setProjectedIds(new Set(savedRoutes.map((r) => r.id)))}>
                       PROJECT ALL
                     </button>
@@ -1423,19 +1424,19 @@ export default function Mars3DView({
                         </div>
                         <div className="m3d-route-actions">
                           <button type="button" onClick={() => toggleRouteVisibility(route.id)} aria-pressed={!hidden} title="Show / hide">
-                            {hidden ? "◌ SHOW" : "◉ HIDE"}
+                            {hidden ? "SHOW" : "HIDE"}
                           </button>
                           <button type="button" onClick={() => flyToRoute(route)} title="Fly to route">
-                            ✈ FLY
+                            <Icon name="fly" size={14} /> FLY
                           </button>
                           <button type="button" className={inCompare ? "active" : ""} onClick={() => onToggleCompareRoute?.(route.id)} title="Add to / remove from comparison">
-                            ⇄ {inCompare ? "IN COMPARE" : "COMPARE"}
+                            {inCompare ? "IN COMPARE" : "COMPARE"}
                           </button>
                           <button type="button" onClick={() => onSnapshotRoute?.(route.id)} title="USGS snapshot of this route">
-                            ▣ USGS
+                            USGS
                           </button>
                           <button type="button" onClick={() => onRenameRoute?.(route.id)} title="Rename">
-                            ✎
+                            <Icon name="edit" size={14} title="Rename" />
                           </button>
                         </div>
                       </li>
@@ -1443,7 +1444,7 @@ export default function Mars3DView({
                   })}
                 </ul>
                 <button type="button" className="m3d-btn m3d-primary m3d-compare-go" onClick={handleCompare} disabled={compareRouteIds.length < 2}>
-                  ⇄ COMPARE SELECTED ({compareRouteIds.length}/4)
+                  COMPARE SELECTED ({compareRouteIds.length}/4)
                 </button>
               </>
             )}

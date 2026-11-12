@@ -2,16 +2,22 @@
  * THEMIS thermal heatmap: historical IR brightness temperature near the site by local solar time
  * (rows) and season Ls (columns), with a color bar, search radius and sample count.
  * OBSERVED · HISTORICAL: brightness temperature, not surface temperature or current weather.
+ * The column of the console's activeSol season (Ls) is outlined and read out as the slider moves.
  */
 
 import { useEffect, useMemo, useState } from "react";
 
 import SourceTag from "../sources/SourceTag";
 import { cssVar, rampColor } from "../marswalk/walkabilityRamp";
+import { useSol } from "../state/solStore";
+import { lsBin } from "../state/solMath";
+import { columnStats } from "../state/thermalStats";
+import Popover from "../ui/Popover";
 
-const RAMP = ["--nn-thermal-cold", "--nn-thermal-mid", "--nn-thermal-hot"];
+const RAMP = ["--nn-thermal-cold", "--nn-thermal-low", "--nn-thermal-mid", "--nn-thermal-high", "--nn-thermal-hot"];
 
 export default function ThermalHeatmapCard({ location, radiusKm = 50 }) {
+  const { sol, seasonLs, label: solLabel } = useSol();
   const [state, setState] = useState({ key: "", data: null, error: "" });
   const lat = location?.latitude_deg;
   const lon = location?.longitude_deg;
@@ -50,11 +56,27 @@ export default function ThermalHeatmapCard({ location, radiusKm = 50 }) {
   const rows = grid.length;
   const cols = grid[0].length;
   const nearest = data.samples[0];
+  const activeCol = lsBin(seasonLs, colDeg);
+  const col = columnStats(data.heatmap, activeCol);
+  const seasonal = data.samples
+    .filter((x) => activeCol != null && lsBin(x.ls_deg, colDeg) === activeCol)
+    .sort((a, b) => a.distance_km - b.distance_km)[0];
   return (
     <div className="nn-thermal-card">
       <div className="nn-thermal-head">
-        <span>THERMAL HEATMAP · local time × season</span>
+        <span>THERMAL HEATMAP · LOCAL TIME × SEASON</span>
         {tag}
+      </div>
+      <div className="nn-thermal-sol" data-testid="thermal-sol-readout" aria-live="polite">
+        <span>{solLabel || `SOL ${sol}`}</span>
+        <strong>
+          {activeCol == null
+            ? "season unknown"
+            : col?.n
+              ? `${col.meanK.toFixed(1)} K mean · Ls ${activeCol * colDeg}–${(activeCol + 1) * colDeg}° · n = ${col.n}`
+              : `no THEMIS samples at Ls ${activeCol * colDeg}–${(activeCol + 1) * colDeg}° (nothing interpolated)`}
+        </strong>
+        {seasonal && <small>{`nearest this season: ${seasonal.tb_k} K at ${seasonal.distance_km} km, LST ${seasonal.lst_h} h`}</small>}
       </div>
       <svg width={cols * cell + 34} height={rows * cell + 24} role="img" aria-label={`THEMIS brightness temperature heatmap, ${data.count} samples within ${radiusKm} km`}>
         {grid.map((row, r) =>
@@ -63,6 +85,9 @@ export default function ThermalHeatmapCard({ location, radiusKm = 50 }) {
               <title>{v == null ? `LST ${r * rowH}-${(r + 1) * rowH} h, Ls ${c * colDeg}-${(c + 1) * colDeg}°: no sample` : `LST ${r * rowH}-${(r + 1) * rowH} h, Ls ${c * colDeg}-${(c + 1) * colDeg}°: ${v.toFixed(1)} K (n=${data.heatmap.counts[r][c]})`}</title>
             </rect>
           )),
+        )}
+        {activeCol != null && (
+          <rect className="nn-thermal-active" x={30 + activeCol * cell - 1} y={-1} width={cell + 1} height={rows * cell + 1} fill="none" />
         )}
         {[0, 6, 12, 18].map((h) => (
           <text key={h} x={0} y={(h / rowH) * cell + 9} className="nn-thermal-axis">{`${h}h`}</text>
@@ -78,8 +103,10 @@ export default function ThermalHeatmapCard({ location, radiusKm = 50 }) {
       </div>
       <div className="nn-thermal-meta">
         n = {data.count} samples within {radiusKm} km · MIN {data.stats.min_k.toFixed(1)} · MEAN {data.stats.mean_k.toFixed(1)} · MAX {data.stats.max_k.toFixed(1)} K
-        <br />
-        nearest {nearest.product_id} at {nearest.distance_km} km · {nearest.tb_k} K · Ls {nearest.ls_deg}° · LST {nearest.lst_h} h
+        <Popover label="NEAREST PRODUCT" title="Nearest THEMIS observation" align="right">
+          {nearest.product_id} at {nearest.distance_km} km · {nearest.tb_k} K · Ls {nearest.ls_deg}° · LST {nearest.lst_h} h. Brightness
+          temperature from Mars Odyssey THEMIS IR-PBT, historical; not surface temperature and not current weather.
+        </Popover>
       </div>
     </div>
   );

@@ -6,12 +6,13 @@ import NeonLineChart from "../ui/NeonLineChart";
 import { ProvenanceTag } from "../ui/StatTriplet";
 import { fmt } from "../ui/format";
 import { COMPARISON_METRICS, comparisonToCsv, rankMetric, readSnapshot, routeColour, routeStats, writeSnapshot } from "../utils/savedRoutes";
+import Icon from "../ui/Icon";
 
 /*
  * ROUTE COMPARISON WORKSPACE
  *
  * Up to four saved routes side by side: map, overlaid elevation profiles,
- * along-track MIN / MEAN / MAX table with best (★) and worst marked per row,
+ * along-track MIN / MEAN / MAX table with best [BEST] and worst [WORST] marked per row,
  * a USGS SIM 3292 snapshot per route and one combined snapshot.
  */
 
@@ -200,7 +201,7 @@ export default function RouteComparisonWorkspace({ routes, compareRouteIds, onTo
                 style={{ "--chip": colour }}
               >
                 <span className="cmp-swatch" />
-                {active ? "✓ " : ""}
+                {active ? <Icon name="check" size={12} /> : null}
                 {route.name}
               </button>
             );
@@ -259,7 +260,7 @@ export default function RouteComparisonWorkspace({ routes, compareRouteIds, onTo
                         {statsList.map((stats, i) => (
                           <td key={selected[i].id} className={i === best ? "cmp-best" : i === worst ? "cmp-worst" : ""}>
                             {fmt(metric.get(stats), metric.digits) ?? "n/a"}
-                            {i === best ? " ★" : i === worst ? " ▾" : ""}
+                            {i === best ? <span className="rc-mark rc-best"> [BEST]</span> : i === worst ? <span className="rc-mark rc-worst"> [WORST]</span> : null}
                           </td>
                         ))}
                       </tr>
@@ -268,7 +269,7 @@ export default function RouteComparisonWorkspace({ routes, compareRouteIds, onTo
                 </tbody>
               </table>
               <div className="nn-footnote">
-                ★ best · amber dotted = worst, per row and by stated direction (elevation rows are informational). Basis: NASA MOLA MEGDR 128 ppd sampled along each path
+                [BEST] best · gold dotted = [WORST] worst, per row and by stated direction (elevation rows are informational). Basis: NASA MOLA MEGDR 128 ppd sampled along each path
                 (DERIVED). Terrain risk is a NeuroNexus planning proxy, not a safety certification.
               </div>
             </div>
@@ -277,7 +278,7 @@ export default function RouteComparisonWorkspace({ routes, compareRouteIds, onTo
               <span className="eyebrow">USGS SIM 3292 SNAPSHOTS</span>
               <ProvenanceTag dataClass="OBSERVED" ledgerId="USGS_SIM_3292_ARCGIS" source="USGS MOLA hillshade + SIM 3292 FeatureServer" />
               <button type="button" onClick={loadCombined} disabled={combined.loading}>
-                {combined.loading ? "BUILDING…" : "▣ COMBINED SNAPSHOT"}
+                {combined.loading ? "BUILDING…" : "COMBINED SNAPSHOT"}
               </button>
             </div>
             {(combined.snapshot || combined.error) && (

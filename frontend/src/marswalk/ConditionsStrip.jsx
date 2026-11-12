@@ -1,20 +1,32 @@
-/* CONDITIONS: archived RAD dose rate (with lag), EVA dose band, REMS outreach line, modeled dust. */
+/* CONDITIONS: archived RAD dose rate (with lag), EVA dose band, REMS outreach line, and the modeled dust and
+ * solar geometry at the console's activeSol (refetched as the sol slider moves). */
 
 import { useEffect, useState } from "react";
+
+import { useSol } from "../state/solStore";
 
 import SourceTag from "../sources/SourceTag";
 import { marswalkApi } from "./marswalkApi";
 
-export default function ConditionsStrip({ site, evaHours }) {
+export default function ConditionsStrip({ site, evaHours, onConditions }) {
+  const { sol } = useSol();
   const [state, setState] = useState({ status: "loading" });
   useEffect(() => {
     const controller = new AbortController();
-    marswalkApi
-      .conditions(site, { signal: controller.signal })
-      .then((data) => setState({ status: "ready", data }))
-      .catch((error) => error.name !== "AbortError" && setState({ status: "error", error: error.message }));
-    return () => controller.abort();
-  }, [site]);
+    const timer = setTimeout(() => {
+      marswalkApi
+        .conditions(site, sol, { signal: controller.signal })
+        .then((data) => {
+          setState({ status: "ready", data });
+          onConditions?.(data);
+        })
+        .catch((error) => error.name !== "AbortError" && setState({ status: "error", error: error.message }));
+    }, 150);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [site, sol, onConditions]);
 
   if (state.status === "loading") return <section className="mw-card mw-skeleton">CONDITIONS · loading…</section>;
   if (state.status === "error") {
@@ -25,7 +37,7 @@ export default function ConditionsStrip({ site, evaHours }) {
       </section>
     );
   }
-  const { rad, weather, dust, season, meda } = state.data;
+  const { rad, weather, dust, season, meda, solar } = state.data;
   const dose = rad?.rate_E_median != null ? rad.rate_E_median * (evaHours / 24) : null;
   return (
     <section className="mw-card">
@@ -62,11 +74,25 @@ export default function ConditionsStrip({ site, evaHours }) {
         </div>
       )}
       <div className="mw-row">
-        <span className="mw-row-label">Dust τ (MY34)</span>
-        <strong>{dust?.tau != null ? dust.tau.toFixed(2) : "n/a"}</strong>
+        <span className="mw-row-label">Dust τ (MY34 sol {dust?.my34_sol ?? "n/a"})</span>
+        <strong>
+          {dust?.tau != null ? dust.tau.toFixed(2) : "n/a"}
+          {solar?.dust_class && <span className={`nn-class nn-class--${solar.dust_class.toLowerCase()}`}> [{solar.dust_class}]</span>}
+        </strong>
         <SourceTag ledgerId="NASA_AMES_MGCM" evidence="MODELED" />
         <small>Modeled scenario, not an observation or forecast.</small>
       </div>
+      {solar && (
+        <div className="mw-row">
+          <span className="mw-row-label">Solar geometry</span>
+          <strong>
+            noon {solar.noon_elevation_deg.toFixed(0)}° · day {solar.daylight_h.toFixed(1)} h
+            {solar.noon_direct_beam_fraction != null ? ` · direct beam ${(solar.noon_direct_beam_fraction * 100).toFixed(0)}%` : ""}
+          </strong>
+          <SourceTag ledgerId="NEURONEXUS_SOLAR_GEOMETRY" />
+          <small>{solar.basis}</small>
+        </div>
+      )}
     </section>
   );
 }

@@ -5,7 +5,7 @@
  */
 
 import { useMemo, useState } from "react";
-import { CircleMarker, ImageOverlay, Polyline, Rectangle, Tooltip, useMap, useMapEvents } from "react-leaflet";
+import { CircleMarker, ImageOverlay, Polyline, Popup, Rectangle, Tooltip, useMap, useMapEvents } from "react-leaflet";
 
 import { cssVar, rampColor } from "../../marswalk/walkabilityRamp";
 
@@ -87,8 +87,19 @@ export default function ContextLayers({ visibility, data }) {
             ))
           : null,
       )}
+      {visibility.mslTraverse && data.roverAtSol?.msl && (
+        <CircleMarker
+          center={[data.roverAtSol.msl.lat, lon360(data.roverAtSol.msl.lon)]}
+          radius={7}
+          pathOptions={{ color: colors.strong, weight: 2, fillColor: colors.msl, fillOpacity: 0.9 }}
+          className="nn-rover-at-sol"
+        >
+          <Tooltip permanent direction="right" className="nn-rover-label">{`CURIOSITY @ SOL ${data.roverAtSol.msl.my34Sol}`}</Tooltip>
+          <Popup>{`Curiosity at MY34 sol ${data.roverAtSol.msl.my34Sol} ≈ mission sol ${data.roverAtSol.msl.missionSol}; last localized waypoint: sol ${data.roverAtSol.msl.sol} (NASA MMGIS). Calendar conversion is approximate to about one sol.`}</Popup>
+        </CircleMarker>
+      )}
       {visibleWaypoints.map(({ rover, w, pos }) => (
-        <CircleMarker key={`${rover}-${w.RMC}`} center={pos} radius={1.5 + (w.tilt ?? 0) / 6} pathOptions={{ color: colors[rover], weight: 1, fillOpacity: 0.5 }}>
+        <CircleMarker key={`${rover}-${w.RMC}`} center={pos} radius={1.5 + (w.tilt ?? 0) / 6} pathOptions={{ color: colors[rover], weight: 1, fillOpacity: rover === "msl" && data.roverAtSol?.msl && w.sol > data.roverAtSol.msl.missionSol ? 0.12 : 0.5, opacity: rover === "msl" && data.roverAtSol?.msl && w.sol > data.roverAtSol.msl.missionSol ? 0.25 : 1 }}>
           <Tooltip>{`${rover === "msl" ? "Curiosity" : "Perseverance"} sol ${w.sol} · tilt ${w.tilt?.toFixed(1) ?? "n/a"}° (IMU)`}</Tooltip>
         </CircleMarker>
       ))}

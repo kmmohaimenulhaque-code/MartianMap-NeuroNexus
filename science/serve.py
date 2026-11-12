@@ -11,13 +11,24 @@ an index.html fallback.
 from __future__ import annotations
 
 import os
+import threading
 from pathlib import Path
 
 from starlette.exceptions import HTTPException
 from starlette.responses import PlainTextResponse
 from starlette.staticfiles import StaticFiles
 
+from science.rovers.api import warm as warm_rover_lines
 from science.weather.api.environment import app as api
+
+
+def _warm_caches() -> None:
+    # CPU-bound display simplification of the rover traverses, done once off the request path.
+    if os.environ.get("NN_WARM_CACHES", "1") == "1":
+        threading.Thread(target=warm_rover_lines, name="nn-warm", daemon=True).start()
+
+
+api.router.on_startup.append(_warm_caches)
 
 DIST = Path(os.environ.get("NEURONEXUS_DIST", Path(__file__).resolve().parents[1] / "frontend" / "dist"))
 API_PASSTHROUGH = ("/terrain/",)

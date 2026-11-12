@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 
+import { missionSolAt } from "../../state/solMath";
+
 async function getJson(url, signal) {
   const response = await fetch(url, { signal });
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -69,6 +71,25 @@ export function useContextLayerData(visibility, location, sol) {
       .catch((e) => e.name !== "AbortError" && setStatus((s) => ({ ...s, dust: `unavailable: ${e.message}` })));
     return () => controller.abort();
   }, [needDust, sol]);
+
+  /* Where Curiosity was at the console's activeSol (MY34): last waypoint at or before that mission sol. */
+  const mslSol = needTraverses && sol != null ? missionSolAt("msl", sol) : null;
+  useEffect(() => {
+    if (mslSol == null) return undefined;
+    const controller = new AbortController();
+    const timer = setTimeout(() => {
+      getJson(`/api/rovers/msl/waypoints?sol_min=${Math.max(0, mslSol - 120)}&sol_max=${mslSol}`, controller.signal)
+        .then((body) => {
+          const last = (body.waypoints ?? []).reduce((a, w) => (!a || (w.sol ?? 0) >= (a.sol ?? 0) ? w : a), null);
+          setData((d) => ({ ...d, roverAtSol: { msl: last ? { ...last, missionSol: mslSol, my34Sol: sol } : null } }));
+        })
+        .catch((e) => e.name !== "AbortError" && setStatus((s) => ({ ...s, roverAtSol: `unavailable: ${e.message}` })));
+    }, 250);
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [mslSol, sol]);
 
   return { data, status };
 }

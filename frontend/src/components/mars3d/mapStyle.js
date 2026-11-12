@@ -4,15 +4,15 @@
  */
 
 export const USGS_CLASS_COLOURS = {
-  Crater: "#d9c2a5",
+  Crater: "#b9cfd6",
   Vallis: "#72d9ff",
-  Mons: "#ff9f68",
+  Mons: "#4ea8de",
   Fossa: "#9fe3a8",
   Mensa: "#e7d06f",
-  Planum: "#c99bff",
+  Planum: "#3fbcd4",
   Patera: "#ff718d",
   Chaos: "#75e6ff",
-  Rupes: "#ffbf69",
+  Rupes: "#b9cfd6",
   Chasma: "#80aaff",
   Dorsum: "#c5a27b",
   Terra: "#f0c6a0",
@@ -77,27 +77,27 @@ export function labelTier(feature) {
 
 /* Non-USGS entities (shape = ArcGIS icon primitive; also drawn by the legend). */
 export const ENTITY_STYLES = {
-  landing: { label: "USGS landing site", colour: "#ffe9a8", shape: "square", size: 10, status: "OBSERVED" },
-  curiosity: { label: "Curiosity — latest traverse position", colour: "#ffd166", shape: "triangle", size: 13, status: "OBSERVED" },
-  perseverance: { label: "Perseverance — latest traverse position", colour: "#ff8fa3", shape: "triangle", size: 13, status: "OBSERVED" },
+  landing: { label: "USGS landing site", colour: "#e8f4f7", shape: "square", size: 10, status: "OBSERVED" },
+  curiosity: { label: "Curiosity — latest traverse position", colour: "#8cf0b1", shape: "triangle", size: 13, status: "OBSERVED" },
+  perseverance: { label: "Perseverance — latest traverse position", colour: "#a7d8ff", shape: "triangle", size: 13, status: "OBSERVED" },
   safeHaven: { label: "Safe Haven (user-defined)", colour: "#62f59a", shape: "kite", size: 12, status: "DERIVED" },
-  customPlace: { label: "Custom place (user-defined)", colour: "#ffb347", shape: "circle", size: 10, status: "DERIVED" },
+  customPlace: { label: "Custom place (user-defined)", colour: "#b9cfd6", shape: "circle", size: 10, status: "DERIVED" },
   routeStart: { label: "Route start", colour: "#62f59a", shape: "circle", size: 11, status: "DERIVED" },
   routeWaypoint: { label: "Route waypoint", colour: "#75e6ff", shape: "circle", size: 8, status: "DERIVED" },
   routeEnd: { label: "Route destination", colour: "#ff647c", shape: "circle", size: 11, status: "DERIVED" },
   zone: { label: "Potential Exploration Zone (NeuroNexus-derived)", colour: "#2ef0b4", shape: "kite", size: 13, status: "DERIVED" },
-  ancient: { label: "Ancient habitability evidence (not present-day)", colour: "#ff6ad5", shape: "circle", size: 12, status: "OBSERVED" },
+  ancient: { label: "Ancient habitability evidence (not present-day)", colour: "#6fd3c1", shape: "circle", size: 12, status: "OBSERVED" },
   iceRegion: { label: "Documented ice study region (not the SWIM ice map)", colour: "#b8ecff", shape: "circle", size: 13, status: "DERIVED" },
-  thermal: { label: "THEMIS observation (colour = brightness temperature)", colour: "#ffb347", shape: "circle", size: 9, status: "OBSERVED" },
+  thermal: { label: "THEMIS observation (colour = brightness temperature)", colour: "#ffc46b", shape: "circle", size: 9, status: "OBSERVED" },
 };
 
 export const LINE_STYLES = {
-  curiosity: { label: "Curiosity traverse (NASA MMGIS)", colour: "#ffd166", width: 3, status: "OBSERVED" },
-  perseverance: { label: "Perseverance traverse (NASA MMGIS)", colour: "#ff8fa3", width: 3, status: "OBSERVED" },
+  curiosity: { label: "Curiosity traverse (NASA MMGIS)", colour: "#8cf0b1", width: 3, status: "OBSERVED" },
+  perseverance: { label: "Perseverance traverse (NASA MMGIS)", colour: "#a7d8ff", width: 3, status: "OBSERVED" },
   route: { label: "Active route", colour: "#75e6ff", width: 4, status: "DERIVED" },
-  candidate: { label: "AI candidate route (colour per candidate; selected = solid)", colour: "#c99bff", width: 3, dashed: true, status: "DERIVED" },
+  candidate: { label: "AI candidate route (colour per candidate; selected = solid)", colour: "#3fbcd4", width: 3, dashed: true, status: "DERIVED" },
   contact: { label: "USGS geologic contact", colour: "#e5e7eb", width: 1, dashed: true, status: "DERIVED" },
-  structure: { label: "USGS geologic structure", colour: "#ff9f68", width: 1.5, status: "DERIVED" },
+  structure: { label: "USGS geologic structure", colour: "#4ea8de", width: 1.5, status: "DERIVED" },
 };
 
 export const AREA_STYLES = {

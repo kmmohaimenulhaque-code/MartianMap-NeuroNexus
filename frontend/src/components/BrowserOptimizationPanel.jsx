@@ -1,9 +1,9 @@
-/* Browser Optimization: presets, individual toggles and live telemetry (🍔 menu + top-bar pill). */
+/* Browser Optimization: opt-in low-RAM mode (OFF by default), presets, toggles and live telemetry. */
 
 import { useState } from "react";
 
 import SourceTag from "../sources/SourceTag";
-import { PRESETS, TOGGLES, autoReason, deviceMemoryGb, perfStore } from "../perf/perfStore";
+import { PRESETS, TOGGLES, autoReason, deviceMemoryGb, isOptimizationOn, perfStore } from "../perf/perfStore";
 import { tileCache } from "../perf/tileCache";
 import { usePerfSettings, useTelemetry } from "../perf/usePerf";
 
@@ -14,8 +14,8 @@ export function TelemetryPill({ onOpen }) {
   const { state } = usePerfSettings();
   return (
     <button type="button" className="perf-pill" onClick={onOpen} title="Browser Optimization telemetry">
-      ⚡ {t.fps ? `${Math.round(t.fps)} FPS` : "– FPS"} · {t.heap.estimated ? "≈" : ""}
-      {Math.round(t.heap.mb)} MB · {state.preset === "AUTO" ? "AUTO" : PRESETS[state.preset].label.split(" ")[0]}
+      [PERF] {t.fps ? `${Math.round(t.fps)} FPS` : "– FPS"} · {t.heap.estimated ? "≈" : ""}
+      {Math.round(t.heap.mb)} MB · {isOptimizationOn(state) ? "OPTIMIZED" : "FULL FIDELITY"}
     </button>
   );
 }
@@ -27,11 +27,24 @@ export default function BrowserOptimizationPanel() {
   const memory = deviceMemoryGb();
   return (
     <div className="perf-panel">
+      <button
+        type="button"
+        className={`perf-master${isOptimizationOn(state) ? " is-on" : ""}`}
+        aria-pressed={isOptimizationOn(state)}
+        onClick={() => perfStore.toggle()}
+      >
+        <span>[BROWSER OPTIMIZATION]</span>
+        <strong>{isOptimizationOn(state) ? "ON · LOW-RAM MODE" : "OFF · MAX FIDELITY"}</strong>
+      </button>
+      <p className="perf-note">
+        Off by default. Turn it on for 4 GB RAM or low-end devices: worker math, IndexedDB tile cache, WebGL suspension when the
+        globe is hidden and marker culling. Every computed number stays identical.
+      </p>
       <div className="perf-presets" role="radiogroup" aria-label="Optimization preset">
         {[
-          ["AUTO", "AUTO / ADAPTIVE"],
+          ["MAX_FIDELITY", `${PRESETS.MAX_FIDELITY.label} (DEFAULT)`],
           ["LOW_RAM", PRESETS.LOW_RAM.label],
-          ["MAX_FIDELITY", PRESETS.MAX_FIDELITY.label],
+          ["AUTO", "AUTO / ADAPTIVE"],
         ].map(([key, label]) => (
           <button key={key} type="button" role="radio" aria-checked={state.preset === key} className={state.preset === key ? "active" : undefined} onClick={() => perfStore.setPreset(key)}>
             {label}

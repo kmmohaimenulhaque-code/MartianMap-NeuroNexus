@@ -77,11 +77,15 @@ class USGSMarsGazetteer:
         }
 
     def all(self) -> tuple[dict, ...]:
-        """Return all registered USGS Mars nomenclature features."""
-        return tuple(
-            self._row_to_dict(row)
-            for _, row in self.data.iterrows()
-        )
+        """Return all registered USGS Mars nomenclature features (built once; the table is read-only)."""
+        cached = getattr(self, "_all_cache", None)
+        if cached is None:
+            cached = tuple(
+                self._row_to_dict(row)
+                for _, row in self.data.iterrows()
+            )
+            self._all_cache = cached
+        return cached
 
     def find(self, name: str) -> tuple[dict, ...]:
         """Find registered features whose names contain the supplied text."""

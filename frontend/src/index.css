@@ -25,7 +25,7 @@ body {
   padding: 12px;
   border: 1px solid rgba(117, 230, 255, 0.12);
   background: rgba(4, 9, 12, 0.94);
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--nn-font);
 }
 
 .nn-route-tools-header {
@@ -35,8 +35,8 @@ body {
 }
 
 .nn-route-eyebrow {
-  font-size: 7px;
-  letter-spacing: 0.15em;
+  font-size: 12px;
+  letter-spacing: 0.06em;
   color: #6d848e;
   text-transform: uppercase;
 }
@@ -44,14 +44,14 @@ body {
 .nn-route-tools h3 {
   margin: 4px 0 4px;
   color: #dce9ee;
-  font-size: 13px;
+  font-size: 15px;
   letter-spacing: 0.02em;
 }
 
 .nn-route-tools p {
   margin: 0;
   color: #72848c;
-  font-size: 8px;
+  font-size: 13px;
   line-height: 1.45;
 }
 
@@ -60,13 +60,13 @@ body {
   padding: 4px 6px;
   border: 1px solid rgba(117, 230, 255, 0.15);
   color: #75e6ff;
-  font-size: 7px;
-  letter-spacing: 0.1em;
+  font-size: 12px;
+  letter-spacing: 0.06em;
 }
 
 .nn-status.loading {
-  color: #f2db8b;
-  border-color: rgba(242, 219, 139, 0.2);
+  color: #ffc46b;
+  border-color: rgba(255, 196, 107, 0.2);
 }
 
 .nn-route-metrics-grid {
@@ -84,15 +84,15 @@ body {
 .nn-route-metric span {
   display: block;
   color: #65777f;
-  font-size: 6px;
-  letter-spacing: 0.11em;
+  font-size: 12px;
+  letter-spacing: 0.06em;
 }
 
 .nn-route-metric strong {
   display: block;
   margin-top: 4px;
   color: #d4e1e6;
-  font-size: 8px;
+  font-size: 13px;
 }
 
 .nn-route-eva-control {
@@ -104,8 +104,8 @@ body {
 
 .nn-route-eva-control label {
   color: #65777f;
-  font-size: 7px;
-  letter-spacing: 0.1em;
+  font-size: 12px;
+  letter-spacing: 0.06em;
 }
 
 .nn-route-eva-control > div {
@@ -121,12 +121,12 @@ body {
   color: #dce9ee;
   padding: 5px;
   font: inherit;
-  font-size: 8px;
+  font-size: 13px;
 }
 
 .nn-route-eva-control span {
   color: #6f8189;
-  font-size: 7px;
+  font-size: 12px;
 }
 
 .nn-route-evidence-grid {
@@ -141,8 +141,8 @@ body {
 
 .nn-route-column-title {
   margin-bottom: 6px;
-  font-size: 7px;
-  letter-spacing: 0.12em;
+  font-size: 12px;
+  letter-spacing: 0.06em;
 }
 
 .nn-route-column-title.positive {
@@ -150,7 +150,7 @@ body {
 }
 
 .nn-route-column-title.caution {
-  color: #e9c97d;
+  color: #ffc46b;
 }
 
 .nn-route-evidence-item {
@@ -161,7 +161,7 @@ body {
 }
 
 .nn-route-evidence-icon {
-  font-size: 8px;
+  font-size: 13px;
 }
 
 .nn-route-evidence-column:first-child
@@ -171,13 +171,13 @@ body {
 
 .nn-route-evidence-column:last-child
   .nn-route-evidence-icon {
-  color: #e9c97d;
+  color: #ffc46b;
 }
 
 .nn-route-evidence-item strong {
   display: block;
   color: #b9c8cd;
-  font-size: 7px;
+  font-size: 12px;
   line-height: 1.4;
   font-weight: 500;
 }
@@ -186,7 +186,7 @@ body {
   display: block;
   margin-top: 2px;
   color: #607179;
-  font-size: 6px;
+  font-size: 12px;
   letter-spacing: 0.07em;
 }
 
@@ -197,13 +197,13 @@ body {
   padding: 7px;
   border: 1px dashed rgba(117, 230, 255, 0.1);
   color: #64777f;
-  font-size: 6px;
+  font-size: 12px;
   line-height: 1.45;
 }
 
 .nn-route-methodology strong {
   color: #79ddec;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.06em;
 }
 
 .nn-route-action-row {
@@ -220,7 +220,7 @@ body {
   color: #8bcddb;
   padding: 7px;
   font: inherit;
-  font-size: 7px;
+  font-size: 12px;
   letter-spacing: 0.08em;
   cursor: pointer;
 }
@@ -253,13 +253,13 @@ body {
 
 .nn-route-save-box > div span {
   color: #70838b;
-  font-size: 7px;
-  letter-spacing: 0.1em;
+  font-size: 12px;
+  letter-spacing: 0.06em;
 }
 
 .nn-route-save-box > div small {
   color: #596a72;
-  font-size: 6px;
+  font-size: 12px;
 }
 
 .nn-route-save-box input {
@@ -269,7 +269,7 @@ body {
   color: #d7e3e7;
   padding: 6px;
   font: inherit;
-  font-size: 7px;
+  font-size: 12px;
 }
 
 .nn-route-snapshot-list {
@@ -295,21 +295,21 @@ body {
 .nn-route-snapshot strong {
   display: block;
   color: #c7d5da;
-  font-size: 7px;
+  font-size: 12px;
 }
 
 .nn-route-snapshot small {
   display: block;
   margin-top: 2px;
   color: #60717a;
-  font-size: 6px;
+  font-size: 12px;
 }
 
 .nn-route-snapshot button {
   border: 0;
   background: transparent;
   color: #70828a;
-  font-size: 13px;
+  font-size: 15px;
   cursor: pointer;
 }
 
@@ -329,12 +329,12 @@ body {
 }
 
 .nn-map-create-popup strong {
-  font-size: 9px;
+  font-size: 13px;
 }
 
 .nn-map-create-popup span {
   color: #667980;
-  font-size: 7px;
+  font-size: 12px;
 }
 
 .nn-map-create-popup label {
@@ -342,7 +342,7 @@ body {
   flex-direction: column;
   gap: 3px;
   color: #65777f;
-  font-size: 6px;
+  font-size: 12px;
   letter-spacing: 0.08em;
 }
 
@@ -351,7 +351,7 @@ body {
   border: 1px solid rgba(117, 230, 255, 0.2);
   background: #071014;
   color: #dce9ee;
-  font-size: 8px;
+  font-size: 13px;
 }
 
 .nn-map-create-popup button {
@@ -360,7 +360,7 @@ body {
   color: #79ddec;
   padding: 5px;
   cursor: pointer;
-  font-size: 7px;
+  font-size: 12px;
 }
 
 .nn-map-create-popup button:disabled {
@@ -419,13 +419,13 @@ body {
 .nn-compare-header h2 {
   margin: 5px 0;
   color: #d8e5e9;
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .nn-compare-header p {
   margin: 0;
   color: #687b83;
-  font-size: 8px;
+  font-size: 13px;
 }
 
 .nn-compare-close {
@@ -435,7 +435,7 @@ body {
   padding: 7px 9px;
   cursor: pointer;
   font: inherit;
-  font-size: 7px;
+  font-size: 12px;
 }
 
 .nn-compare-map-grid {
@@ -468,8 +468,8 @@ body {
   background: rgba(3, 9, 11, 0.8);
   border: 1px solid rgba(117, 230, 255, 0.13);
   color: #8bd1dc;
-  font-size: 6px;
-  letter-spacing: 0.12em;
+  font-size: 12px;
+  letter-spacing: 0.06em;
 }
 
 .nn-compare-route-strip {
@@ -502,16 +502,12 @@ body {
 }
 
 .nn-compare-route-card-top strong {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   color: #c8d6db;
-  font-size: 8px;
-}
+  font-size: 13px; white-space: normal; overflow-wrap: anywhere;}
 
 .nn-compare-route-card-top span {
   color: #75e6ff;
-  font-size: 6px;
+  font-size: 12px;
 }
 
 .nn-compare-mini-grid {
@@ -524,7 +520,7 @@ body {
 .nn-compare-mini-grid span {
   display: block;
   color: #5f7179;
-  font-size: 5px;
+  font-size: 12px;
   letter-spacing: 0.08em;
 }
 
@@ -532,7 +528,7 @@ body {
   display: block;
   margin-top: 2px;
   color: #aebfc5;
-  font-size: 7px;
+  font-size: 12px;
 }
 
 .nn-compare-card-columns {
@@ -546,7 +542,7 @@ body {
   display: block;
   margin-bottom: 3px;
   color: #64767e;
-  font-size: 5px;
+  font-size: 12px;
   letter-spacing: 0.08em;
 }
 
@@ -554,7 +550,7 @@ body {
   display: block;
   margin-bottom: 2px;
   color: #788b92;
-  font-size: 5px;
+  font-size: 12px;
   line-height: 1.35;
 }
 
@@ -603,7 +599,7 @@ body {
 .nn-drawer-header h2 {
   margin: 5px 0 0;
   color: #d5e1e5;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .nn-drawer-header > button {
@@ -624,8 +620,8 @@ body {
 
 .nn-drawer-section-title {
   color: #75ddec;
-  font-size: 7px;
-  letter-spacing: 0.12em;
+  font-size: 12px;
+  letter-spacing: 0.06em;
 }
 
 .nn-drawer-section textarea {
@@ -636,13 +632,13 @@ body {
   background: #061014;
   color: #d3e0e4;
   font: inherit;
-  font-size: 8px;
+  font-size: 13px;
   line-height: 1.5;
 }
 
 .nn-drawer-section > small {
   color: #5f7179;
-  font-size: 6px;
+  font-size: 12px;
   text-align: right;
 }
 
@@ -659,7 +655,7 @@ body {
   color: #d3e0e4;
   padding: 7px;
   font: inherit;
-  font-size: 8px;
+  font-size: 13px;
 }
 
 .nn-checklist-entry button {
@@ -674,7 +670,7 @@ body {
   display: flex;
   justify-content: space-between;
   color: #61737b;
-  font-size: 6px;
+  font-size: 12px;
 }
 
 .nn-checklist-list {
@@ -692,7 +688,7 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.05);
   background: rgba(255, 255, 255, 0.015);
   color: #aab9be;
-  font-size: 7px;
+  font-size: 12px;
   line-height: 1.4;
 }
 

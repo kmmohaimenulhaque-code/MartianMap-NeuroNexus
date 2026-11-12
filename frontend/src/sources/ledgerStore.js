@@ -54,7 +54,7 @@ export function getLedgerState() {
 export function shortLabel(entry) {
   if (!entry) return "";
   const base = entry.instrument ? `${entry.mission?.includes("Reconnaissance") ? "MRO " : ""}${entry.instrument}` : entry.product_title.split("(")[0].trim();
-  return base.length > 32 ? `${base.slice(0, 31)}…` : base;
+  return base; // never truncated: chips wrap, and the full entry is in the popover
 }
 
 const CLASS_KEYS = {
@@ -84,13 +84,13 @@ export const CLASS_MEANINGS = {
 
 export function tagText({ entry, ledgerId, evidence, detail, compact, status }) {
   if (!entry) {
-    if (status === "ready") return `🏷️ UNREGISTERED SOURCE · ${ledgerId}`;
-    return `🏷️ ${evidence ?? "SOURCE"} · ${ledgerId}`;
+    if (status === "ready") return `UNREGISTERED SOURCE · ${ledgerId}`;
+    return `${evidence ?? "SOURCE"} · ${ledgerId}`;
   }
   const label = shortLabel(entry);
-  if (compact) return `🏷️ ${label}`;
+  if (compact) return label;
   const cls = evidence ?? entry.evidence_class;
-  return ["🏷️ " + cls, label, detail].filter(Boolean).join(" · ");
+  return [cls, label, detail].filter(Boolean).join(" · ");
 }
 
 export function isToggleKey(event) {

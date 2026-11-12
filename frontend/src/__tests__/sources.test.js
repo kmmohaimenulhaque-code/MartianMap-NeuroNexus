@@ -50,13 +50,13 @@ describe("canonical ledger resolution", () => {
 describe("SourceTag", () => {
   it("writes the evidence class as visible text", () => {
     const entry = resolveIn(index, "HIRISE_STAC_DTM");
-    expect(tagText({ entry, ledgerId: "HIRISE_STAC_DTM", detail: "DTEEC_024234 · 1.01 m" })).toBe("🏷️ OBSERVED · MRO HiRISE · DTEEC_024234 · 1.01 m");
-    expect(tagText({ entry, ledgerId: "HIRISE_STAC_DTM", compact: true })).toBe("🏷️ MRO HiRISE");
+    expect(tagText({ entry, ledgerId: "HIRISE_STAC_DTM", detail: "DTEEC_024234 · 1.01 m" })).toBe("OBSERVED · MRO HiRISE · DTEEC_024234 · 1.01 m");
+    expect(tagText({ entry, ledgerId: "HIRISE_STAC_DTM", compact: true })).toBe("MRO HiRISE");
   });
 
   it("marks unknown ids as UNREGISTERED once the ledger is loaded", () => {
-    expect(tagText({ entry: null, ledgerId: "NOPE", status: "ready" })).toBe("🏷️ UNREGISTERED SOURCE · NOPE");
-    expect(tagText({ entry: null, ledgerId: "NOPE", status: "loading", evidence: "DERIVED" })).toBe("🏷️ DERIVED · NOPE");
+    expect(tagText({ entry: null, ledgerId: "NOPE", status: "ready" })).toBe("UNREGISTERED SOURCE · NOPE");
+    expect(tagText({ entry: null, ledgerId: "NOPE", status: "loading", evidence: "DERIVED" })).toBe("DERIVED · NOPE");
   });
 
   it("opens from the keyboard with Enter or Space", () => {
@@ -69,7 +69,7 @@ describe("SourceTag", () => {
     seedLedger(ledger.entries);
     const html = renderToStaticMarkup(createElement(SourceTag, { ledgerId: "THEMIS", evidence: "OBSERVED", detail: "HISTORICAL" }));
     expect(html).toContain("<button");
-    expect(html).toContain("🏷️ OBSERVED · THEMIS · HISTORICAL");
+    expect(html).toContain("OBSERVED · THEMIS · HISTORICAL");
     expect(html).toContain('aria-haspopup="dialog"');
     const bad = renderToStaticMarkup(createElement(SourceTag, { ledgerId: "NOT_IN_LEDGER" }));
     expect(bad).toContain("UNREGISTERED SOURCE");

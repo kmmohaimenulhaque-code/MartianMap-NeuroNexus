@@ -1,8 +1,10 @@
 import SearchBar from "./SearchBar";
 import { TelemetryPill } from "../BrowserOptimizationPanel";
+import Icon from "../../ui/Icon";
+import SolScrubber from "../SolScrubber";
 
 /* Extracted from App.jsx (T7.8); state stays in App and arrives as props. */
-export default function TopBar({ appMode, backendConnected, commandIndex, comparedRoutes, handleOpenOrbital, handleOpenSnapshot, handleSelectPlace, manualOpen, places, query, routePoints, selectedCandidateId, setCommandIndex, setDesignerOpen, setIntelligenceOpen, setManualOpen, setQuery, sol, suggestions, switchMode }) {
+export default function TopBar({ appMode, backendConnected, commandIndex, comparedRoutes, handleOpenOrbital, handleOpenSnapshot, handleSelectPlace, manualOpen, places, query, routePoints, selectedCandidateId, setCommandIndex, setDesignerOpen, setIntelligenceOpen, setManualOpen, setQuery, suggestions, switchMode }) {
   return (
     <header className="topbar">
       <div className="brand-block">
@@ -38,11 +40,7 @@ export default function TopBar({ appMode, backendConnected, commandIndex, compar
             alignItems: "center",
           }}
         >
-          <div>
-            <span className="state-label">SOL</span>
-
-            <strong>{sol}</strong>
-          </div>
+          <SolScrubber />
 
           <div>
             <span className="state-label">FEATURES</span>
@@ -126,7 +124,7 @@ export default function TopBar({ appMode, backendConnected, commandIndex, compar
               type="button"
               aria-label="Open mission command index"
               aria-expanded={commandIndex.open}
-              title="Mission Command Index (Ctrl/⌘+K)"
+              title="Mission Command Index (Ctrl/Cmd+K)"
               onClick={() => setCommandIndex((state) => ({ open: !state.open, tab: "commands" }))}
               style={{
                 minWidth: "42px",
@@ -139,9 +137,9 @@ export default function TopBar({ appMode, backendConnected, commandIndex, compar
 
                 color: "#75e6ff",
 
-                fontFamily: "monospace",
+                fontFamily: "var(--nn-font)",
 
-                fontSize: "18px",
+                fontSize: "20px",
 
                 lineHeight: 1,
 
@@ -150,11 +148,11 @@ export default function TopBar({ appMode, backendConnected, commandIndex, compar
                 boxShadow: "0 0 16px rgba(117,230,255,0.06)",
               }}
             >
-              ☰
+              <Icon name="index" size={18} title="Command index" />
             </button>
 
             <button type="button" className="burger-button" aria-label="Open Mission Operations Manual" aria-expanded={manualOpen} title="Mission Operations Manual" onClick={() => setManualOpen(true)}>
-              🍔
+              <Icon name="menu" size={20} title="Mission Operations Manual" />
             </button>
           </div>
         </div>

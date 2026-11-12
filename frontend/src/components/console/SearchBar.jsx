@@ -1,9 +1,11 @@
+import Icon from "../../ui/Icon";
+
 
 export default function SearchBar({ query, suggestions, onQueryChange, onSelect }) {
   return (
     <div className="search-wrapper">
       <div className="search-box">
-        <span className="search-icon">⌕</span>
+        <span className="search-icon"><Icon name="search" size={16} /></span>
 
         <input
           value={query}

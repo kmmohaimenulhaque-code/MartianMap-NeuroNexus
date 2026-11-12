@@ -1,4 +1,5 @@
 import { MAX_CHECKLIST_POINTS, MAX_CHECKLIST_WORDS, MAX_TODO_WORDS, countWords, trimToWordLimit } from "../../utils/appHelpers";
+import Icon from "../../ui/Icon";
 
 const glassButtonStyle = {
   minHeight: "34px",
@@ -11,9 +12,9 @@ const glassButtonStyle = {
 
   color: "#9ab0b8",
 
-  fontFamily: "monospace",
+  fontFamily: "var(--nn-font)",
 
-  fontSize: "10px",
+  fontSize: "14px",
 
   letterSpacing: "0.06em",
 
@@ -77,12 +78,12 @@ export default function MissionMenu({
                 style={{
                   color: "#75e6ff",
 
-                  fontSize: "10px",
+                  fontSize: "14px",
 
-                  letterSpacing: "0.12em",
+                  letterSpacing: "0.06em",
                 }}
               >
-                ✍️ TO-DO LIST MAKER
+                TO-DO LIST MAKER
               </div>
 
               <strong
@@ -91,7 +92,7 @@ export default function MissionMenu({
 
                   marginTop: "5px",
 
-                  fontSize: "13px",
+                  fontSize: "15px",
                 }}
               >
                 Mission objective / field note
@@ -124,9 +125,9 @@ export default function MissionMenu({
 
                   color: "#d8e5e9",
 
-                  fontFamily: "monospace",
+                  fontFamily: "var(--nn-font)",
 
-                  fontSize: "10px",
+                  fontSize: "14px",
 
                   lineHeight: 1.6,
 
@@ -146,9 +147,9 @@ export default function MissionMenu({
 
                   color: todoWords >= MAX_TODO_WORDS ? "#ff8997" : "#6f828a",
 
-                  fontFamily: "monospace",
+                  fontFamily: "var(--nn-font)",
 
-                  fontSize: "10px",
+                  fontSize: "14px",
                 }}
               >
                 <span>MAXIMUM 150 WORDS</span>
@@ -180,12 +181,12 @@ export default function MissionMenu({
                 style={{
                   color: "#75e6ff",
 
-                  fontSize: "10px",
+                  fontSize: "14px",
 
-                  letterSpacing: "0.12em",
+                  letterSpacing: "0.06em",
                 }}
               >
-                📋 CHECKLIST MAKER
+                CHECKLIST MAKER
               </div>
 
               <strong
@@ -194,7 +195,7 @@ export default function MissionMenu({
 
                   marginTop: "5px",
 
-                  fontSize: "13px",
+                  fontSize: "15px",
                 }}
               >
                 Tickable mission actions
@@ -218,9 +219,9 @@ export default function MissionMenu({
 
                   color: "#6f828a",
 
-                  fontFamily: "monospace",
+                  fontFamily: "var(--nn-font)",
 
-                  fontSize: "10px",
+                  fontSize: "14px",
                 }}
               >
                 <span>
@@ -276,10 +277,10 @@ export default function MissionMenu({
 
                         cursor: "pointer",
 
-                        fontSize: "15px",
+                        fontSize: "16px",
                       }}
                     >
-                      {item.done ? "✓" : ""}
+                      {item.done ? <Icon name="check" size={14} /> : null}
                     </button>
 
                     <input
@@ -305,9 +306,9 @@ export default function MissionMenu({
 
                         textDecoration: item.done ? "line-through" : "none",
 
-                        fontFamily: "monospace",
+                        fontFamily: "var(--nn-font)",
 
-                        fontSize: "10px",
+                        fontSize: "14px",
 
                         outline: "none",
                       }}
@@ -327,7 +328,7 @@ export default function MissionMenu({
 
                         cursor: "pointer",
 
-                        fontSize: "13px",
+                        fontSize: "15px",
                       }}
                     >
                       ×
@@ -350,7 +351,7 @@ export default function MissionMenu({
 
                       color: "#667980",
 
-                      fontSize: "10px",
+                      fontSize: "14px",
 
                       textAlign: "center",
                     }}
@@ -410,9 +411,9 @@ export default function MissionMenu({
                   style={{
                     color: "#75e6ff",
 
-                    fontSize: "10px",
+                    fontSize: "14px",
 
-                    letterSpacing: "0.12em",
+                    letterSpacing: "0.06em",
                   }}
                 >
                   MISSION RECORD
@@ -426,7 +427,7 @@ export default function MissionMenu({
 
                     color: "#687b83",
 
-                    fontSize: "10px",
+                    fontSize: "14px",
                   }}
                 >
                   Notes and checklist are saved locally and included in both mission exports. The complete CSV flattens every value in the mission
@@ -551,9 +552,9 @@ export default function MissionMenu({
               style={{
                 color: "#75e6ff",
 
-                fontSize: "10px",
+                fontSize: "14px",
 
-                letterSpacing: "0.16em",
+                letterSpacing: "0.06em",
               }}
             >
               NEURONEXUS / MISSION WORKSPACE
@@ -563,7 +564,7 @@ export default function MissionMenu({
               style={{
                 margin: "5px 0 0",
 
-                fontSize: "18px",
+                fontSize: "20px",
 
                 letterSpacing: "0.06em",
               }}
@@ -579,7 +580,7 @@ export default function MissionMenu({
 
                 color: "#74868e",
 
-                fontSize: "10px",
+                fontSize: "14px",
               }}
             >
               Persistent local mission planning workspace.
@@ -600,7 +601,7 @@ export default function MissionMenu({
 
               color: "#75e6ff",
 
-              fontSize: "20px",
+              fontSize: "22px",
 
               cursor: "pointer",
             }}

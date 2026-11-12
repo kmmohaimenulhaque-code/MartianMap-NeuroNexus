@@ -1,4 +1,4 @@
-/* LAYERS ▾: collapsible categories of map layers; every row carries its 🏷️ source tag. */
+/* LAYERS ▾: collapsible categories of map layers; every row carries its source tag. */
 
 import { useEffect, useRef, useState } from "react";
 

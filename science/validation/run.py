@@ -116,7 +116,7 @@ def figures(site: str, report: dict, out_dir: Path) -> list[str]:
         fig, ax = plt.subplots(figsize=(6.4, 3.6), dpi=130)
         fig.patch.set_facecolor("#091115")
         ax.set_facecolor("#081014")
-        colors = {"HIRISE": "#c99bff", "CTX": "#ff9f68", "MOLA": "#6f858d"}
+        colors = {"HIRISE": "#75e6ff", "CTX": "#4ea8de", "MOLA": "#6f858d"}  # tokens.css --nn-src-*
         for fam in ("HIRISE", "CTX", "MOLA"):
             pts = [s for s in series if s["family"] == fam]
             if pts:

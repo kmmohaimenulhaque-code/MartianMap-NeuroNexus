@@ -1,5 +1,6 @@
 /* DecisionCard: status rule, time / metabolic / consumables budget, segments and terrain sources. */
 
+import { statusAtSol } from "./decision";
 import SourceTag from "../sources/SourceTag";
 import { CLASS_TOKENS, tokenColor } from "./walkabilityRamp";
 
@@ -17,7 +18,7 @@ function Row({ label, value, tag, note }) {
   );
 }
 
-export default function DecisionCard({ plan, estimate, loading, error }) {
+export default function DecisionCard({ plan, estimate, loading, error, conditions }) {
   if (loading && !plan) return <section className="mw-card mw-skeleton" aria-busy="true">PLANNING · reading the terrain ladder…</section>;
   if (!plan && !estimate) {
     return (
@@ -49,6 +50,17 @@ export default function DecisionCard({ plan, estimate, loading, error }) {
         <span className={status === "EXCEEDS PLANNING LIMIT" ? "mw-hatch-chip" : undefined}>{status}</span>
         <SourceTag ledgerId="NEURONEXUS_MARSWALK_PARAMETERS" compact />
       </div>
+      {conditions?.solar?.dust_class && (
+        <div className="mw-solstatus" data-testid="decision-at-sol">
+          <span>
+            AT {conditions.season?.label ?? "ACTIVE SOL"} · DUST τ {conditions.dust?.tau?.toFixed(2)} [{conditions.solar.dust_class}]
+          </span>
+          <strong style={{ color: tokenColor(CLASS_TOKENS[statusAtSol(status, conditions.solar.dust_class)]) }}>
+            {statusAtSol(status, conditions.solar.dust_class)}
+          </strong>
+          <SourceTag ledgerId="NASA_AMES_MGCM" evidence="MODELED" compact />
+        </div>
+      )}
       {plan.status.reasons.length > 0 && (
         <ul className="mw-reasons">
           {plan.status.reasons.map((r) => (

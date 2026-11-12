@@ -52,7 +52,7 @@ function SchematicTrack({ objects }) {
       aria-label="Mars-centred close-approach distance schematic"
     >
       <line x1={marsX} y1="26" x2={marsX} y2={height - 18} stroke="#75e6ff" strokeOpacity="0.35" strokeDasharray="3 3" />
-      <circle cx={marsX} cy={height / 2} r="12" fill="#c1440e" stroke="#ff9f68" strokeWidth="1.5" />
+      <circle cx={marsX} cy={height / 2} r="12" fill="#c1440e" stroke="#4ea8de" strokeWidth="1.5" />
       <text x={marsX} y={height - 4} fontSize="9" fill="#8aa0a8" textAnchor="middle">
         MARS
       </text>
@@ -173,7 +173,7 @@ export default function OrbitalTrackingPanel({ open, onClose, data, loading, err
                       <td>
                         {format(object.distance_au, 5, " au")}
                         <small>
-                          {format(object.distance_km, 0, " km")} · {format(object.distance_mars_radii, 0, " R♂")}
+                          {format(object.distance_km, 0, " km")} · {format(object.distance_mars_radii, 0, " Mars radii")}
                         </small>
                       </td>
                       <td>

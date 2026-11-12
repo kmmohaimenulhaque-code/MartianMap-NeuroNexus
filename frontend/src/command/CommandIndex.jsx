@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { CATEGORIES, TEAM_URL, searchCommands } from "../features/registry";
+import Icon from "../ui/Icon";
 
 /*
- * ☰ MISSION COMMAND INDEX — every capability of the console, by category.
+ * MISSION COMMAND INDEX — every capability of the console, by category.
  * Search, arrow keys + Enter, Esc to close. Unavailable commands say why.
  * Tabs: COMMANDS · FIELD NOTES & CHECKLIST · TEAM.
  */
@@ -92,7 +93,7 @@ export default function CommandIndex({ open, onClose, registry, initialTab = "co
         {tab === "commands" && (
           <>
             <div className="cix-search">
-              <span>⌕</span>
+              <span><Icon name="search" size={16} /></span>
               <input
                 ref={inputRef}
                 value={query}
@@ -103,7 +104,7 @@ export default function CommandIndex({ open, onClose, registry, initialTab = "co
                 placeholder="Search features… (↑↓ Enter)"
                 aria-label="Search commands"
               />
-              <kbd>Ctrl/⌘ K</kbd>
+              <kbd>Ctrl/Cmd K</kbd>
             </div>
             <div className="cix-list">
               {CATEGORIES.map((cat) => {
@@ -125,7 +126,7 @@ export default function CommandIndex({ open, onClose, registry, initialTab = "co
                         })
                       }
                     >
-                      <span>{cat.icon}</span> {cat.label.toUpperCase()} <small>{items.length}</small>
+                      <Icon name={cat.icon} size={14} /> {cat.label.toUpperCase()} <small>{items.length}</small>
                       <i>{isCollapsed ? "+" : "−"}</i>
                     </button>
                     {!isCollapsed &&

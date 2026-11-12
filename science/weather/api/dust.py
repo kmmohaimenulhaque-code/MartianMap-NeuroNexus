@@ -132,6 +132,7 @@ def meta() -> dict[str, Any]:
         "levels": LEVELS,
         "reference": "NASA Ames Mars GCM V3.2 User Guide §2.3; Montabone et al. (2015), Icarus 251.",
         "ls_range_deg": [round(float(ds["areo"].values[0]), 2), round(float(ds["areo"].values[-1]), 2)],
+        "ls_deg": _round(ds["areo"].values, 2),
     }
 
 

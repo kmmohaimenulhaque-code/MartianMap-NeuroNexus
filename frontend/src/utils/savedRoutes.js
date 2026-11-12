@@ -11,7 +11,7 @@ import { openNeuronexusDb } from "../perf/tileCache";
  * labelled as such.
  */
 
-export const ROUTE_COLOURS = ["#75e6ff", "#ff9f68", "#8cf0b1", "#c99bff", "#ffe27a", "#ff7eb6", "#7ea8ff", "#b8f27a"];
+export const ROUTE_COLOURS = ["#75e6ff", "#4ea8de", "#8cf0b1", "#3fbcd4", "#d8f6ff", "#a7d8ff", "#6fd3c1", "#b8f27a"];
 export const STORAGE_KEY_V2 = "neuronexus.savedRoutes.v2";
 export const STORAGE_KEY_V3 = "neuronexus.savedRoutes.v3";
 export const STORAGE_KEY_V4 = "neuronexus.savedRoutes.v4";

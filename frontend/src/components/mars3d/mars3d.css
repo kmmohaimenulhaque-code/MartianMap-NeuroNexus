@@ -59,14 +59,14 @@
 .m3d-title span {
   display: block;
   color: #75e6ff;
-  font-family: monospace;
-  font-size: 7.5px;
-  letter-spacing: 0.12em;
+  font-family: var(--nn-font);
+  font-size: 12px;
+  letter-spacing: 0.06em;
 }
 
 .m3d-title strong {
   color: #e6f6fb;
-  font-size: 11px;
+  font-size: 14px;
   letter-spacing: 0.08em;
 }
 
@@ -82,8 +82,8 @@
   border: 1px solid #29414b;
   background: #0a1318;
   color: #9fd8e8;
-  font-family: monospace;
-  font-size: 8px;
+  font-family: var(--nn-font);
+  font-size: 13px;
   letter-spacing: 0.08em;
   cursor: pointer;
 }
@@ -107,7 +107,7 @@
 }
 
 .m3d-close {
-  font-size: 15px;
+  font-size: 16px;
   min-width: 28px;
 }
 
@@ -130,9 +130,9 @@
   place-items: center;
   padding: 20px;
   color: #75e6ff;
-  font-family: monospace;
-  font-size: 9px;
-  letter-spacing: 0.1em;
+  font-family: var(--nn-font);
+  font-size: 13px;
+  letter-spacing: 0.06em;
   text-align: center;
   pointer-events: none;
 }
@@ -147,11 +147,11 @@
   left: 50%;
   transform: translateX(-50%);
   padding: 6px 10px;
-  border: 1px solid rgba(255, 209, 102, 0.45);
+  border: 1px solid rgba(216, 246, 255, 0.45);
   background: #140f05;
-  color: #ffd166;
-  font-family: monospace;
-  font-size: 8.5px;
+  color: #d8f6ff;
+  font-family: var(--nn-font);
+  font-size: 13px;
   max-width: calc(100% - 24px);
 }
 
@@ -171,9 +171,9 @@
 .m3d-candidates > span {
   width: 100%;
   color: #75e6ff;
-  font-family: monospace;
-  font-size: 7.5px;
-  letter-spacing: 0.12em;
+  font-family: var(--nn-font);
+  font-size: 12px;
+  letter-spacing: 0.06em;
 }
 
 .m3d-candidates > button {
@@ -184,7 +184,7 @@
   border: 1px solid #29414b;
   background: #0a1318;
   color: #cfe0e5;
-  font-size: 8.5px;
+  font-size: 13px;
   cursor: pointer;
 }
 
@@ -208,7 +208,7 @@
   gap: 6px;
   padding-top: 5px;
   border-top: 1px dashed #1d2f37;
-  font-size: 9px;
+  font-size: 13px;
 }
 
 .m3d-info {
@@ -221,7 +221,7 @@
   padding: 8px;
   border: 1px solid #1d2f37;
   background: #070e12;
-  font-size: 8.5px;
+  font-size: 13px;
   line-height: 1.55;
 }
 
@@ -232,9 +232,9 @@
   align-items: center;
   margin-bottom: 5px;
   color: #75e6ff;
-  font-family: monospace;
-  font-size: 8px;
-  letter-spacing: 0.12em;
+  font-family: var(--nn-font);
+  font-size: 13px;
+  letter-spacing: 0.06em;
 }
 
 .m3d-info button,
@@ -263,8 +263,8 @@
   background: #05090c;
   border-top: 1px solid rgba(117, 230, 255, 0.12);
   color: #9fd8e8;
-  font-family: monospace;
-  font-size: 8.5px;
+  font-family: var(--nn-font);
+  font-size: 13px;
 }
 
 .m3d-hint {
@@ -293,9 +293,9 @@
 .m3d-group h4 {
   margin: 0 0 6px;
   color: #75e6ff;
-  font-family: monospace;
-  font-size: 8px;
-  letter-spacing: 0.12em;
+  font-family: var(--nn-font);
+  font-size: 13px;
+  letter-spacing: 0.06em;
 }
 
 .m3d-group label {
@@ -304,7 +304,7 @@
   align-items: center;
   gap: 6px;
   padding: 3px 0;
-  font-size: 9px;
+  font-size: 13px;
   color: #c6d6db;
   cursor: pointer;
 }
@@ -312,7 +312,7 @@
 .m3d-group h4 label {
   display: inline-flex;
   color: #75e6ff;
-  font-size: 8px;
+  font-size: 13px;
 }
 
 .m3d-group label.disabled {
@@ -329,7 +329,7 @@
   display: block;
   margin-top: 4px;
   color: #5f737a;
-  font-size: 8px;
+  font-size: 13px;
   line-height: 1.5;
 }
 
@@ -340,7 +340,7 @@
 
 .m3d-science p {
   margin: 0 0 7px;
-  font-size: 9px;
+  font-size: 13px;
   line-height: 1.55;
 }
 
@@ -351,21 +351,21 @@
 .m3d-tag {
   padding: 1px 4px;
   border: 1px solid currentColor;
-  font-family: monospace;
-  font-size: 6.5px;
+  font-family: var(--nn-font);
+  font-size: 12px;
   font-style: normal;
   letter-spacing: 0.08em;
   white-space: nowrap;
 }
 
 .m3d-observed { color: #8cf0b1; }
-.m3d-modeled { color: #c99bff; }
+.m3d-modeled { color: #3fbcd4; }
 .m3d-derived { color: #75e6ff; }
 .m3d-unavailable { color: #7d949b; }
 
 /* Esri widgets inside the scene keep the dark console look */
 .m3d-view .esri-widget {
-  font-size: 11px;
+  font-size: 14px;
 }
 
 @media (max-width: 720px) {
@@ -424,8 +424,8 @@
   border: 1px solid #29414b;
   background: #0a1318;
   color: #75e6ff;
-  font-family: monospace;
-  font-size: 7.5px;
+  font-family: var(--nn-font);
+  font-size: 12px;
   letter-spacing: 0.08em;
   cursor: pointer;
 }
@@ -437,21 +437,21 @@
 
 .m3d-muted {
   color: #5f737a;
-  font-size: 8.5px;
+  font-size: 13px;
 }
 
 .m3d-error-text {
   color: #ffb0b0;
-  font-size: 8.5px;
+  font-size: 13px;
 }
 
 /* legend */
 .m3d-legend h4 {
   margin: 10px 0 6px;
   color: #75e6ff;
-  font-family: monospace;
-  font-size: 7.5px;
-  letter-spacing: 0.12em;
+  font-family: var(--nn-font);
+  font-size: 12px;
+  letter-spacing: 0.06em;
 }
 
 .m3d-legend h4:first-child {
@@ -476,7 +476,7 @@
   display: flex;
   align-items: center;
   gap: 7px;
-  font-size: 8.5px;
+  font-size: 13px;
   color: #cfe0e5;
 }
 
@@ -492,7 +492,7 @@
   display: block;
   margin-top: 6px;
   color: #5f737a;
-  font-size: 7.5px;
+  font-size: 12px;
   line-height: 1.5;
 }
 
@@ -548,7 +548,7 @@
 }
 
 .m3d-sw-area.gradient {
-  background: linear-gradient(90deg, #62f59a, #ffb347, #ff647c);
+  background: linear-gradient(90deg, #62f59a, #ffc46b, #ff647c);
   border: 1px solid #29414b;
 }
 
@@ -559,7 +559,7 @@
   border: 1px solid rgba(46, 240, 180, 0.35);
   background: rgba(46, 240, 180, 0.06);
   color: #a9f7de;
-  font-size: 8.5px;
+  font-size: 13px;
   line-height: 1.55;
 }
 
@@ -577,7 +577,7 @@
   align-items: center;
   margin-bottom: 4px;
   color: #e6f6fb;
-  font-size: 9.5px;
+  font-size: 13px;
 }
 
 .m3d-zone-detail {
@@ -585,7 +585,7 @@
   flex-direction: column;
   gap: 2px;
   margin-bottom: 6px;
-  font-size: 8.5px;
+  font-size: 13px;
   line-height: 1.5;
 }
 

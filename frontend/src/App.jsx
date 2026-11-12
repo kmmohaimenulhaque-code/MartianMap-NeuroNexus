@@ -55,6 +55,8 @@ import BrowserOptimizationPanel from "./components/BrowserOptimizationPanel";
 import { perfStore } from "./perf/perfStore";
 import { usePerfSettings } from "./perf/usePerf";
 import ThermalHeatmapCard from "./components/ThermalHeatmapCard";
+import SolConditionsCard from "./components/SolConditionsCard";
+import { SolProvider } from "./state/SolContext";
 import CategorizedLayersMenu from "./components/CategorizedLayersMenu";
 import DynamicMapLegend from "./components/DynamicMapLegend";
 import ContextLayers from "./components/mars/ContextLayers";
@@ -1748,7 +1750,7 @@ export default function App() {
     "field-notes": { run: () => setCommandIndex({ open: true, tab: "notes" }) },
     shortcuts: {
       run: () =>
-        setNotice("Ctrl/⌘+K command index · / search · R route mode · S save route · A route designer · C compare · I intelligence · 3 3D · O orbital · P print · N notes · [ ] sol"),
+        setNotice("Ctrl/Cmd+K command index · / search · R route mode · S save route · A route designer · C compare · I intelligence · 3 3D · O orbital · P print · N notes · [ ] sol"),
     },
     "backend-status": { run: () => setNotice(backendConnected ? "Backend online (FastAPI, port 8002)." : "Backend unreachable — start uvicorn on port 8002.") },
     about: { run: () => setCommandIndex({ open: true, tab: "team" }) },
@@ -1965,6 +1967,7 @@ export default function App() {
   }
 
   return (
+    <SolProvider sol={sol} setSol={setSol} playing={dustPlaying} setPlaying={setDustPlaying}>
     <SourcesContext.Provider value={sourcesContext}>
     <main className="mission-shell">
       <TopBar
@@ -1985,7 +1988,6 @@ export default function App() {
         setIntelligenceOpen={setIntelligenceOpen}
         setManualOpen={setManualOpen}
         setQuery={setQuery}
-        sol={sol}
         suggestions={suggestions}
         switchMode={switchMode}
       />
@@ -2061,9 +2063,9 @@ export default function App() {
 
             color: "#ffb0b0",
 
-            fontFamily: "monospace",
+            fontFamily: "var(--nn-font)",
 
-            fontSize: "9px",
+            fontSize: "13px",
 
             boxShadow: "0 10px 30px rgba(0,0,0,0.45)",
           }}
@@ -2079,7 +2081,7 @@ export default function App() {
               background: "transparent",
               color: "#ffb0b0",
               cursor: "pointer",
-              fontSize: "11px",
+              fontSize: "14px",
               lineHeight: 1,
               padding: "2px 6px",
             }}
@@ -2149,7 +2151,7 @@ export default function App() {
 
                   color: "#71848c",
 
-                  fontSize: "9px",
+                  fontSize: "13px",
 
                   lineHeight: 1.5,
                 }}
@@ -2227,6 +2229,7 @@ export default function App() {
             </div>
 
             <ThermalHeatmapCard location={selectedLocation} />
+            <SolConditionsCard lat={selectedLocation?.latitude_deg} lon={selectedLocation?.longitude_deg} />
 
             <div className="source-note">
               <span>SOURCE</span>
@@ -2511,7 +2514,7 @@ export default function App() {
 
                   color: "#667a82",
 
-                  fontSize: "9px",
+                  fontSize: "13px",
 
                   lineHeight: 1.45,
                 }}
@@ -2594,7 +2597,7 @@ export default function App() {
           <strong>Observed · Modeled · Derived · Simulated</strong>
 
           <button type="button" className="evidence-sources" onClick={() => setSourcesDrawer({ open: true, focusId: null })}>
-            🏷️ SOURCE LEDGER
+            [SOURCE LEDGER]
           </button>
         </div>
 
@@ -2752,5 +2755,6 @@ export default function App() {
       <SourcesDrawer open={sourcesDrawer.open} focusId={sourcesDrawer.focusId} onClose={() => setSourcesDrawer({ open: false, focusId: null })} />
     </main>
     </SourcesContext.Provider>
+    </SolProvider>
   );
 }
