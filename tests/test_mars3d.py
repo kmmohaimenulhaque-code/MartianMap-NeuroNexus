@@ -68,3 +68,37 @@ def test_exploration_context_labels_and_honesty():
     assert all(30 <= s["latitude_deg"] <= 60 for s in payload["ice_study_regions"])
     assert payload["layers"]["swim_water_ice"]["status"] == "UNAVAILABLE"
     assert "certified safe" in payload["boundary"]
+
+
+def test_exploration_zones_are_derived_bounded_and_honest():
+    from science.mars3d.layers import PEZ_CRITERIA, exploration_zones
+    from tests.synthetic_terrain import ridge_grid
+
+    def loader(window):
+        assert window["width_km"] <= 120.0
+        grid = ridge_grid(window["center_latitude_deg"], window["center_longitude_deg"], span_deg=1.4)
+        grid.elevation_m -= 2000.0  # below datum, like the northern plains
+        return grid
+
+    payload = exploration_zones({"latitude_deg": 46.0, "longitude_deg": 150.0}, loader=loader)
+    assert payload["label"].endswith("DERIVED — NEURONEXUS")
+    assert "not a NASA-certified safe zone" in payload["method"]
+    names = [z["name"] for z in payload["zones"]]
+    assert "Arcadia Planitia" in names and names[-1] == "Selected site"
+    for zone in payload["zones"]:
+        assert zone["classification"] == "POTENTIAL EXPLORATION ZONE — DERIVED — NEURONEXUS"
+        for cell in zone["cells"]:
+            assert cell["walkability"] >= PEZ_CRITERIA["walkability_min"]
+            assert cell["slope_deg"] <= PEZ_CRITERIA["slope_max_deg"]
+            assert cell["elevation_m"] <= PEZ_CRITERIA["elevation_max_m"]
+    assert any(z["status"] == "DERIVED" and z["candidate_area_km2"] > 0 for z in payload["zones"])
+
+
+def test_exploration_zone_without_terrain_is_unavailable():
+    from science.mars3d.layers import evaluate_exploration_zone
+
+    def broken(window):
+        raise ValueError("Invalid MOLA tile size")
+
+    zone = evaluate_exploration_zone("X", 45.0, 10.0, context="test", loader=broken)
+    assert zone["status"] == "UNAVAILABLE" and zone["cells"] == []
