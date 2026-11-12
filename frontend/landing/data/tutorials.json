@@ -97,6 +97,26 @@
     "zones": {
       "src": "assets/screenshots/v3/landing-zones.png",
       "w": 1600
+    },
+    "qglayers": {
+      "src": "assets/screenshots/v3/landing-qg-layers.png",
+      "w": 1600
+    },
+    "qgroute1": {
+      "src": "assets/screenshots/v3/landing-qg-route1.png",
+      "w": 1600
+    },
+    "qgroute2": {
+      "src": "assets/screenshots/v3/landing-qg-route2.png",
+      "w": 1600
+    },
+    "qgroute3": {
+      "src": "assets/screenshots/v3/landing-qg-route3.png",
+      "w": 1600
+    },
+    "qgmarswalk": {
+      "src": "assets/screenshots/v3/landing-qg-marswalk.png",
+      "w": 1600
     }
   },
   "tutorials": [
@@ -1032,54 +1052,126 @@
     "glossary": [],
     "steps": [
       {
-        "media": "layers",
+        "media": "qglayers",
         "focus": [
-          0.0,
-          0.0,
-          1.0,
-          1.0
+          0.08,
+          0.12,
+          0.72,
+          0.82
         ],
-        "caption": "One integrated map: HiRISE, CTX, MOLA, dust, geology and rovers, layered."
+        "cursor": [
+          0.746,
+          0.169
+        ],
+        "caption": "One integrated map. Open LAYERS to stack HiRISE, CTX, MOLA, geology and dust on every view."
       },
       {
         "media": "solstorm",
         "focus": [
           0.2,
-          0.14,
-          0.36,
+          0.03,
+          0.56,
+          0.73
+        ],
+        "cursor": [
+          0.551,
+          0.052
+        ],
+        "caption": "Press play: dust, RAD dose and weather update every map, sol by sol."
+      },
+      {
+        "media": "qgroute1",
+        "focus": [
+          0.13,
+          0.18,
+          0.3,
+          0.26
+        ],
+        "cursor": [
+          0.213,
+          0.258
+        ],
+        "caption": "Open Route Design and set the selected site as START."
+      },
+      {
+        "media": "qgroute2",
+        "focus": [
+          0.13,
+          0.25,
+          0.3,
+          0.2
+        ],
+        "cursor": [
+          0.213,
+          0.374
+        ],
+        "caption": "Pick a destination on the map, then set it as DESTINATION."
+      },
+      {
+        "media": "qgroute2",
+        "focus": [
+          0.13,
+          0.55,
+          0.3,
+          0.35
+        ],
+        "cursor": [
+          0.213,
+          0.86
+        ],
+        "caption": "Weigh your objectives and press GENERATE ROUTES."
+      },
+      {
+        "media": "qgroute3",
+        "focus": [
+          0.29,
+          0.12,
+          0.59,
+          0.85
+        ],
+        "cursor": [
+          0.371,
+          0.228
+        ],
+        "caption": "Six deterministic candidates appear. Save them all and compare."
+      },
+      {
+        "media": "qgmarswalk",
+        "focus": [
+          0.17,
+          0.08,
+          0.65,
+          0.68
+        ],
+        "cursor": [
+          0.494,
+          0.418
+        ],
+        "caption": "In MARSWALK, tap a target. The walk is planned over 1 m HiRISE terrain."
+      },
+      {
+        "media": "qgmarswalk",
+        "focus": [
+          0.0,
+          0.22,
+          0.3,
+          0.4
+        ],
+        "cursor": [
+          0.0875,
+          0.5825
+        ],
+        "caption": "Pick 4 or 8 hours and press PLAN: a turnaround point and walk-back margin."
+      },
+      {
+        "media": "qgmarswalk",
+        "focus": [
+          0.8,
+          0.17,
+          0.2,
           0.62
         ],
-        "caption": "Conditions follow the sol: dust, RAD dose and weather update every map."
-      },
-      {
-        "media": "designer",
-        "focus": [
-          0.27,
-          0.28,
-          0.65,
-          0.6
-        ],
-        "caption": "Route Design scores walks for time, terrain, science and operations."
-      },
-      {
-        "media": "marswalk",
-        "focus": [
-          0.33,
-          0.13,
-          0.67,
-          0.82
-        ],
-        "caption": "MARSWALK plans the EVA with a turnaround point and walk-back margin."
-      },
-      {
-        "media": "exports",
-        "focus": [
-          0.0,
-          0.0,
-          1.0,
-          1.0
-        ],
-        "caption": "Every number carries its NASA source, checked against rover ground truth."
+        "caption": "Every decision cites its NASA source and reads as a planning limit, never a safety verdict."
       }
     ]
   }

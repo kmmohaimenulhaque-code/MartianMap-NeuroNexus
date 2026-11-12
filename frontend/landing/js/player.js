@@ -44,7 +44,7 @@ export function createPlayer(root, spec, { sizes, tokens, consolePath }) {
     const first = sizes[t.steps[0].media] || [16, 10];
     const portrait = first[1] > first[0];
     root.innerHTML = `
-      <div class="pl-shell">
+      <div class="pl-shell${t === spec.guide ? " pl-shell--guide" : ""}">
         <div class="pl-top">
           <div>
             <p class="lp-eyebrow lp-eyebrow--dark">${reel ? `Reel &middot; ${reelIndex + 1} of ${spec.tutorials.length}` : t === spec.guide ? "The challenge, answered" : "Tutorial"}</p>
@@ -90,6 +90,7 @@ export function createPlayer(root, spec, { sizes, tokens, consolePath }) {
       },
     });
     stage.go(0, { autoplay: !reducedMotion() });
+    loupe(root.querySelector("[data-pl-stage]"));
     syncPlayButton();
 
     root.querySelector("[data-pl-close]").addEventListener("click", close);
@@ -172,4 +173,30 @@ export function createPlayer(root, spec, { sizes, tokens, consolePath }) {
   window.addEventListener("hashchange", fromHash);
 
   return { open, openReel: (from) => open(null, from, { reel: true }), close };
+}
+
+/* Magnifier: a round 2.4x loupe over the playing screenshot that follows the pointer (fine pointers only). */
+function loupe(wrap) {
+  if (!wrap || !matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+  const lens = document.createElement("div");
+  lens.className = "pl-loupe";
+  lens.setAttribute("aria-hidden", "true");
+  wrap.append(lens);
+  const Z = 2.4;
+  wrap.addEventListener("pointermove", (e) => {
+    const img = wrap.querySelector(".tt-frame.is-on img");
+    if (!img) return;
+    const r = img.getBoundingClientRect();
+    const w = wrap.getBoundingClientRect();
+    const x = e.clientX - r.left;
+    const y = e.clientY - r.top;
+    const d = lens.offsetWidth / 2;
+    lens.style.left = `${e.clientX - w.left - d}px`;
+    lens.style.top = `${e.clientY - w.top - d}px`;
+    lens.style.backgroundImage = `url("${img.currentSrc || img.src}")`;
+    lens.style.backgroundSize = `${r.width * Z}px ${r.height * Z}px`;
+    lens.style.backgroundPosition = `${d - x * Z}px ${d - y * Z}px`;
+    lens.classList.add("is-on");
+  });
+  wrap.addEventListener("pointerleave", () => lens.classList.remove("is-on"));
 }
