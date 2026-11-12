@@ -1,4 +1,4 @@
-cat > requirements.txt <<'EOF'
+
 # NeuroNexus Python dependencies
 
 # Scientific / data core
@@ -44,4 +44,3 @@ google-genai
 # PyTorch is intentionally NOT pinned here.
 # NeuroNexus targets AMD Instinct MI300X + ROCm.
 # Install/use the PyTorch build matching the ROCm environment.
-EOF
