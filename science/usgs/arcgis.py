@@ -153,7 +153,15 @@ def query_layer(layer: str, extent: dict[str, float], out_fields: str, return_ge
 # ---------------------------------------------------------------- tiles
 
 
-def _choose_level(width_m: float, height_m: float, max_px: int = 900) -> int:
+# Snapshots are drawn up to ~1,000 CSS px wide on 2-3x screens; up to 2,048 px per side keeps the hillshade sharp
+# there (level 5 whenever it fits) instead of stretching a coarser level.
+SNAPSHOT_MAX_PX = 2048
+MAX_TILES = 100  # 2,048 px is at most 9 x 9 tiles; this cap also bounds memory on a 512 MB instance
+JPEG_QUALITY = 90  # hillshade has no hard edges; JPEG is ~4x smaller and ~10x cheaper to encode than PNG
+BACKGROUND_RGB = (4, 8, 11)  # the snapshot panel background (#04080b) behind areas outside the map
+
+
+def _choose_level(width_m: float, height_m: float, max_px: int = SNAPSHOT_MAX_PX) -> int:
     for level in range(MAX_CACHED_LEVEL, -1, -1):
         if max(width_m, height_m) / LOD_RESOLUTIONS[level] <= max_px:
             return level
@@ -169,8 +177,8 @@ def stitch_tiles(extent: dict[str, float], level: int) -> dict[str, Any]:
     col1 = int(math.floor((extent["xmax"] - TILE_ORIGIN[0]) / span))
     row0 = int(math.floor((TILE_ORIGIN[1] - extent["ymax"]) / span))
     row1 = int(math.floor((TILE_ORIGIN[1] - extent["ymin"]) / span))
-    if (col1 - col0 + 1) * (row1 - row0 + 1) > 64:
-        raise ValueError("Snapshot would need more than 64 tiles.")
+    if (col1 - col0 + 1) * (row1 - row0 + 1) > MAX_TILES:
+        raise ValueError(f"Snapshot would need more than {MAX_TILES} tiles.")
     canvas = Image.new("RGBA", ((col1 - col0 + 1) * TILE_SIZE, (row1 - row0 + 1) * TILE_SIZE), (0, 0, 0, 0))
     jobs = [(r, c) for r in range(row0, row1 + 1) for c in range(col0, col1 + 1)]
     fetched = {"ok": 0, "missing": 0}
@@ -204,10 +212,12 @@ def stitch_tiles(extent: dict[str, float], level: int) -> dict[str, Any]:
     if max(image.width, image.height) < 480:
         scale = max(1, int(round(640 / max(image.width, image.height, 1))))
         image = image.resize((image.width * scale, image.height * scale), Image.NEAREST)
+    flat = Image.new("RGB", image.size, BACKGROUND_RGB)
+    flat.paste(image, mask=image.getchannel("A"))
     buffer = io.BytesIO()
-    image.save(buffer, format="PNG", optimize=True)
+    flat.save(buffer, format="JPEG", quality=JPEG_QUALITY, optimize=True, progressive=True)
     return {
-        "data_uri": "data:image/png;base64," + base64.b64encode(buffer.getvalue()).decode("ascii"),
+        "data_uri": "data:image/jpeg;base64," + base64.b64encode(buffer.getvalue()).decode("ascii"),
         "width": image.width, "height": image.height,
         "source_width": width, "source_height": height,
         "display_scale": scale, "tiles": fetched, "level": level,
