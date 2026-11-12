@@ -5,6 +5,7 @@ import { fetchUsgsMultiRouteSnapshot, fetchUsgsRouteSnapshot } from "../services
 import NeonLineChart from "../ui/NeonLineChart";
 import { ProvenanceTag } from "../ui/StatTriplet";
 import { fmt } from "../ui/format";
+import { snapshotMarkScale } from "../utils/snapshotScale";
 import { COMPARISON_METRICS, comparisonToCsv, rankMetric, readSnapshot, routeColour, routeStats, writeSnapshot } from "../utils/savedRoutes";
 import Icon from "../ui/Icon";
 import { provenance, provenanceCsvHeader } from "../exports/exporters";
@@ -24,22 +25,23 @@ function SnapshotFigure({ snapshot, routes, height = 220 }) {
   const image = snapshot?.image;
   const width = image?.width ?? 900;
   const h = image?.height ?? 600;
+  const k = snapshotMarkScale(width, h);
   const overlays = snapshot?.routes?.length ? snapshot.routes : [{ route_px: snapshot?.route_px ?? [], colour: routes?.[0]?.colour ?? "#01ffff" }];
   return (
     <svg viewBox={`0 0 ${width} ${h}`} width="100%" style={{ maxHeight: height, display: "block" }} role="img" aria-label="USGS geology snapshot">
       {image?.data_uri && <image href={image.data_uri} x="0" y="0" width={width} height={h} />}
       {(snapshot?.geology?.polygons ?? []).map((polygon, index) =>
         polygon.rings_px.map((ring, ringIndex) => (
-          <polygon key={`${index}-${ringIndex}`} points={ring.map((p) => p.join(",")).join(" ")} fill={polygon.color} fillOpacity="0.22" stroke={polygon.color} strokeOpacity="0.45" strokeWidth="1" />
+          <polygon key={`${index}-${ringIndex}`} points={ring.map((p) => p.join(",")).join(" ")} fill={polygon.color} fillOpacity="0.22" stroke={polygon.color} strokeOpacity="0.45" strokeWidth={1 * k} />
         )),
       )}
       {overlays.map((overlay, index) => (
         <g key={overlay.route_id ?? index}>
-          <polyline points={overlay.route_px.map((p) => p.join(",")).join(" ")} fill="none" stroke={overlay.colour ?? "#01ffff"} strokeOpacity="0.3" strokeWidth="9" strokeLinecap="round" strokeLinejoin="round" />
-          <polyline points={overlay.route_px.map((p) => p.join(",")).join(" ")} fill="none" stroke={overlay.colour ?? "#01ffff"} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-          {overlay.route_px.length > 0 && <circle cx={overlay.route_px[0][0]} cy={overlay.route_px[0][1]} r="6" fill="#62f59a" stroke="#04080b" strokeWidth="1.5" />}
+          <polyline points={overlay.route_px.map((p) => p.join(",")).join(" ")} fill="none" stroke={overlay.colour ?? "#01ffff"} strokeOpacity="0.3" strokeWidth={9 * k} strokeLinecap="round" strokeLinejoin="round" />
+          <polyline points={overlay.route_px.map((p) => p.join(",")).join(" ")} fill="none" stroke={overlay.colour ?? "#01ffff"} strokeWidth={3 * k} strokeLinecap="round" strokeLinejoin="round" />
+          {overlay.route_px.length > 0 && <circle cx={overlay.route_px[0][0]} cy={overlay.route_px[0][1]} r={6 * k} fill="#62f59a" stroke="#04080b" strokeWidth={1.5 * k} />}
           {overlay.route_px.length > 1 && (
-            <circle cx={overlay.route_px[overlay.route_px.length - 1][0]} cy={overlay.route_px[overlay.route_px.length - 1][1]} r="6" fill="#ff647c" stroke="#04080b" strokeWidth="1.5" />
+            <circle cx={overlay.route_px[overlay.route_px.length - 1][0]} cy={overlay.route_px[overlay.route_px.length - 1][1]} r={6 * k} fill="#ff647c" stroke="#04080b" strokeWidth={1.5 * k} />
           )}
         </g>
       ))}
