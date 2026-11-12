@@ -49,7 +49,7 @@ def test_tool_results_are_size_bounded():
 
 def test_model_is_configurable_with_a_gemini_default(monkeypatch):
     monkeypatch.delenv(ENV_MODEL, raising=False)
-    assert model_name() == DEFAULT_MODEL == "gemini-2.5-flash"
+    assert model_name() == DEFAULT_MODEL == "gemini-3.5-flash"
     monkeypatch.setenv(ENV_MODEL, "gemini-2.5-pro")
     assert model_name() == "gemini-2.5-pro"
 
@@ -100,3 +100,57 @@ def test_provenance_ledger_separates_ai_from_nasa_observation():
     assert {"EXTERNAL SOURCE", "DERIVED OUTPUT", "TEAM METHOD", "AI INTERPRETATION"} <= classes
     gemini = next(entry for entry in ledger["entries"] if entry["id"] == "gemini")
     assert gemini["class"] == "AI INTERPRETATION"
+
+
+
+class _FakeModel:
+    def __init__(self, name, actions=("generateContent",)):
+        self.name = f"models/{name}"
+        self.supported_actions = list(actions)
+
+
+class _FakeClient:
+    def __init__(self, names):
+        self._names = names
+
+        class _Models:
+            @staticmethod
+            def list():
+                return [_FakeModel(n) for n in names] + [_FakeModel("text-embedding-004", ("embedContent",)),
+                                                         _FakeModel("gemini-3.1-flash-image")]
+
+        self.models = _Models()
+
+
+def _resolve(monkeypatch, names, configured=None):
+    import science.ai.config as config
+
+    monkeypatch.setenv(ENV_KEY, f"key-{len(names)}-{configured}")
+    if configured:
+        monkeypatch.setenv(ENV_MODEL, configured)
+    else:
+        monkeypatch.delenv(ENV_MODEL, raising=False)
+    config._cache.update(at=0.0, models=None)
+    return config.resolve_model(_FakeClient(names))
+
+
+def test_configured_model_is_used_when_available(monkeypatch):
+    info = _resolve(monkeypatch, ["gemini-3.5-flash", "gemini-3.6-flash"], configured="gemini-3.5-flash")
+    assert info["model"] == "gemini-3.5-flash" and info["notice"] is None and not info["substituted"]
+
+
+def test_retired_model_is_replaced_with_an_available_one_and_explained(monkeypatch):
+    info = _resolve(monkeypatch, ["gemini-3.6-flash", "gemini-3.1-flash-lite"], configured="gemini-2.5-flash")
+    assert info["model"] == "gemini-3.6-flash" and info["substituted"]
+    assert "gemini-2.5-flash" in info["notice"] and "unavailable" in info["notice"]
+    assert "GEMINI_MODEL" in info["notice"]
+
+
+def test_non_text_models_are_never_chosen(monkeypatch):
+    info = _resolve(monkeypatch, [], configured=None)
+    assert info["model"] is None and "no Gemini text-generation model" in info["notice"]
+
+
+def test_unknown_future_flash_model_is_picked_by_version(monkeypatch):
+    info = _resolve(monkeypatch, ["gemini-4.2-flash", "gemini-4.0-pro"], configured="gemini-9-flash")
+    assert info["model"] == "gemini-4.2-flash"
