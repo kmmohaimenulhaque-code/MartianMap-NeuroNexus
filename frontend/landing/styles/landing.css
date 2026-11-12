@@ -3749,3 +3749,10 @@ body.lp {
 .pl-shell .pl-stage-wrap:hover {
   cursor: zoom-in;
 }
+
+/* Phones: the caption would cover the footage; the highlighted step in the list below says the same thing. */
+@media (max-width: 767px) {
+  .tt-caption {
+    display: none;
+  }
+}
