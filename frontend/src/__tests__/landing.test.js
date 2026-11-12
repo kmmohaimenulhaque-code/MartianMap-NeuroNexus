@@ -30,9 +30,9 @@ describe("tutorials.json", () => {
     expect(spec.tutorials.some((t) => t.id === g.id)).toBe(false);
     // Same timing rule as landing/js/stage.js stepDuration.
     const read = (st) => 1500 + st.caption.split(/\s+/).length * 230;
-    const ms = g.steps.reduce((sum, st) => sum + (st.taps ? Math.max(3400, read(st), st.taps.length * 1800 + 900) : Math.max(3400, read(st) + (st.cursor ? 1100 : 0))), 0);
-    expect(ms).toBeGreaterThanOrEqual(20000);
-    expect(ms).toBeLessThanOrEqual(45000);
+    const ms = g.steps.reduce((sum, st) => sum + (st.taps ? Math.max(3400, read(st), st.taps.length * 1200 + 600) : Math.max(3400, read(st) + (st.cursor ? 1100 : 0))), 0);
+    expect(ms).toBeGreaterThanOrEqual(28000);
+    expect(ms).toBeLessThanOrEqual(32000);
     for (const st of g.steps) {
       expect(spec.media[st.media], st.media).toBeTruthy();
       for (const tap of st.taps ?? []) expect(spec.media[tap.media ?? st.media], tap.media).toBeTruthy();

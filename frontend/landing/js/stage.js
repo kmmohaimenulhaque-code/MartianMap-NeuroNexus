@@ -9,7 +9,7 @@ import { fillTokens } from "./content.js";
 const CURSOR_SVG =
   '<svg class="tt-cursor" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 2l17 9.5-7.4 1.6L9.2 21z" fill="#f2f0ec" stroke="#05090b" stroke-width="1.4" stroke-linejoin="round"/></svg>';
 
-const TAP_MS = 1800; // one cursor tap: camera move, glide, click
+const TAP_MS = 1200; // one cursor tap: camera move, glide, click
 
 export class TutorialStage {
   constructor(host, tutorial, { sizes, tokens, mode = "card", onStep, onEnd, loop = mode === "card" } = {}) {
@@ -64,7 +64,7 @@ export class TutorialStage {
   stepDuration(step) {
     const words = step.caption.split(/\s+/).length;
     const read = 1500 + words * 230;
-    if (step.taps?.length) return Math.max(3400, read, step.taps.length * TAP_MS + 900);
+    if (step.taps?.length) return Math.max(3400, read, step.taps.length * TAP_MS + 600);
     return Math.max(3400, read + (step.cursor ? 1100 : 0));
   }
 
@@ -154,7 +154,7 @@ export class TutorialStage {
     views.forEach((v, k) => {
       const t0 = k * TAP_MS;
       if (k > 0) this.later(() => this.show(v, v.media === views[k - 1].media), t0);
-      if (v.cursor) this.later(() => this.tap(v, k === 0 && !step.taps), fast ? 0 : t0 + (k === 0 ? 700 : 520));
+      if (v.cursor) this.later(() => this.tap(v, k === 0 && !step.taps), fast ? 0 : t0 + (k === 0 ? 500 : 380));
       else if (k > 0) this.later(() => this.cursor.classList.remove("is-on"), t0);
     });
     this.onStep?.(i, step);
@@ -195,7 +195,7 @@ export class TutorialStage {
       if (this.mode === "player") haptic(8);
       this.later(() => this.cursor.classList.remove("is-press"), 120);
     };
-    const glide = reducedMotion() ? 0 : 560;
+    const glide = reducedMotion() ? 0 : 450;
     this.later(press, glide);
     if (view.double) this.later(press, glide + 240);
   }
