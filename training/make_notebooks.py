@@ -655,17 +655,61 @@ if PLATFORM == "mi300x":
 ''')
 
 
+
+RESUME_INTRO = """# Resume: GGUF, publish, Space, live calls, router demo (no GPU needed)
+
+For a run whose training finished and pushed `adapter/` and `eval.json` to the Hub, but stopped before GGUF.
+Use a CPU runtime (Colab: Runtime > Change runtime type > CPU). Same secrets as the training notebook.
+It downloads the adapter, merges it on CPU, makes the GGUF files, publishes them, updates the model card,
+starts the Space and runs the live calls and router demo."""
+
+RESUME_CELL = r'''
+# Resume: load the adapter and eval results that the training run already pushed
+from huggingface_hub import snapshot_download
+ADAPTER = pathlib.Path(snapshot_download(MODEL_REPO, allow_patterns=["adapter/*", "eval.json"], token=HF_TOKEN,
+                                         local_dir=str(WORK / "hub"))) / "adapter"
+EVAL = json.load(open(WORK / "hub" / "eval.json"))
+TRAIN_MIN = EVAL["train_minutes"]
+LORA_R = json.load(open(ADAPTER / "adapter_config.json"))["r"]
+trainer = model = None
+import transformers
+DTYPE_KW = "dtype" if tuple(int(x) for x in transformers.__version__.split(".")[:2]) >= (4, 56) else "torch_dtype"
+mark(f"adapter and eval loaded: {EVAL['train_steps']} steps, fine-tuned pass rate {EVAL['fine_tuned']['pass_rate']}")
+'''
+
+RESUME_INSTALL = r'''
+# 2. Install (CPU is enough)
+def sh(cmd, check=True):
+    print("$", cmd, flush=True)
+    r = subprocess.run(cmd, shell=True, text=True, capture_output=True)
+    if r.returncode and check:
+        print(r.stdout[-3000:], r.stderr[-3000:])
+        raise RuntimeError(f"failed: {cmd}")
+    return r
+sh(f'{sys.executable} -m pip install -q transformers peft accelerate hf_transfer "huggingface_hub>=0.34" sentencepiece protobuf requests')
+import torch
+mark(f"torch {torch.__version__}")
+'''
+
+
 def render(target: dict, text: str) -> str:
     for k, v in target.items():
         text = text.replace("{{" + k + "}}", v)
     return text
 
 
+def resume_cells():
+    # CELLS: 0 intro, 1 config, 2 install, 3 llama.cpp, 4 login, 5 dataset, 10 guards, 12+ merge onward
+    return ([("markdown", RESUME_INTRO), CELLS[1], ("code", RESUME_INSTALL.strip("\n")), CELLS[3], CELLS[4], CELLS[5],
+             ("code", RESUME_CELL.strip("\n")), CELLS[10]] + CELLS[12:])
+
+
 def build():
-    for name, target in TARGETS.items():
+    jobs = [(n, t, CELLS) for n, t in TARGETS.items()] + [("qwen3_4b_resume_gguf", TARGETS["qwen3_4b_kaggle"], resume_cells())]
+    for name, target, cell_list in jobs:
         cells = []
         py = []
-        for kind, src in CELLS:
+        for kind, src in cell_list:
             src = render(target, src)
             lines = src.splitlines(keepends=True)
             if kind == "markdown":
