@@ -1346,7 +1346,7 @@ a.intel-chip:focus-visible {
   color: var(--nn-text-dim);
 }
 
-/* Which model answered (fine-tuned Qwen or Gemini) and why: one gray line, scrolls sideways, never wraps. */
+/* Which model answered (Gemini or a fallback provider): one gray line, scrolls sideways, never wraps. */
 .intel-route {
   margin-top: 6px;
   color: var(--nn-text-dim);

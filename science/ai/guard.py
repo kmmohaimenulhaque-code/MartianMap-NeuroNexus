@@ -1,9 +1,5 @@
-"""Answer guards for MARS INTELLIGENCE.
-
-Used three times with the same code: to filter the SFT dataset, to score the base and
-fine-tuned models in the notebooks, and live in the router before a Qwen answer is
-shown (science/ai/router.py). Pure standard library so it can be pasted into a notebook cell.
-"""
+"""Answer guards for MARS INTELLIGENCE: the router checks every fallback-provider answer with them
+before it is shown (science/ai/router.py). Pure standard library."""
 
 from __future__ import annotations
 
@@ -47,7 +43,8 @@ def check(answer: str, evidence: str, *, expects_missing: bool = False) -> dict:
     bad = ungrounded_numbers(answer, evidence)
     if bad:
         v.append(f"ungrounded_number:{bad[:3]}")
-    if re.search(r"\bsafe\b", answer, re.I) or any(re.search(rf"\b{re.escape(t)}\b", answer) for t in FORBIDDEN_STATUS):
+    # "Safe Haven" is a console feature name, not a verdict.
+    if re.search(r"\bsafe\b(?!\s+havens?\b)", answer, re.I) or any(re.search(rf"\b{re.escape(t)}\b", answer) for t in FORBIDDEN_STATUS):
         v.append("banned_safety_term")
     if "—" in answer:
         v.append("em_dash")

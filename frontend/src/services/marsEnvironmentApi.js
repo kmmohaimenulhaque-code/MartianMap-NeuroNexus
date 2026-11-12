@@ -11,8 +11,12 @@ async function fetchJson(url, options = {}) {
     try {
       const body = await response.json();
 
-      if (body?.detail) {
+      if (typeof body?.detail === "string") {
         message = body.detail;
+      } else if (Array.isArray(body?.detail)) {  // FastAPI validation errors: [{msg, loc, ...}]
+        message = body.detail.map((item) => item?.msg ?? JSON.stringify(item)).join("; ");
+      } else if (body?.reason || body?.error) {
+        message = String(body.reason || body.error);
       }
     } catch {
       // Keep the HTTP status message.

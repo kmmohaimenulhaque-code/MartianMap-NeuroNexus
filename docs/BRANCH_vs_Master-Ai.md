@@ -1,6 +1,6 @@
 # What this branch adds over Master-Ai
 
-Branch: `feature/mission-console-v2-Qwen-Gem` (94 commits, 14 to 29 Oct 2026). Compared with `Master-Ai`
+Branch: `v4-argon-landing-routing` (built on `feature/mission-console-v2-Qwen-Gem`) (94 commits, 14 to 29 Oct 2026). Compared with `Master-Ai`
 (last commit 13 Oct 2026, "Add Python dependencies to requirements.txt").
 
 The two branches share no Git history, so this compares their file trees: 378 files differ outside `data/` and
@@ -18,18 +18,11 @@ The first console: map, thermal, 3D, AI route design, and a Gemini assistant.
 
 ## Added in this branch
 
-### 1. Fine-tuned Qwen + Gemini router (newest)
-- Own fine-tuned Qwen3 4B and 14B (LoRA, GGUF on Hugging Face, `Mhaquehaque/neuronexus-qwen3-*-mars-intel`).
-- `science/ai/router.py`: explanations, data questions and "is it safe?" go to Qwen; compare, plan, broad and web
-  questions go to Gemini. Every Qwen answer passes number and wording checks (`science/ai/guard.py`); a failure,
-  timeout or outage falls back to the other model. Gemini 401/403 now fails over to the next model.
-- Chat shows which model answered and why. `/api/ai/status` lists the last 50 routing decisions.
-- Training kit in `training/` (3,395-row dataset from the repo's own NASA data, notebooks for MI300X, Kaggle and Colab),
-  a one-shot demo script and a Colab host.
-
-| Qwen: terrain | Qwen: dose and "is it safe?" | Gemini: multi-step plan |
-|---|---|---|
-| ![](screenshots/ai-router/1-qwen-terrain.png) | ![](screenshots/ai-router/2-qwen-dose-and-safety.png) | ![](screenshots/ai-router/3-gemini-multi-step.png) |
+### 1. Gemini with fast fallback providers (newest)
+- When Gemini fails, `science/ai/router.py` tries Groq, Mistral, NVIDIA NIM, GitHub Models, Cohere and OpenRouter in
+  order (only those with a key set), once per model, no retries. A Gemini 401/403 also fails over to its next model.
+- The chat shows which provider and model answered, and what it fell back from.
+- Policy: no Chinese or Russian models or vendors (enforced by tests).
 
 ### 2. Mission Console v2 (14 Oct)
 Dust scenario graphs, terrain statistics, site morphology, a command index, a team page, saved AI routes,
