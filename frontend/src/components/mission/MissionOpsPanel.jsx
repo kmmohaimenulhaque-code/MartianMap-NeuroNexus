@@ -420,11 +420,17 @@ export default function MissionOpsPanel({ consoleState, missionInput, profile, o
       {activeTab === "RESOURCES" && (
         <>
           <Section title="Atmosphere" link={NASA_LINKS.marsFacts} linkLabel="NASA Mars facts">
+            {state.resources.atmosphere.some((gas) => gas.ledger_id) && (
+              <p className="mission-source-note">
+                General reference values for Mars&apos; near-surface atmosphere from NASA mission measurements (Curiosity SAM at Gale,
+                Franz et al. 2017; same as NASA&apos;s Mars fact sheet). Not measured at this coordinate; N₂, Ar and O₂ vary by season.
+              </p>
+            )}
             {state.resources.atmosphere.map((gas) => (
               <div className="mission-row" key={gas.name}>
                 <span>{gas.name}</span>
                 <strong className={TONE[gas.status] ?? ""}>
-                  {gas.volume_percent == null ? "NO SITE VALUE" : `${gas.volume_percent}%${gas.uncertainty != null ? ` ± ${gas.uncertainty}` : ""}`}
+                  {gas.volume_percent == null ? "NO SITE VALUE" : `${gas.volume_percent}%`}
                   {gas.ledger_id && <SourceTag ledgerId={gas.ledger_id} detail="MSL SAM GALE" compact />}
                   <em className={`mission-tag ${TONE[gas.status] ?? ""}`}>{gas.status}</em>
                   {gas.url && (

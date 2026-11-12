@@ -95,16 +95,17 @@ def build_site_science(
                 "Curiosity / Gale Crater atmospheric context"
             ),
             "gases": [
-                {"name": "Carbon dioxide (CO₂)", "volume_percent": 95.1, "uncertainty": 0.3},
-                {"name": "Nitrogen (N₂)", "volume_percent": 2.59, "uncertainty": 0.06},
-                {"name": "Argon (Ar)", "volume_percent": 1.94, "uncertainty": 0.04},
-                {"name": "Oxygen (O₂)", "volume_percent": 0.161, "uncertainty": 0.009},
-                {"name": "Carbon monoxide (CO)", "volume_percent": 0.058, "uncertainty": 0.008},
+                {"name": "Carbon dioxide (CO₂)", "volume_percent": 95.1},
+                {"name": "Nitrogen (N₂)", "volume_percent": 2.59},
+                {"name": "Argon (Ar)", "volume_percent": 1.94},
+                {"name": "Oxygen (O₂)", "volume_percent": 0.161},
+                {"name": "Carbon monoxide (CO)", "volume_percent": 0.058},
             ],
             "note": (
-                "Curiosity SAM quadrupole mass spectrometer volume mixing ratios at Gale "
-                "(campaign means, Franz et al. 2017, Planet. Space Sci. 138). N₂, Ar and O₂ "
-                "vary seasonally by several percent (Trainer et al. 2019)."
+                "General reference values for Mars' near-surface atmosphere from NASA mission measurements "
+                "(Curiosity SAM at Gale, Franz et al. 2017, doi:10.1016/j.pss.2017.01.014; the same values as "
+                "NASA's NSSDC Mars fact sheet). Not a measurement at this coordinate; N₂, Ar and O₂ vary "
+                "seasonally by several percent."
             ),
             "ledger_id": "MSL_SAM_GALE_VMR",
             "evidence": "NASA REFERENCE",

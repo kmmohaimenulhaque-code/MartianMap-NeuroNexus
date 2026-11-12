@@ -462,10 +462,11 @@
       "version": null,
       "archive_lag_days": null,
       "caveats": [
-        "Campaign means; N2, Ar and O2 vary seasonally by several percent (Trainer et al. 2019, JGR Planets)."
+        "General reference values from NASA mission measurements, not a measurement at the selected coordinate.",
+        "N2, Ar and O2 vary seasonally by several percent (Trainer et al. 2019)."
       ],
       "verified_on": "2026-10-20",
-      "verification_note": "Values transcribed from the publication; DOI not re-resolved in this session.",
+      "verification_note": "DOI verified 2026-10-20 via doi.org and Crossref (title, Planet. Space Sci. 138, 44-54, 2017). Percentages match NASA NSSDC Mars fact sheet (CO2 95.1, N2 2.59, Ar 1.94, O2 0.16, CO 0.06 %). Paper text not reachable here, so its stated uncertainties are not shown.",
       "legacy": {
         "id": "MSL_SAM_GALE_VMR",
         "role": "atmosphere_reference",
