@@ -1,5 +1,6 @@
 /* MAP LEGEND: keys for the active layers only, each with its source tag. */
 
+import Icon from "../ui/Icon";
 import SourceTag from "../sources/SourceTag";
 import { activeLayers, LEGEND } from "./layers/layerCatalog";
 
@@ -24,13 +25,13 @@ function Swatch({ kind, token }) {
 }
 
 /* Button (docked=false) or the legend body docked in the map's bottom-left corner (docked). */
-export default function DynamicMapLegend({ visibility, open, onToggle, docked = false }) {
+export default function DynamicMapLegend({ visibility, open, onToggle, docked = false, compact = false }) {
   const layers = activeLayers(visibility);
   if (!docked) {
     return (
       <div className="nn-legend">
-        <button type="button" className="mission-action" aria-expanded={open} onClick={onToggle}>
-          MAP LEGEND {open ? "▴" : "▾"}
+        <button type="button" className={`mission-action${compact ? " nn-icon-btn" : ""}`} aria-expanded={open} aria-label="Map legend" onClick={onToggle}>
+          {compact ? <Icon name="list" size={18} /> : <>MAP LEGEND {open ? "▴" : "▾"}</>}
         </button>
       </div>
     );

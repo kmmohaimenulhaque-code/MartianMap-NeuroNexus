@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import "./mars3d.css";
-import { capPhonePixelRatio, enableSoftwareWebGLFallback, requireModules } from "./arcgisLoader";
+import { capPhonePixelRatio, requireModules } from "./arcgisLoader";
+import Globe2DFallback from "./Globe2DFallback";
 import { createLabelOverlay } from "./labelOverlay";
 import Mars3DLegend from "./Mars3DLegend";
 import SourceTag from "../../sources/SourceTag";
@@ -251,7 +252,8 @@ export default function Mars3DView({
 
   const [ready, setReady] = useState(false);
   const [loadError, setLoadError] = useState("");
-  const [webglMode] = useState(() => enableSoftwareWebGLFallback());
+  const [toolsOpen, setToolsOpen] = useState(false);
+  const [coarsePointer] = useState(() => typeof window !== "undefined" && Boolean(window.matchMedia?.("(pointer: coarse)").matches));
   const [fullscreen, setFullscreen] = useState(false);
   const [height, setHeight] = useState(() => Math.round(Math.min(560, window.innerHeight * 0.58)));
   const [sidePanel, setSidePanel] = useState(null); // "layers" | "legend" | "pez" | "routes" | null
@@ -430,6 +432,7 @@ export default function Mars3DView({
 
         view.on("click", async (event) => {
           const p = propsRef.current;
+          if (event.mapPoint) setReadout({ lat: event.mapPoint.y, lon: lon360(event.mapPoint.x), z: event.mapPoint.z, name: null });
           let hits;
           try {
             hits = (await view.hitTest(event)).results ?? [];
@@ -1187,6 +1190,8 @@ export default function Mars3DView({
           <strong>{displayName ?? "NO SITE SELECTED"}</strong>
         </div>
         <nav className="m3d-actions" aria-label="3D map tools">
+          {/* On phones the tools fold into the 3D TOOLS menu; on wider screens the wrapper is display: contents. */}
+          <div className={`m3d-tools${toolsOpen ? " is-open" : ""}`} onClick={(event) => event.target.closest("button") && setToolsOpen(false)}>
           <button type="button" className="m3d-btn m3d-primary" onClick={onOpenDesigner}>
             AI ROUTE DESIGN
           </button>
@@ -1231,17 +1236,12 @@ export default function Mars3DView({
           >
             <Icon name="globe" size={14} /> ROUTE PROJECTION{projection ? ` (${projectedRoutes.length})` : ""}
           </button>
-          {Object.entries(FLY_TARGETS).map(([key, t]) => (
-            <button key={key} type="button" className="m3d-btn" onClick={() => smoothFlyTo(t.lat, t.lon, t.km)} title={`Fly to ${t.label}`}>
-              <Icon name="fly" size={14} /> {t.label}
-            </button>
-          ))}
-          <button type="button" className="m3d-btn" onClick={flyToCorridor} disabled={routePoints.length < 2} title={routePoints.length < 2 ? "Plan a route first" : "Fly along the route corridor"}>
+          <button type="button" className="m3d-btn m3d-after-fly" onClick={flyToCorridor} disabled={routePoints.length < 2} title={routePoints.length < 2 ? "Plan a route first" : "Fly along the route corridor"}>
             <Icon name="fly" size={14} /> ROUTE
           </button>
           <button
             type="button"
-            className={`m3d-btn${sidePanel === "layers" ? " active" : ""}`}
+            className={`m3d-btn m3d-after-fly${sidePanel === "layers" ? " active" : ""}`}
             aria-pressed={sidePanel === "layers"}
             onClick={() => togglePanel("layers")}
           >
@@ -1249,16 +1249,19 @@ export default function Mars3DView({
           </button>
           <button
             type="button"
-            className={`m3d-btn${sidePanel === "legend" ? " active" : ""}`}
+            className={`m3d-btn m3d-after-fly${sidePanel === "legend" ? " active" : ""}`}
             aria-pressed={sidePanel === "legend"}
             onClick={() => togglePanel("legend")}
           >
             <Icon name="list" size={14} /> LEGEND
           </button>
           <select
-            className="m3d-btn m3d-select"
+            className="m3d-btn m3d-select m3d-after-fly"
             value={tool}
-            onChange={(event) => startTool(event.target.value)}
+            onChange={(event) => {
+              setToolsOpen(false);
+              startTool(event.target.value);
+            }}
             disabled={!ready}
             aria-label="Measurement tool"
           >
@@ -1267,8 +1270,17 @@ export default function Mars3DView({
             <option value="area">AREA</option>
             <option value="profile">ELEVATION PROFILE</option>
           </select>
-          <button type="button" className="m3d-btn" onClick={() => setFullscreen((v) => !v)}>
+          <button type="button" className="m3d-btn m3d-after-fly" onClick={() => setFullscreen((v) => !v)}>
             {fullscreen ? "EXIT FULL SCREEN" : "⤢ FULL SCREEN"}
+          </button>
+          </div>
+          {Object.entries(FLY_TARGETS).map(([key, t]) => (
+            <button key={key} type="button" className="m3d-btn m3d-fly" onClick={() => smoothFlyTo(t.lat, t.lon, t.km)} title={`Fly to ${t.label}`}>
+              <Icon name="fly" size={14} /> {t.label}
+            </button>
+          ))}
+          <button type="button" className="m3d-btn m3d-tools-toggle" aria-expanded={toolsOpen} onClick={() => setToolsOpen((v) => !v)}>
+            3D TOOLS ▾
           </button>
           <button type="button" className="m3d-btn m3d-close" onClick={onClose} aria-label="Close 3D map">
             ×
@@ -1281,11 +1293,13 @@ export default function Mars3DView({
         <div className="m3d-labels" ref={labelContainerRef} aria-hidden="true" />
 
         {!ready && !loadError && <div className="m3d-status">LOADING ARCGIS MARS SCENE…</div>}
-        {loadError && <div className="m3d-status m3d-error">3D VIEW UNAVAILABLE · {loadError}</div>}
-        {ready && webglMode === "software" && (
-          <div className="m3d-webgl-chip" data-testid="m3d-software-webgl" title="This browser renders WebGL without hardware acceleration; the globe is the same, only slower.">
-            SOFTWARE WEBGL · no hardware acceleration
-          </div>
+        {loadError && (
+          <Globe2DFallback
+            center={selectedLocation ? { lat: Number(selectedLocation.latitude_deg), lon: Number(selectedLocation.longitude_deg) } : null}
+            onSelectCoordinate={(point) => propsRef.current.onSelectCoordinate?.(point)}
+            onReadout={setReadout}
+            reason={loadError}
+          />
         )}
         {toast && (
           <div className="m3d-toast" role="status">
@@ -1354,7 +1368,7 @@ export default function Mars3DView({
               {readout.name && <span className="m3d-hover-name">{readout.name}</span>}
             </>
           ) : (
-            <span>MOVE OVER THE SURFACE FOR COORDINATES</span>
+            <span>{coarsePointer ? "TAP SURFACE FOR COORDINATES" : "MOVE OVER THE SURFACE FOR COORDINATES"}</span>
           )}
           <span className="m3d-hint">DRAG ROTATE · RIGHT-DRAG TILT · WHEEL ZOOM · CLICK SELECT</span>
         </footer>

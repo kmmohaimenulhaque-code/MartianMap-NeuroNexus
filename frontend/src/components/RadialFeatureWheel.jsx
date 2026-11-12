@@ -37,7 +37,8 @@ function WheelIcon({ name, x, y, size = 26 }) {
   );
 }
 
-export function WheelSvg({ state, dispatch, onAction, availability, solLabel }) {
+export function WheelSvg({ state, dispatch, onAction, availability, solLabel, compact = false }) {
+  const lh = compact ? 19 : 14; // label line height in viewBox units (phones draw the wheel smaller, so text is set larger)
   const active = state.active != null ? WHEEL[state.active] : null;
   const subItem = active && state.sub != null ? active.items[state.sub] : null;
   const subVerdict = subItem ? (availability?.(subItem.id) ?? true) : true;
@@ -52,7 +53,7 @@ export function WheelSvg({ state, dispatch, onAction, availability, solLabel }) 
     onAction?.(id);
   };
   return (
-    <svg className="nn-wheel-svg" width={GEOM.size} height={GEOM.size} viewBox={`0 0 ${GEOM.size} ${GEOM.size}`} role="menu" aria-label="Radial feature wheel">
+    <svg className={`nn-wheel-svg${compact ? " is-compact" : ""}`} width={GEOM.size} height={GEOM.size} viewBox={`0 0 ${GEOM.size} ${GEOM.size}`} role="menu" aria-label="Radial feature wheel">
       <defs>
         <radialGradient id="nn-wheel-slate" gradientUnits="userSpaceOnUse" cx={C} cy={C} r={GEOM.outer}>
           <stop offset="0.5" stopColor="#0d181e" />
@@ -119,7 +120,7 @@ export function WheelSvg({ state, dispatch, onAction, availability, solLabel }) 
             <WheelIcon name={sector.icon} x={ix} y={iy - 14} />
             <text x={ix} y={iy + 14} textAnchor="middle" className="nn-wheel-label">
               {sector.label.map((line, k) => (
-                <tspan key={line} x={ix} dy={k === 0 ? 0 : 14}>
+                <tspan key={line} x={ix} dy={k === 0 ? 0 : lh}>
                   {line}
                 </tspan>
               ))}
@@ -142,7 +143,7 @@ export function WheelSvg({ state, dispatch, onAction, availability, solLabel }) 
             const { a0, a1, mid } = subAngles(state.active, active.items.length, j);
             const on = state.sub === j;
             const verdict = availability?.(item.id) ?? true;
-            const lines = wrapLabel(`[${item.label}]`, 13);
+            const lines = wrapLabel(`[${item.label}]`, compact ? 11 : 13);
             const [tx, ty] = polar((GEOM.subInner + GEOM.subOuter) / 2, mid);
             return (
               <g
@@ -157,9 +158,9 @@ export function WheelSvg({ state, dispatch, onAction, availability, solLabel }) 
                 <title>{verdict === true ? item.label : `${item.label}: ${verdict}`}</title>
                 <path d={annulusPath(GEOM.subInner, GEOM.subOuter, a0, a1)} className="nn-wheel-subface" filter="url(#nn-wheel-grain)" />
                 {on && <path d={annulusPath(GEOM.subInner, GEOM.subOuter, a0, a1)} fill="url(#nn-wheel-active)" className="nn-wheel-face-on" />}
-                <text x={tx} y={ty - ((lines.length - 1) * 14) / 2 + 4} textAnchor="middle" className="nn-wheel-sublabel">
+                <text x={tx} y={ty - ((lines.length - 1) * lh) / 2 + 4} textAnchor="middle" className="nn-wheel-sublabel">
                   {lines.map((line, k) => (
-                    <tspan key={`${line}-${k}`} x={tx} dy={k === 0 ? 0 : 14}>
+                    <tspan key={`${line}-${k}`} x={tx} dy={k === 0 ? 0 : lh}>
                       {line}
                     </tspan>
                   ))}
@@ -186,7 +187,7 @@ export function WheelSvg({ state, dispatch, onAction, availability, solLabel }) 
         {wrapLabel(subVerdict === true ? (subItem ? "CLICK OR ENTER TO RUN" : "ESC TO CLOSE") : String(subVerdict).toUpperCase(), 22)
           .slice(0, 2)
           .map((line, k) => (
-            <tspan key={`${line}-${k}`} x={C} dy={k === 0 ? 0 : 14}>
+            <tspan key={`${line}-${k}`} x={C} dy={k === 0 ? 0 : lh}>
               {line}
             </tspan>
           ))}
@@ -277,6 +278,7 @@ export default function RadialFeatureWheel({ onAction, availability }) {
   }, [state.open]);
 
   if (!state.open) return null;
+  const compact = window.matchMedia?.("(max-width: 767px)").matches ?? false;
 
   const onKeyDown = (event) => {
     const sector = state.active != null ? WHEEL[state.active] : null;
@@ -307,7 +309,7 @@ export default function RadialFeatureWheel({ onAction, availability }) {
       data-testid="radial-wheel"
     >
       <div className="nn-wheel" style={{ left: state.x - GEOM.size / 2, top: state.y - GEOM.size / 2 }} onMouseDown={(e) => e.stopPropagation()}>
-        <WheelSvg state={state} dispatch={dispatch} onAction={onAction} availability={availability} solLabel={solLabel} />
+        <WheelSvg state={state} dispatch={dispatch} onAction={onAction} availability={availability} solLabel={solLabel} compact={compact} />
       </div>
     </div>,
     document.body,

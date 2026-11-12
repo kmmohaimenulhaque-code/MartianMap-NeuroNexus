@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Icon from "../../ui/Icon";
 import { mobileUi, useMobileUi } from "./mobileStore";
 
@@ -94,20 +94,58 @@ export function SheetHead({ title, children }) {
   );
 }
 
-/* [2D MAP | USGS MAP | SPLIT] for the dual-map area below 1200 px. */
-export function MapViewToggle() {
+/* [2D | USGS | 3D] map switch on phones (< 768 px): one full-height map at a time. */
+export function MapViewToggle({ is3dOpen = false, onSet3d }) {
   const { mapView } = useMobileUi();
+  const current = is3dOpen ? "3d" : mapView;
   return (
     <div className="nn-mapview-toggle" role="radiogroup" aria-label="Map view">
       {[
-        ["2d", "2D MAP"],
-        ["usgs", "USGS MAP"],
-        ["split", "SPLIT"],
+        ["2d", "2D"],
+        ["usgs", "USGS"],
+        ["3d", "3D"],
       ].map(([id, label]) => (
-        <button key={id} type="button" role="radio" aria-checked={mapView === id} className={mapView === id ? "is-active" : undefined} onClick={() => mobileUi.setMapView(id)}>
+        <button
+          key={id}
+          type="button"
+          role="radio"
+          aria-checked={current === id}
+          className={current === id ? "is-active" : undefined}
+          onClick={() => {
+            if (id === "3d") return onSet3d?.(true);
+            mobileUi.setMapView(id);
+            if (is3dOpen) onSet3d?.(false);
+            return undefined;
+          }}
+        >
           {label}
         </button>
       ))}
+    </div>
+  );
+}
+
+/* SOL pill for the phone header: tap to open the full sol scrubber in a floating popover. */
+export function SolPill({ sol, seasonLs, children }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!open) return undefined;
+    const away = (event) => !ref.current?.contains(event.target) && setOpen(false);
+    window.addEventListener("pointerdown", away);
+    return () => window.removeEventListener("pointerdown", away);
+  }, [open]);
+  return (
+    <div className="nn-solpill" ref={ref}>
+      <button type="button" className="nn-solpill-btn" aria-expanded={open} aria-label={`Active sol ${sol ?? ""}; open the sol scrubber`} onClick={() => setOpen((v) => !v)}>
+        SOL {sol ?? "n/a"}
+      </button>
+      {open && (
+        <div className="nn-solpill-pop" role="dialog" aria-label="Active sol">
+          {children}
+          {seasonLs != null && <small>MY34 scenario · Ls {seasonLs.toFixed(0)}°</small>}
+        </div>
+      )}
     </div>
   );
 }

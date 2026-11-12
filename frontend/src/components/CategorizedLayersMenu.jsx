@@ -1,11 +1,12 @@
 /* LAYERS ▾: collapsible categories of map layers; every row carries its source tag. */
 
+import Icon from "../ui/Icon";
 import { useEffect, useRef, useState } from "react";
 
 import SourceTag from "../sources/SourceTag";
 import { LAYER_CATEGORIES } from "./layers/layerCatalog";
 
-export default function CategorizedLayersMenu({ visibility, onToggle, onLink, status = {} }) {
+export default function CategorizedLayersMenu({ visibility, onToggle, onLink, status = {}, compact = false }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   useEffect(() => {
@@ -22,8 +23,8 @@ export default function CategorizedLayersMenu({ visibility, onToggle, onLink, st
   const activeCount = Object.values(visibility).filter(Boolean).length;
   return (
     <div className="nn-layers" ref={ref}>
-      <button type="button" className="mission-action" aria-expanded={open} aria-haspopup="true" onClick={() => setOpen((v) => !v)}>
-        LAYERS ({activeCount}) ▾
+      <button type="button" className={`mission-action${compact ? " nn-icon-btn" : ""}`} aria-expanded={open} aria-haspopup="true" aria-label={`Map layers, ${activeCount} on`} onClick={() => setOpen((v) => !v)}>
+        {compact ? <Icon name="layers" size={18} /> : <>LAYERS ({activeCount}) ▾</>}
       </button>
       {open && (
         <div className="nn-layers-menu" role="menu" aria-label="Map layers by category">

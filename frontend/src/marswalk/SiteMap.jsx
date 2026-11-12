@@ -50,6 +50,8 @@ function DetailOverlays({ frame, mode, overlays }) {
   );
 }
 
+const COARSE_POINTER = typeof window !== "undefined" && Boolean(window.matchMedia?.("(pointer: coarse)").matches);
+
 function pinIcon(kind, label) {
   return divIcon({ className: `mw-pin mw-pin--${kind}`, html: `<span>${label}</span>`, iconSize: [22, 22], iconAnchor: [11, 11] });
 }
@@ -58,6 +60,7 @@ function ClickAndCursor({ frame, onClick, onCursor }) {
   useMapEvents({
     click(event) {
       const [lat, lon] = toLatLon(event.latlng.lng, event.latlng.lat, frame);
+      onCursor?.({ x: event.latlng.lng, y: event.latlng.lat }); // touch has no hover: a tap fills the readout too
       onClick?.({ lat, lon, x: event.latlng.lng, y: event.latlng.lat });
     },
     mousemove(event) {
@@ -251,7 +254,9 @@ export default function SiteMap({ frame, mode, overlays, plan, estimate, editPts
       <div className="mw-readout" aria-live="polite">
         {readout
           ? `${readout.lat.toFixed(5)}°, ${readout.lon.toFixed(5)}°E · ${Number.isFinite(readout.elev) ? `${readout.elev.toFixed(1)} m` : "elev n/a"} (${readout.src}, ${gsd[readout.src]}) · slope@3 m ${Number.isFinite(readout.slope) ? `${readout.slope.toFixed(1)}°` : "n/a"}`
-          : "Move over the map for lat, lon · elevation (source, gsd) · slope@3 m · click to set the target"}
+          : COARSE_POINTER
+            ? "Tap the map to set the target · lat, lon · elevation · slope@3 m"
+            : "Move over the map for lat, lon · elevation (source, gsd) · slope@3 m · click to set the target"}
       </div>
     </div>
   );

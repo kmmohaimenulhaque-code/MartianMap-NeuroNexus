@@ -628,4 +628,13 @@
   background: rgba(3, 7, 10, 0.72);
   letter-spacing: 0.06em;
 }
-.m3d-webgl-chip { position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); z-index: 5; padding: 4px 10px; border: 1px solid var(--nn-amber, #ffc46b); background: rgba(8, 16, 20, 0.92); color: var(--nn-amber, #ffc46b); font: 600 12px var(--nn-mono, inherit); letter-spacing: 0.06em; white-space: nowrap; pointer-events: none; }
+
+/* Toolbar: the tools wrapper is transparent to layout on wide screens; order keeps the fly buttons where they were. */
+.m3d-tools { display: contents; }
+.m3d-tools > .m3d-after-fly { order: 2; }
+.m3d-actions > .m3d-fly { order: 1; }
+.m3d-actions > .m3d-close { order: 3; }
+.m3d-tools-toggle { display: none; }
+.m3d-fallback { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; background: #000; }
+.m3d-fallback canvas { touch-action: none; cursor: grab; }
+.m3d-fallback-note { margin: 0; max-width: 92%; color: #93a7af; font: 12px/1.4 var(--nn-font); letter-spacing: 0.04em; text-align: center; }

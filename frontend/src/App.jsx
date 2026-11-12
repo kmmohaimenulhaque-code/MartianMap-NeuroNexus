@@ -67,6 +67,7 @@ import RightColumn from "./components/console/RightColumn";
 import EvidenceBar from "./components/console/EvidenceBar";
 import LeftColumn from "./components/console/LeftColumn";
 import TopBar from "./components/console/TopBar";
+import SearchBar from "./components/console/SearchBar";
 import ScrollJumpButton from "./components/console/ScrollJumpButton";
 import ErrorBoundary from "./ui/ErrorBoundary";
 import { decodePlanLink } from "./marswalk/planLink";
@@ -2098,7 +2099,19 @@ export default function App() {
               <strong>{displayName}</strong>
             </div>
 
-            <MapViewToggle />
+            {/* Phones (< 768 px): row 2 of the HUD. Search, map switch, layers and legend; hidden on wider screens. */}
+            <div className="nn-phone-mapbar">
+              <SearchBar query={query} suggestions={suggestions} onQueryChange={setQuery} onSelect={handleSelectPlace} />
+              <MapViewToggle is3dOpen={map3dOpen} onSet3d={setMap3dOpen} />
+              <CategorizedLayersMenu
+                compact
+                visibility={layerVisibility}
+                status={contextLayers.status}
+                onToggle={(id) => setLayerVisibility((v) => ({ ...v, [id]: !v[id] }))}
+                onLink={(action) => action === "marswalk" && switchMode("marswalk")}
+              />
+              <DynamicMapLegend compact visibility={layerVisibility} open={legendOpen} onToggle={() => setLegendOpen((v) => !v)} />
+            </div>
 
             <div className="map-status-inline">
               <span>{places.length.toLocaleString()} USGS FEATURES</span>

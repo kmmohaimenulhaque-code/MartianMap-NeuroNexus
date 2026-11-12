@@ -1,5 +1,6 @@
 /* Browser Optimization: opt-in low-RAM mode (OFF by default), presets, toggles and live telemetry. */
 
+import { detectWebGLMode } from "./mars3d/arcgisLoader";
 import { useState } from "react";
 
 import SourceTag from "../sources/SourceTag";
@@ -25,6 +26,7 @@ export default function BrowserOptimizationPanel() {
   const t = useTelemetry(true);
   const [purged, setPurged] = useState("");
   const memory = deviceMemoryGb();
+  const [webgl] = useState(() => detectWebGLMode());
   return (
     <div className="perf-panel">
       <button
@@ -39,6 +41,14 @@ export default function BrowserOptimizationPanel() {
       <p className="perf-note">
         Off by default. Turn it on for 4 GB RAM or low-end devices: worker math, IndexedDB tile cache, WebGL suspension when the
         globe is hidden and marker culling. Every computed number stays identical.
+      </p>
+      <p className="perf-note" data-testid="webgl-status">
+        3D RENDERING ·{" "}
+        {webgl === "hardware"
+          ? "HARDWARE WEBGL"
+          : webgl === "software"
+            ? "SOFTWARE WEBGL (no hardware acceleration: the 3D globe works, more slowly)"
+            : "NO WEBGL (the 3D view shows a 2D canvas globe instead)"}
       </p>
       <div className="perf-presets" role="radiogroup" aria-label="Optimization preset">
         {[

@@ -60,6 +60,24 @@ function writePref(key, value) {
   }
 }
 
+/* Map limitation note. On phones it is one line with [i] to expand and × to dismiss; on wider screens it shows in full. */
+function MwNote({ text }) {
+  const [open, setOpen] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  if (hidden) return null;
+  return (
+    <div className={`mw-note${open ? " is-open" : ""}`} data-testid="mw-note">
+      <button type="button" className="mw-note-i" aria-expanded={open} aria-label="Show the full map limitation" onClick={() => setOpen((v) => !v)}>
+        i
+      </button>
+      <span className="mw-note-text">{text}</span>
+      <button type="button" className="mw-note-x" aria-label="Dismiss the map limitation note" onClick={() => setHidden(true)}>
+        ×
+      </button>
+    </div>
+  );
+}
+
 export default function MarswalkView({ demo, onNotice }) {
   const [site, setSite] = useState(() => (demo?.site ?? readPref("nn.marswalk.site", "gale")));
   const [config, setConfig] = useState(null);
@@ -451,7 +469,7 @@ export default function MarswalkView({ demo, onNotice }) {
         ) : (
           <div className="mw-banner">{planState.error ? `UNAVAILABLE · ${planState.error}` : "Locating the rover's latest position (stand-in habitat)…"}</div>
         )}
-        {windowJson?.limitation && <div className="mw-note">{windowJson.limitation}</div>}
+        {windowJson?.limitation && <MwNote text={windowJson.limitation} />}
       </section>
       <section className="mw-bottom">
         <SheetHead title="ELEVATION AND SLOPE PROFILE" />

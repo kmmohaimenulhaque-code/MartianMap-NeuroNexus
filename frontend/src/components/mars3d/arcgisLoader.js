@@ -16,6 +16,17 @@ let webglMode = null;
  * renders in software instead of failing. It returns "hardware", "software" or "none" so the view can say
  * which one it got. The rendering itself is unchanged.
  */
+/* "hardware" | "software" | "none" for this browser, without changing anything (Browser Optimization panel). */
+export function detectWebGLMode() {
+  if (webglMode) return webglMode;
+  try {
+    if (document.createElement("canvas").getContext("webgl2", { failIfMajorPerformanceCaveat: true })) return "hardware";
+    return document.createElement("canvas").getContext("webgl2") ? "software" : "none";
+  } catch {
+    return "none";
+  }
+}
+
 export function enableSoftwareWebGLFallback() {
   if (webglMode) return webglMode;
   try {

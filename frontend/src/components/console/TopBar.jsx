@@ -2,9 +2,12 @@ import SearchBar from "./SearchBar";
 import { TelemetryPill } from "../BrowserOptimizationPanel";
 import Icon from "../../ui/Icon";
 import SolScrubber from "../SolScrubber";
+import { SolPill } from "../mobile/MobileDock";
+import { useSol } from "../../state/solStore";
 
 /* Extracted from App.jsx (T7.8); state stays in App and arrives as props. */
 export default function TopBar({ appMode, backendConnected, commandIndex, comparedRoutes, handleOpenOrbital, handleOpenSnapshot, handleSelectPlace, manualOpen, places, query, routePoints, selectedCandidateId, setCommandIndex, setDesignerOpen, setIntelligenceOpen, setManualOpen, setQuery, suggestions, switchMode }) {
+  const { sol, seasonLs } = useSol();
   return (
     <header className="topbar">
       <div className="brand-block">
@@ -107,6 +110,9 @@ export default function TopBar({ appMode, backendConnected, commandIndex, compar
           </div>
 
           <div className="topbar-row">
+            <SolPill sol={sol} seasonLs={seasonLs}>
+              <SolScrubber />
+            </SolPill>
             <div className="mission-actions">
               <button type="button" className="mission-action" onClick={() => setDesignerOpen(true)}>
                 AI ROUTE DESIGN
