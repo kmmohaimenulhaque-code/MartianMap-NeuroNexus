@@ -1,0 +1,33 @@
+{
+  "project": "NeuroNexus",
+  "version": "0.1.0",
+  "datasets": [
+    {
+      "id": "mola_meg128_global_topography",
+      "mission": "Mars Global Surveyor",
+      "instrument": "Mars Orbiter Laser Altimeter (MOLA)",
+      "product": "MEGDR 128 px/degree",
+      "type": "topography",
+      "resolution_px_per_degree": 128,
+      "coverage": "Global, approximately 88N to 88S",
+      "units": "meter",
+      "projection": "Simple Cylindrical",
+      "source": "NASA Planetary Data System / PDS Geosciences Node",
+      "status": "downloaded"
+    },
+    {
+      "id": "mola_meg512_polar_topography",
+      "mission": "Mars Global Surveyor",
+      "instrument": "Mars Orbiter Laser Altimeter (MOLA)",
+      "product": "Polar MEGDR 512 px/degree",
+      "type": "topography",
+      "resolution_px_per_degree": 512,
+      "resolution_km_per_pixel": 0.115,
+      "coverage": "North and South polar regions",
+      "units": "meter",
+      "projection": "Polar Stereographic",
+      "source": "NASA Planetary Data System / PDS Geosciences Node",
+      "status": "downloaded"
+    }
+  ]
+}

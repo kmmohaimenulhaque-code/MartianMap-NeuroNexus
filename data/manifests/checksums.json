@@ -1,0 +1,97 @@
+{
+  "project": "NeuroNexus",
+  "generated_at_utc": "2026-09-20T12:48:58.811115+00:00",
+  "algorithm": "SHA-256",
+  "files": [
+    {
+      "path": "data/raw/mola/meg128/topography/megt00n000hb.img",
+      "size_bytes": 129761280,
+      "sha256": "f57274b5e459ab35a1975ca5f186f98bdb929475a4557098a7c632b9aa175c75"
+    },
+    {
+      "path": "data/raw/mola/meg128/topography/megt00n090hb.img",
+      "size_bytes": 129761280,
+      "sha256": "764946162d4c650abfb22aa284595a15374a7185f302a639c19e6602c67a1d6e"
+    },
+    {
+      "path": "data/raw/mola/meg128/topography/megt00n180hb.img",
+      "size_bytes": 129761280,
+      "sha256": "11a7b73f40775e78df32e8ad1e61ac2e3c521ea8f26be9039a004c3b10ea3a50"
+    },
+    {
+      "path": "data/raw/mola/meg128/topography/megt00n270hb.img",
+      "size_bytes": 129761280,
+      "sha256": "074356eea72882c0560f2c15f4466d01fd6b18b57decb419fb96878154dd7b29"
+    },
+    {
+      "path": "data/raw/mola/meg128/topography/megt44n000hb.img",
+      "size_bytes": 129761280,
+      "sha256": "14022166079edafc99650f354e5a634e6eb2c2ea544b444c01cd8ee55437df36"
+    },
+    {
+      "path": "data/raw/mola/meg128/topography/megt44n090hb.img",
+      "size_bytes": 129761280,
+      "sha256": "a65eb54042e579dbb6274aad8256e30fbb752dd70b93b6a3ad748909f1a9f687"
+    },
+    {
+      "path": "data/raw/mola/meg128/topography/megt44n180hb.img",
+      "size_bytes": 129761280,
+      "sha256": "951de9b021808027f4b96e4fa82e1f4f9e621b2ddf978bc2ef235cd3d7dbf3c5"
+    },
+    {
+      "path": "data/raw/mola/meg128/topography/megt44n270hb.img",
+      "size_bytes": 129761280,
+      "sha256": "d8172f3de496958ab1e2197037d8a12decc0512cc8a8c0f84eccaa51595edccc"
+    },
+    {
+      "path": "data/raw/mola/meg128/topography/megt44s000hb.img",
+      "size_bytes": 129761280,
+      "sha256": "5e7f698a2b732164731949b31ed5d1226010318ea69b89a73b614debb40302d6"
+    },
+    {
+      "path": "data/raw/mola/meg128/topography/megt44s090hb.img",
+      "size_bytes": 129761280,
+      "sha256": "68fc0fe968859997689a25022b1fb4a75021abf1536c2e9da8789674e11cc201"
+    },
+    {
+      "path": "data/raw/mola/meg128/topography/megt44s180hb.img",
+      "size_bytes": 129761280,
+      "sha256": "665d395456e9aaad74cdd4f45b6fe33e4898f083532219a2420b3e6c10604fbf"
+    },
+    {
+      "path": "data/raw/mola/meg128/topography/megt44s270hb.img",
+      "size_bytes": 129761280,
+      "sha256": "5f9fe49948997d2b16f0576b039ba179c6adae69ce988ac28d60181540a4a27d"
+    },
+    {
+      "path": "data/raw/mola/meg128/topography/megt88n000hb.img",
+      "size_bytes": 129761280,
+      "sha256": "33e48c5e6bed072bae4ca49edee53134336aee517ebc1ce5ecf0a470d82cfd10"
+    },
+    {
+      "path": "data/raw/mola/meg128/topography/megt88n090hb.img",
+      "size_bytes": 129761280,
+      "sha256": "7df40fa1655939a5088e5dd2b4ccd1d24f4e69ccd75fc9c34c4ea7f2ccd3910b"
+    },
+    {
+      "path": "data/raw/mola/meg128/topography/megt88n180hb.img",
+      "size_bytes": 129761280,
+      "sha256": "0d1db101aa48eddcfa6ac7e2ff9124aa758f4157eb92df79b8483948991bfc24"
+    },
+    {
+      "path": "data/raw/mola/meg128/topography/megt88n270hb.img",
+      "size_bytes": 129761280,
+      "sha256": "15a21106e752c7c6cf091d40def5ab6e0c36eec25a0fe57afe058580a2ba32d5"
+    },
+    {
+      "path": "data/raw/mola/polar512/north/megt_n_512_1.img",
+      "size_bytes": 301989888,
+      "sha256": "a4ab4e220b005245d8bf4cea6fcbda9bc78299705889b13a337d09203c494b23"
+    },
+    {
+      "path": "data/raw/mola/polar512/south/megt_s_512_1.img",
+      "size_bytes": 301989888,
+      "sha256": "e137a52eb00853bd5bbf1c06a95bdb0415e5280141f4b196614fb889304bf0d0"
+    }
+  ]
+}
