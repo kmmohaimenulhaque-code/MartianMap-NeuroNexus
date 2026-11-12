@@ -4,7 +4,7 @@ The site now has three pages, built by one Vite config (`frontend/vite.config.js
 
 | URL | Entry | What it is |
 |---|---|---|
-| `/` | `frontend/index.html` + `frontend/landing/main.js` | Landing page: hero resolution lens, statements, feature reel, 12 animated tutorials, proof, challenge trace, data, team, Mars globe finale |
+| `/` | `frontend/index.html` + `frontend/landing/main.js` | Landing page: hero resolution lens with background glass and a frosted text lens, statements, feature reel, 12 animated tutorials, proof, challenge trace, data, team link, Mars globe finale |
 | `/console/` | `frontend/console/index.html` + `frontend/src/main.jsx` | The mission console, unchanged apart from the label fixes below |
 | `/tutorials/` | `frontend/tutorials/index.html` + `frontend/landing/tutorials.js` | Gallery of every tutorial with the shared player |
 
@@ -35,6 +35,7 @@ frontend/
     js/lens.js                  hero resolution lens (canvas)
     js/finale.js                Mars globe (three.js, lazy loaded)
     js/menu.js                  menu overlay and science-server warm-up ping
+    js/hero.js                  headline blur-in and the frosted glass lens over the headline
     js/terms.js                 glossary tooltips
     js/header.js, reveal.js, content.js, env.js
   public/landing/media/*.webp   GENERATED from assets/screenshots
