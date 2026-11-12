@@ -1,4 +1,6 @@
-const API_BASE = "/api";
+import { API_ORIGIN } from "../apiOrigin";
+
+const API_BASE = `${API_ORIGIN}/api`;
 
 async function fetchJson(url, options = {}) {
   const response = await fetch(url, options);

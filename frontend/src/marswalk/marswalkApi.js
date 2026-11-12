@@ -1,6 +1,8 @@
 /* Marswalk API client. Every call can be cancelled with an AbortSignal (stale drags are dropped). */
 
-const API = "/api";
+import { API_ORIGIN } from "../apiOrigin";
+
+const API = `${API_ORIGIN}/api`;
 
 async function request(path, { method = "GET", body, signal } = {}) {
   const response = await fetch(`${API}${path}`, {
