@@ -27,6 +27,19 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
+.lp-impact__grid article {
+  display: flex;
+  min-height: 260px;
+  flex-direction: column;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(14, 22, 28, 0.78);
+  padding: 22px;
+}
+
+.lp-impact__grid article .lp-mini-cta {
+  margin-top: auto;
+}
+
 *,
 *::before,
 *::after {
@@ -764,6 +777,62 @@ main > section {
   -webkit-backdrop-filter: blur(12px);
 }
 
+/* The Apollo story is an editorial bridge below the statement, not part of the hero grid. */
+main > .lp-story {
+  width: min(1120px, calc(100% - 2 * var(--gutter)));
+  max-width: none;
+  margin: clamp(56px, 8vw, 112px) auto 0;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+main > .lp-story .lp-story__media {
+  aspect-ratio: 16 / 10;
+  min-height: 0;
+  border-radius: 16px;
+}
+
+main > .lp-story .lp-story__media img {
+  min-height: 0;
+  transform: scale(1.04);
+}
+
+main > .lp-story.is-in .lp-story__media img {
+  transform: scale(1);
+}
+
+main > .lp-story .lp-story__body {
+  align-self: center;
+  padding: clamp(12px, 3vw, 36px) 0 clamp(12px, 3vw, 36px) clamp(12px, 3vw, 44px);
+}
+
+main > .lp-story h2 {
+  max-width: 18ch;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+
+main > .lp-story .lp-story__bridge {
+  max-width: 58ch;
+  margin: 14px 0;
+  color: var(--ink-2);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+main > .lp-story .lp-story__controls {
+  margin: 18px 0 12px;
+}
+
+main > .lp-story[data-reveal] {
+  transition: opacity 600ms cubic-bezier(0.16, 1, 0.3, 1), transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 .lp-story__media {
   position: relative;
   min-height: 220px;
@@ -936,7 +1005,7 @@ main > section {
 @media (min-width: 1024px) {
   .lp-hero {
     grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-rows: auto 1fr auto auto;
+    grid-template-rows: 1fr auto;
     align-items: end;
     column-gap: clamp(32px, 5vw, 96px);
   }
@@ -948,7 +1017,7 @@ main > section {
   }
   .lp-hero__intro {
     grid-column: 1;
-    grid-row: 2;
+    grid-row: 1;
     align-self: start;
     max-width: 16ch;
     font-size: clamp(40px, 4.6vw, 84px);
@@ -956,7 +1025,7 @@ main > section {
     letter-spacing: -0.035em;
   }
   .lp-lens {
-    grid-row: 1 / 4;
+    grid-row: 1 / 3;
     grid-column: 2;
     align-self: start;
     width: min(46vw, calc((100svh - 150px) * 1.013));
@@ -966,13 +1035,13 @@ main > section {
   }
   .lp-cue {
     grid-column: 1;
-    grid-row: 4;
+    grid-row: 2;
     justify-content: flex-start;
     gap: 24px;
   }
   .lp-hero__bridge {
     grid-column: 1;
-    grid-row: 3;
+    grid-row: 2;
   }
 }
 
@@ -1433,7 +1502,7 @@ main > section {
 }
 
 .lp-pareto {
-  background: linear-gradient(180deg, rgba(1, 255, 255, 0.04), transparent 28%, rgba(255, 138, 92, 0.04));
+  background: rgba(1, 255, 255, 0.018);
 }
 
 .lp-pareto > *,
@@ -1444,8 +1513,11 @@ main > section {
 }
 
 .lp-pareto .lp-display {
-  max-width: 15ch;
+  max-width: 26ch;
   margin-bottom: 24px;
+  font-size: clamp(1.75rem, 3vw, 2.6rem);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
 }
 
 .lp-table-wrap {
@@ -1474,13 +1546,14 @@ main > section {
   width: 100%;
   min-width: 1180px;
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.45;
+  font-variant-numeric: tabular-nums;
 }
 
 .lp-pareto-table th,
 .lp-pareto-table td {
-  padding: 14px 12px;
+  padding: 14px 16px;
   border-right: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
   text-align: left;
@@ -1489,7 +1562,7 @@ main > section {
 
 .lp-pareto-table thead th {
   color: var(--teal);
-  font-size: 10px;
+  font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -1546,7 +1619,7 @@ main > section {
 
 .lp-pareto-bars > span {
   display: grid;
-  grid-template-columns: 72px 1fr;
+  grid-template-columns: 78px minmax(80px, 1fr) auto;
   align-items: center;
   gap: 10px;
 }
@@ -1561,13 +1634,13 @@ main > section {
   display: block;
   height: 8px;
   overflow: hidden;
-  background: rgba(1, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .lp-pareto-bars b {
   display: block;
   height: 100%;
-  background: linear-gradient(90deg, var(--teal), var(--rust));
+  background: var(--teal);
   transform-origin: left;
   animation: pareto-bar-in 500ms var(--ease-out);
 }
@@ -1598,6 +1671,20 @@ main > section {
 
 .lp-pareto-table td {
   color: var(--ink-2);
+}
+
+.lp-pareto-table td:last-child {
+  min-width: 260px;
+  font-size: 13.5px;
+}
+
+.lp-pareto-bars em {
+  min-width: 68px;
+  color: var(--ink);
+  font-size: 11px;
+  font-style: normal;
+  text-align: right;
+  white-space: nowrap;
 }
 
 .lp-pareto-table td strong {
@@ -1810,12 +1897,15 @@ main > section {
 }
 
 .lp-impact {
-  background: linear-gradient(180deg, transparent, rgba(255, 138, 92, 0.06));
+  background: rgba(255, 255, 255, 0.012);
 }
 
 .lp-impact .lp-display {
-  max-width: 12ch;
+  max-width: 28ch;
   margin-bottom: 44px;
+  font-size: clamp(1.75rem, 3vw, 2.6rem);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
 }
 
 @media (min-width: 900px) {

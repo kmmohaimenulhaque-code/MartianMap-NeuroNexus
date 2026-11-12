@@ -73,26 +73,6 @@
       <section class="lp-hero" id="top" aria-labelledby="hero-title">
         <div class="lp-hero__backdrop" aria-hidden="true"></div>
         <span class="lp-glass" aria-hidden="true" data-glass></span>
-        <aside class="lp-story" data-reveal data-apollo-card aria-label="Interactive Apollo 14 story">
-          <div class="lp-story__media">
-            <img src="https://images-assets.nasa.gov/image/AS14-64-9089/AS14-64-9089~orig.jpg" data-apollo-image alt="Apollo 14 view of Cone Crater terrain" />
-            <span class="lp-story__pin lp-story__pin--crater" data-apollo-pin="crater">Cone Crater</span>
-            <span class="lp-story__pin lp-story__pin--turnaround" data-apollo-pin="turnaround">30 m turnaround</span>
-            <span class="lp-story__scale">LROC / Apollo 14</span>
-            <span class="lp-story__hint">Select a marker</span>
-          </div>
-          <div class="lp-story__body">
-            <p class="lp-eyebrow"><span class="lp-dot" aria-hidden="true"></span>A True Story // Apollo 14 · February 1971 · Cone Crater</p>
-            <h2>Thirty Meters Decided the Mission.</h2>
-            <p data-apollo-copy>Alan Shepard and Edgar Mitchell turned back roughly thirty meters from Cone Crater when the terrain and their oxygen limits made the final push too costly. NeuroNexus asks the same question before an EVA: what does the map hide at walking scale?</p>
-            <div class="lp-story__controls" role="tablist" aria-label="Apollo story views">
-              <button type="button" class="is-active" data-apollo-view="story" role="tab" aria-selected="true">01. 1971 Cone Crater: 30 m blind spot</button>
-              <button type="button" data-apollo-view="map" role="tab" aria-selected="false">02. 2026 Gale Crater: 1 m HiRISE lens</button>
-            </div>
-            <button type="button" class="lp-story__sweep" data-lens-sweep>Sweep lens across Gale scarp</button>
-            <p class="lp-small">Imagery &amp; Context: LROC (NASA/GSFC/Arizona State University) · Apollo 14 AS14-64-9089 (NASA). <a href="https://images-assets.nasa.gov/image/AS14-64-9089/" target="_blank" rel="noopener">Open source image</a></p>
-          </div>
-        </aside>
         <h1 class="lp-hero__intro" id="hero-title" data-intro>
           NeuroNexus turns NASA's sharpest Mars terrain into walking plans for future astronauts, and shows how sure every number is.
         </h1>
@@ -107,7 +87,7 @@
             <span>Drag or move across the card.</span> Inside the lens: <button class="lp-term" type="button" data-term="hirise">HiRISE</button> terrain at 1 m. Outside: the same ground averaged to the <button class="lp-term" type="button" data-term="mola">MOLA</button> 463 m grid. Gale crater, the console's demo walk.
           </figcaption>
         </figure>
-          <p class="lp-hero__bridge">Drag the Resolution Lens to compare <button class="lp-term" type="button" data-term="mola">MOLA</button> at 463 m with <button class="lp-term" type="button" data-term="hirise">HiRISE</button> at 1 m. Coarse pixels blur the pitches a person actually walks.</p>
+        <p class="lp-hero__bridge">Drag the Resolution Lens to compare <button class="lp-term" type="button" data-term="mola">MOLA</button> at 463 m with <button class="lp-term" type="button" data-term="hirise">HiRISE</button> at 1 m. Coarse pixels blur the pitches a person actually walks.</p>
           <div class="lp-cue" aria-hidden="true"><span>+</span><span>Scroll to Explore</span><span>+</span></div>
       </section>
 
@@ -119,6 +99,28 @@
         </svg>
         <h2 class="lp-display" id="st1" data-split>Know the Ground Before You Walk It.</h2>
       </section>
+
+      <aside class="lp-story" data-reveal data-apollo-card aria-label="Interactive Apollo 14 story">
+        <div class="lp-story__media">
+          <img src="https://images-assets.nasa.gov/image/AS14-64-9089/AS14-64-9089~orig.jpg" data-apollo-image alt="Apollo 14 view of Cone Crater terrain" />
+          <span class="lp-story__pin lp-story__pin--crater" data-apollo-pin="crater">Cone Crater rim</span>
+          <span class="lp-story__pin lp-story__pin--turnaround" data-apollo-pin="turnaround">Turnaround: 30 m short</span>
+          <span class="lp-story__scale">LROC / Apollo 14</span>
+          <span class="lp-story__hint">Select a marker</span>
+        </div>
+        <div class="lp-story__body">
+          <p class="lp-eyebrow"><span class="lp-dot" aria-hidden="true"></span>A True Story · Apollo 14 · February 1971</p>
+          <h2>Thirty Meters Decided the Mission.</h2>
+          <p data-apollo-copy>In February 1971, two Apollo 14 astronauts climbed toward the rim of Cone Crater. The terrain was rugged, their orbital maps were inadequate, and every ridge looked the same. They turned back. Orbital images later showed they had stopped just 30 meters from the rim. Hope is not a navigation strategy. With no GPS, up to a 22-minute one-way signal delay, and global dust storms, the first explorers on Mars cannot afford a 30-meter mistake.</p>
+          <p class="lp-story__bridge">The same resolution ladder now compares <button class="lp-term" type="button" data-term="hirise">HiRISE</button>, <button class="lp-term" type="button" data-term="ctx">CTX</button> and <button class="lp-term" type="button" data-term="mola">MOLA</button> before an <button class="lp-term" type="button" data-term="eva">EVA</button> reaches its <button class="lp-term" type="button" data-term="pnr">turnaround point</button>. The <button class="lp-term" type="button" data-term="p90-ratio">p90 ratio</button> shows what coarse terrain hides.</p>
+          <div class="lp-story__controls" role="tablist" aria-label="Apollo story views">
+            <button type="button" class="is-active" data-apollo-view="story" role="tab" aria-selected="true">1971 · Cone Crater</button>
+            <button type="button" data-apollo-view="map" role="tab" aria-selected="false">2026 · Gale lens</button>
+            <button type="button" data-lens-sweep>View the resolution lesson</button>
+          </div>
+          <p class="lp-small">LROC · NASA/GSFC/ASU · AS14-64-9089 · <a href="https://images-assets.nasa.gov/image/AS14-64-9089/" target="_blank" rel="noopener">Open source image</a></p>
+        </div>
+      </aside>
 
       <!-- 3. Approach -->
       <section class="lp-approach" id="approach" aria-labelledby="ap-title">
@@ -155,8 +157,8 @@
       <!-- 4. Pareto proof -->
       <section class="lp-pareto" id="pareto" aria-labelledby="pareto-title">
         <p class="lp-eyebrow" data-reveal><span class="lp-dot" aria-hidden="true"></span>Multi-Objective Pareto Proof // Gale to Escalante (2,283.9 x 56.3 km window · 60 x 108 grid @ 0.9&#50;6 km · 2,018 ms)</p>
-        <h2 class="lp-display lp-display--md" id="pareto-title" data-reveal>Standard Routers Give You One Shortest Line. Our Engine Proves When That Line Is a Trap.</h2>
-        <p class="lp-body" data-reveal>In 2,018 ms, deterministic multi-objective Dijkstra generates six candidates over NASA <button class="lp-term" type="button" data-term="mola">MOLA</button> terrain and cataloged USGS, IAU and <button class="lp-term" type="button" data-term="themis">THEMIS</button> evidence. Five form the non-dominated frontier. Select a row or filter the set to inspect the proof.</p>
+        <h2 class="lp-display lp-display--md" id="pareto-title" data-reveal>When the Shortest Line Is a Trap.</h2>
+        <p class="lp-body" data-reveal>In 2,018 ms, deterministic multi-objective Dijkstra generates six candidates over NASA <button class="lp-term" type="button" data-term="mola">MOLA</button> terrain and cataloged USGS, IAU and <button class="lp-term" type="button" data-term="themis">THEMIS</button> evidence. Five form the non-dominated frontier; the shortest path is mathematically dominated.</p>
         <div class="lp-pareto-toolbar" data-reveal>
           <span class="lp-small">Select a candidate to inspect its trade-off.</span>
           <div class="lp-pareto-filters" role="group" aria-label="Pareto candidate filters">
@@ -167,7 +169,7 @@
         </div>
         <div class="lp-table-wrap" data-reveal>
           <table class="lp-pareto-table">
-            <thead><tr><th>Candidate Route</th><th>Pareto Status</th><th>Distance</th><th>Total Climb</th><th>Est. EVA Time</th><th>Mean / Max Slope</th><th>Risk Proxy</th><th>Why It Matters</th></tr></thead>
+            <thead><tr><th>Candidate Route</th><th>Pareto Status</th><th>Distance</th><th>Total Climb</th><th>Est. EVA</th><th>Mean / Max Slope</th><th><button class="lp-term" type="button" data-term="edge-cost-model">Risk Proxy</button></th><th>Trade-Off Takeaway</th></tr></thead>
             <tbody>
               <tr tabindex="0" data-pareto-row="0" data-pareto-status="dominated"><th scope="row">1. Low distance</th><td><strong>Dominated in this set</strong></td><td>1,464.72 km</td><td>31,332 m</td><td>630.11 h</td><td>3.54 deg / 31.23 deg</td><td>94.3</td><td>The shortest-path trap: minimizing horizontal distance forces 31.3 km of vertical climbing and the highest risk proxy.</td></tr>
               <tr tabindex="0" data-pareto-row="1" data-pareto-status="non-dominated"><th scope="row">2. Low EVA</th><td>Pareto / non-dominated</td><td>1,465.20 km (+480 m)</td><td>22,597 m</td><td>623.74 h</td><td>3.05 deg / 32.90 deg</td><td>93.1</td><td>Walking just 480 meters farther (+0.03%) saves 8,735 meters of vertical climb and 6.37 hours of EVA time.</td></tr>
@@ -179,7 +181,6 @@
           </table>
         </div>
         <aside class="lp-pareto-detail" data-pareto-detail aria-live="polite"></aside>
-        <p class="lp-formula" data-reveal><span>Edge Cost</span> = L * (1 + (slope / 15 deg)<sup>3</sup> + (max_slope / 15 deg)<sup>2</sup> + (roughness / 150 m)<sup>2</sup>)</p>
         <a class="lp-pill lp-pill--cyan lp-magnetic" href="/console/?tutorial=route-design"><span class="lp-dot" aria-hidden="true"></span>Inspect All 6 Pareto Candidates Live in Console</a>
       </section>
 
@@ -188,7 +189,7 @@
         <p class="lp-eyebrow" data-reveal><span class="lp-dot" aria-hidden="true"></span>Why This Matters Right Now (2026)</p>
         <h2 class="lp-display lp-display--md" id="impact-title" data-reveal>Immediate Impact &amp; Scaling Path</h2>
         <div class="lp-impact__grid">
-          <article data-reveal><span class="lp-num">01</span><h3>Orbital Imaging Triage Today</h3><p>HiRISE covers less than 2% of Mars. The <strong data-fill="gale.mola_ratio"></strong>x scale-bias model and 7.3 m seam detector flag coarse-map blind spots.</p><button class="lp-impact-more" type="button">+</button><div class="lp-impact-detail">Task the next stereo pair where the resolution ladder shows the greatest decision change.</div><a class="lp-mini-cta" href="/console/?tutorial=validation">Try it in the console <span aria-hidden="true">-&gt;</span></a></article>
+          <article data-reveal><span class="lp-num">01</span><h3>Orbital Imaging Triage Today</h3><p><button class="lp-term" type="button" data-term="hirise">HiRISE</button> covers less than 2% of Mars. The <strong data-fill="gale.mola_ratio"></strong>x scale-bias model and 7.3 m seam detector flag coarse-map blind spots.</p><button class="lp-impact-more" type="button">+</button><div class="lp-impact-detail">Task the next stereo pair where the resolution ladder shows the greatest decision change.</div><a class="lp-mini-cta" href="/console/?tutorial=validation">Try it in the console <span aria-hidden="true">-&gt;</span></a></article>
           <article data-reveal><span class="lp-num">02</span><h3>Earth Analog Crews &amp; Artemis Lunar EVA Rehearsal Today</h3><p>Analog crews and Artemis planners can rehearse multi-objective <button class="lp-term" type="button" data-term="eva">EVA</button> trade-offs by bridging coarse LOLA grids to 1 m LRO NAC strips.</p><button class="lp-impact-more" type="button">+</button><div class="lp-impact-detail">Use the same evidence-first workflow on Earth analog terrain and lunar lighting windows.</div><a class="lp-mini-cta" href="/console/?tutorial=marswalk">Try it in the console <span aria-hidden="true">-&gt;</span></a></article>
           <article data-reveal><span class="lp-num">03</span><h3>Zero-Install Planetary Science</h3><p>Unifies 76 NASA PDS, USGS <button class="lp-term" type="button" data-term="sim-3292">SIM 3292</button>, ASU <button class="lp-term" type="button" data-term="themis">THEMIS</button>, MSL RAD and NASA Ames MGCM sources in a browser console.</p><button class="lp-impact-more" type="button">+</button><div class="lp-impact-detail">No workstation GIS license is required for the judged interactive path.</div><a class="lp-mini-cta" href="/console/?tutorial=sources-exports">Try it in the console <span aria-hidden="true">-&gt;</span></a></article>
         </div>
