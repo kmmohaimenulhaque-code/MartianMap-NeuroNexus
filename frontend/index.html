@@ -86,9 +86,10 @@
             <h2>Thirty Meters Decided the Mission.</h2>
             <p data-apollo-copy>Alan Shepard and Edgar Mitchell turned back roughly thirty meters from Cone Crater when the terrain and their oxygen limits made the final push too costly. NeuroNexus asks the same question before an EVA: what does the map hide at walking scale?</p>
             <div class="lp-story__controls" role="tablist" aria-label="Apollo story views">
-              <button type="button" class="is-active" data-apollo-view="story" role="tab" aria-selected="true">The story</button>
-              <button type="button" data-apollo-view="map" role="tab" aria-selected="false">The map lesson</button>
+              <button type="button" class="is-active" data-apollo-view="story" role="tab" aria-selected="true">01. 1971 Cone Crater: 30 m blind spot</button>
+              <button type="button" data-apollo-view="map" role="tab" aria-selected="false">02. 2026 Gale Crater: 1 m HiRISE lens</button>
             </div>
+            <button type="button" class="lp-story__sweep" data-lens-sweep>Sweep lens across Gale scarp</button>
             <p class="lp-small">Imagery &amp; Context: LROC (NASA/GSFC/Arizona State University) · Apollo 14 AS14-64-9089 (NASA). <a href="https://images-assets.nasa.gov/image/AS14-64-9089/" target="_blank" rel="noopener">Open source image</a></p>
           </div>
         </aside>
@@ -106,7 +107,7 @@
             <span>Drag or move across the card.</span> Inside the lens: <button class="lp-term" type="button" data-term="hirise">HiRISE</button> terrain at 1 m. Outside: the same ground averaged to the <button class="lp-term" type="button" data-term="mola">MOLA</button> 463 m grid. Gale crater, the console's demo walk.
           </figcaption>
         </figure>
-          <p class="lp-hero__bridge">Thirty meters changed Apollo 14's science return. This lens shows why the resolution of the ground model changes the decision.</p>
+          <p class="lp-hero__bridge">Drag the Resolution Lens to compare <button class="lp-term" type="button" data-term="mola">MOLA</button> at 463 m with <button class="lp-term" type="button" data-term="hirise">HiRISE</button> at 1 m. Coarse pixels blur the pitches a person actually walks.</p>
           <div class="lp-cue" aria-hidden="true"><span>+</span><span>Scroll to Explore</span><span>+</span></div>
       </section>
 
@@ -134,12 +135,18 @@
           <button class="lp-term" type="button" data-term="eva">EVA</button> plan with a <button class="lp-term" type="button" data-term="pnr">turnaround point</button>.
         </h2>
         <p class="lp-body" data-reveal>Every value carries its source. Missing data stays missing. Planning limits are labeled as planning limits, never as safety limits.</p>
-        <div class="lp-innovation" data-reveal>
+        <div class="lp-innovation" data-reveal data-innovation>
           <p class="lp-eyebrow"><span class="lp-dot" aria-hidden="true"></span>Three Scientific &amp; Architectural Innovations</p>
+          <div class="lp-innovation__switches" role="tablist" aria-label="Innovation evidence">
+            <button type="button" class="is-active" data-innovation-tab="gale">Gale Crater: n=1,386</button>
+            <button type="button" data-innovation-tab="jezero">Jezero out-of-sample</button>
+            <button type="button" data-innovation-tab="corridor">V4 corridor match: 45% vs 41%</button>
+          </div>
+          <div class="lp-innovation__evidence" data-innovation-evidence>463 m <button class="lp-term" type="button" data-term="mola">MOLA</button> underestimates p90 steep ground by <strong><span data-fill="gale.mola_ratio"></span>x [1.70, 1.85]</strong>. A 1 m <button class="lp-term" type="button" data-term="hirise">HiRISE</button> surface at a 3 m rover baseline reproduces felt tilt at <strong><span data-fill="gale.hirise_ratio"></span>x [0.89, 1.07]</strong>.</div>
           <div class="lp-innovation__grid">
-            <article><span class="lp-num">01</span><h3>Empirical Scale-Bias Calibration</h3><p>Curiosity end-of-drive IMU tilt points at Gale and out-of-sample Jezero show MOLA underestimates p90 steep ground by <strong data-fill="gale.mola_ratio"></strong>x at Gale and <strong data-fill="jezero.mola_ratio"></strong>x at Jezero. A 1 m HiRISE surface at a 3 m rover-scale baseline reproduces felt tilt at <strong data-fill="gale.hirise_ratio"></strong>x and <strong data-fill="jezero.hirise_ratio"></strong>x.</p><p class="lp-small">V4 corridor planning stayed within 10 m of JPL's human-planned drive 45% of the time versus 41% on MOLA-only.</p></article>
-            <article><span class="lp-num">02</span><h3>668-Sol Spatio-Temporal Survival Matrix</h3><p>Across Mars Year 34, the planner tracks how dust changes the decision: <strong>WITHIN 0 · REVIEW 570 · EXCEEDS 98</strong>. It also maps 941 sq km of Gale Potential Exploration Zones and contrasts them with Arcadia Planitia's shallow-ice context.</p></article>
-            <article><span class="lp-num">03</span><h3>Epistemic Humility &amp; Guarded 27-Tool AI</h3><p>The map names its limits: a 7.3 m seam bias, a 215-day RAD archive lag, unavailable thermal data when no source is within radius, and sub-meter rock limits. Deterministic graph search owns route geometry. Mars Intelligence explains trade-offs with clickable tags across 76 canonical sources.</p></article>
+            <article><span class="lp-num">01</span><h3>Empirical Scale-Bias Calibration</h3><p>Curiosity end-of-drive IMU tilt points prove the resolution ladder matters. V4 stayed within 10 m of JPL's human-planned drive 45% of the time versus 41% on MOLA-only, weaving around &gt;15 deg scarps.</p><a class="lp-mini-cta" href="/console/?tutorial=validation">Try it in the console <span aria-hidden="true">-&gt;</span></a></article>
+            <article class="lp-innovation__matrix"><span class="lp-num">02</span><h3>668-Sol MY34 matrix</h3><p>Scrub the modeled dust season and watch the planning status change.</p><input type="range" min="1" max="668" value="400" data-sol-ribbon aria-label="Mars Year 34 sol" /><div class="lp-sol-readout"><strong data-sol-number>400</strong><span data-sol-tau>tau 4.62</span><b data-sol-status>EXCEEDS PLANNING LIMIT</b></div><div class="lp-sol-track" data-sol-track aria-hidden="true"></div><a class="lp-mini-cta" href="/console/?tutorial=active-sol">Try it in the console <span aria-hidden="true">-&gt;</span></a></article>
+            <article><span class="lp-num">03</span><h3>Epistemic humility &amp; guarded 27-tool AI</h3><p>The map names what it does not know: <button class="lp-term" type="button" data-term="ctx">CTX</button> seam bias, archive lag, missing <button class="lp-term" type="button" data-term="themis">THEMIS</button> coverage and sub-meter rock limits.</p><div class="lp-provenance-pills"><button type="button" data-warning="V6 seam: 7.3 m">V6 seam: 7.3 m</button><button type="button" data-warning="RAD lag: 215 days">RAD lag: 215 days</button><button type="button" data-warning="Thermal gap: 101.9 km">Thermal gap: 101.9 km</button></div><a class="lp-mini-cta" href="/console/?tutorial=mars-intelligence">Try it in the console <span aria-hidden="true">-&gt;</span></a></article>
           </div>
         </div>
         <a class="lp-pill lp-magnetic" href="#features" data-reveal><span class="lp-dot" aria-hidden="true"></span>See How It Works</a>
@@ -147,9 +154,9 @@
 
       <!-- 4. Pareto proof -->
       <section class="lp-pareto" id="pareto" aria-labelledby="pareto-title">
-        <p class="lp-eyebrow" data-reveal><span class="lp-dot" aria-hidden="true"></span>Multi-Objective Pareto Proof // Gale to Escalante (2,283.9 x 56.3 km window)</p>
+        <p class="lp-eyebrow" data-reveal><span class="lp-dot" aria-hidden="true"></span>Multi-Objective Pareto Proof // Gale to Escalante (2,283.9 x 56.3 km window · 60 x 108 grid @ 0.9&#50;6 km · 2,018 ms)</p>
         <h2 class="lp-display lp-display--md" id="pareto-title" data-reveal>Standard Routers Give You One Shortest Line. Our Engine Proves When That Line Is a Trap.</h2>
-        <p class="lp-body" data-reveal>Six deterministic candidates expose the trade-off instead of hiding it inside one score. The shortest route is not automatically the best route for an EVA. Select a row or filter the set to inspect the proof.</p>
+        <p class="lp-body" data-reveal>In 2,018 ms, deterministic multi-objective Dijkstra generates six candidates over NASA <button class="lp-term" type="button" data-term="mola">MOLA</button> terrain and cataloged USGS, IAU and <button class="lp-term" type="button" data-term="themis">THEMIS</button> evidence. Five form the non-dominated frontier. Select a row or filter the set to inspect the proof.</p>
         <div class="lp-pareto-toolbar" data-reveal>
           <span class="lp-small">Select a candidate to inspect its trade-off.</span>
           <div class="lp-pareto-filters" role="group" aria-label="Pareto candidate filters">
@@ -181,9 +188,9 @@
         <p class="lp-eyebrow" data-reveal><span class="lp-dot" aria-hidden="true"></span>Why This Matters Right Now (2026)</p>
         <h2 class="lp-display lp-display--md" id="impact-title" data-reveal>Immediate Impact &amp; Scaling Path</h2>
         <div class="lp-impact__grid">
-          <article data-reveal><span class="lp-num">01</span><h3>Orbital Imaging Triage Today</h3><p>HiRISE covers less than 2% of Mars. Before planners task an MRO stereo pair or cross a CTX and MOLA boundary, the <strong data-fill="gale.mola_ratio"></strong>x scale-bias model and 7.3 m seam detector flag where coarse maps hide steep terrain.</p></article>
-          <article data-reveal><span class="lp-num">02</span><h3>Earth Analog Crews &amp; Artemis Lunar EVA Rehearsal Today</h3><p>NASA CHAPEA, MDRS and HI-SEAS analog crews, plus Artemis III planners, can rehearse multi-objective EVA trade-offs by bridging coarse LOLA grids to 1 m LRO NAC strips under strict lighting and shadow windows.</p></article>
-          <article data-reveal><span class="lp-num">03</span><h3>Zero-Install Planetary Science</h3><p>NeuroNexus unifies 76 NASA PDS, USGS SIM 3292, ASU THEMIS IR-PBT v2.0, MSL RAD and NASA Ames MGCM sources in a 60 FPS browser console with a 45 MB memory footprint and no workstation GIS license.</p></article>
+          <article data-reveal><span class="lp-num">01</span><h3>Orbital Imaging Triage Today</h3><p>HiRISE covers less than 2% of Mars. The <strong data-fill="gale.mola_ratio"></strong>x scale-bias model and 7.3 m seam detector flag coarse-map blind spots.</p><button class="lp-impact-more" type="button">+</button><div class="lp-impact-detail">Task the next stereo pair where the resolution ladder shows the greatest decision change.</div><a class="lp-mini-cta" href="/console/?tutorial=validation">Try it in the console <span aria-hidden="true">-&gt;</span></a></article>
+          <article data-reveal><span class="lp-num">02</span><h3>Earth Analog Crews &amp; Artemis Lunar EVA Rehearsal Today</h3><p>Analog crews and Artemis planners can rehearse multi-objective <button class="lp-term" type="button" data-term="eva">EVA</button> trade-offs by bridging coarse LOLA grids to 1 m LRO NAC strips.</p><button class="lp-impact-more" type="button">+</button><div class="lp-impact-detail">Use the same evidence-first workflow on Earth analog terrain and lunar lighting windows.</div><a class="lp-mini-cta" href="/console/?tutorial=marswalk">Try it in the console <span aria-hidden="true">-&gt;</span></a></article>
+          <article data-reveal><span class="lp-num">03</span><h3>Zero-Install Planetary Science</h3><p>Unifies 76 NASA PDS, USGS <button class="lp-term" type="button" data-term="sim-3292">SIM 3292</button>, ASU <button class="lp-term" type="button" data-term="themis">THEMIS</button>, MSL RAD and NASA Ames MGCM sources in a browser console.</p><button class="lp-impact-more" type="button">+</button><div class="lp-impact-detail">No workstation GIS license is required for the judged interactive path.</div><a class="lp-mini-cta" href="/console/?tutorial=sources-exports">Try it in the console <span aria-hidden="true">-&gt;</span></a></article>
         </div>
       </section>
 

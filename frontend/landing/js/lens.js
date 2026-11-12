@@ -117,6 +117,15 @@ export function initLens(hero) {
     kick();
   };
 
+  fig.addEventListener("nn:lens-sweep", () => {
+    lens.tx = 0.78;
+    lens.ty = 0.36;
+    lastInput = performance.now();
+    kick();
+    card.classList.add("is-sweeping");
+    setTimeout(() => card.classList.remove("is-sweeping"), 900);
+  });
+
   const tilt = (e) => {
     if (!finePointer() || reducedMotion()) return;
     const r = card.getBoundingClientRect();

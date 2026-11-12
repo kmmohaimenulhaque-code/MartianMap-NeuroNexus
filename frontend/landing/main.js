@@ -55,3 +55,39 @@ initLens(headline.hero);
 initFinale();
 initGlass();
 initFx(doc);
+
+const innovation = doc.querySelector("[data-innovation]");
+if (innovation) {
+  const evidence = innovation.querySelector("[data-innovation-evidence]");
+  const evidenceByTab = {
+    gale: "463 m MOLA underestimates p90 steep ground by <strong>1.79x [1.70, 1.85]</strong>. A 1 m HiRISE surface at a 3 m rover baseline reproduces felt tilt at <strong>0.99x [0.89, 1.07]</strong>.",
+    jezero: "Out-of-sample Jezero shows a <strong>2.35x [1.77, 2.62]</strong> MOLA p90 underestimate. HiRISE reproduces rover-scale tilt at <strong>0.92x</strong> with no retuning.",
+    corridor: "The multi-resolution corridor stayed within 10 m of JPL's human-planned drive <strong>45% [40.00, 54.00]</strong> versus <strong>41%</strong> on MOLA-only, using a 1,627 m corridor path versus a 1,351 m straight line.",
+  };
+  innovation.querySelectorAll("[data-innovation-tab]").forEach((button) => {
+    button.addEventListener("click", () => {
+      innovation.querySelectorAll("[data-innovation-tab]").forEach((item) => item.classList.toggle("is-active", item === button));
+      evidence.innerHTML = evidenceByTab[button.dataset.innovationTab];
+    });
+  });
+  const ribbon = innovation.querySelector("[data-sol-ribbon]");
+  const updateSol = () => {
+    const sol = Number(ribbon.value);
+    const storm = sol >= 370 && sol <= 468;
+    innovation.querySelector("[data-sol-number]").textContent = sol;
+    innovation.querySelector("[data-sol-tau]").textContent = `tau ${storm ? "4.62" : sol < 370 ? "0.31" : "1.18"}`;
+    innovation.querySelector("[data-sol-status]").textContent = storm ? "EXCEEDS PLANNING LIMIT" : "REVIEW REQUIRED";
+    innovation.querySelector("[data-sol-status]").className = storm ? "is-exceeds" : "is-review";
+    innovation.querySelector("[data-sol-track]").style.setProperty("--sol", `${(sol / 668) * 100}%`);
+  };
+  ribbon?.addEventListener("input", updateSol);
+  updateSol();
+  innovation.querySelectorAll("[data-warning]").forEach((button) => button.addEventListener("click", () => {
+    evidence.textContent = `${button.dataset.warning}. Open the console warning card to inspect the source and uncertainty.`;
+  }));
+}
+doc.querySelectorAll(".lp-impact-more").forEach((button) => button.addEventListener("click", () => {
+  const card = button.closest("article");
+  card.classList.toggle("is-expanded");
+  button.textContent = card.classList.contains("is-expanded") ? "−" : "+";
+}));

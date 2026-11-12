@@ -1661,6 +1661,154 @@ main > section {
   font-size: 12px;
 }
 
+.lp-innovation__switches {
+  display: flex;
+  gap: 8px;
+  margin: 18px 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.lp-innovation__switches button,
+.lp-provenance-pills button,
+.lp-impact-more {
+  border: 1px solid var(--line);
+  background: rgba(14, 22, 28, 0.78);
+  color: var(--ink-2);
+  padding: 9px 11px;
+  font: inherit;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.lp-innovation__switches button:hover,
+.lp-innovation__switches button:focus-visible,
+.lp-provenance-pills button:hover,
+.lp-provenance-pills button:focus-visible,
+.lp-impact-more:hover,
+.lp-impact-more:focus-visible {
+  border-color: rgba(1, 255, 255, 0.45);
+  color: var(--teal);
+}
+
+.lp-innovation__switches button.is-active {
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+.lp-innovation__evidence {
+  min-height: 48px;
+  margin: 0 0 18px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  background: rgba(14, 22, 28, 0.78);
+  color: var(--ink-2);
+}
+
+.lp-innovation__evidence strong {
+  color: var(--teal);
+  font-variant-numeric: tabular-nums;
+}
+
+.lp-sol-readout {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 5px 12px;
+  margin: 14px 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.lp-sol-readout b {
+  grid-column: 1 / -1;
+  color: var(--amber);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+
+.lp-sol-readout b.is-exceeds {
+  color: var(--rust);
+}
+
+.lp-sol-readout b.is-review {
+  color: var(--amber);
+}
+
+.lp-sol-track {
+  position: relative;
+  height: 5px;
+  margin: 8px 0 18px;
+  background: linear-gradient(90deg, var(--amber) 0 55%, var(--rust) 55% 70%, var(--line) 70%);
+}
+
+.lp-sol-track::after {
+  content: "";
+  position: absolute;
+  left: var(--sol, 60%);
+  top: -5px;
+  width: 3px;
+  height: 15px;
+  background: var(--teal);
+  box-shadow: 0 0 10px var(--teal);
+}
+
+.lp-innovation__matrix input[type="range"] {
+  width: 100%;
+  accent-color: var(--teal);
+}
+
+.lp-provenance-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 14px 0;
+}
+
+.lp-mini-cta {
+  display: inline-block;
+  margin-top: 12px;
+  color: var(--teal);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lp-mini-cta:hover,
+.lp-mini-cta:focus-visible {
+  color: var(--ink);
+}
+
+.lp-impact-more {
+  float: right;
+  min-width: 32px;
+  color: var(--teal);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.lp-impact-detail {
+  display: none;
+  clear: both;
+  padding-top: 12px;
+  color: var(--ink-2);
+  font-size: 12px;
+}
+
+.lp-impact__grid article.is-expanded .lp-impact-detail {
+  display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-innovation__evidence,
+  .lp-impact-detail {
+    transition: none;
+  }
+}
+
 .lp-impact {
   background: linear-gradient(180deg, transparent, rgba(255, 138, 92, 0.06));
 }

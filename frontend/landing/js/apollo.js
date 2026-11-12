@@ -8,6 +8,7 @@ export function initApolloStory(root = document) {
   const copy = card.querySelector("[data-apollo-copy]");
   const views = [...card.querySelectorAll("[data-apollo-view]")];
   const pins = [...card.querySelectorAll("[data-apollo-pin]")];
+  const sweep = card.querySelector("[data-lens-sweep]");
   const originalCopy = copy?.textContent || "";
 
   image?.addEventListener("error", () => {
@@ -29,6 +30,10 @@ export function initApolloStory(root = document) {
   };
 
   views.forEach((button) => button.addEventListener("click", () => selectView(button.dataset.apolloView)));
+  sweep?.addEventListener("click", () => {
+    selectView("map");
+    document.querySelector("[data-lens]")?.dispatchEvent(new CustomEvent("nn:lens-sweep"));
+  });
   pins.forEach((pin) => pin.addEventListener("click", () => {
     card.querySelectorAll(".lp-story__pin").forEach((item) => item.classList.remove("is-selected"));
     pin.classList.add("is-selected");
