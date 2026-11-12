@@ -17,6 +17,7 @@ def _part(monkeypatch, name):
     # The part sets these module-wide; monkeypatch restores them for the rest of the suite.
     monkeypatch.setattr(ladder, "CACHE_WINDOWS", ladder.CACHE_WINDOWS)
     monkeypatch.setattr(planner, "LAYER_CACHE", planner.LAYER_CACHE)
+    monkeypatch.setattr(planner, "MAX_FRAME_SIDE", planner.MAX_FRAME_SIDE)
     monkeypatch.setenv("NN_PART", name)
     sys.modules.pop("science.serve_part", None)
     return importlib.import_module("science.serve_part")
@@ -60,3 +61,15 @@ def test_selective_layers_equal_full_compute(only):
     for name in only | {"elevation", "source"}:
         np.testing.assert_array_equal(part[name], full[name])
     assert "roughness_25m" not in part or "roughness_25m" in only
+
+
+def test_frame_cap_coarsens_resolution_instead_of_growing_the_frame(monkeypatch):
+    """512 MB hosts plan on at most NN_MAX_FRAME_SIDE px per side; the resolution coarsens to fit."""
+    pts = [{"lat": -4.8247, "lon": 137.3876}, {"lat": -4.8247, "lon": 137.3673}]  # about 1.2 km apart
+    monkeypatch.setattr(planner, "MAX_FRAME_SIDE", 2500)  # the full app
+    full = planner._frame(pts, 1.0, 300.0)
+    monkeypatch.setattr(planner, "MAX_FRAME_SIDE", 1500)
+    capped = planner._frame(pts, 1.0, 300.0)
+    assert full[:3] == capped[:3]  # same frame
+    assert full[3] == 1.0 and capped[3] > 1.0
+    assert 2 * capped[2] / capped[3] <= 1500

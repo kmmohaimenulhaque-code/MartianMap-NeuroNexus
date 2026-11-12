@@ -57,6 +57,8 @@ THREADS = max(HEAVY_CONCURRENCY + 1, int(os.environ.get("NN_THREADS", "2")))
 # Cached terrain frames and planner layer sets are the memory that stays after a request.
 ladder.CACHE_WINDOWS = max(1, int(os.environ.get("NN_WINDOW_CACHE", "2")))
 planner.LAYER_CACHE = max(1, int(os.environ.get("NN_LAYER_CACHE", "1")))
+# A 1 m route frame up to 2500 px per side peaked at 722 MB; 512 MB hosts plan on a smaller frame.
+planner.MAX_FRAME_SIDE = max(200, int(os.environ.get("NN_MAX_FRAME_SIDE", "1500")))
 
 
 @asynccontextmanager
