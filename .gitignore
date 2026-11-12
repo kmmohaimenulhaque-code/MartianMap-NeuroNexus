@@ -40,3 +40,19 @@ build/
 
 # Logs
 *.log
+
+# Large/generated THEMIS JSONL indexes — Parquet versions are committed
+data/indexes/themis/metadata/themis_metadata.jsonl
+data/indexes/themis/metadata/themis_spatiotemporal_cells.jsonl
+
+# Generated/intermediate THEMIS JSONL artifacts
+data/indexes/themis/metadata/mars_seasonal_sampling_plan.jsonl
+data/indexes/themis/metadata/mars_seasonal_thermal.jsonl
+data/indexes/themis/metadata/themis_controlled_0630.jsonl
+data/indexes/themis/metadata/themis_controlled_0630_measurements.jsonl
+data/indexes/themis/metadata/themis_controlled_0630_paths.jsonl
+data/indexes/themis/metadata/themis_footprints.jsonl
+data/indexes/themis/metadata/themis_seasonal_candidates.jsonl
+data/indexes/themis/metadata/themis_selected_observations.jsonl
+data/indexes/themis/metadata/checkpoint.json
+data/indexes/themis/metadata/failed_products.jsonl
