@@ -347,8 +347,11 @@ def service_status() -> dict[str, Any]:
     payload["model"] = info["model"] or info["requested"]
     payload["requested_model"] = info["requested"]
     payload["available_models"] = info["available"]
+    listing = (info.get("listing_error") or "").lower()
+    key_rejected = any(t in listing for t in ("401", "403", "api key not valid", "unauthenticated", "permission_denied"))
     payload["model_check"] = {
-        "status": "NO MODEL AVAILABLE" if info["model"] is None else ("SUBSTITUTED" if info["substituted"] else "OK"),
+        "status": "KEY REJECTED" if key_rejected else
+                  "NO MODEL AVAILABLE" if info["model"] is None else ("SUBSTITUTED" if info["substituted"] else "OK"),
         "detail": info["notice"] or info["listing_error"] or f"Using '{info['model']}'.",
     }
     return payload

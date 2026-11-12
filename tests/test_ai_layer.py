@@ -249,3 +249,13 @@ def test_every_model_failing_reports_what_was_tried(monkeypatch):
     reply = chat([{"role": "user", "content": "hello"}], STATE)
     assert reply["status"] == "unavailable"
     assert "gemini-3.6-flash (503 overloaded)" in reply["reason"] and "gemini-3-flash-preview (503 overloaded)" in reply["reason"]
+
+
+def test_status_reports_a_rejected_key(monkeypatch):
+    import science.ai.gemini as gemini
+    monkeypatch.setenv(ENV_KEY, "bad-key")
+    monkeypatch.setattr(gemini, "_client", lambda: object())
+    monkeypatch.setattr(gemini, "resolve_model", lambda client: {
+        "model": "gemini-3.6-flash", "requested": "gemini-3.6-flash", "available": None, "substituted": False,
+        "notice": None, "listing_error": "401 UNAUTHENTICATED. API key not valid."})
+    assert gemini.service_status()["model_check"]["status"] == "KEY REJECTED"
