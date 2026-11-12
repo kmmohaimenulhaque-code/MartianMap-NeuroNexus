@@ -3,6 +3,7 @@
 NASA Space Apps Challenge 2026 · branch Master-Ai
 
 Setup first: SETUP_INSTRUCTIONS.md contains the complete installation, NASA data, Gemini API-key, backend/frontend startup, troubleshooting, and demo instructions.
+
 Setup instructions:
 https://github.com/kmmohaimenulhaque-code/martian-map/blob/Master-Ai/SETUP_INSTRUCTIONS.md
 
