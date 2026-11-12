@@ -94,6 +94,7 @@ http://127.0.0.1:8002/ai/status (`"configured": true` once the key is set).
 ## 5. Start the frontend (terminal 2)
 
 ```bash
+cd martian-map
 cd frontend
 npm install
 npm run dev
