@@ -2,8 +2,8 @@
 
 The API layer talks to this module only. A provider is any module exposing
 chat(messages, mission_state, *, enable_search, thinking_mode), analyse_routes(payload) and
-service_status(). The default "auto" is the Qwen/Gemini router; to add another provider, implement
-those three functions in a new module and register it in PROVIDERS, then set
+service_status(). The default "auto" is the Gemini/fallback router; to add another provider,
+implement those three functions in a new module and register it in PROVIDERS, then set
 AI_PROVIDER=<name>. Tools (science.ai.tools) and the knowledge base
 (science.ai.knowledge_base) are provider-independent and are reused as-is.
 """
@@ -15,8 +15,6 @@ import os
 from typing import Any
 
 PROVIDERS = {"gemini": "science.ai.gemini", "auto": "science.ai.router"}
-# "auto" routes between the fine-tuned Qwen voice model and Gemini tool calling (science/ai/router.py).
-# Without QWEN_BASE_URL it behaves like "gemini".
 DEFAULT_PROVIDER = "auto"
 
 

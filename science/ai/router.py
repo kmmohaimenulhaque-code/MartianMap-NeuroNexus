@@ -1,129 +1,167 @@
-"""AI router: the fine-tuned Qwen voice model for explanation, Gemini for tool calling.
-
-Routing (science.ai.intent decides, every response says why):
-  1. Web search, recent events and multi-step questions go to Gemini function calling.
-  2. Explanations, single-topic data questions, app help and Mars knowledge go to Qwen. The
-     router first runs the matching deterministic tools and hands Qwen a CONTEXT block.
-  3. Every Qwen answer passes science.ai.guard (numbers grounded in CONTEXT, no "safe", only the
-     three planning statuses, n/a for missing data). A failed guard re-routes to Gemini.
-  4. Qwen down or slow -> Gemini. Gemini down -> Qwen with the same deterministic tools.
-     Both down -> the usual "unavailable" response; nothing is invented.
-Structured route analysis stays on Gemini (JSON schema output).
-"""
+"""Fast, single-pass fallback routing for AI text generation."""
 
 from __future__ import annotations
 
-import re
-import threading
+import json
+import os
 import time
-from collections import deque
+from dataclasses import dataclass
 from typing import Any
 
-from science.ai import context, gemini, guard, intent, qwen
+import httpx
 
-EVIDENCE_NOTE = "AI INTERPRETATION of NeuroNexus tool results. Not itself a NASA observation."
-_decisions: deque = deque(maxlen=50)
-_lock = threading.Lock()
+from science.ai import gemini
 
-
-def _record(question: str, result: dict[str, Any]) -> None:
-    with _lock:
-        _decisions.appendleft({"at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "question": question[:120],
-                               **{k: result.get(k) for k in ("provider", "route", "route_reason", "fallback_from",
-                                                             "status", "elapsed_ms", "guard")}})
+FAILOVER_CODES = frozenset({401, 403, 429, 500, 502, 503, 504})
+REQUEST_TIMEOUT_SECONDS = 2.5
 
 
-def _expects_missing(ctx: str) -> bool:
-    return bool(re.search(r":\s*n/a\b", ctx))
+@dataclass(frozen=True)
+class Provider:
+    name: str
+    key_env: str
+    endpoint: str
+    models: tuple[str, ...]
+    kind: str = "openai"
 
 
-def _ask_qwen(messages, state, plan: intent.Intent, started: float) -> dict[str, Any]:
-    ok, detail = qwen.healthy()
-    if not ok:
-        raise RuntimeError(f"qwen unavailable: {detail}")
-    tools = plan.tools or intent.FAMILIES["site"] + intent.FAMILIES["environment"]
-    ctx, tool_log = context.build(state, tools)
-    question = str(messages[-1].get("content", ""))
-    try:
-        out = qwen.complete(messages, ctx)
-    except Exception as exc:
-        qwen.mark_down(f"{type(exc).__name__}")
-        raise RuntimeError(f"qwen request failed: {type(exc).__name__}") from exc
-    verdict = guard.check(out["text"], ctx + "\n" + question)
-    if not verdict["ok"]:
-        raise GuardFailure(verdict["violations"], out["text"])
-    return {"status": "ok", "model": qwen.model_name(), "text": out["text"], "tool_calls": tool_log,
-            "sources": gemini._sources(tool_log), "search_grounding": [], "web_sources": [], "thoughts": "", "model_notice": None,
-            "elapsed_ms": round((time.perf_counter() - started) * 1000, 1), "evidence_note": EVIDENCE_NOTE,
-            "guard": {"ok": True, "violations": []}, "context_lines": ctx.count("\n") + 1,
-            "expects_missing": _expects_missing(ctx)}
+@dataclass(frozen=True)
+class ProviderResponse:
+    provider: str
+    model: str
+    text: str
+    elapsed_ms: float
 
 
-class GuardFailure(RuntimeError):
-    def __init__(self, violations: list[str], text: str):
-        super().__init__("guard:" + (violations[0] if violations else "failed"))
-        self.violations, self.text = violations, text
+PROVIDERS = (
+    Provider("Groq", "GROQ_API_KEY", "https://api.groq.com/openai/v1/chat/completions",
+             ("llama-3.3-70b-versatile", "openai/gpt-oss-120b")),
+    Provider("Mistral", "MISTRAL_API_KEY", "https://api.mistral.ai/v1/chat/completions",
+             ("mistral-large-latest", "mistral-small-latest")),
+    Provider("NVIDIA NIM", "NVIDIA_API_KEY", "https://integrate.api.nvidia.com/v1/chat/completions",
+             ("nvidia/nemotron-3.5", "meta/llama-3.1-70b-instruct")),
+    Provider("GitHub Models", "GITHUB_TOKEN", "https://models.inference.ai.azure.com/chat/completions",
+             ("gpt-4o", "Phi-4")),
+    Provider("Cohere", "COHERE_API_KEY", "https://api.cohere.com/v2/chat",
+             ("command-r-plus",), kind="cohere"),
+)
+
+
+class ProviderUnavailable(RuntimeError):
+    """Raised when a configured provider cannot return usable content."""
+
+
+def _configured(provider: Provider) -> bool:
+    return bool((os.environ.get(provider.key_env) or "").strip())
+
+
+def _model(provider: Provider) -> str:
+    key = f"{provider.name.upper().replace(' ', '_').replace('-', '_')}_MODEL"
+    return (os.environ.get(key) or "").strip() or provider.models[0]
+
+
+def _request(provider: Provider, messages: list[dict[str, str]], *, json_mode: bool = False) -> ProviderResponse:
+    model = _model(provider)
+    if provider.kind == "cohere":
+        payload: dict[str, Any] = {"model": model, "messages": messages, "temperature": 0.2, "max_tokens": 2048}
+    else:
+        payload = {"model": model, "messages": messages, "temperature": 0.2, "max_tokens": 2048}
+        if json_mode:
+            payload["response_format"] = {"type": "json_object"}
+    started = time.perf_counter()
+    headers = {"Authorization": f"Bearer {os.environ[provider.key_env].strip()}",
+               "Content-Type": "application/json"}
+    with httpx.Client(timeout=REQUEST_TIMEOUT_SECONDS) as client:
+        response = client.post(provider.endpoint, headers=headers, json=payload)
+        if response.status_code in FAILOVER_CODES:
+            raise httpx.HTTPStatusError(
+                f"{provider.name} returned HTTP {response.status_code}",
+                request=response.request,
+                response=response,
+            )
+        response.raise_for_status()
+        body = response.json()
+    if provider.kind == "cohere":
+        content = (body.get("message") or {}).get("content") or []
+        text = "".join(str(item.get("text", "")) for item in content if isinstance(item, dict)).strip()
+    else:
+        choices = body.get("choices") or []
+        message = (choices[0] or {}).get("message") if choices else {}
+        text = str((message or {}).get("content") or "").strip()
+    if not text:
+        raise ProviderUnavailable(f"{provider.name} returned an empty response")
+    return ProviderResponse(provider.name, model, text, (time.perf_counter() - started) * 1000)
+
+
+def fallback(messages: list[dict[str, str]], *, json_mode: bool = False) -> tuple[ProviderResponse | None, list[dict[str, str]]]:
+    """Try configured providers once each, without sleeping or retrying."""
+    failures: list[dict[str, str]] = []
+    for provider in PROVIDERS:
+        if not _configured(provider):
+            continue
+        try:
+            return _request(provider, messages, json_mode=json_mode), failures
+        except (httpx.HTTPError, TimeoutError, ValueError, ProviderUnavailable) as exc:
+            code = getattr(getattr(exc, "response", None), "status_code", None)
+            failures.append({"provider": provider.name, "reason": f"{code or type(exc).__name__}: {str(exc)[:160]}"})
+    return None, failures
+
+
+def _fallback_chat(messages: list[dict[str, str]], state: dict[str, Any], failures: list[dict[str, Any]]) -> dict[str, Any] | None:
+    prompt = [
+        {"role": "system", "content": "Answer using only the supplied mission state. Do not invent unavailable values."},
+        *messages,
+        {"role": "user", "content": "Mission state JSON:\n" + json.dumps(state, default=str)[:30000]},
+    ]
+    response, provider_failures = fallback(prompt)
+    if response is None:
+        return None
+    return {
+        "status": "ok", "provider": response.provider, "model": response.model, "text": response.text,
+        "tool_calls": [], "fallback_failures": provider_failures,
+        "gemini_failure": failures, "elapsed_ms": response.elapsed_ms,
+        "evidence_note": "AI interpretation of supplied NeuroNexus state. Not itself a NASA observation.",
+    }
 
 
 def chat(messages: list[dict[str, str]], mission_state: dict[str, Any] | None = None, *,
          enable_search: bool = False, thinking_mode: bool = False) -> dict[str, Any]:
-    started = time.perf_counter()
     state = mission_state or {}
-    question = str((messages[-1] if messages else {}).get("content", ""))
-    plan = intent.classify(question, enable_search=enable_search)
-    if thinking_mode and plan.route == "qwen":  # reasoning traces exist only on Gemini
-        plan = intent.Intent("gemini", "thinking mode requires Gemini", plan.families, plan.tools)
-    order = ["qwen", "gemini"] if plan.route == "qwen" else ["gemini", "qwen"]
-    if qwen.base_url() is None:  # Qwen not deployed: plain Gemini, no fallback noise
-        order = ["gemini"]
-    fallback_from: str | None = None
-    guard_info: dict[str, Any] | None = None
-    last: dict[str, Any] | None = None
-    for provider in order:
-        if provider == "qwen":
-            try:
-                result = _ask_qwen(messages, state, plan, started)
-                break
-            except GuardFailure as exc:
-                guard_info = {"ok": False, "violations": exc.violations}
-                fallback_from = f"qwen: {exc}"
-            except Exception as exc:
-                fallback_from = f"qwen: {exc}"
-            continue
-        extra = {"thinking_mode": True} if thinking_mode else {}  # older provider modules do not take the flag
-        result = gemini.chat(messages, state, enable_search=enable_search, **extra)
-        if result.get("status") == "ok":
-            break
-        last = result
-        fallback_from = f"gemini: {result.get('reason') or result.get('status')}"
-    else:
-        result = last or {"status": "unavailable", "reason": "No AI provider is configured or reachable.",
-                          "note": "The rest of NeuroNexus works without the assistant."}
-        provider = "none"
+    result = gemini.chat(messages, state, enable_search=enable_search, thinking_mode=thinking_mode)
     if result.get("status") == "ok":
-        provider = "qwen" if result.get("model") == qwen.model_name() else "gemini"
-    result.update({"provider": provider, "route": plan.route, "route_reason": plan.reason,
-                   "fallback_from": fallback_from if fallback_from and provider != order[0] else None})
-    if guard_info and provider != "qwen":
-        result["guard"] = guard_info
-    result.setdefault("elapsed_ms", round((time.perf_counter() - started) * 1000, 1))
-    if result.get("status") == "ok":  # stable response shape for the console, whichever provider answered
-        result.setdefault("model_used", result.get("model"))
-        result.setdefault("fallback_chain_tried", [])
-        result.setdefault("thoughts", "")
-        result.setdefault("web_sources", [])
-    _record(question, result)
-    return result
+        return result
+    fallback_result = _fallback_chat(messages, state, [{"provider": "Gemini", "reason": str(result.get("reason", "failed"))}])
+    return fallback_result or {**result, "fallback": status()}
 
 
 def analyse_routes(payload: dict[str, Any]) -> dict[str, Any]:
-    return {**gemini.analyse_routes(payload), "provider": "gemini", "route_reason": "structured route analysis (JSON schema)"}
+    result = gemini.analyse_routes(payload)
+    if result.get("status") == "ok":
+        return result
+    messages = [
+        {"role": "system", "content": "Return JSON only. Preserve all deterministic route values exactly."},
+        {"role": "user", "content": "Route analysis JSON:\n" + json.dumps(payload, default=str)[:60000]},
+    ]
+    response, failures = fallback(messages, json_mode=True)
+    if response is None:
+        return {**result, "fallback": status()}
+    try:
+        analysis = json.loads(response.text)
+    except json.JSONDecodeError:
+        return {"status": "error", "reason": "Fallback provider returned invalid JSON.", "provider": response.provider}
+    return {"status": "ok", "provider": response.provider, "model": response.model, "analysis": analysis,
+            "fallback_failures": failures, "schema": "neuronexus.route-analysis.v1",
+            "elapsed_ms": response.elapsed_ms}
+
+
+def status() -> dict[str, Any]:
+    return {
+        "fallback_order": [provider.name for provider in PROVIDERS],
+        "configured": [provider.name for provider in PROVIDERS if _configured(provider)],
+        "timeout_seconds": REQUEST_TIMEOUT_SECONDS,
+        "retry_policy": "one attempt per provider; no sleeps or provider retries",
+    }
 
 
 def service_status() -> dict[str, Any]:
-    with _lock:
-        recent = list(_decisions)
-    return {**gemini.service_status(), "router": {
-        "providers": {"qwen": qwen.service_status(), "gemini": {"configured": gemini.api_key() is not None}},
-        "rules": __doc__.split("Routing", 1)[1].split("Structured", 1)[0].strip(),
-        "recent_decisions": recent}}
+    return {**gemini.service_status(), "fallback": status()}
