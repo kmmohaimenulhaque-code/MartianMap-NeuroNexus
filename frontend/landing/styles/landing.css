@@ -749,6 +749,50 @@ main > section {
   letter-spacing: -0.02em;
 }
 
+.lp-story {
+  position: relative;
+  z-index: 1;
+  max-width: 62ch;
+  padding: 18px 20px;
+  border: 1px solid rgba(1, 255, 255, 0.22);
+  border-left: 3px solid var(--rust);
+  background: rgba(6, 12, 20, 0.66);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.lp-story .lp-eyebrow {
+  margin-bottom: 10px;
+  color: var(--teal);
+  font-size: 10px;
+}
+
+.lp-story h2 {
+  max-width: 12ch;
+  margin: 0 0 10px;
+  font-size: clamp(30px, 4vw, 58px);
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+}
+
+.lp-story p:not(.lp-eyebrow):not(.lp-small) {
+  max-width: 55ch;
+  margin: 0 0 10px;
+  color: var(--ink-2);
+}
+
+.lp-story .lp-small {
+  margin: 0;
+}
+
+.lp-hero__bridge {
+  max-width: 42ch;
+  margin: 0;
+  color: var(--ink-2);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+
 .lp-lens {
   margin: 0;
   perspective: 1400px;
@@ -773,11 +817,19 @@ main > section {
 @media (min-width: 1024px) {
   .lp-hero {
     grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-rows: 1fr auto;
+    grid-template-rows: auto 1fr auto auto;
     align-items: end;
     column-gap: clamp(32px, 5vw, 96px);
   }
+  .lp-story {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: start;
+    max-width: min(58ch, 52vw);
+  }
   .lp-hero__intro {
+    grid-column: 1;
+    grid-row: 2;
     align-self: start;
     max-width: 16ch;
     font-size: clamp(40px, 4.6vw, 84px);
@@ -785,7 +837,7 @@ main > section {
     letter-spacing: -0.035em;
   }
   .lp-lens {
-    grid-row: 1 / 3;
+    grid-row: 1 / 4;
     grid-column: 2;
     align-self: start;
     width: min(46vw, calc((100svh - 150px) * 1.013));
@@ -795,8 +847,25 @@ main > section {
   }
   .lp-cue {
     grid-column: 1;
+    grid-row: 4;
     justify-content: flex-start;
     gap: 24px;
+  }
+  .lp-hero__bridge {
+    grid-column: 1;
+    grid-row: 3;
+  }
+}
+
+@media (max-width: 599px) {
+  .lp-story {
+    padding: 14px;
+  }
+  .lp-story h2 {
+    font-size: 34px;
+  }
+  .lp-hero__bridge {
+    font-size: 12px;
   }
 }
 
@@ -1031,6 +1100,23 @@ main > section {
   text-transform: uppercase;
 }
 
+.lp-reel__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 24px;
+  padding: 14px var(--gutter) 0;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.lp-reel__links a {
+  color: var(--teal);
+  text-underline-offset: 4px;
+}
+
 .lp-tri {
   width: 12px;
   height: 12px;
@@ -1216,6 +1302,155 @@ main > section {
 
 .lp-features__all {
   margin-top: clamp(48px, 6vw, 88px);
+}
+
+/* Pareto proof and impact */
+
+.lp-pareto,
+.lp-impact,
+.lp-innovation {
+  position: relative;
+  overflow: hidden;
+}
+
+.lp-pareto {
+  background: linear-gradient(180deg, rgba(1, 255, 255, 0.04), transparent 28%, rgba(255, 138, 92, 0.04));
+}
+
+.lp-pareto > *,
+.lp-impact > *,
+.lp-innovation > * {
+  position: relative;
+  z-index: 1;
+}
+
+.lp-pareto .lp-display {
+  max-width: 15ch;
+  margin-bottom: 24px;
+}
+
+.lp-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  background: rgba(3, 7, 12, 0.62);
+  -webkit-overflow-scrolling: touch;
+}
+
+.lp-pareto-table {
+  width: 100%;
+  min-width: 1180px;
+  border-collapse: collapse;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.lp-pareto-table th,
+.lp-pareto-table td {
+  padding: 14px 12px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.lp-pareto-table thead th {
+  color: var(--teal);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.lp-pareto-table tbody th {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.lp-pareto-table td {
+  color: var(--ink-2);
+}
+
+.lp-pareto-table td strong {
+  color: var(--rust);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.lp-formula {
+  margin: 24px 0;
+  padding: 18px 20px;
+  border-left: 2px solid var(--teal);
+  background: rgba(1, 255, 255, 0.05);
+  color: var(--ink);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: clamp(12px, 1.4vw, 16px);
+  overflow-wrap: anywhere;
+}
+
+.lp-formula span {
+  color: var(--teal);
+}
+
+.lp-innovation {
+  width: 100%;
+  margin: 34px 0 12px;
+  padding: 24px 0 4px;
+  border-top: 1px solid var(--line);
+}
+
+.lp-innovation__grid,
+.lp-impact__grid {
+  display: grid;
+  gap: 0;
+  border-top: 1px solid var(--line);
+}
+
+.lp-innovation__grid article,
+.lp-impact__grid article {
+  padding: 22px 18px 22px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.lp-innovation__grid h3,
+.lp-impact__grid h3 {
+  max-width: 20ch;
+  margin: 10px 0 8px;
+  font-size: clamp(22px, 2.2vw, 32px);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+}
+
+.lp-innovation__grid p,
+.lp-impact__grid p {
+  max-width: 52ch;
+  margin: 0 0 10px;
+  color: var(--ink-2);
+}
+
+.lp-innovation__grid .lp-small {
+  font-size: 12px;
+}
+
+.lp-impact {
+  background: linear-gradient(180deg, transparent, rgba(255, 138, 92, 0.06));
+}
+
+.lp-impact .lp-display {
+  max-width: 12ch;
+  margin-bottom: 44px;
+}
+
+@media (min-width: 900px) {
+  .lp-innovation__grid,
+  .lp-impact__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px;
+    border-top: 0;
+  }
+  .lp-innovation__grid article,
+  .lp-impact__grid article {
+    border-top: 1px solid var(--line);
+  }
 }
 
 /* ---------- Tutorial stage (cards and player) ---------- */

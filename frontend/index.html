@@ -25,8 +25,6 @@
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/png" sizes="192x192" href="/pwa/icon-192.png" />
     <link rel="apple-touch-icon" href="/pwa/apple-touch-icon.png" />
-    <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
-    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600&display=swap" />
     <link rel="preload" as="image" href="/landing/media/hero-hirise.webp" fetchpriority="high" />
   </head>
   <body class="lp">
@@ -75,6 +73,12 @@
       <section class="lp-hero" id="top" aria-labelledby="hero-title">
         <div class="lp-hero__backdrop" aria-hidden="true"></div>
         <span class="lp-glass" aria-hidden="true" data-glass></span>
+        <aside class="lp-story" data-reveal aria-label="Apollo 14 story">
+          <p class="lp-eyebrow"><span class="lp-dot" aria-hidden="true"></span>A True Story // Apollo 14 · February 1971 · Cone Crater</p>
+          <h2>Thirty Meters Decided the Mission.</h2>
+          <p>Alan Shepard and Edgar Mitchell turned back roughly thirty meters from Cone Crater when the terrain and their oxygen limits made the final push too costly. NeuroNexus asks the same question before an EVA: what does the map hide at walking scale?</p>
+          <p class="lp-small">Imagery &amp; Context: LROC (NASA/GSFC/Arizona State University) · Apollo 14 AS14-64-9089 (NASA)</p>
+        </aside>
         <h1 class="lp-hero__intro" id="hero-title" data-intro>
           NeuroNexus turns NASA's sharpest Mars terrain into walking plans for future astronauts, and shows how sure every number is.
         </h1>
@@ -89,7 +93,8 @@
             <span>Drag or move across the card.</span> Inside the lens: <button class="lp-term" type="button" data-term="hirise">HiRISE</button> terrain at 1 m. Outside: the same ground averaged to the <button class="lp-term" type="button" data-term="mola">MOLA</button> 463 m grid. Gale crater, the console's demo walk.
           </figcaption>
         </figure>
-        <div class="lp-cue" aria-hidden="true"><span>+</span><span>Scroll to Explore</span><span>+</span></div>
+          <p class="lp-hero__bridge">Thirty meters changed Apollo 14's science return. This lens shows why the resolution of the ground model changes the decision.</p>
+          <div class="lp-cue" aria-hidden="true"><span>+</span><span>Scroll to Explore</span><span>+</span></div>
       </section>
 
       <!-- 2. Statement -->
@@ -116,19 +121,64 @@
           <button class="lp-term" type="button" data-term="eva">EVA</button> plan with a <button class="lp-term" type="button" data-term="pnr">turnaround point</button>.
         </h2>
         <p class="lp-body" data-reveal>Every value carries its source. Missing data stays missing. Planning limits are labeled as planning limits, never as safety limits.</p>
+        <div class="lp-innovation" data-reveal>
+          <p class="lp-eyebrow"><span class="lp-dot" aria-hidden="true"></span>Three Scientific &amp; Architectural Innovations</p>
+          <div class="lp-innovation__grid">
+            <article><span class="lp-num">01</span><h3>Empirical Scale-Bias Calibration</h3><p>Curiosity end-of-drive IMU tilt points at Gale and out-of-sample Jezero show MOLA underestimates p90 steep ground by <strong data-fill="gale.mola_ratio"></strong>x at Gale and <strong data-fill="jezero.mola_ratio"></strong>x at Jezero. A 1 m HiRISE surface at a 3 m rover-scale baseline reproduces felt tilt at <strong data-fill="gale.hirise_ratio"></strong>x and <strong data-fill="jezero.hirise_ratio"></strong>x.</p><p class="lp-small">V4 corridor planning stayed within 10 m of JPL's human-planned drive 45% of the time versus 41% on MOLA-only.</p></article>
+            <article><span class="lp-num">02</span><h3>668-Sol Spatio-Temporal Survival Matrix</h3><p>Across Mars Year 34, the planner tracks how dust changes the decision: <strong>WITHIN 0 · REVIEW 570 · EXCEEDS 98</strong>. It also maps 941 sq km of Gale Potential Exploration Zones and contrasts them with Arcadia Planitia's shallow-ice context.</p></article>
+            <article><span class="lp-num">03</span><h3>Epistemic Humility &amp; Guarded 27-Tool AI</h3><p>The map names its limits: a 7.3 m seam bias, a 215-day RAD archive lag, unavailable thermal data when no source is within radius, and sub-meter rock limits. Deterministic graph search owns route geometry. Mars Intelligence explains trade-offs with clickable tags across 76 canonical sources.</p></article>
+          </div>
+        </div>
         <a class="lp-pill lp-magnetic" href="#features" data-reveal><span class="lp-dot" aria-hidden="true"></span>See How It Works</a>
       </section>
 
-      <!-- 4. Reel band -->
+      <!-- 4. Pareto proof -->
+      <section class="lp-pareto" id="pareto" aria-labelledby="pareto-title">
+        <p class="lp-eyebrow" data-reveal><span class="lp-dot" aria-hidden="true"></span>Multi-Objective Pareto Proof // Gale to Escalante (2,283.9 x 56.3 km window)</p>
+        <h2 class="lp-display lp-display--md" id="pareto-title" data-reveal>Standard Routers Give You One Shortest Line. Our Engine Proves When That Line Is a Trap.</h2>
+        <p class="lp-body" data-reveal>Six deterministic candidates expose the trade-off instead of hiding it inside one score. The shortest route is not automatically the best route for an EVA.</p>
+        <div class="lp-table-wrap" data-reveal>
+          <table class="lp-pareto-table">
+            <thead><tr><th>Candidate Route</th><th>Pareto Status</th><th>Distance</th><th>Total Climb</th><th>Est. EVA Time</th><th>Mean / Max Slope</th><th>Risk Proxy</th><th>Why It Matters</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">1. Low distance</th><td><strong>Dominated in this set</strong></td><td>1,464.72 km</td><td>31,332 m</td><td>630.11 h</td><td>3.54 deg / 31.23 deg</td><td>94.3</td><td>The shortest-path trap: minimizing horizontal distance forces 31.3 km of vertical climbing and the highest risk proxy.</td></tr>
+              <tr><th scope="row">2. Low EVA</th><td>Pareto / non-dominated</td><td>1,465.20 km (+480 m)</td><td>22,597 m</td><td>623.74 h</td><td>3.05 deg / 32.90 deg</td><td>93.1</td><td>Walking just 480 meters farther (+0.03%) saves 8,735 meters of vertical climb and 6.37 hours of EVA time.</td></tr>
+              <tr><th scope="row">3. Low terrain-risk proxy</th><td>Pareto / non-dominated</td><td>1,510.34 km (+45.6 km)</td><td>21,416 m</td><td>639.83 h</td><td>2.07 deg / 28.07 deg</td><td>79.5</td><td>Trading +45.6 km (+3.1% distance) cuts 9,916 meters of climb and lowers the cubic slope and roughness risk proxy from 94.3 to 79.5.</td></tr>
+              <tr><th scope="row">4. Low terrain burden</th><td>Pareto / non-dominated</td><td>1,620.55 km</td><td>20,099 m</td><td>681.72 h</td><td>1.58 deg / 33.81 deg</td><td>82.1</td><td>Lowest total terrain burden (12.4 versus 23.9) and lowest cumulative climb, 11,233 m less than the shortest path.</td></tr>
+              <tr><th scope="row">5. Science first</th><td>Pareto / non-dominated</td><td>1,471.76 km</td><td>22,815 m</td><td>626.73 h</td><td>2.22 deg / 32.90 deg</td><td>85.9</td><td>Weighted 55% Science, 20% Terrain, 15% EVA and 10% Ops to maximize proximity to cataloged USGS, IAU and THEMIS evidence.</td></tr>
+              <tr><th scope="row">6. Balanced</th><td>Pareto / non-dominated</td><td>1,474.38 km</td><td>22,652 m</td><td>627.58 h</td><td>2.18 deg / 32.90 deg</td><td>85.9</td><td>Equal weights across all four normalized objectives. Score: 1.031.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="lp-formula" data-reveal><span>Edge Cost</span> = L * (1 + (slope / 15 deg)<sup>3</sup> + (max_slope / 15 deg)<sup>2</sup> + (roughness / 150 m)<sup>2</sup>)</p>
+        <a class="lp-pill lp-pill--cyan lp-magnetic" href="/console/?tutorial=route-design"><span class="lp-dot" aria-hidden="true"></span>Inspect All 6 Pareto Candidates Live in Console</a>
+      </section>
+
+      <!-- 5. Immediate impact -->
+      <section class="lp-impact" id="impact" aria-labelledby="impact-title">
+        <p class="lp-eyebrow" data-reveal><span class="lp-dot" aria-hidden="true"></span>Why This Matters Right Now (2026)</p>
+        <h2 class="lp-display lp-display--md" id="impact-title" data-reveal>Immediate Impact &amp; Scaling Path</h2>
+        <div class="lp-impact__grid">
+          <article data-reveal><span class="lp-num">01</span><h3>Orbital Imaging Triage Today</h3><p>HiRISE covers less than 2% of Mars. Before planners task an MRO stereo pair or cross a CTX and MOLA boundary, the <strong data-fill="gale.mola_ratio"></strong>x scale-bias model and 7.3 m seam detector flag where coarse maps hide steep terrain.</p></article>
+          <article data-reveal><span class="lp-num">02</span><h3>Earth Analog Crews &amp; Artemis Lunar EVA Rehearsal Today</h3><p>NASA CHAPEA, MDRS and HI-SEAS analog crews, plus Artemis III planners, can rehearse multi-objective EVA trade-offs by bridging coarse LOLA grids to 1 m LRO NAC strips under strict lighting and shadow windows.</p></article>
+          <article data-reveal><span class="lp-num">03</span><h3>Zero-Install Planetary Science</h3><p>NeuroNexus unifies 76 NASA PDS, USGS SIM 3292, ASU THEMIS IR-PBT v2.0, MSL RAD and NASA Ames MGCM sources in a 60 FPS browser console with a 45 MB memory footprint and no workstation GIS license.</p></article>
+        </div>
+      </section>
+
+      <!-- 6. Reel band -->
       <section class="lp-reel" id="reel" aria-label="Feature reel">
         <button class="lp-reel__band" type="button" data-play-reel aria-label="Play the feature reel: every tutorial in sequence">
           <span class="lp-marquee" aria-hidden="true">
             <span class="lp-marquee__track" data-marquee></span>
           </span>
         </button>
+        <div class="lp-reel__links" aria-label="Demo videos">
+          <a href="https://www.youtube.com/watch?v=0MLtYKHewcA" target="_blank" rel="noopener">Global Judging Official Demo · 30 seconds</a>
+          <a href="https://www.youtube.com/watch?v=0MLtYKHewcA" target="_blank" rel="noopener">Full Local Pitch Story · 3:57</a>
+        </div>
       </section>
 
-      <!-- 5. Core features + tutorials -->
+      <!-- 7. Core features + tutorials -->
       <section class="lp-features" id="features" aria-labelledby="ft-title">
         <div class="lp-features__head">
           <h2 class="lp-display lp-display--md" id="ft-title" data-split>Core Features</h2>
@@ -138,7 +188,7 @@
         <a class="lp-pill lp-magnetic lp-features__all" href="/tutorials/"><span class="lp-dot" aria-hidden="true"></span>See All Tutorials</a>
       </section>
 
-      <!-- 6. Proof -->
+      <!-- 8. Proof -->
       <section class="lp-proof" id="proof" aria-labelledby="pf-title">
         <p class="lp-eyebrow" data-reveal><span class="lp-dot" aria-hidden="true"></span>The Proof</p>
         <h2 class="lp-proof__number" id="pf-title"><span data-count="gale.mola_ratio" data-decimals="2">0.00</span><span class="lp-proof__x">x</span></h2>
@@ -173,7 +223,7 @@
         </svg>
         <h2 class="lp-display" id="st2" data-split>Where NASA Data Becomes a Walking Plan.</h2>
         <ul class="lp-principles">
-          <li data-reveal><span class="lp-num">01</span><h3>Planning Limits Are Not Safety Limits</h3><p>Every status reads Within Planning Limits, Review Required or Exceeds Planning Limit. Nothing is ever called safe.</p></li>
+          <li data-reveal><span class="lp-num">01</span><h3>Planning Limits Are Not Safety Limits</h3>          <p>Every status reads Within Planning Limits, Review Required or Exceeds Planning Limit. No route or ground receives a safety verdict.</p></li>
           <li data-reveal><span class="lp-num">02</span><h3>No Hallucinated Values</h3><p>Where NASA data does not reach, the console says n/a or Unavailable. A gap is shown as a gap, never filled with a guess.</p></li>
           <li data-reveal><span class="lp-num">03</span><h3>AI May Explain, Never Invent</h3><p>A deterministic engine owns every route and number. <button class="lp-term" type="button" data-term="mars-intelligence">Mars Intelligence</button> answers through <button class="lp-term" type="button" data-term="tool-call">tool calls</button> and labels each answer as AI interpretation.</p></li>
         </ul>
@@ -202,7 +252,7 @@
             <p class="lp-small">NASA Ames Mars GCM, MSL RAD, REMS, MEDA, THEMIS, JPL CAD</p>
           </details>
           <details class="lp-trace__row">
-            <summary><q>the data necessary to make safe and scientifically meaningful decisions</q></summary>
+            <summary><q>the data necessary to make informed and scientifically meaningful decisions</q></summary>
             <p>Planning statuses with plain reasons, sensitivity, site science and evidence classes. NeuroNexus shows the data behind each decision and never labels ground safe.</p>
             <p class="lp-small">All of the above, with a source tag on every value</p>
           </details>

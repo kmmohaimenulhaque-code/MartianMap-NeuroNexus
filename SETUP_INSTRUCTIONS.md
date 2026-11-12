@@ -1,13 +1,19 @@
 # NeuroNexus - Martian Map · Setup Instructions
 
-NASA Space Apps Challenge 2026 · branch `landing-core-features`
+NASA Space Apps Challenge 2026 · branch `landing-core-features2`
 
 ## Quick start (one server: landing page, console and API on port 7860)
 
 After the one-time setup in steps 1 to 4 below:
 
 ```bash
-git pull && cd frontend && npm run build && cd ..
+git switch landing-core-features2
+git pull --ff-only
+git lfs pull
+cd frontend
+npm ci
+npm run build
+cd ..
 python -m uvicorn science.serve:app --host 0.0.0.0 --port 7860
 ```
 
@@ -36,7 +42,7 @@ The frontend forwards `/api/*` to the backend on port 8002, so **start the backe
 ## 2. Get the code and the NASA data
 
 ```bash
-git clone --branch landing-core-features https://github.com/kmmohaimenulhaque-code/martian-map.git
+git clone --branch landing-core-features2 https://github.com/kmmohaimenulhaque-code/martian-map.git
 cd martian-map
 
 git lfs install
@@ -149,8 +155,9 @@ npm run preview    # serves the build at http://localhost:4173 (still uses the b
 
 ```bash
 cd martian-map
-git pull && git lfs pull                       # latest code and the real MOLA terrain tiles
-cd frontend && npm install && npm run build && cd ..
+git switch landing-core-features2
+git pull --ff-only && git lfs pull              # latest code and the real MOLA terrain tiles
+cd frontend && npm ci && npm run build && cd ..
 python -m uvicorn science.serve:app --host 0.0.0.0 --port 7860
 ```
 

@@ -408,7 +408,7 @@ function CustomPlacesLayer({ places, safeHavens, routeMode, interactive, onRoute
             <Tooltip direction="top" offset={[0, -4]}>
               <strong>{haven.name}</strong>
               <br />
-              SAFE HAVEN
+              SHELTER POINT
             </Tooltip>
           </CircleMarker>
         );
@@ -508,12 +508,12 @@ function CoordinateCreator({ draftLocation, setDraftLocation, onCreateUserPlace,
         </button>
 
         <label>
-          SAFE HAVEN
+          SHELTER POINT
           <input type="text" maxLength={48} value={havenName} placeholder="Optional name" onChange={(event) => setHavenName(event.target.value)} />
         </label>
 
         <button type="button" onClick={createSafeHaven}>
-          ADD SAFE HAVEN
+          ADD SHELTER POINT
         </button>
       </div>
     </Popup>

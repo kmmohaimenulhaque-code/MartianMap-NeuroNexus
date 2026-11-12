@@ -161,7 +161,7 @@ export default function RouteConsole({
             cursor: "pointer",
           }}
         >
-          ADD SAFE HAVEN
+          ADD SHELTER POINT
         </button>
       </div>
 
@@ -205,7 +205,7 @@ export default function RouteConsole({
         </span>
 
         <span>
-          SAFE HAVENS{" "}
+          SHELTER POINTS{" "}
           <strong
             style={{
               color: "#8cf0b1",

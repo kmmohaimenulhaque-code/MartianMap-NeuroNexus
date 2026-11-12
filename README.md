@@ -1,6 +1,6 @@
 ## Team NeuroNexus - Interplanetary Survival Guide: Martian Map
 
-NASA Space Apps Challenge 2026 · branch `landing-core-features`
+NASA Space Apps Challenge 2026 · branch `landing-core-features2`
 
 <p align="center">
   <img alt="NASA Space Apps 2026" src="https://img.shields.io/badge/NASA_Space_Apps-2026-0B3D91?style=flat-square">
@@ -17,7 +17,7 @@ NASA Space Apps Challenge 2026 · branch `landing-core-features`
   <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-5FD3B0?style=flat-square">
 </p>
 
-## Demo Video
+## Demo Videos
 
 <div align="center">
   <a href="https://www.youtube.com/watch?v=0MLtYKHewcA" target="_blank">
@@ -27,12 +27,15 @@ NASA Space Apps Challenge 2026 · branch `landing-core-features`
   <p><strong>Click the image to watch the demo on YouTube</strong></p>
 </div>
 
+Official judging cut: [30-second subtitled demo](https://www.youtube.com/watch?v=0MLtYKHewcA).
+Full local pitch story: [3:57 narrative video](https://www.youtube.com/watch?v=0MLtYKHewcA).
+
 ---
 
 Setup first: SETUP_INSTRUCTIONS.md contains the complete installation, NASA data, Gemini API-key, backend/frontend startup, troubleshooting, and demo instructions.
 
 Setup instructions:
-https://github.com/kmmohaimenulhaque-code/martian-map/blob/landing-core-features/SETUP_INSTRUCTIONS.md
+https://github.com/kmmohaimenulhaque-code/martian-map/blob/landing-core-features2/SETUP_INSTRUCTIONS.md
 
 ## OUR CHALLENGE:
 
@@ -44,6 +47,22 @@ Far from home, the first astronauts to set foot on Mars will want the best map p
 NeuroNexus is an interactive planetary mission-planning and scientific intelligence system for Mars. It combines authoritative Mars datasets, deterministic terrain analysis, multi-objective route generation, and transparent AI interpretation to support mission planning and exploration decisions.
 
 The goal is not to declare a universally "safe" place on Mars. NeuroNexus provides transparent evidence and derived planning aids so explorers can compare terrain, environment, science opportunities, and operational constraints before deciding on a route or site.
+
+## Why the shortest route is a trap
+
+The Gale to Escalante benchmark contains six deterministic candidates. The low-distance route is 1,464.72 km with 31,332 m of climb and a 94.3 risk proxy. A 480 m longer candidate cuts climb to 22,597 m and estimated EVA time to 623.74 h. The Pareto set makes that trade-off visible instead of hiding it inside one shortest-path answer.
+
+## Three scientific and architectural innovations
+
+1. **Empirical scale-bias calibration:** Curiosity end-of-drive IMU tilt points at Gale and out-of-sample Jezero show that 463 m MOLA underestimates p90 steep ground by 1.79x at Gale and 2.35x at Jezero. A 1 m HiRISE surface evaluated at a 3 m rover-scale baseline reproduces felt tilt at 0.99x at Gale and 0.92x at Jezero.
+2. **668-sol spatio-temporal survival matrix:** Across Mars Year 34, the planner records WITHIN 0, REVIEW 570 and EXCEEDS 98 status outcomes as dust optical depth changes. It also identifies 941 sq km of Gale Potential Exploration Zones under the documented walkability, slope and datum filters.
+3. **Epistemic humility and guarded 27-tool AI:** The interface exposes a 7.3 m seam bias, 215-day RAD archive lag, unavailable thermal data when no reference is within radius, and sub-meter rock limits. Deterministic graph search owns route geometry; Mars Intelligence only explains structured results and links to 76 canonical sources.
+
+## Why this matters right now in 2026
+
+* **Orbital imaging triage today:** HiRISE covers less than 2% of Mars. The scale-bias model and seam detector identify where coarse orbital maps may hide steep terrain before a stereo pair is tasked or a route crosses a CTX and MOLA boundary.
+* **Earth analog crews and Artemis lunar EVA rehearsal today:** NASA CHAPEA, MDRS and HI-SEAS crews, plus Artemis III planners, can rehearse multi-objective EVA trade-offs by bridging coarse LOLA grids to 1 m LRO NAC strips under lighting and shadow constraints.
+* **Zero-install planetary science:** A 60 FPS browser console with a 45 MB memory footprint unifies 76 NASA PDS, USGS SIM 3292, ASU THEMIS IR-PBT v2.0, MSL RAD and NASA Ames MGCM sources without a workstation GIS license.
 
 ## What it does
 
@@ -129,7 +148,7 @@ Everything in this section is **new** in the `feature/mission-console-v2` releas
 |---|-------------|----------|
 | 1 | [Dust scenario graphics](#1-new--dust-scenario-graphics-right-panel) | Opacity over all 668 sols, dust-top height, global dust map, sol scrubber |
 | 2 | [Site morphology statistics](#2-new--site-morphology-min--mean--max) | Elevation, slope, roughness: AT SITE plus MIN / MEAN / MAX over a 2–20 km window |
-| 3 | [☰ Mission Command Index](#3-new--mission-command-index-the--menu) | Every feature by category, searchable, keyboard-driven |
+| 3 | [Mission Command Index](#3-new--mission-command-index-the-command-index) | Every feature by category, searchable, keyboard-driven |
 | 4 | [Team NeuroNexus credits + Meet the Team](#4-new--team-neuronexus-credits-and-meet-the-team) | Logo, copyright and a direct link to our Space Apps team page |
 | 5 | [Mars Intelligence v2](#5-new--mars-intelligence-v2) | Answers about the mission, Mars, missions, history and the app, with cited sources |
 | 6 | [Save AI routes by name](#6-new--save-ai-designed-routes-by-name) | Save any or all AI candidates; every saved route is reproducible |
@@ -156,11 +175,11 @@ The right-hand **Dust scenario** panel is now a full graphical view of the NASA 
 
 Elevation, slope and roughness now show **AT SITE** (the local MOLA sample) separately from **MIN / MEAN / MAX** over a selectable **2 / 4 / 10 / 20 km** NASA MOLA window, with the valid-pixel count and slope p90 as the stated basis. Values above the route engine's own risk references are flagged amber (a planning aid, not a safety limit). Aspect is shown at the site only, because the mean of a circular quantity is not meaningful.
 
-### 3. NEW · Mission Command Index (the ☰ menu)
+### 3. NEW · Mission Command Index
 
 ![New: the Mission Command Index with every console feature grouped by category, search and keyboard shortcuts](assets/screenshots/v2/03-command-index.png)
 
-The ☰ button now opens a categorised **Command Index** with **every feature in the console**: Site & Navigation, Route Planning, Saved Routes & Comparison, Analysis & Intelligence, Environment, Views, Mission Operations, Data & Export, Workspace, and System & Team.
+The Command Index button now opens a categorized **Command Index** with **every feature in the console**: Site & Navigation, Route Planning, Saved Routes & Comparison, Analysis & Intelligence, Environment, Views, Mission Operations, Data & Export, Workspace, and System & Team.
 
 * **Search** and keyboard control (`Ctrl/⌘ + K` anywhere, ↑ ↓ Enter, Esc) plus single-key shortcuts (R route mode, S save route, C compare, I intelligence, 3 globe…).
 * Unavailable actions **say why** (for example "Needs at least 2 waypoints") instead of silently greying out.
@@ -367,7 +386,7 @@ flowchart TB
         MAP3D["Interactive 3D Mars<br/>ArcGIS SceneView · loaded on demand"]
         ROUTEUI["Route Design, Saving & Comparison<br/>Waypoints · objective weights · EVA settings<br/>Named AI routes · along-track stats · Verify · 3D Route Projection"]
         DUSTUI["Dust & Morphology Panels<br/>Opacity over 668 sols · global dust map · sol scrubber<br/>AT SITE + MIN / MEAN / MAX terrain statistics"]
-        CMDUI["Mission Command Index (☰)<br/>Every feature by category · search · shortcuts<br/>Notes · Team NeuroNexus · Meet the Team"]
+        CMDUI["Mission Command Index<br/>Every feature by category · search · shortcuts<br/>Notes · Team NeuroNexus · Meet the Team"]
         OPSUI["Science & Mission Panels<br/>Environment · hazards · thermal · rover photos<br/>Briefings · orbital tracking · mission operations"]
         INTELUI["Mars Intelligence<br/>Grounded Q&A · route trade-off explanations<br/>Mars science · missions · history · app guide · web-search toggle"]
         NOTES["Field Notes & Checklist<br/>Custom places · Safe Havens · exports"]
@@ -693,7 +712,7 @@ Captured from the production build (`npm run build` + `vite preview`) running ag
 
 ![Full mission console: selected site, rover photos, 2D coloured map, USGS scientific map and the dust and morphology panels](assets/screenshots/tour/01-full-console.png)
 
-One screen holds the whole mission picture. The **left column** is the site evidence (geography, rover imagery, THEMIS thermal evidence, solar geometry). The **centre** is the synchronised **2D coloured Mars map** and the embedded **USGS scientific map**, with the route console beneath. The **right column** carries the **NEW** dust graphics and terrain statistics, site science, the interpretation panel, the crewed console and the NASA feed. The top bar has site search over 2,052 USGS/IAU features, the sol, the system status and the main tools; the **NEW** ☰ Command Index sits at the top right. The footer lists every data source and the **NEW** Team NeuroNexus credits.
+One screen holds the whole mission picture. The **left column** is the site evidence (geography, rover imagery, THEMIS thermal evidence, solar geometry). The **center** is the synchronized **2D colored Mars map** and the embedded **USGS scientific map**, with the route console beneath. The **right column** carries the **NEW** dust graphics and terrain statistics, site science, the interpretation panel, the crewed console and the NASA feed. The top bar has site search over 2,052 USGS/IAU features, the sol, the system status and the main tools; the **NEW** Command Index sits at the top right. The footer lists every data source and the **NEW** Team NeuroNexus credits.
 
 ### Site evidence (left column)
 
@@ -749,7 +768,7 @@ One screen holds the whole mission picture. The **left column** is the site evid
 
 ![Field notes and mission checklist inside the Command Index](assets/screenshots/tour/13-field-notes-and-checklist.png)
 
-**Field notes and checklist.** A persistent mission objective note and a ten-item checklist, with JSON, CSV, route CSV and print/PDF exports. **NEW:** it now lives in a tab of the ☰ Command Index.
+**Field notes and checklist.** A persistent mission objective note and a ten-item checklist, with JSON, CSV, route CSV and print/PDF exports. **NEW:** it now lives in a tab of the Command Index.
 
 # Team
 
