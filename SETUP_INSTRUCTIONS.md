@@ -70,9 +70,10 @@ nano .env
 ```
 And paste inside .env
 ```
-GEMINI_API_KEY=AQ.Ab8RN6Iig3GcIdyA4HgLPN9hcfLZw7oPWLGi1ONA_pKa73lIvQ
+GEMINI_API_KEY=PASTE_YOUR_API_KEY
 ```
-( Note that API keys are meant to be private, but for the sake of easy installation, I have committed the key here )
+You can obtain a Gemini API key from Google AI Studio.
+#NB: Gemini-powered functionality can be tested by providing a valid Gemini API key in the backend .env file. No API key is required to explore the core terrain, mapping, USGS, 3D, environmental, routing, and visualization features.
 
 Or copy the template: `cp .env.example .env` (Windows: `copy .env.example .env`) and edit it.
 
