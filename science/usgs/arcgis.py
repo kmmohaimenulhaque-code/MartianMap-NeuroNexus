@@ -4,16 +4,13 @@ Mechanisms used (no cross-origin DOM manipulation):
   * Web AppBuilder URL parameter `extent=xmin,ymin,xmax,ymax,wkt=<map WKT>`
     (jimu.js MapUrlParamsHandler applies it without reprojection when the WKT
     equals the map's spatial reference).
-  * ArcGIS REST tile endpoint of the web map's own MOLA hillshade basemap.
-  * ArcGIS REST FeatureServer `query` on the SIM 3292 geologic layers.
+  * ArcGIS REST FeatureServer `query` on the SIM 3292 geologic layers, drawn as vectors in the web map's own
+    renderer colors (route snapshots use no raster basemap, so they stay sharp at any extent).
 """
 
 from __future__ import annotations
 
-import base64
-import io
 import json
-import math
 import threading
 import time
 import urllib.parse
@@ -34,33 +31,22 @@ MAP_WKT = (
     'PROJECTION["Robinson"],PARAMETER["False_Easting",0.0],PARAMETER["False_Northing",0.0],'
     'PARAMETER["Central_Meridian",0.0],UNIT["Meter",1.0]]'
 )
-TILE_SERVICE = (
-    "https://tiles.arcgis.com/tiles/v01gqwM5QqNysAAi/arcgis/rest/services/"
-    "MOLA_Hillshade_Robinson_128ppd_tif/MapServer"
-)
 FEATURE_SERVICE = (
     "https://services.arcgis.com/v01gqwM5QqNysAAi/arcgis/rest/services/"
     "Tanaka_et_al_2014_Mars_Global_Map_Features/FeatureServer"
 )
 LAYERS = {"landing_sites": 0, "contacts": 1, "structures": 2, "units": 3}
-TILE_ORIGIN = (-9055300.0, 13517700.0)
-TILE_SIZE = 256
 LOD_RESOLUTIONS = [33072.9828126323 / (2 ** level) for level in range(8)]
 # The service advertises LODs 0-7 but only levels 0-5 are cached
 # (maxScale 3,906,250 -> 1,033.53 m/pixel). Finer levels return HTTP 404,
 # so NeuroNexus never requests them and reports the native limit honestly.
 MAX_CACHED_LEVEL = 5
 SNAPSHOT_BUDGET_S = 60.0  # whole USGS fetch for one snapshot, well inside a 120 s proxy limit
-NATIVE_LIMIT_NOTE = (
-    "USGS tile cache limit: level 5, 1,033.53 m/pixel. Smaller extents are "
-    "upsampled for display; no detail beyond the cached resolution exists."
-)
 USER_AGENT = "NeuroNexus-MartianMap/2.0 (NASA Space Apps research prototype)"
 SOURCE = {
     "map": "USGS SIM 3292 Geologic Map of Mars, 1:20M (Tanaka et al., 2014)",
     "map_url": "https://pubs.usgs.gov/sim/3292/",
     "app_url": f"{WAB_BASE_URL}?id={WAB_APP_ID}",
-    "tiles": TILE_SERVICE,
     "features": FEATURE_SERVICE,
     "projection": "Robinson_clon0_Mars_2000_Sphere (R = 3,396,190 m); PROJ robin algorithm in NeuroNexus",
 }
@@ -130,6 +116,24 @@ def unit_colors() -> dict[str, str]:
     return colors
 
 
+def line_styles(layer: str, field: str) -> dict[str, dict[str, Any]]:
+    """Color and dash of each value in a SIM 3292 line layer, from the web map's own renderer."""
+    with _RENDERER_LOCK:
+        if layer in _RENDERER:
+            return _RENDERER[layer]
+    data = json.loads(_get(f"{FEATURE_SERVICE}/{LAYERS[layer]}", {"f": "json"}).decode("utf-8"))
+    renderer = (data.get("drawingInfo") or {}).get("renderer") or {}
+    styles = {}
+    for info in renderer.get("uniqueValueInfos", []) or []:
+        symbol = info.get("symbol") or {}
+        rgba = symbol.get("color") or [0, 0, 0, 255]
+        styles[str(info.get("value"))] = {"color": "#{:02x}{:02x}{:02x}".format(*[int(v) for v in rgba[:3]]),
+                                          "dash": symbol.get("style") == "esriSLSDash", "field": field}
+    with _RENDERER_LOCK:
+        _RENDERER[layer] = styles
+    return styles
+
+
 def query_layer(layer: str, extent: dict[str, float], out_fields: str, return_geometry: bool, offset: float | None = None,
                 geometry: dict[str, Any] | None = None, geometry_type: str = "esriGeometryEnvelope") -> list[dict[str, Any]]:
     geom = geometry or {**extent, "spatialReference": {"wkt": MAP_WKT}}
@@ -150,15 +154,11 @@ def query_layer(layer: str, extent: dict[str, float], out_fields: str, return_ge
     return payload.get("features", [])
 
 
-# ---------------------------------------------------------------- tiles
+# ---------------------------------------------------------------- frame
 
 
-# Snapshots are drawn up to ~1,000 CSS px wide on 2-3x screens; up to 2,048 px per side keeps the hillshade sharp
-# there (level 5 whenever it fits) instead of stretching a coarser level.
+# Map resolution level of a snapshot extent (sets the vector generalization and the frame size).
 SNAPSHOT_MAX_PX = 2048
-MAX_TILES = 100  # 2,048 px is at most 9 x 9 tiles; this cap also bounds memory on a 512 MB instance
-JPEG_QUALITY = 90  # hillshade has no hard edges; JPEG is ~4x smaller and ~10x cheaper to encode than PNG
-BACKGROUND_RGB = (4, 8, 11)  # the snapshot panel background (#04080b) behind areas outside the map
 
 
 def _choose_level(width_m: float, height_m: float, max_px: int = SNAPSHOT_MAX_PX) -> int:
@@ -168,63 +168,19 @@ def _choose_level(width_m: float, height_m: float, max_px: int = SNAPSHOT_MAX_PX
     return 0
 
 
-def stitch_tiles(extent: dict[str, float], level: int) -> dict[str, Any]:
-    from PIL import Image
+VECTOR_FRAME_PX = 1600  # long side of the vector snapshot frame; vectors stay sharp at any size
 
+
+def vector_frame(extent: dict[str, float], level: int) -> dict[str, Any]:
+    """Pixel frame of a vector-only snapshot (no raster basemap): the extent at `level`, scaled so its long side
+    is VECTOR_FRAME_PX."""
     res = LOD_RESOLUTIONS[level]
-    span = TILE_SIZE * res
-    col0 = int(math.floor((extent["xmin"] - TILE_ORIGIN[0]) / span))
-    col1 = int(math.floor((extent["xmax"] - TILE_ORIGIN[0]) / span))
-    row0 = int(math.floor((TILE_ORIGIN[1] - extent["ymax"]) / span))
-    row1 = int(math.floor((TILE_ORIGIN[1] - extent["ymin"]) / span))
-    if (col1 - col0 + 1) * (row1 - row0 + 1) > MAX_TILES:
-        raise ValueError(f"Snapshot would need more than {MAX_TILES} tiles.")
-    canvas = Image.new("RGBA", ((col1 - col0 + 1) * TILE_SIZE, (row1 - row0 + 1) * TILE_SIZE), (0, 0, 0, 0))
-    jobs = [(r, c) for r in range(row0, row1 + 1) for c in range(col0, col1 + 1)]
-    fetched = {"ok": 0, "missing": 0}
-
-    def fetch(rc):
-        r, c = rc
-        try:
-            return rc, _get(f"{TILE_SERVICE}/tile/{level}/{r}/{c}", timeout=12.0)
-        except Exception:
-            return rc, None
-
-    with ThreadPoolExecutor(max_workers=8) as pool:
-        for (r, c), data in pool.map(fetch, jobs):
-            if not data:
-                fetched["missing"] += 1
-                continue
-            try:
-                tile = Image.open(io.BytesIO(data)).convert("RGBA")
-                canvas.paste(tile, ((c - col0) * TILE_SIZE, (r - row0) * TILE_SIZE))
-                fetched["ok"] += 1
-            except Exception:
-                fetched["missing"] += 1
-    left = int(round((extent["xmin"] - (TILE_ORIGIN[0] + col0 * span)) / res))
-    top = int(round(((TILE_ORIGIN[1] - row0 * span) - extent["ymax"]) / res))
-    width = int(round((extent["xmax"] - extent["xmin"]) / res))
-    height = int(round((extent["ymax"] - extent["ymin"]) / res))
-    image = canvas.crop((left, top, left + max(width, 1), top + max(height, 1)))
-    # Upsample small extents so the snapshot is legible. The native cached
-    # resolution is reported separately and is never overstated.
-    scale = 1
-    if max(image.width, image.height) < 480:
-        scale = max(1, int(round(640 / max(image.width, image.height, 1))))
-        image = image.resize((image.width * scale, image.height * scale), Image.BICUBIC)  # smooth enlargement, no blocks
-    flat = Image.new("RGB", image.size, BACKGROUND_RGB)
-    flat.paste(image, mask=image.getchannel("A"))
-    buffer = io.BytesIO()
-    flat.save(buffer, format="JPEG", quality=JPEG_QUALITY, optimize=True, progressive=True)
-    return {
-        "data_uri": "data:image/jpeg;base64," + base64.b64encode(buffer.getvalue()).decode("ascii"),
-        "width": image.width, "height": image.height,
-        "source_width": width, "source_height": height,
-        "display_scale": scale, "tiles": fetched, "level": level,
-        "native_resolution_m_per_px": res,
-        "display_resolution_m_per_px": res / scale,
-        "resolution_note": NATIVE_LIMIT_NOTE,
-    }
+    width = max(1, int(round((extent["xmax"] - extent["xmin"]) / res)))
+    height = max(1, int(round((extent["ymax"] - extent["ymin"]) / res)))
+    scale = VECTOR_FRAME_PX / max(width, height)
+    return {"width": int(round(width * scale)), "height": int(round(height * scale)), "display_scale": scale,
+            "source_width": width, "source_height": height, "level": level, "native_resolution_m_per_px": res,
+            "display_resolution_m_per_px": res / scale, "basemap": None}
 
 
 # ---------------------------------------------------------------- geometry
@@ -320,7 +276,7 @@ def build_route_snapshot(route: dict[str, Any]) -> dict[str, Any]:
     with _CACHE_LOCK:
         cached = _CACHE.get(key)
     errors: list[str] = []
-    extent = extent_for(all_coords, min_half_m=8000.0, margin=0.25)
+    extent = extent_for(all_coords, min_half_m=40000.0, margin=0.25)  # at least the USGS app panel's own ±40 km frame
     level = _choose_level(extent["xmax"] - extent["xmin"], extent["ymax"] - extent["ymin"])
     res = LOD_RESOLUTIONS[level]
 
@@ -330,16 +286,20 @@ def build_route_snapshot(route: dict[str, Any]) -> dict[str, Any]:
         return [round(scale * (x - extent["xmin"]) / res, 2), round(scale * (extent["ymax"] - y) / res, 2)]
 
     route_xy = [project(lat, lon) for lat, lon in coords]
+    frame = vector_frame(extent, level)
+    detail_m = max(100.0, frame["display_resolution_m_per_px"])  # generalize to about one display pixel
     if cached is None:
-        cached = {"image": None, "units": [], "contacts": [], "structures": [], "landing_sites": [], "colors": {}}
+        cached = {"units": [], "contacts": [], "structures": [], "landing_sites": [], "colors": {},
+                  "contact_styles": {}, "structure_styles": {}}
         query = "USGS SIM 3292 FeatureServer query failed"
         jobs = {
-            "image": (lambda: stitch_tiles(extent, level), "USGS MOLA hillshade tiles unavailable"),
             "colors": (unit_colors, f"{query} (unit colors)"),
+            "contact_styles": (lambda: line_styles("contacts", "ConType"), f"{query} (contact styles)"),
+            "structure_styles": (lambda: line_styles("structures", "Interpretation"), f"{query} (structure styles)"),
             "units": (lambda: query_layer("units", extent, "Unit,UnitDesc,UnitGroup,Interpretation,PrimaryCharacteristics",
-                                          True, res), f"{query} (units)"),
-            "contacts": (lambda: query_layer("contacts", extent, "*", True, res), f"{query} (contacts)"),
-            "structures": (lambda: query_layer("structures", extent, "*", True, res), f"{query} (structures)"),
+                                          True, detail_m), f"{query} (units)"),
+            "contacts": (lambda: query_layer("contacts", extent, "*", True, detail_m), f"{query} (contacts)"),
+            "structures": (lambda: query_layer("structures", extent, "*", True, detail_m), f"{query} (structures)"),
             "landing_sites": (lambda: query_layer("landing_sites", extent, "*", True), f"{query} (landing sites)"),
         }
         # All six USGS requests at once, under one time budget: run in sequence their timeouts could add up to
@@ -363,9 +323,7 @@ def build_route_snapshot(route: dict[str, Any]) -> dict[str, Any]:
                     _CACHE.clear()
                 _CACHE[key] = cached
 
-    # Read the display scale only now: a freshly stitched image may be upsampled for display,
-    # and every pixel coordinate below must use the same scale as that image.
-    scale = float((cached.get("image") or {}).get("display_scale", 1) or 1)
+    scale = float(frame["display_scale"])
 
     polygons = []
     for feature in cached["units"]:
@@ -382,10 +340,16 @@ def build_route_snapshot(route: dict[str, Any]) -> dict[str, Any]:
         for item in overlays
     ]
 
-    def lines(features):
-        return [{"attributes": f.get("attributes", {}),
-                 "paths_px": [[px(x, y) for x, y in path] for path in (f.get("geometry") or {}).get("paths", [])]}
-                for f in features]
+    def lines(features, styles):
+        out = []
+        for f in features:
+            attrs = f.get("attributes", {})
+            field = next(iter(styles.values()))["field"] if styles else None
+            style = styles.get(str(attrs.get(field))) if field else None
+            out.append({"attributes": attrs, "color": (style or {}).get("color", "#000000"),
+                        "dash": bool((style or {}).get("dash")),
+                        "paths_px": [[px(x, y) for x, y in path] for path in (f.get("geometry") or {}).get("paths", [])]})
+        return out
 
     landing = []
     for feature in cached["landing_sites"]:
@@ -398,7 +362,7 @@ def build_route_snapshot(route: dict[str, Any]) -> dict[str, Any]:
             landing.append({"attributes": feature.get("attributes", {}), "px": px(x, y)})
     sync = build_wab_sync_url(coords)
     return {
-        "status": "ok" if not errors else ("partial" if cached["image"] or cached["units"] else "unavailable"),
+        "status": "ok" if not errors else ("partial" if cached["units"] else "unavailable"),
         "errors": errors,
         "route": {k: route.get(k) for k in ("route_id", "name", "metrics", "objective_weights", "generation_method", "eva", "provenance")},
         "coordinates": [{"latitude_deg": a, "longitude_deg": b % 360.0} for a, b in coords],
@@ -408,17 +372,18 @@ def build_route_snapshot(route: dict[str, Any]) -> dict[str, Any]:
         "extent_robinson_m": extent,
         "level": level,
         "native_resolution_m_per_px": res,
-        "resolution_note": NATIVE_LIMIT_NOTE,
-        "image": cached["image"],
+        "resolution_note": (f"Vector geology from the SIM 3292 FeatureServer, generalized to about {detail_m:,.0f} m; "
+                            "drawn sharp at any size. No raster basemap is used."),
+        "image": frame,
         "route_px": [px(x, y) for x, y in route_xy],
         "routes": overlay_routes,
-        "geology": {"units_crossed": crossed, "polygons": polygons, "contacts": lines(cached["contacts"]),
-                    "structures": lines(cached["structures"]), "landing_sites": landing,
+        "geology": {"units_crossed": crossed, "polygons": polygons, "contacts": lines(cached["contacts"], cached["contact_styles"]),
+                    "structures": lines(cached["structures"], cached["structure_styles"]), "landing_sites": landing,
                     "note": "SIM 3292 is a 1:20,000,000 global map; unit boundaries are generalized at km scale."},
         "wab_sync_url": sync["url"],
         "source": SOURCE,
         "provenance": {
-            "basemap": "USGS-hosted MOLA hillshade (NASA MOLA 128 ppd) tiles, fetched unmodified",
+            "basemap": "None: the USGS SIM 3292 geologic layers drawn as in the USGS web map, in its own renderer colors",
             "geology": "USGS SIM 3292 FeatureServer query (EXTERNAL SOURCE)",
             "route_geometry": "NeuroNexus route coordinates projected with the map's Robinson definition (COMPUTED)",
         },

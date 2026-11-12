@@ -35,7 +35,7 @@
       "w": 1600
     },
     "compare": {
-      "src": "assets/screenshots/v2/10-comparison-table-and-profile.png",
+      "src": "assets/screenshots/v3/landing-compare-usgs.png",
       "w": 1600
     },
     "projection": {
@@ -140,6 +140,14 @@
     },
     "qg3d2": {
       "src": "assets/screenshots/v3/landing-qg-g3-d2.png",
+      "w": 1600
+    },
+    "usgs1": {
+      "src": "assets/screenshots/v3/landing-usgs-1-layered.png",
+      "w": 1600
+    },
+    "usgs2": {
+      "src": "assets/screenshots/v3/landing-usgs-2-app.png",
       "w": 1600
     }
   },
@@ -301,22 +309,22 @@
         {
           "media": "compare",
           "focus": [
-            0.075,
-            0.15,
-            0.6,
-            0.47
+            0.13,
+            0.13,
+            0.49,
+            0.36
           ],
           "caption": "Compare up to four routes with statistics sampled along the whole path."
         },
         {
           "media": "compare",
           "focus": [
-            0.075,
-            0.68,
-            0.85,
-            0.28
+            0.13,
+            0.5,
+            0.75,
+            0.43
           ],
-          "caption": "Each route also gets its own USGS geology snapshot."
+          "caption": "Each route also gets its own USGS geologic map snapshot."
         },
         {
           "media": "projection",
@@ -329,14 +337,49 @@
           "caption": "Project the saved routes onto the 3D globe and see them over real terrain."
         },
         {
+          "media": "usgs1",
+          "focus": [
+            0.56,
+            0.14,
+            0.22,
+            0.06
+          ],
+          "cursor": [
+            0.696,
+            0.1694
+          ],
+          "caption": "Switch the USGS Scientific Map to USGS APP, then tap USGS SNAPSHOT.",
+          "taps": [
+            {
+              "cursor": [
+                0.696,
+                0.1694
+              ]
+            },
+            {
+              "media": "usgs2",
+              "focus": [
+                0.5612,
+                0.1917,
+                0.2159,
+                0.7028
+              ],
+              "cursor": [
+                0.6037,
+                0.2742
+              ]
+            }
+          ]
+        },
+        {
           "media": "snapshot",
           "focus": [
-            0.13,
-            0.03,
-            0.74,
-            0.94
+            0.137,
+            0.122,
+            0.554,
+            0.85
           ],
-          "caption": "Export a USGS geologic map snapshot with each route's distance, EVA hours, risk and provenance."
+          "caption": "The routes on the USGS geologic map, with each route's distance, EVA hours and risk."
         }
       ]
     },
@@ -781,20 +824,58 @@
         "SIM 3292",
         "Geology"
       ],
-      "summary": "Every compared route on the USGS Geologic Map of Mars, with its distance, EVA hours, risk, the units it crosses and full provenance.",
+      "summary": "Open the USGS geologic map app, tap USGS SNAPSHOT, and get every compared route on the USGS SIM 3292 geology with its distance, EVA hours, risk, the units it crosses and full provenance.",
       "glossary": [
         "sim-3292"
       ],
       "steps": [
         {
+          "media": "usgs1",
+          "focus": [
+            0.56,
+            0.14,
+            0.22,
+            0.06
+          ],
+          "cursor": [
+            0.696,
+            0.1694
+          ],
+          "caption": "Open the USGS APP view of the USGS Scientific Map."
+        },
+        {
+          "media": "usgs2",
+          "focus": [
+            0.5612,
+            0.1917,
+            0.2159,
+            0.7028
+          ],
+          "caption": "The USGS geologic map app, synced to the selected site."
+        },
+        {
+          "media": "usgs2",
+          "focus": [
+            0.565,
+            0.25,
+            0.15,
+            0.05
+          ],
+          "cursor": [
+            0.6037,
+            0.2742
+          ],
+          "caption": "Tap USGS SNAPSHOT."
+        },
+        {
           "media": "snapshot",
           "focus": [
             0.137,
-            0.123,
+            0.122,
             0.554,
-            0.846
+            0.85
           ],
-          "caption": "Compared routes drawn together on the USGS Geologic Map of Mars, SIM 3292."
+          "caption": "Every compared route drawn on the USGS SIM 3292 geologic units, sharp at any zoom."
         },
         {
           "media": "snapshot",
@@ -822,13 +903,13 @@
             0.704,
             0.475,
             0.159,
-            0.315
+            0.292
           ],
           "cursor": [
-            0.7344,
-            0.7713
+            0.7349,
+            0.7487
           ],
-          "caption": "Provenance lists the map, projection and tile resolution behind the snapshot."
+          "caption": "Provenance lists the USGS map, its services and the projection behind the snapshot."
         }
       ]
     },

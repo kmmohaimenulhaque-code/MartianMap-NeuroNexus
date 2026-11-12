@@ -3,14 +3,15 @@
  *
  * A scientific representation of the same geography as the left-hand route,
  * built from real USGS/ArcGIS map services:
- *   - MOLA hillshade tiles from the SIM 3292 web map's own basemap service
  *   - geologic units, contacts, structures and landing sites from the
- *     SIM 3292 FeatureServer
+ *     SIM 3292 FeatureServer, drawn as vectors in the USGS web map's own
+ *     renderer colors (no raster basemap, so the map stays sharp at any extent)
  * The route is drawn in the map's own Robinson projection, so the geometry is
  * correct rather than a visually impressive approximation.
  */
 
 import { snapshotMarkScale } from "../../utils/snapshotScale";
+import UsgsGeologyLayers from "./UsgsGeologyLayers";
 
 function format(value, digits = 2, suffix = "") {
   if (value === null || value === undefined || Number.isNaN(Number(value))) {
@@ -64,54 +65,27 @@ export default function UsgsRouteSnapshot({ open, onClose, snapshot, loading, er
           <div className="snapshot-body">
             <div className="snapshot-canvas">
               <svg viewBox={`0 0 ${width} ${height}`} width="100%" role="img" aria-label="USGS route snapshot">
-                {image?.data_uri && <image href={image.data_uri} x="0" y="0" width={width} height={height} />}
-                {(snapshot.geology?.polygons ?? []).map((polygon, index) =>
-                  polygon.rings_px.map((ring, ringIndex) => (
-                    <polygon
-                      key={`${index}-${ringIndex}`}
-                      points={ring.map((point) => point.join(",")).join(" ")}
-                      fill={polygon.color}
-                      fillOpacity="0.28"
-                      stroke={polygon.color}
-                      strokeOpacity="0.55"
-                      strokeWidth={1 * k}
-                    />
-                  )),
-                )}
-                {(snapshot.geology?.contacts ?? []).map((contact, index) =>
-                  contact.paths_px.map((path, pathIndex) => (
-                    <polyline
-                      key={`c-${index}-${pathIndex}`}
-                      points={path.map((point) => point.join(",")).join(" ")}
-                      fill="none"
-                      stroke="#e5e7eb"
-                      strokeOpacity="0.5"
-                      strokeWidth={1 * k}
-                      strokeDasharray={`${4 * k} ${3 * k}`}
-                    />
-                  )),
-                )}
-                {(snapshot.geology?.structures ?? []).map((structure, index) =>
-                  structure.paths_px.map((path, pathIndex) => (
-                    <polyline
-                      key={`s-${index}-${pathIndex}`}
-                      points={path.map((point) => point.join(",")).join(" ")}
-                      fill="none"
-                      stroke="#4ea8de"
-                      strokeOpacity="0.8"
-                      strokeWidth={1.4 * k}
-                    />
-                  )),
-                )}
+                <UsgsGeologyLayers geology={snapshot.geology} width={width} height={height} k={k} />
                 {(snapshot.routes ?? []).map((overlay, overlayIndex) => (
                   <g key={overlay.route_id ?? overlayIndex}>
-                    <polyline points={overlay.route_px.map((point) => point.join(",")).join(" ")} fill="none" stroke={overlay.colour ?? "#01ffff"} strokeOpacity="0.3" strokeWidth={9 * k} strokeLinecap="round" strokeLinejoin="round" />
+                    <polyline points={overlay.route_px.map((point) => point.join(",")).join(" ")} fill="none" stroke="#04080b" strokeOpacity="0.85" strokeWidth={7 * k} strokeLinecap="round" strokeLinejoin="round" />
                     <polyline points={overlay.route_px.map((point) => point.join(",")).join(" ")} fill="none" stroke={overlay.colour ?? "#01ffff"} strokeWidth={3 * k} strokeLinecap="round" strokeLinejoin="round" />
                     {[overlay.route_px[0], overlay.route_px[overlay.route_px.length - 1]].map((point, end) => (
                       <circle key={end} cx={point[0]} cy={point[1]} r={6 * k} fill={end ? "#ff647c" : "#62f59a"} stroke={overlay.colour ?? "#04080b"} strokeWidth={2 * k} />
                     ))}
                   </g>
                 ))}
+                {!(snapshot.routes ?? []).length && (
+                  <polyline
+                    points={(snapshot.route_px ?? []).map((point) => point.join(",")).join(" ")}
+                    fill="none"
+                    stroke="#04080b"
+                    strokeOpacity="0.85"
+                    strokeWidth={7 * k}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                )}
                 {!(snapshot.routes ?? []).length && (
                   <polyline
                     points={(snapshot.route_px ?? []).map((point) => point.join(",")).join(" ")}
@@ -135,8 +109,8 @@ export default function UsgsRouteSnapshot({ open, onClose, snapshot, loading, er
                 ))}
                 {(snapshot.geology?.landing_sites ?? []).map((site, index) => (
                   <g key={`l-${index}`}>
-                    <rect x={site.px[0] - 4 * k} y={site.px[1] - 4 * k} width={8 * k} height={8 * k} fill="#d8f6ff" stroke="#04080b" />
-                    <text x={site.px[0] + 8 * k} y={site.px[1] + 4 * k} fontSize={11 * k} fill="#d8f6ff">
+                    <rect x={site.px[0] - 4 * k} y={site.px[1] - 4 * k} width={8 * k} height={8 * k} fill="#ffffff" stroke="#04080b" />
+                    <text x={site.px[0] + 8 * k} y={site.px[1] + 4 * k} fontSize={11 * k} fill="#04080b" stroke="#ffffff" strokeWidth={3 * k} paintOrder="stroke">
                       {site.attributes?.NAME}
                     </text>
                   </g>
@@ -239,10 +213,7 @@ export default function UsgsRouteSnapshot({ open, onClose, snapshot, loading, er
                 <p>{snapshot.provenance?.geology}</p>
                 <p>{snapshot.provenance?.route_geometry}</p>
                 <p>Projection: {snapshot.projection?.name}</p>
-                <p>{image?.resolution_note}</p>
-                <p>
-                  Native tile resolution: {format(snapshot.native_resolution_m_per_px, 1, " m/px")} (level {snapshot.level})
-                </p>
+                <p>{snapshot.resolution_note}</p>
                 <p>{snapshot.geology?.note}</p>
                 <a href={snapshot.source?.map_url} target="_blank" rel="noreferrer">
                   USGS SIM 3292 ↗

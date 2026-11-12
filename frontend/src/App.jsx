@@ -1887,7 +1887,7 @@ export default function App() {
       usgs_route_snapshot: snapshot
         ? {
             ...snapshot,
-            image: snapshot.image ? { ...snapshot.image, data_uri: "[omitted: binary image]" } : null,
+            image: snapshot.image ?? null,
             geology: { ...snapshot.geology, polygons: undefined, contacts: undefined, structures: undefined },
           }
         : null,

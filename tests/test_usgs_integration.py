@@ -68,7 +68,7 @@ def test_snapshot_answers_within_its_budget_when_usgs_hangs(monkeypatch):
         return []
 
     monkeypatch.setattr(arcgis, "SNAPSHOT_BUDGET_S", 0.5)
-    monkeypatch.setattr(arcgis, "stitch_tiles", lambda *_a, **_k: {"display_scale": 1, "data_uri": "", "level": 5})
+    monkeypatch.setattr(arcgis, "line_styles", lambda *_a, **_k: {})
     monkeypatch.setattr(arcgis, "unit_colors", lambda: {})
     monkeypatch.setattr(arcgis, "query_layer", slow_query)
     arcgis._CACHE.clear()
@@ -76,7 +76,7 @@ def test_snapshot_answers_within_its_budget_when_usgs_hangs(monkeypatch):
     snap = arcgis.build_route_snapshot({"coordinates": [{"latitude_deg": -4.81, "longitude_deg": 137.3},
                                                         {"latitude_deg": -4.71, "longitude_deg": 137.35}]})
     assert _time.perf_counter() - started < 3
-    assert snap["status"] == "partial" and snap["image"]
+    assert snap["status"] == "unavailable" and snap["image"]["width"]  # vector frame, nothing to draw yet
     assert sum("no answer within" in e for e in snap["errors"]) == 4
     assert not arcgis._CACHE  # a partial snapshot is not cached
 
@@ -103,10 +103,11 @@ def test_vectorized_point_in_polygon_matches_the_scalar_test():
 
 def test_snapshot_uses_the_finest_cached_level_that_fits():
     """A ~1,400 km route used to get level 4 (810 px) and was stretched blurry; it now gets level 5 (1,034 m/px)."""
-    from science.usgs.arcgis import LOD_RESOLUTIONS, MAX_CACHED_LEVEL, MAX_TILES, SNAPSHOT_MAX_PX, _choose_level
+    from science.usgs.arcgis import LOD_RESOLUTIONS, MAX_CACHED_LEVEL, SNAPSHOT_MAX_PX, VECTOR_FRAME_PX, _choose_level, vector_frame
 
     ext = extent_for([(-5.3672, 137.811), (0.1931, 115.3923)], min_half_m=8000.0, margin=0.25)
     width = ext["xmax"] - ext["xmin"]
     assert _choose_level(width, width) == MAX_CACHED_LEVEL
     assert width / LOD_RESOLUTIONS[MAX_CACHED_LEVEL] <= SNAPSHOT_MAX_PX
-    assert (SNAPSHOT_MAX_PX // 256 + 1) ** 2 <= MAX_TILES  # the largest frame never trips the tile cap
+    frame = vector_frame(ext, MAX_CACHED_LEVEL)
+    assert max(frame["width"], frame["height"]) == VECTOR_FRAME_PX and frame["basemap"] is None  # vectors, no raster

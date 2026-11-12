@@ -172,7 +172,7 @@ def test_candidate_generation_is_deterministic():
 def test_multi_route_snapshot_draws_every_route(monkeypatch):
     from science.usgs import arcgis
 
-    monkeypatch.setattr(arcgis, "stitch_tiles", lambda extent, level: None)
+    monkeypatch.setattr(arcgis, "line_styles", lambda *_a, **_k: {})
     monkeypatch.setattr(arcgis, "unit_colors", lambda: {})
     monkeypatch.setattr(arcgis, "query_layer", lambda *args, **kwargs: [])
     monkeypatch.setattr(arcgis, "build_wab_sync_url", lambda coords, **kw: {"url": "https://example.invalid"})

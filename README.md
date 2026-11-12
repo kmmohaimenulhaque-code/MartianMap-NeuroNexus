@@ -212,7 +212,7 @@ Every AI Route Designer candidate now has **SAVE AS ROUTE** (you choose the name
 
 ### 7. NEW · Multi-route USGS snapshot
 
-![New: one USGS SIM 3292 snapshot showing four routes selected for comparison in their own colours](assets/screenshots/v2/08-multi-route-usgs-snapshot.png)
+![New: one USGS SIM 3292 snapshot showing four routes selected for comparison in their own colours, drawn on the USGS geologic units as in the USGS web map](assets/screenshots/v2/08-multi-route-usgs-snapshot.png)
 
 Select two or more routes for comparison and **USGS SNAPSHOT** draws **all of them in a single USGS SIM 3292 frame** over MOLA hillshade, each in its own colour with start and end markers, plus the geologic units each route crosses. With one route selected it behaves as before.
 

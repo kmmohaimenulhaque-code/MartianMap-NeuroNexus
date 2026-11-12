@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import MarsMap from "../components/mars/MarsMap";
+import UsgsGeologyLayers from "../components/mars/UsgsGeologyLayers";
 import { fetchUsgsMultiRouteSnapshot, fetchUsgsRouteSnapshot } from "../services/marsEnvironmentApi";
 import NeonLineChart from "../ui/NeonLineChart";
 import { ProvenanceTag } from "../ui/StatTriplet";
@@ -28,16 +29,11 @@ function SnapshotFigure({ snapshot, routes, height = 220 }) {
   const k = snapshotMarkScale(width, h);
   const overlays = snapshot?.routes?.length ? snapshot.routes : [{ route_px: snapshot?.route_px ?? [], colour: routes?.[0]?.colour ?? "#01ffff" }];
   return (
-    <svg viewBox={`0 0 ${width} ${h}`} width="100%" style={{ maxHeight: height, display: "block" }} role="img" aria-label="USGS geology snapshot">
-      {image?.data_uri && <image href={image.data_uri} x="0" y="0" width={width} height={h} />}
-      {(snapshot?.geology?.polygons ?? []).map((polygon, index) =>
-        polygon.rings_px.map((ring, ringIndex) => (
-          <polygon key={`${index}-${ringIndex}`} points={ring.map((p) => p.join(",")).join(" ")} fill={polygon.color} fillOpacity="0.22" stroke={polygon.color} strokeOpacity="0.45" strokeWidth={1 * k} />
-        )),
-      )}
+    <svg viewBox={`0 0 ${width} ${h}`} width="100%" style={{ maxHeight: height, display: "block", overflow: "hidden" }} role="img" aria-label="USGS geology snapshot">
+      <UsgsGeologyLayers geology={snapshot?.geology} width={width} height={h} k={k} />
       {overlays.map((overlay, index) => (
         <g key={overlay.route_id ?? index}>
-          <polyline points={overlay.route_px.map((p) => p.join(",")).join(" ")} fill="none" stroke={overlay.colour ?? "#01ffff"} strokeOpacity="0.3" strokeWidth={9 * k} strokeLinecap="round" strokeLinejoin="round" />
+          <polyline points={overlay.route_px.map((p) => p.join(",")).join(" ")} fill="none" stroke="#04080b" strokeOpacity="0.85" strokeWidth={7 * k} strokeLinecap="round" strokeLinejoin="round" />
           <polyline points={overlay.route_px.map((p) => p.join(",")).join(" ")} fill="none" stroke={overlay.colour ?? "#01ffff"} strokeWidth={3 * k} strokeLinecap="round" strokeLinejoin="round" />
           {overlay.route_px.length > 0 && <circle cx={overlay.route_px[0][0]} cy={overlay.route_px[0][1]} r={6 * k} fill="#62f59a" stroke="#04080b" strokeWidth={1.5 * k} />}
           {overlay.route_px.length > 1 && (
@@ -282,7 +278,7 @@ export default function RouteComparisonWorkspace({ routes, compareRouteIds, onTo
 
             <div className="cmp-snapshots-head">
               <span className="eyebrow">USGS SIM 3292 SNAPSHOTS</span>
-              <ProvenanceTag dataClass="OBSERVED" ledgerId="USGS_SIM_3292_ARCGIS" source="USGS MOLA hillshade + SIM 3292 FeatureServer" />
+              <ProvenanceTag dataClass="OBSERVED" ledgerId="USGS_SIM_3292_ARCGIS" source="USGS SIM 3292 FeatureServer (geologic layers, as in the USGS web map)" />
               <button type="button" onClick={loadCombined} disabled={combined.loading}>
                 {combined.loading ? "BUILDING…" : "COMBINED SNAPSHOT"}
               </button>

@@ -190,9 +190,9 @@ const STORE = "usgsSnapshots";
 /* Shared with the Browser Optimization tile cache (database version 2 keeps every snapshot). */
 const openDb = openNeuronexusDb;
 
-/* Bump when the server's snapshot image changes (q2: finest cached USGS level, up to 2,048 px, JPEG), so snapshots
+/* Bump when the server's snapshot drawing changes (v1: USGS vector geology only, no raster basemap), so snapshots
    cached at an older quality are fetched again instead of being shown forever. */
-export const SNAPSHOT_CACHE_VERSION = "q2";
+export const SNAPSHOT_CACHE_VERSION = "v1";
 
 export function snapshotCacheKey(kind, geometryKey) {
   return `${kind}:${SNAPSHOT_CACHE_VERSION}:${geometryKey}`;
