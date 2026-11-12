@@ -4,7 +4,7 @@ NASA Space Apps Challenge 2026 · branch Master-Ai
 
 ## Demo video
 
-<a href="https://youtu.be/0MLtYKHewcA"><img src="https://img.youtube.com/vi/0MLtYKHewcA/maxresdefault.jpg" alt="NeuroNexus: Interplanetary Survival Guide: Martian Map" width="100%" /></a>
+<iframe width="100%" height="600" src="https://www.youtube.com/embed/0MLtYKHewcA" title="NeuroNexus: Interplanetary Survival Guide: Martian Map" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 Setup first: SETUP_INSTRUCTIONS.md contains the complete installation, NASA data, Gemini API-key, backend/frontend startup, troubleshooting, and demo instructions.
 
@@ -20,7 +20,7 @@ Project Description
 
 NeuroNexus is an interactive planetary mission-planning and scientific intelligence system for Mars. It combines authoritative Mars datasets, deterministic terrain analysis, multi-objective route generation, and transparent AI interpretation to support mission planning and exploration decisions.
 
-The goal is not to declare a universally “safe” place on Mars. NeuroNexus provides transparent evidence and derived planning aids so explorers can compare terrain, environment, science opportunities, and operational constraints before deciding on a route or site.
+The goal is not to declare a universally "safe" place on Mars. NeuroNexus provides transparent evidence and derived planning aids so explorers can compare terrain, environment, science opportunities, and operational constraints before deciding on a route or site.
 
 What it does
 
@@ -84,7 +84,7 @@ The legend explains named-feature colours, geologic symbols, landing sites, and 
 
 ![Potential exploration-zone panel and 3D markers for documented study regions including Arcadia Planitia and Utopia Planitia](assets/screenshots/potential-exploration-zones.png)
 
-The exploration-zone view connects derived candidate areas to documented study-region context and terrain summaries, with controls to fly to a region. These zones are NeuroNexus planning aids—no single zone is declared “safe” or habitable.
+The exploration-zone view connects derived candidate areas to documented study-region context and terrain summaries, with controls to fly to a region. These zones are NeuroNexus planning aids—no single zone is declared "safe" or habitable.
 
 ### Field notes and mission checklist
 
@@ -230,7 +230,7 @@ npm run build
 ```
 Runtime notes
 
-* The ArcGIS 3D experience loads only when opened and requires internet access to Esri’s public services.
+* The ArcGIS 3D experience loads only when opened and requires internet access to Esri's public services.
 * The NASA MOLA raw terrain dataset is large; follow the Git LFS/PDS instructions in SETUP_INSTRUCTIONS.md.
 * The SWIM water-ice consensus raster is currently UNAVAILABLE in the application; related regions are presented only as documented exploration-study context.
 * Some high-resolution orbital datasets listed in the scientific catalogue remain explicitly not-ingested rather than being fabricated.
