@@ -99,3 +99,14 @@ def test_vectorized_point_in_polygon_matches_the_scalar_test():
         fast = _points_in_polygon(xs, ys, rings)
         slow = [_point_in_polygon(x, y, rings) for x, y in zip(xs, ys, strict=True)]
         assert fast.tolist() == slow
+
+
+def test_snapshot_uses_the_finest_cached_level_that_fits():
+    """A ~1,400 km route used to get level 4 (810 px) and was stretched blurry; it now gets level 5 (1,034 m/px)."""
+    from science.usgs.arcgis import LOD_RESOLUTIONS, MAX_CACHED_LEVEL, MAX_TILES, SNAPSHOT_MAX_PX, _choose_level
+
+    ext = extent_for([(-5.3672, 137.811), (0.1931, 115.3923)], min_half_m=8000.0, margin=0.25)
+    width = ext["xmax"] - ext["xmin"]
+    assert _choose_level(width, width) == MAX_CACHED_LEVEL
+    assert width / LOD_RESOLUTIONS[MAX_CACHED_LEVEL] <= SNAPSHOT_MAX_PX
+    assert (SNAPSHOT_MAX_PX // 256 + 1) ** 2 <= MAX_TILES  # the largest frame never trips the tile cap
