@@ -593,7 +593,21 @@ json.dump([{"case": l, **r} for l, r in rows_out], open(WORK / "router_demo.json
 upload_file(path_or_fileobj=str(WORK / "router_demo.json"), path_in_repo="router_demo.json", repo_id=MODEL_REPO, token=HF_TOKEN)
 
 # %%
-# 18. Summary
+# 18. Final model card update: Space status, endpoint and router demo results
+lines = ["", "## Inference and router demo", f"- Space: https://huggingface.co/spaces/{SPACE_REPO} "
+         f"({'RUNNING' if SPACE_OK else 'not confirmed running at publish time'})",
+         f"- Endpoint: `{SPACE_URL}/v1/chat/completions`", "",
+         "| case | provider | route | fallback from | seconds |", "|---|---|---|---|---|"]
+for label, r in rows_out:
+    lines.append(f"| {label} | {r['provider']} | {r['route']} | {r['fallback_from'] or '-'} | {r['seconds']} |")
+lines.append("\nFull answers: `router_demo.json`.")
+(WORK / "README.md").write_text(card + "\n".join(lines) + "\n")
+upload_file(path_or_fileobj=str(WORK / "README.md"), path_in_repo="README.md", repo_id=MODEL_REPO, token=HF_TOKEN,
+            commit_message="Model card: inference and router demo results")
+mark("model card updated")
+
+# %%
+# 19. Summary
 server.terminate()
 print(json.dumps({"model": f"https://huggingface.co/{MODEL_REPO}", "space": f"https://huggingface.co/spaces/{SPACE_REPO}",
                   "endpoint": f"{SPACE_URL}/v1/chat/completions", "space_running": SPACE_OK,
