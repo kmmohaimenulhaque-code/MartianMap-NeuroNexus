@@ -33,6 +33,9 @@ SNAP_RADIUS_M = 25.0
 ROUTE_WALK_PENALTY = 3.0  # planning choice: cost per meter = 1 + 3 * (1 - walkability / 100)
 SITES = {"gale": {"lat": -4.7, "lon": 137.4, "rover": "msl"}, "jezero": {"lat": 18.44, "lon": 77.45, "rover": "m2020"}}
 _layer_cache: OrderedDict[tuple, dict] = OrderedDict()
+LAYER_CACHE = 4  # computed layer sets kept; small hosts lower it (science.serve_part)
+MAX_FRAME_SIDE = MAX_PIXELS_PER_SIDE  # planning frame cap in pixels per side; small hosts lower it, the
+# resolution then coarsens to fit and the plan reports the resolution it used (method.fine_res_m)
 _lock = threading.Lock()
 
 
@@ -71,7 +74,7 @@ def _frame(points: list[dict], res: float, pad_m: float) -> tuple[float, float, 
                max(abs(MARS_RADIUS_M * math.cos(math.radians(lat0)) * math.radians(((p["lon"] - lon0 + 180) % 360) - 180))
                    for p in points)) + pad_m
     half = math.ceil(half / 50.0) * 50.0
-    res = max(res, math.ceil(2 * half / MAX_PIXELS_PER_SIDE * 10) / 10)
+    res = max(res, math.ceil(2 * half / MAX_FRAME_SIDE * 10) / 10)
     return round(lat0, 6), round(lon0, 6), half, res
 
 
@@ -84,7 +87,7 @@ def _layers(window, v: dict) -> dict:
     computed = layers.compute(window, v, baselines=(1, 3), extras=False)
     with _lock:
         _layer_cache[key] = computed
-        while len(_layer_cache) > 4:
+        while len(_layer_cache) > LAYER_CACHE:
             _layer_cache.popitem(last=False)
     return computed
 

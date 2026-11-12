@@ -1,9 +1,569 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
-    { "source": "/api", "destination": "https://martian-map-api.onrender.com/api" },
-    { "source": "/api/:path*", "destination": "https://martian-map-api.onrender.com/api/:path*" },
-    { "source": "/terrain/:path*", "destination": "https://martian-map-api.onrender.com/terrain/:path*" },
-    { "source": "/((?!api/|terrain/).*)", "destination": "/index.html" }
+    {
+      "source": "/api/terrain/hires/window",
+      "destination": "https://neuronexus-v4-s1-window.onrender.com/api/terrain/hires/window",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "source": "/api/terrain/sources",
+      "destination": "https://neuronexus-v4-s1-window.onrender.com/api/terrain/sources",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "source": "/api/terrain/hires/image",
+      "destination": "https://neuronexus-v4-s1-image.onrender.com/api/terrain/hires/image",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "source": "/api/marswalk/:path*",
+      "destination": "https://neuronexus-v4-s1-marswalk.onrender.com/api/marswalk/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "source": "/api/usgs/:path*",
+      "destination": "https://neuronexus-v4-usgs-a.onrender.com/api/usgs/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "source": "/api",
+      "destination": "https://neuronexus-v4-core-a.onrender.com/api",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "https://neuronexus-v4-core-a.onrender.com/api/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "source": "/terrain/:path*",
+      "destination": "https://neuronexus-v4-core-a.onrender.com/terrain/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "source": "/api/terrain/hires/window",
+      "destination": "https://neuronexus-v4-s2-window.onrender.com/api/terrain/hires/window",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "2"
+        }
+      ]
+    },
+    {
+      "source": "/api/terrain/sources",
+      "destination": "https://neuronexus-v4-s2-window.onrender.com/api/terrain/sources",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "2"
+        }
+      ]
+    },
+    {
+      "source": "/api/terrain/hires/image",
+      "destination": "https://neuronexus-v4-s2-image.onrender.com/api/terrain/hires/image",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "2"
+        }
+      ]
+    },
+    {
+      "source": "/api/marswalk/:path*",
+      "destination": "https://neuronexus-v4-s2-marswalk.onrender.com/api/marswalk/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "2"
+        }
+      ]
+    },
+    {
+      "source": "/api/usgs/:path*",
+      "destination": "https://neuronexus-v4-usgs-a.onrender.com/api/usgs/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "2"
+        }
+      ]
+    },
+    {
+      "source": "/api",
+      "destination": "https://neuronexus-v4-core-a.onrender.com/api",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "2"
+        }
+      ]
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "https://neuronexus-v4-core-a.onrender.com/api/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "2"
+        }
+      ]
+    },
+    {
+      "source": "/terrain/:path*",
+      "destination": "https://neuronexus-v4-core-a.onrender.com/terrain/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "2"
+        }
+      ]
+    },
+    {
+      "source": "/api/terrain/hires/window",
+      "destination": "https://neuronexus-v4-s3-window.onrender.com/api/terrain/hires/window",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "3"
+        }
+      ]
+    },
+    {
+      "source": "/api/terrain/sources",
+      "destination": "https://neuronexus-v4-s3-window.onrender.com/api/terrain/sources",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "3"
+        }
+      ]
+    },
+    {
+      "source": "/api/terrain/hires/image",
+      "destination": "https://neuronexus-v4-s3-image.onrender.com/api/terrain/hires/image",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "3"
+        }
+      ]
+    },
+    {
+      "source": "/api/marswalk/:path*",
+      "destination": "https://neuronexus-v4-s3-marswalk.onrender.com/api/marswalk/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "3"
+        }
+      ]
+    },
+    {
+      "source": "/api/usgs/:path*",
+      "destination": "https://neuronexus-v4-usgs-a.onrender.com/api/usgs/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "3"
+        }
+      ]
+    },
+    {
+      "source": "/api",
+      "destination": "https://neuronexus-v4-core-a.onrender.com/api",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "3"
+        }
+      ]
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "https://neuronexus-v4-core-a.onrender.com/api/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "3"
+        }
+      ]
+    },
+    {
+      "source": "/terrain/:path*",
+      "destination": "https://neuronexus-v4-core-a.onrender.com/terrain/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "3"
+        }
+      ]
+    },
+    {
+      "source": "/api/terrain/hires/window",
+      "destination": "https://neuronexus-v4-s4-window.onrender.com/api/terrain/hires/window",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "4"
+        }
+      ]
+    },
+    {
+      "source": "/api/terrain/sources",
+      "destination": "https://neuronexus-v4-s4-window.onrender.com/api/terrain/sources",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "4"
+        }
+      ]
+    },
+    {
+      "source": "/api/terrain/hires/image",
+      "destination": "https://neuronexus-v4-s4-image.onrender.com/api/terrain/hires/image",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "4"
+        }
+      ]
+    },
+    {
+      "source": "/api/marswalk/:path*",
+      "destination": "https://neuronexus-v4-s4-marswalk.onrender.com/api/marswalk/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "4"
+        }
+      ]
+    },
+    {
+      "source": "/api/usgs/:path*",
+      "destination": "https://neuronexus-v4-usgs-b.onrender.com/api/usgs/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "4"
+        }
+      ]
+    },
+    {
+      "source": "/api",
+      "destination": "https://neuronexus-v4-core-b.onrender.com/api",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "4"
+        }
+      ]
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "https://neuronexus-v4-core-b.onrender.com/api/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "4"
+        }
+      ]
+    },
+    {
+      "source": "/terrain/:path*",
+      "destination": "https://neuronexus-v4-core-b.onrender.com/terrain/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "4"
+        }
+      ]
+    },
+    {
+      "source": "/api/terrain/hires/window",
+      "destination": "https://neuronexus-v4-s5-window.onrender.com/api/terrain/hires/window",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "5"
+        }
+      ]
+    },
+    {
+      "source": "/api/terrain/sources",
+      "destination": "https://neuronexus-v4-s5-window.onrender.com/api/terrain/sources",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "5"
+        }
+      ]
+    },
+    {
+      "source": "/api/terrain/hires/image",
+      "destination": "https://neuronexus-v4-s5-image.onrender.com/api/terrain/hires/image",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "5"
+        }
+      ]
+    },
+    {
+      "source": "/api/marswalk/:path*",
+      "destination": "https://neuronexus-v4-s5-marswalk.onrender.com/api/marswalk/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "5"
+        }
+      ]
+    },
+    {
+      "source": "/api/usgs/:path*",
+      "destination": "https://neuronexus-v4-usgs-b.onrender.com/api/usgs/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "5"
+        }
+      ]
+    },
+    {
+      "source": "/api",
+      "destination": "https://neuronexus-v4-core-b.onrender.com/api",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "5"
+        }
+      ]
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "https://neuronexus-v4-core-b.onrender.com/api/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "5"
+        }
+      ]
+    },
+    {
+      "source": "/terrain/:path*",
+      "destination": "https://neuronexus-v4-core-b.onrender.com/terrain/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "5"
+        }
+      ]
+    },
+    {
+      "source": "/api/terrain/hires/window",
+      "destination": "https://neuronexus-v4-s6-window.onrender.com/api/terrain/hires/window",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "6"
+        }
+      ]
+    },
+    {
+      "source": "/api/terrain/sources",
+      "destination": "https://neuronexus-v4-s6-window.onrender.com/api/terrain/sources",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "6"
+        }
+      ]
+    },
+    {
+      "source": "/api/terrain/hires/image",
+      "destination": "https://neuronexus-v4-s6-image.onrender.com/api/terrain/hires/image",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "6"
+        }
+      ]
+    },
+    {
+      "source": "/api/marswalk/:path*",
+      "destination": "https://neuronexus-v4-s6-marswalk.onrender.com/api/marswalk/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "6"
+        }
+      ]
+    },
+    {
+      "source": "/api/usgs/:path*",
+      "destination": "https://neuronexus-v4-usgs-b.onrender.com/api/usgs/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "6"
+        }
+      ]
+    },
+    {
+      "source": "/api",
+      "destination": "https://neuronexus-v4-core-b.onrender.com/api",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "6"
+        }
+      ]
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "https://neuronexus-v4-core-b.onrender.com/api/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "6"
+        }
+      ]
+    },
+    {
+      "source": "/terrain/:path*",
+      "destination": "https://neuronexus-v4-core-b.onrender.com/terrain/:path*",
+      "has": [
+        {
+          "type": "cookie",
+          "key": "nn_shard",
+          "value": "6"
+        }
+      ]
+    },
+    {
+      "source": "/api/terrain/hires/window",
+      "destination": "https://neuronexus-v4-s1-window.onrender.com/api/terrain/hires/window"
+    },
+    {
+      "source": "/api/terrain/sources",
+      "destination": "https://neuronexus-v4-s1-window.onrender.com/api/terrain/sources"
+    },
+    {
+      "source": "/api/terrain/hires/image",
+      "destination": "https://neuronexus-v4-s1-image.onrender.com/api/terrain/hires/image"
+    },
+    {
+      "source": "/api/marswalk/:path*",
+      "destination": "https://neuronexus-v4-s1-marswalk.onrender.com/api/marswalk/:path*"
+    },
+    {
+      "source": "/api/usgs/:path*",
+      "destination": "https://neuronexus-v4-usgs-a.onrender.com/api/usgs/:path*"
+    },
+    {
+      "source": "/api",
+      "destination": "https://neuronexus-v4-core-a.onrender.com/api"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "https://neuronexus-v4-core-a.onrender.com/api/:path*"
+    },
+    {
+      "source": "/terrain/:path*",
+      "destination": "https://neuronexus-v4-core-a.onrender.com/terrain/:path*"
+    },
+    {
+      "source": "/((?!api/|terrain/).*)",
+      "destination": "/index.html"
+    }
   ]
 }

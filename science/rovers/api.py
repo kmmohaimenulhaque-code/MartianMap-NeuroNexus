@@ -81,7 +81,7 @@ def traverse(rover: str, max_vertices: int = Query(4000, ge=50, le=200000)):
     data = _data(rover)
     meta = traverses.ROVERS[rover]
     with _simplify_lock:  # one computation per (rover, budget, version); concurrent callers wait for it
-        line, total, tolerance = _display_line(rover, max_vertices, f"{data['origin']}:{data['retrieved_at']}")
+        line, total, tolerance = _display_line(rover, max_vertices, data.get("content_version") or traverses.content_version(data))
     return {"rover": rover, "name": meta["name"], "evidence": "OBSERVED",
             "geometry": {"type": "LineString", "coordinates": line},
             "vertices_full": total, "vertices_display": len(line), "display_tolerance_m": round(tolerance, 3),

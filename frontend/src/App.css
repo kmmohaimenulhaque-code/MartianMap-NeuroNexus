@@ -3072,8 +3072,11 @@ a {
 
 /* ---------------------------------------------- USGS route snapshot */
 
-.snapshot-actions { display: flex; align-items: center; gap: 7px; }
+.snapshot-actions { display: flex; align-items: center; gap: 7px; flex-shrink: 0; max-width: 100%; overflow-x: auto; }
+.snapshot-actions > * { flex-shrink: 0; white-space: nowrap; }
 .snapshot-link { color: var(--nn-cyan); font-family: var(--nn-font); font-size: 12px; text-decoration: none; border: 1px solid #29414b; padding: 7px 9px; }
+.snapshot > header > div:first-child { min-width: 0; }
+.snapshot > header .eyebrow, .snapshot > header h2 { display: block; white-space: nowrap; overflow-x: auto; }
 .snapshot-status { padding: 12px 16px; color: var(--nn-cyan); font-family: var(--nn-font); font-size: 12px; letter-spacing: 0.06em; }
 .snapshot-body { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 0; min-height: 0; overflow: hidden; }
 .snapshot-canvas { padding: 12px; overflow: auto; background: #04080b; }
@@ -3148,6 +3151,14 @@ a {
 @media (max-width: 1100px) {
   .ai-designer-body, .snapshot-body { grid-template-columns: minmax(0, 1fr); }
   .ai-designer-controls, .snapshot-side { border-right: 0; border-left: 0; border-bottom: 1px solid rgba(1, 255, 255, 0.12); }
+}
+
+/* Phones: the snapshot title takes the full width and its actions sit on one row below it (chrome never wraps). */
+@media (max-width: 767px) {
+  .snapshot > header { position: relative; flex-direction: column; align-items: stretch; gap: 10px; }
+  .snapshot > header > div:first-child { padding-right: 44px; }
+  /* Close stays in reach in the top corner while the action row scrolls sideways. */
+  .snapshot-actions .ai-close { position: absolute; top: 12px; right: 14px; }
 }
 
 

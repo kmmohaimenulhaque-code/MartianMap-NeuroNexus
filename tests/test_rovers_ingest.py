@@ -69,3 +69,22 @@ def test_api_serves_snapshot_offline_and_decimates_for_display(monkeypatch):
 def test_rdp_keeps_endpoints_and_corners():
     pts = np.array([[0, 0], [1, 0.01], [2, 0], [2, 1], [2, 2]], dtype=float)
     assert list(traverses.rdp(pts, 0.1)) == [0, 2, 4]
+
+
+def test_refetching_the_same_drives_reuses_the_display_line(monkeypatch):
+    """The hourly live refresh must not recompute the CPU-bound RDP line when MMGIS returns the same drives."""
+    from science.rovers import api
+
+    monkeypatch.setattr(traverses, "_cache", {})
+    monkeypatch.setattr(traverses, "_fetch", lambda *_a, **_k: (_ for _ in ()).throw(OSError("offline")))
+    first = traverses.load("m2020")
+    again = {**first, "retrieved_at": "2099-01-01T00:00:00+00:00", "origin": "live"}
+    assert traverses.content_version(again) == first["content_version"]
+    changed = {**first, "traverse": first["traverse"][:-1]}
+    assert traverses.content_version(changed) != first["content_version"]
+
+    api._display_line.cache_clear()
+    api.traverse("m2020", 500)
+    monkeypatch.setattr(traverses, "_cache", {"m2020": {"_t": 9e18, "data": {**again, "content_version": traverses.content_version(again)}}})
+    api.traverse("m2020", 500)
+    assert api._display_line.cache_info().hits == 1

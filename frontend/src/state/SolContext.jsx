@@ -6,7 +6,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { dustFrameFailed, loadDustFrame, peekDustFrame, prefetchDustFrames } from "./dustFrames";
+import { dustFrameFailed, loadDustFrame, nextPlaybackSol, peekDustFrame, prefetchDustFrames } from "./dustFrames";
 
 import { lsAt, missionSolAt, my34SolToUtc, seasonName } from "./solMath";
 import { SolContext, setSolSnapshot } from "./solStore";
@@ -40,7 +40,7 @@ export function SolProvider({ sol, setSol, playing = false, setPlaying, children
     prefetchDustFrames(solRef.current, 24);
     const timer = window.setInterval(() => {
       const current = solRef.current ?? 1;
-      const next = current >= 668 ? 1 : current + 2;
+      const next = nextPlaybackSol(current);
       if (peekDustFrame(next) || dustFrameFailed(next) || waited >= 12) {
         waited = 0;
         prefetchDustFrames(next, 24);

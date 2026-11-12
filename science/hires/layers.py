@@ -90,17 +90,32 @@ def walkability(slope3: np.ndarray, rough5: np.ndarray, v: dict) -> tuple[np.nda
 DEFAULT_BASELINES = (1, 3, 5, 20, 100, 463)
 
 
-def compute(window: TerrainWindow, v: dict, baselines=DEFAULT_BASELINES, extras: bool = True) -> dict[str, np.ndarray]:
-    """Analytic layers; ``extras`` adds 25 m roughness and the legacy 3x3 local relief."""
+def compute(window: TerrainWindow, v: dict, baselines=DEFAULT_BASELINES, extras: bool = True,
+            only: set[str] | None = None) -> dict[str, np.ndarray]:
+    """Analytic layers; ``extras`` adds 25 m roughness and the legacy 3x3 local relief.
+
+    ``only`` limits the work to those layer names plus what they depend on (walkability needs
+    slope_3m and roughness_5m). Each layer is computed exactly as without it; this only skips
+    layers nobody asked for, which bounds peak memory on small hosts.
+    """
     layers: dict[str, np.ndarray] = {"elevation": window.elevation, "source": window.source}
+    walk = only is None or bool({"walkability", "walk_class"} & only)
+
+    def wanted(name: str) -> bool:
+        return only is None or name in only
+
     cache: dict = {}
     for b in sorted(set(baselines) | {3}):
-        layers[f"slope_{b}m"], layers[f"slope_{b}m_baseline"] = composite_slope(window, b, cache)
-    layers["roughness_5m"] = hirise_roughness(window, 5)
-    if extras:
+        if wanted(f"slope_{b}m") or (b == 3 and walk):
+            layers[f"slope_{b}m"], layers[f"slope_{b}m_baseline"] = composite_slope(window, b, cache)
+    if wanted("roughness_5m") or walk:
+        layers["roughness_5m"] = hirise_roughness(window, 5)
+    if extras and wanted("roughness_25m"):
         layers["roughness_25m"] = hirise_roughness(window, 25)
+    if extras and wanted("local_relief_3x3"):
         layers["local_relief_3x3"] = derivatives.local_relief_3x3(window.elevation).astype("float32")
-    layers["walkability"], layers["walk_class"] = walkability(layers["slope_3m"], layers["roughness_5m"], v)
+    if walk:
+        layers["walkability"], layers["walk_class"] = walkability(layers["slope_3m"], layers["roughness_5m"], v)
     return layers
 
 
@@ -144,12 +159,24 @@ def hillshade(z: np.ndarray, res_m: float, azimuth=315.0, altitude=45.0) -> np.n
     return np.clip(shade, 0, 1)
 
 
-def ramp_rgb(walk: np.ndarray) -> np.ndarray:
+RAMP_BLOCK_ROWS = 128  # the ramp is per pixel; blocks keep its float64 RGB temporaries small
+
+
+def _ramp_block(walk: np.ndarray) -> np.ndarray:
     lo, mid, hi = (np.array(c, dtype="float64") for c in palette.RAMP)
     t = np.clip(walk / 100.0, 0, 1)[..., None]
     first = lo + (mid - lo) * np.clip(t * 2, 0, 1)
     second = mid + (hi - mid) * np.clip(t * 2 - 1, 0, 1)
     return np.where(t < 0.5, first, second).astype("uint8")
+
+
+def ramp_rgb(walk: np.ndarray) -> np.ndarray:
+    if walk.ndim < 2 or walk.shape[0] <= RAMP_BLOCK_ROWS:
+        return _ramp_block(walk)
+    out = np.empty(walk.shape + (3,), dtype="uint8")
+    for r in range(0, walk.shape[0], RAMP_BLOCK_ROWS):
+        out[r:r + RAMP_BLOCK_ROWS] = _ramp_block(walk[r:r + RAMP_BLOCK_ROWS])
+    return out
 
 
 def render(layer: str, window: TerrainWindow, layers: dict, max_side: int = 1024, ortho: np.ndarray | None = None) -> bytes:
@@ -180,7 +207,7 @@ def render(layer: str, window: TerrainWindow, layers: dict, max_side: int = 1024
         rgba = np.zeros(walk.shape + (4,), dtype="uint8")
         rgba[..., :3] = ramp_rgb(np.nan_to_num(walk, nan=0.0))
         rgba[..., 3] = np.where(np.isfinite(walk), 170, 0)
-        rr, cc = np.indices(walk.shape)
+        rr, cc = np.ogrid[:walk.shape[0], :walk.shape[1]]
         hatch = (cls == 3) & (((rr + cc) // 3) % 3 == 0)  # EXCEED is hatched, never color alone
         rgba[hatch] = (*palette.rgb("--nn-walk-hatch"), 235)
         return _png(rgba)
