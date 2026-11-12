@@ -2,9 +2,16 @@
 
 NASA Space Apps Challenge 2026 · branch Master-Ai
 
-## Demo video
+## 🎬 Demo Video
 
-<iframe width="100%" height="600" src="https://www.youtube.com/embed/0MLtYKHewcA" title="NeuroNexus: Interplanetary Survival Guide: Martian Map" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<div align="center">
+  <a href="https://www.youtube.com/watch?v=0MLtYKHewcA" target="_blank">
+    <img src="https://img.youtube.com/vi/0MLtYKHewcA/maxresdefault.jpg" alt="NeuroNexus: Interplanetary Survival Guide - Martian Map" width="100%" style="max-width: 900px; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);">
+  </a>
+  <p><i>Click to watch the full demo</i></p>
+</div>
+
+---
 
 Setup first: SETUP_INSTRUCTIONS.md contains the complete installation, NASA data, Gemini API-key, backend/frontend startup, troubleshooting, and demo instructions.
 
