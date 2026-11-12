@@ -1,4 +1,4 @@
-# NeuroNexus — Interplanetary Survival Guide: Martian Map
+# NeuroNexus - Interplanetary Survival Guide: Martian Map
 
 NASA Space Apps Challenge 2026 · branch Master-Ai
 
@@ -59,12 +59,12 @@ Evidence and provenance
 
 NeuroNexus distinguishes:
 
-* OBSERVED / NASA OBSERVED — measurements or archived observations from a named source.
-* NASA REFERENCE — published NASA/USGS reference information or catalogue data.
-* MODELED — output of a physical model such as the NASA Ames Mars GCM.
-* DERIVED / COMPUTED — values calculated by NeuroNexus from source data.
-* SIMULATED — configurable project simulation values.
-* UNAVAILABLE — no ingested evidence; NeuroNexus does not invent a substitute.
+* OBSERVED / NASA OBSERVED - measurements or archived observations from a named source.
+* NASA REFERENCE - published NASA/USGS reference information or catalogue data.
+* MODELED - output of a physical model such as the NASA Ames Mars GCM.
+* DERIVED / COMPUTED - values calculated by NeuroNexus from source data.
+* SIMULATED - configurable project simulation values.
+* UNAVAILABLE - no ingested evidence; NeuroNexus does not invent a substitute.
 
 Examples of NeuroNexus-derived outputs include the multi-objective route engine, route metrics, walkability score, terrain-risk proxy, EVA-time estimate, and potential exploration-zone scoring.
 
