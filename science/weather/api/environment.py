@@ -120,96 +120,27 @@ def _clean_feed_text(
 @app.get("/briefing/mars")
 def mars_briefing(
     limit: int = Query(
-        6,
+        8,
         ge=1,
-        le=10,
+        le=20,
+    ),
+    days: int = Query(
+        30,
+        ge=1,
+        le=365,
     ),
 ):
-    request = urllib.request.Request(
-        NASA_MARS_RSS_URL,
-        headers={
-            "User-Agent":
-                "NeuroNexus-MarsMap/1.0",
-        },
-    )
+    """
+    Latest Mars articles from NASA and partner organisations.
 
-    try:
-        with urllib.request.urlopen(
-            request,
-            timeout=10,
-        ) as response:
-            xml_bytes = (
-                response.read()
-            )
+    Aggregates NASA (Mars, Perseverance, MRO, MAVEN, Photojournal, agency
+    news), ESA (Mars Express, ExoMars) and The Planetary Society feeds,
+    newest first, from the last `days` days, each with its original link.
+    """
+    from science.briefing.news import latest_mars_news
 
-        root = ET.fromstring(
-            xml_bytes,
-        )
+    return latest_mars_news(limit=int(limit), days=int(days))
 
-        items = []
-
-        for item in root.findall(
-            ".//item",
-        )[:limit]:
-            title = _clean_feed_text(
-                item.findtext(
-                    "title",
-                ),
-            )
-
-            link = (
-                item.findtext(
-                    "link",
-                )
-                or NASA_MARS_RSS_URL
-            )
-
-            published = _clean_feed_text(
-                item.findtext(
-                    "pubDate",
-                ),
-            )
-
-            description = _clean_feed_text(
-                item.findtext(
-                    "description",
-                ),
-            )
-
-            items.append(
-                {
-                    "title": title,
-                    "url": link,
-                    "published":
-                        published,
-                    "description":
-                        description,
-                },
-            )
-
-        return {
-            "status": "ok",
-            "source":
-                "NASA Science / Mars Photojournal",
-            "feed_url":
-                NASA_MARS_RSS_URL,
-            "count": len(
-                items,
-            ),
-            "items": items,
-        }
-
-    except Exception:
-        return {
-            "status":
-                "unavailable",
-            "source":
-                "NASA Science / Mars Photojournal",
-            "feed_url":
-                NASA_MARS_RSS_URL,
-            "count": 0,
-            "items": [],
-        }
 
 @app.get("/environment")
 def environment(
