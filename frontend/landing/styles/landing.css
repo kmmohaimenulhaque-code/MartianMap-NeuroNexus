@@ -3405,15 +3405,19 @@ body.lp {
 /* Pareto scene: the panorama pans with the cursor under a dust frost that the cursor wipes clear; neurons glow
    behind a glass table and fire signals into the rows (js/pareto.js initParetoScene). */
 .lp-pareto {
-  overflow: hidden;
+  overflow: clip; /* not hidden: a scroll container would stop the sticky panorama from sticking */
   isolation: isolate;
 }
 
 .lp-pano {
-  position: absolute;
-  inset: 0 0 auto;
+  /* A sticky full-viewport backdrop: the panorama stays behind the heading, the table and the selected candidate
+     while they scroll past. Negative margins take it out of the flow (it adds no height). */
+  position: sticky;
+  top: 0;
   z-index: -2;
-  height: clamp(340px, 58vh, 600px);
+  width: 100vw;
+  height: 100vh;
+  margin: calc(-1 * clamp(3.5rem, 7vw, 6rem)) 0 calc(-100vh + clamp(3.5rem, 7vw, 6rem)) calc(50% - 50vw);
   overflow: hidden;
   --fx: -999px;
   --fy: -999px;
@@ -3460,8 +3464,8 @@ body.lp {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, rgba(6, 12, 20, 0.7), rgba(6, 12, 20, 0.2) 55%, rgba(6, 12, 20, 0.05)),
-    linear-gradient(rgba(6, 12, 20, 0.45), transparent 25%, transparent 50%, var(--paper));
+    linear-gradient(90deg, rgba(6, 12, 20, 0.62), rgba(6, 12, 20, 0.22) 55%, rgba(6, 12, 20, 0.12)),
+    linear-gradient(rgba(6, 12, 20, 0.35), rgba(6, 12, 20, 0.2) 40%, rgba(6, 12, 20, 0.45));
   pointer-events: none;
 }
 
@@ -3534,4 +3538,34 @@ body.lp {
     white-space: normal;
     text-align: left;
   }
+}
+
+/* Soft edges where the Pareto section meets its neighbors, over the sticky panorama. */
+.lp-pareto::before,
+.lp-pareto::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  height: 160px;
+  pointer-events: none;
+}
+
+.lp-pareto::before {
+  top: 0;
+  background: linear-gradient(var(--paper), transparent);
+}
+
+.lp-pareto::after {
+  bottom: 0;
+  background: linear-gradient(transparent, var(--paper));
+}
+
+.lp-pano__credit {
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.9);
+}
+
+.lp-pano__credit a {
+  color: var(--cyan);
 }
