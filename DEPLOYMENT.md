@@ -131,7 +131,7 @@ Measured (Curiosity's latest position, 100% HiRISE): MARSWALK load peaks window 
 ## 3c. Sharded split API: 20 services (branch `feature/mission-console-v4`)
 
 The 3b layout has one terrain queue, so about 2-3 people can use MARSWALK at once. v4 runs 2 core services and
-6 shards of the 3 parts (20 free services, names `nn-v4-core-a|b`, `nn-v4-s<k>-window|image|marswalk`). The console
+6 shards of the 3 parts (20 free services, names `neuronexus-v4-core-a|b`, `neuronexus-v4-s<k>-window|image|marswalk`, in the Render workspace "NeuroNexus"). The console
 sets a sticky `nn_shard` cookie (1-6, 7 days, `frontend/src/shard.js`); `frontend/vercel.json` routes by it, so one
 browser always reaches the same shard (its cached frames and stored plans). Shards 1-3 use core-a, 4-6 core-b; no
 cookie means shard 1. Regenerate the routes with `python tools/gen_vercel_rewrites.py` (tests check it is current).

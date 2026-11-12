@@ -53,3 +53,11 @@ def test_missing_or_bad_cookie_falls_back_to_shard_one():
         assert "-s1-image." in _route("/api/terrain/hires/image", cookie)
         assert "-core-a." in _route("/api/health", cookie)
     assert _route("/marswalk", None) == "/index.html"
+
+
+def test_blueprint_creates_exactly_the_routed_services():
+    names = re.findall(r"^    name: (\S+)$", gen.render_blueprint(), flags=re.M)
+    assert names == [f"{gen.PREFIX}-{n}" for n in gen.service_names()]
+    parts = re.findall(r"^        value: (terrain-window|terrain-image|marswalk)$", gen.render_blueprint(), flags=re.M)
+    assert parts == [n.split("-", 1)[1].replace("window", "terrain-window").replace("image", "terrain-image")
+                     for n in gen.service_names() if not n.startswith("core-")]
