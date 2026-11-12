@@ -1752,7 +1752,6 @@ label:has(> .m3d-layer-tag) { flex-wrap: wrap; }
 /* Secondary readouts (°C under K, bins) in cyan at a lighter weight. */
 #root .metric small { color: var(--nn-cyan); opacity: 0.78; font-weight: 400; }
 /* Small labels: pale cyan instead of gray. */
-#root :is(.metric > span, .coordinate-block > span, .panel-heading .eyebrow, .nn-stat-label, .mission-row > span, .mw-row-label, .mw-field > span, .dust-kpis span, .nn-solcond-grid dt, .perf-telemetry dt, .site-thermal-summary dt) { color: var(--nn-cyan-pale); }
 /* Footer figures. */
 #root .evidence-bar strong { color: var(--nn-cyan); }
 /* Morphology values outside their review range: cyan number, amber marker beside it. */
@@ -1777,7 +1776,7 @@ label:has(> .m3d-layer-tag) { flex-wrap: wrap; }
 
 /* Selected site (nomenclature): larger name, coordinates and values; thermal summary as a second column. */
 #root .place-title h3 { font-size: 20px; letter-spacing: 0.04em; }
-#root .place-title p { font-size: 13px; color: var(--nn-cyan-pale); }
+#root .place-title p { font-size: 13px; }
 #root .coordinate-block span { font-size: 12px; }
 #root .coordinate-block strong { font-size: 15px; }
 #root .site-split .metric strong { font-size: 15px; }
@@ -1791,7 +1790,7 @@ label:has(> .m3d-layer-tag) { flex-wrap: wrap; }
 .site-thermal-kicker { color: var(--nn-cyan); font-size: 12px; font-weight: 700; letter-spacing: 0.08em; }
 .site-thermal-summary dl { margin: 0; display: flex; flex-direction: column; gap: 5px; }
 .site-thermal-summary dl > div { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
-.site-thermal-summary dt { font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; }
+.site-thermal-summary dt { color: var(--nn-text-dim); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; }
 .site-thermal-summary dd { margin: 0; color: var(--nn-cyan); font-size: 14px; font-weight: 700; white-space: nowrap; overflow-x: auto; scrollbar-width: none; }
 .site-thermal-summary dd.is-na { color: var(--nn-text-dim); font-weight: 400; }
 .site-thermal-note { color: var(--nn-text-dim); font-size: 12px; }

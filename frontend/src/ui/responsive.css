@@ -45,7 +45,7 @@
 /* Dark-cyan HUD zoom controls on every Leaflet map (2D map, USGS overlays, MARSWALK site map). */
 .leaflet-bar { border: 1px solid #29414b !important; border-radius: 0 !important; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45) !important; }
 .leaflet-bar a, .leaflet-control-zoom a, .leaflet-control-zoom-in, .leaflet-control-zoom-out {
-  background: rgba(9, 17, 21, 0.92) !important; color: #75e6ff !important; border-bottom: 1px solid #29414b !important; border-radius: 0 !important;
+  background: rgba(9, 17, 21, 0.92) !important; color: var(--nn-cyan) !important; border-bottom: 1px solid #29414b !important; border-radius: 0 !important;
 }
 .leaflet-bar a:last-child { border-bottom: 0 !important; }
 .leaflet-bar a:hover, .leaflet-bar a:focus-visible { background: #0d2028 !important; color: #ffffff !important; }
@@ -451,4 +451,15 @@
 @media (max-width: 380px) {
   .topbar .mode-switch button { padding: 0 7px; letter-spacing: 0.03em; }
   .topbar .nn-solpill-btn { padding: 0 8px; letter-spacing: 0.03em; }
+}
+
+/* Laptops, desktops, tablets: a deeper cyan for text and accents. The live status dot and the selected-site
+ * signal keep the bright cyan, so "online" and "selected" still read at a glance. */
+@media (min-width: 768px) {
+  :root { --nn-cyan: #139dc0; --cyan: #139dc0; }
+  #root .status-dot { color: #75e6ff; }
+  #root .status-dot > span { background: #75e6ff; }
+  #root .signal { color: #75e6ff; }
+  /* Thermal context summary without a box: a quiet left rule instead. */
+  .site-thermal-summary { border: 0; border-left: 1px solid rgba(117, 230, 255, 0.18); background: none; padding: 2px 0 2px 10px; }
 }

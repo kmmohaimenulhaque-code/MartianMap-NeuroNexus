@@ -56,7 +56,7 @@ export default function InterpretationPanel({ environment, siteScience }) {
         >
           <span
             style={{
-              color: "#75e6ff",
+              color: "var(--nn-cyan)",
             }}
           >
             NEAREST NOMENCLATURE CONTEXT

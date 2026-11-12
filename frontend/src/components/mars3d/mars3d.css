@@ -58,7 +58,7 @@
 
 .m3d-title span {
   display: block;
-  color: #75e6ff;
+  color: var(--nn-cyan);
   font-family: var(--nn-font);
   font-size: 12px;
   letter-spacing: 0.06em;
@@ -102,7 +102,7 @@
 .m3d-primary {
   border-color: #75e6ff;
   background: #0d2028;
-  color: #75e6ff;
+  color: var(--nn-cyan);
   font-weight: 700;
 }
 
@@ -129,7 +129,7 @@
   display: grid;
   place-items: center;
   padding: 20px;
-  color: #75e6ff;
+  color: var(--nn-cyan);
   font-family: var(--nn-font);
   font-size: 12px;
   letter-spacing: 0.06em;
@@ -170,7 +170,7 @@
 
 .m3d-candidates > span {
   width: 100%;
-  color: #75e6ff;
+  color: var(--nn-cyan);
   font-family: var(--nn-font);
   font-size: 12px;
   letter-spacing: 0.06em;
@@ -231,7 +231,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 5px;
-  color: #75e6ff;
+  color: var(--nn-cyan);
   font-family: var(--nn-font);
   font-size: 12px;
   letter-spacing: 0.06em;
@@ -246,7 +246,7 @@
 }
 
 .m3d-info b {
-  color: #75e6ff;
+  color: var(--nn-cyan);
   font-weight: 400;
   margin-right: 4px;
 }
@@ -292,7 +292,7 @@
 
 .m3d-group h4 {
   margin: 0 0 6px;
-  color: #75e6ff;
+  color: var(--nn-cyan);
   font-family: var(--nn-font);
   font-size: 12px;
   letter-spacing: 0.06em;
@@ -311,7 +311,7 @@
 
 .m3d-group h4 label {
   display: inline-flex;
-  color: #75e6ff;
+  color: var(--nn-cyan);
   font-size: 12px;
 }
 
@@ -335,7 +335,7 @@
 
 .m3d-group a,
 .m3d-science a {
-  color: #75e6ff;
+  color: var(--nn-cyan);
 }
 
 .m3d-science p {
@@ -360,7 +360,7 @@
 
 .m3d-observed { color: #8cf0b1; }
 .m3d-modeled { color: #3fbcd4; }
-.m3d-derived { color: #75e6ff; }
+.m3d-derived { color: var(--nn-cyan); }
 .m3d-unavailable { color: #7d949b; }
 
 /* Esri widgets inside the scene keep the dark console look */
@@ -423,7 +423,7 @@
   padding: 1px 6px;
   border: 1px solid #29414b;
   background: #0a1318;
-  color: #75e6ff;
+  color: var(--nn-cyan);
   font-family: var(--nn-font);
   font-size: 12px;
   letter-spacing: 0.08em;
@@ -448,7 +448,7 @@
 /* legend */
 .m3d-legend h4 {
   margin: 10px 0 6px;
-  color: #75e6ff;
+  color: var(--nn-cyan);
   font-family: var(--nn-font);
   font-size: 12px;
   letter-spacing: 0.06em;

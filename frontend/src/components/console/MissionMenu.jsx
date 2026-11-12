@@ -76,7 +76,7 @@ export default function MissionMenu({
             >
               <div
                 style={{
-                  color: "#75e6ff",
+                  color: "var(--nn-cyan)",
 
                   fontSize: "12px",
 
@@ -179,7 +179,7 @@ export default function MissionMenu({
             >
               <div
                 style={{
-                  color: "#75e6ff",
+                  color: "var(--nn-cyan)",
 
                   fontSize: "12px",
 
@@ -409,7 +409,7 @@ export default function MissionMenu({
               <div>
                 <div
                   style={{
-                    color: "#75e6ff",
+                    color: "var(--nn-cyan)",
 
                     fontSize: "12px",
 
@@ -550,7 +550,7 @@ export default function MissionMenu({
           <div>
             <div
               style={{
-                color: "#75e6ff",
+                color: "var(--nn-cyan)",
 
                 fontSize: "12px",
 
@@ -599,7 +599,7 @@ export default function MissionMenu({
 
               background: "#091115",
 
-              color: "#75e6ff",
+              color: "var(--nn-cyan)",
 
               fontSize: "22px",
 

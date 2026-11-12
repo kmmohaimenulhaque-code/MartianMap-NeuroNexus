@@ -23,7 +23,7 @@
 
 .mission-ops-tabs button.active {
   border-color: rgba(117, 230, 255, 0.55);
-  color: #75e6ff;
+  color: var(--nn-cyan);
   background: #0d1e25;
 }
 
@@ -37,7 +37,7 @@
 }
 
 .mission-sim-banner span {
-  color: #75e6ff;
+  color: var(--nn-cyan);
   font-size: 12px;
   letter-spacing: 0.06em;
 }
@@ -101,7 +101,7 @@
 .mission-section-title {
   padding: 7px 8px;
   border-bottom: 1px solid rgba(117, 230, 255, 0.08);
-  color: #75e6ff;
+  color: var(--nn-cyan);
 }
 
 .mission-row {
@@ -618,7 +618,7 @@
 .mission-row .observed, .mission-tag.observed { color: #8cf0b1; }
 .mission-row .reference, .mission-tag.reference { color: #9fd8e8; }
 .mission-row .modeled, .mission-tag.modeled { color: #3fbcd4; }
-.mission-row .derived, .mission-tag.derived { color: #75e6ff; }
+.mission-row .derived, .mission-tag.derived { color: var(--nn-cyan); }
 .mission-row .project, .mission-tag.project { color: #d6e6ec; }
 .mission-row .sim, .mission-tag.sim { color: #d8f6ff; }
 .mission-row .config, .mission-tag.config { color: #4ea8de; }
@@ -632,7 +632,7 @@
   text-decoration: none;
 }
 
-.mission-src:hover { color: #75e6ff; }
+.mission-src:hover { color: var(--nn-cyan); }
 
 .mission-detail {
   display: block;
@@ -657,7 +657,7 @@
   letter-spacing: 0.06em;
 }
 
-.mission-section-title a:hover { color: #75e6ff; }
+.mission-section-title a:hover { color: var(--nn-cyan); }
 
 .mission-vehicle-block { border-bottom: 1px solid rgba(29, 47, 55, 0.6); padding-bottom: 6px; margin-bottom: 6px; }
 
@@ -704,7 +704,7 @@
   background: rgba(8, 20, 26, 0.75);
 }
 
-.mission-orbital-strip span { display: block; color: #75e6ff; font-family: var(--nn-font); font-size: 12px; letter-spacing: 0.06em; }
+.mission-orbital-strip span { display: block; color: var(--nn-cyan); font-family: var(--nn-font); font-size: 12px; letter-spacing: 0.06em; }
 .mission-orbital-strip strong { display: block; color: #d6e6ec; font-size: 12px; }
 .mission-orbital-strip small { display: block; color: #66797f; font-size: 12px; }
 .mission-orbital-strip button { border: 1px solid #29414b; background: #0a1318; color: #9fd8e8; font-family: var(--nn-font); font-size: 12px; letter-spacing: 0.06em; padding: 7px 9px; cursor: pointer; }

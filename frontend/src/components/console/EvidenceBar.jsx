@@ -34,10 +34,6 @@ export default function EvidenceBar({ TEAM_URL, setSourcesDrawer }) {
       </div>
 
       <div className="evidence-warning">
-        <span>DATA MODEL</span>
-
-        <strong>Observed · Modeled · Derived · Simulated</strong>
-
         <button type="button" className="evidence-sources" onClick={() => setSourcesDrawer({ open: true, focusId: null })}>
           [SOURCE LEDGER]
         </button>

@@ -147,7 +147,7 @@ export default function TopBar({ appMode, backendConnected, commandIndex, compar
 
                 background: "#091115",
 
-                color: "#75e6ff",
+                color: "var(--nn-cyan)",
 
                 fontFamily: "var(--nn-font)",
 

@@ -74,7 +74,7 @@ export default function LeftColumn({ activeCustomPlace, displayName, displayType
           <div className="site-split-main">
             <Metric
               label="Selection source"
-              value={namedFeature ? "USGS / IAU FEATURE" : activeCustomPlace ? "USER PLACE" : selectedLocation ? "COORDINATE SELECTION" : "n/a"}
+              value={namedFeature ? "IAU FEATURE" : activeCustomPlace ? "USER PLACE" : selectedLocation ? "COORDINATE" : "n/a"}
             />
 
             {namedFeature ? (

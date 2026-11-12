@@ -256,7 +256,7 @@ function CustomPlacesLayer({ places, safeHavens, routeMode, interactive, onRoute
             center={[lat, lng]}
             radius={6}
             pathOptions={{
-              color: "#75e6ff",
+              color: "var(--nn-cyan)",
               fillColor: "#75e6ff",
               fillOpacity: 0.95,
               weight: 2,
@@ -568,7 +568,7 @@ function ComparisonLegend({ routes }) {
         style={{
           marginBottom: "7px",
 
-          color: "#75e6ff",
+          color: "var(--nn-cyan)",
 
           fontFamily: "var(--nn-font)",
 
@@ -902,7 +902,7 @@ export default function MarsMap({
           <Polyline
             positions={routeToDisplay}
             pathOptions={{
-              color: "#75e6ff",
+              color: "var(--nn-cyan)",
 
               weight: 4,
 
@@ -1040,7 +1040,7 @@ export default function MarsMap({
 
             background: "rgba(7,13,17,0.88)",
 
-            color: "#75e6ff",
+            color: "var(--nn-cyan)",
 
             fontFamily: "var(--nn-font)",
 

@@ -59,7 +59,7 @@ body {
   align-self: flex-start;
   padding: 4px 6px;
   border: 1px solid rgba(117, 230, 255, 0.15);
-  color: #75e6ff;
+  color: var(--nn-cyan);
   font-size: 12px;
   letter-spacing: 0.06em;
 }
@@ -506,7 +506,7 @@ body {
   font-size: 12px; white-space: normal; overflow-wrap: anywhere;}
 
 .nn-compare-route-card-top span {
-  color: #75e6ff;
+  color: var(--nn-cyan);
   font-size: 12px;
 }
 
@@ -662,7 +662,7 @@ body {
   width: 30px;
   border: 1px solid rgba(117, 230, 255, 0.15);
   background: #08161b;
-  color: #75e6ff;
+  color: var(--nn-cyan);
   cursor: pointer;
 }
 
