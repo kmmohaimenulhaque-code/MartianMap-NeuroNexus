@@ -286,13 +286,16 @@ flowchart TB
         MAP2D["2D Mars Explorer<br/>Leaflet · site search · map selection"]
         TOPO["MOLA Topographic Explorer<br/>Elevation tiles · contours · local terrain"]
         MAP3D["Interactive 3D Mars<br/>ArcGIS SceneView · loaded on demand"]
-        ROUTEUI["Route Design & Comparison<br/>Waypoints · objective weights · EVA settings"]
+        ROUTEUI["Route Design, Saving & Comparison<br/>Waypoints · objective weights · EVA settings<br/>Named AI routes · along-track stats · Verify · 3D Route Projection"]
+        DUSTUI["Dust & Morphology Panels<br/>Opacity over 668 sols · global dust map · sol scrubber<br/>AT SITE + MIN / MEAN / MAX terrain statistics"]
+        CMDUI["Mission Command Index (☰)<br/>Every feature by category · search · shortcuts<br/>Notes · Team NeuroNexus · Meet the Team"]
         OPSUI["Science & Mission Panels<br/>Environment · hazards · thermal · rover photos<br/>Briefings · orbital tracking · mission operations"]
-        INTELUI["Mars Intelligence<br/>Grounded Q&A · route trade-off explanations"]
+        INTELUI["Mars Intelligence<br/>Grounded Q&A · route trade-off explanations<br/>Mars science · missions · history · app guide · web-search toggle"]
         NOTES["Field Notes & Checklist<br/>Custom places · Safe Havens · exports"]
 
         CLIENT["marsEnvironmentApi.js<br/>REST / JSON client"]
-        STORAGE[("Browser localStorage<br/>Saved routes · profile · places · notes<br/>Checklist · Safe Havens · objectives")]
+        STORAGE[("Browser localStorage<br/>Saved routes (v3, with generation record) · profile · places · notes<br/>Checklist · Safe Havens · objectives · console sol")]
+        IDB[("Browser IndexedDB<br/>USGS snapshot cache")]
 
         APP <--> MAP2D
         APP <--> TOPO
@@ -301,7 +304,10 @@ flowchart TB
         APP <--> OPSUI
         APP <--> INTELUI
         APP <--> NOTES
+        APP <--> DUSTUI
+        APP <--> CMDUI
         APP <--> STORAGE
+        ROUTEUI <--> IDB
 
         APP --> CLIENT
         MAP3D --> CLIENT
@@ -317,14 +323,15 @@ flowchart TB
 
     subgraph ROUTERS["FASTAPI DOMAIN ROUTERS"]
         SITEAPI["Environment & Place Catalogue<br/>Site context · USGS/IAU search"]
-        TERRAINAPI["Terrain API<br/>Tiles · contours · windows · route geometry"]
-        ROUTEAPI["Routing API<br/>Candidates · evaluation · methodology"]
-        USGSAPI["USGS API<br/>Map synchronisation · route snapshots"]
+        TERRAINAPI["Terrain API<br/>Tiles · contours · windows (MIN / MEAN / MAX) · route geometry"]
+        ROUTEAPI["Routing API<br/>Candidates · evaluation (along-track stats, profiles) · methodology"]
+        USGSAPI["USGS API<br/>Map synchronisation · route snapshots (single and multi-route)"]
+        DUSTAPI["Dust API<br/>Timeseries · global map · metadata"]
         MARS3DAPI["Mars3D API<br/>Terrain grids · traverses · exploration zones"]
         HAZARDAPI["Hazards API<br/>Hazard overview · AI context"]
         MISSIONAPI["Mission API<br/>Explicitly simulated mission state"]
         ORBITAPI["Orbital API<br/>Near-Mars close approaches"]
-        AIAPI["AI API<br/>Chat · route analysis · provenance"]
+        AIAPI["AI API<br/>Chat · route analysis · provenance<br/>Provider switch"]
         MEDIAAPI["Briefing & Rover Media<br/>NASA and partner feeds · rover imagery"]
     end
 
@@ -337,6 +344,7 @@ flowchart TB
     API --> MISSIONAPI
     API --> ORBITAPI
     API --> AIAPI
+    API --> DUSTAPI
     API --> MEDIAAPI
 
     subgraph ENGINES["SCIENTIFIC & COMPUTATIONAL CORE"]
@@ -350,7 +358,8 @@ flowchart TB
         SIM["Mission Simulation Model<br/>Crew · vehicles · EVA · life support"]
         ORBITAL["Orbital Data Adapter"]
         MEDIA["Briefing & Imagery Adapters"]
-        TOOLS["Server-side AI Tool Registry<br/>Reads structured site, terrain, route,<br/>thermal, hazard and orbital context"]
+        TOOLS["Server-side AI Tool Registry · 26 tools<br/>Reads structured site, terrain, route,<br/>thermal, hazard, dust and orbital context<br/>Mars-time calculator · gazetteer · landing sites"]
+        KB["Knowledge Base · BM25 retrieval<br/>Mars science · missions · history · project docs<br/>UI command catalogue · cited sections"]
         PROVENANCE["Source Ledger & Evidence Classification<br/>Observed · Reference · Modelled · Derived<br/>Simulated · Unavailable"]
     end
 
@@ -366,11 +375,13 @@ flowchart TB
     MEDIAAPI --> MEDIA
     AIAPI --> TOOLS
     AIAPI --> PROVENANCE
+    DUSTAPI --> WEATHER
+    TOOLS --> KB
 
     subgraph LOCALDATA["LOCAL SCIENTIFIC DATA"]
         MOLA["NASA MOLA MEGDR<br/>Terrain tiles · Git LFS"]
         THEMIS["NASA THEMIS IR-PBT<br/>Indexed historical observations · Parquet"]
-        DUST["NASA Ames Mars GCM · MY34<br/>NetCDF · external/mars-gcm submodule"]
+        DUST["NASA Ames Mars GCM · MY34<br/>NetCDF · external/mars-gcm submodule<br/>(repository-root copy as fallback)"]
         GAZETTEER["USGS / IAU Gazetteer<br/>Processed feature catalogue · Parquet"]
         MANIFEST["data/manifests<br/>Source ledger · checksums · dataset metadata"]
     end
@@ -384,6 +395,7 @@ flowchart TB
     THERMAL --> ENV
 
     DUST --> WEATHER
+    DUST --> DUSTAPI
     WEATHER --> ENV
 
     GAZETTEER --> ENV
@@ -394,6 +406,7 @@ flowchart TB
     TOOLS --> TERRAIN
     TOOLS --> ROUTING
     TOOLS --> ORBITAL
+    TOOLS --> WEATHER
     TOOLS --> PROVENANCE
 
     subgraph EXTERNAL["EXTERNAL DATA & SERVICES"]
@@ -418,6 +431,8 @@ flowchart TB
 
     ROUTING -. "Deterministic route metrics remain authoritative" .-> INTELUI
     ENV -. "Scientific context and evidence status" .-> OPSUI
+    WEATHER -. "Modeled dust series (MODELED, not a forecast)" .-> DUSTUI
+    KB -. "Cited Mars, mission and app knowledge" .-> INTELUI
 ```
 # Simplified Architecture Mermaid Diagram 
 
@@ -427,20 +442,23 @@ flowchart TB
 
     subgraph FRONTEND["PRESENTATION LAYER · React 19 + Vite"]
         APP["App.jsx<br/>Shared Mission State"]
-        MAPS["2D + Topo + 3D Maps"]
-        ROUTE["Route Design & Comparison"]
+        MAPS["2D + Topo + 3D Maps<br/>(3D Route Projection)"]
+        ROUTE["Route Design, Saving & Comparison<br/>(named AI routes · Verify)"]
         OPS["Science & Mission Panels"]
+        DUSTM["Dust Graphs & Terrain Statistics"]
         INTEL["Mars Intelligence"]
-        NOTES["Field Notes & Exports"]
-        APP --> MAPS & ROUTE & OPS & INTEL & NOTES
+        NOTES["Command Index · Field Notes & Exports"]
+        APP --> MAPS & ROUTE & OPS & DUSTM & INTEL & NOTES
     end
 
     subgraph BACKEND["FASTAPI BACKEND · Port 8002"]
         API["Domain Routers"]
-        ENGINES["Scientific Engines<br/>Terrain · Routing · Thermal · Hazards<br/>Environment · Simulation"]
+        ENGINES["Scientific Engines<br/>Terrain · Routing · Thermal · Hazards<br/>Environment · Dust · Simulation"]
+        KBS["AI Tools & Knowledge Base"]
         PROV["Provenance & Evidence Classification"]
         API --> ENGINES
         API --> PROV
+        API --> KBS
     end
 
     subgraph DATA["DATA LAYER"]
@@ -452,6 +470,7 @@ flowchart TB
     ENGINES --> LOCAL
     ENGINES --> EXT
     INTEL -.->|"Grounded interpretation only"| ENGINES
+    KBS --> ENGINES
 ```
 
 # Stack
@@ -538,6 +557,73 @@ https://github.com/kmmohaimenulhaque-code/martian-map/tree/Master-Ai
 
 # Source ledger:
 https://github.com/kmmohaimenulhaque-code/martian-map/blob/Master-Ai/data/manifests/updated_source_ledger.json
+
+
+## Project tour: the whole console in screenshots
+
+Captured from the production build (`npm run build` + `vite preview`) running against the live FastAPI backend. Everything below is the actual application, not mock-ups. Features marked **NEW** are described in the [NEW FEATURES](#-new-features--mission-console-v2) section above.
+
+### The mission console
+
+![Full mission console: selected site, rover photos, 2D coloured map, USGS scientific map and the dust and morphology panels](assets/screenshots/tour/01-full-console.png)
+
+One screen holds the whole mission picture. The **left column** is the site evidence (geography, rover imagery, THEMIS thermal evidence, solar geometry). The **centre** is the synchronised **2D coloured Mars map** and the embedded **USGS scientific map**, with the route console beneath. The **right column** carries the **NEW** dust graphics and terrain statistics, site science, the interpretation panel, the crewed console and the NASA feed. The top bar has site search over 2,052 USGS/IAU features, the sol, the system status and the main tools; the **NEW** ☰ Command Index sits at the top right. The footer lists every data source and the **NEW** Team NeuroNexus credits.
+
+### Site evidence (left column)
+
+| | |
+|---|---|
+| ![Selected site panel for Gale crater: coordinates, USGS/IAU identity, diameter, approval status, quadrangle](assets/screenshots/tour/02-selected-site.png) | **Selected site.** Name, feature type, exact coordinates, whether the selection is a USGS/IAU named feature, a user place or a bare coordinate, with its diameter, IAU approval status and USGS quadrangle. Any coordinate on Mars can be selected, and nearby nomenclature is shown only as context. |
+| ![Applicable rover photos for Gale crater from the NASA Image and Video Library](assets/screenshots/tour/04-rover-photos.png) | **Applicable rover photos.** NASA Image and Video Library items matched to the selected feature (here Curiosity at Gale), each linked back to NASA. |
+| ![THEMIS historical thermal evidence: nearest brightness temperature, min, max, mean, sample counts, radius, years and seasonal coverage](assets/screenshots/tour/03-thermal-themis.png) | **Historical THEMIS thermal evidence.** The nearest historical brightness temperature is shown separately from the minimum, maximum and mean within the search radius, with sample counts, observation years, seasonal coverage and an evidence score. These are historical NASA Odyssey observations, not current weather. |
+| ![Solar geometry panel with areocentric longitude](assets/screenshots/tour/05-solar-geometry.png) | **Solar geometry.** Areocentric longitude (Ls) for the console sol, which now follows the **NEW** sol scrubber. |
+
+### Right column: science and mission panels
+
+| | |
+|---|---|
+| ![Site science and survival context: soil, minerals, atmosphere, water and ice, bioavailability](assets/screenshots/tour/06-site-science.png) | **Site science and survival context.** Soil, minerals, atmosphere (Curiosity/SAM gas fractions for Gale), water and ice, bioavailability and biology, each with an explicit status such as CONTEXT ONLY, NOT INGESTED or PROXY ONLY, so missing evidence is stated and never invented. |
+| ![Interpretation panel: assessment status and evidence class of thermal, dust and terrain](assets/screenshots/tour/07-assessment-interpretation.png) | **Interpretation.** The assessment status and the evidence class behind each input: historical thermal observation, **modeled** MY34 dust scenario, NASA MOLA terrain. |
+| ![Crewed Mars console: mission, phase, sol, site, mission definition with evidence class badges](assets/screenshots/tour/08-crewed-mars-console.png) | **Crewed Mars console.** An explicitly simulated mission model (crew, vehicles, EVA, radiation, life support, resources) with a configurable profile. Every row carries its evidence badge (PROJECT DATA, DERIVED, CONFIGURABLE, UNAVAILABLE) and source link. It is not a live mission feed. |
+| ![NASA Mars reference feed with latest items from NASA and partner sources](assets/screenshots/tour/09-nasa-reference-feed.png) | **Mars reference feed.** Latest Mars items from NASA Science and partner agencies, filterable by source, with a link to the archive. |
+
+### Maps and routes
+
+![2D coloured global map with a three-waypoint route and the route console showing displacement and planned route length](assets/screenshots/tour/10-2d-map-route-planning.png)
+
+**2D coloured global map and route planning.** 2,052 USGS/IAU features are clickable and colour-coded by type. Turn on **PLAN ROUTE**, click waypoints, and **ANALYZE** returns the haversine displacement and planned length with NASA MOLA terrain analysed at every waypoint. **SAVE ROUTE**, **COMPARE**, custom places and Safe Havens live in the same console. Saved routes are the basis of the **NEW** comparison, projection and snapshot features.
+
+![USGS scientific map synchronised to the selected site with the SIM 3292 geologic map legend](assets/screenshots/tour/11-usgs-scientific-map.png)
+
+**USGS scientific map.** The embedded USGS Geologic Map of Mars (SIM 3292) synchronises to the selected site (here ±40 km around Gale) with its legend for landing sites, geologic contacts and structural features. **USGS SNAPSHOT** renders routes on this geology (the **NEW** multi-route snapshot draws every compared route in one frame).
+
+![AI Route Designer with six deterministic candidates, trade-off analysis and Save as route buttons](assets/screenshots/tour/15-ai-route-designer.png)
+
+**AI Route Designer.** Deterministic multi-objective routing over NASA MOLA terrain generates six candidates (low distance, low terrain-risk, low EVA, low terrain burden, science first, balanced), each with distance, EVA time, terrain burden, slopes, elevation gain, science evidence and its Pareto status, plus the method used and the uncertainties. The AI never produces route geometry. **NEW:** every candidate can be saved by name.
+
+### 3D Mars
+
+![Interactive 3D Mars with the AI candidate routes and the 3D toolbar](assets/screenshots/tour/16-3d-mars.png)
+
+**Interactive 3D Mars.** An ArcGIS SceneView in Mars 2000 coordinates over public Mars terrain and imagery, with named features, landing sites, rover locations and the AI route candidates (here a Gale to Peace Vallis route). The toolbar gives AI Route Design, compare, USGS snapshot, exploration zones, the **NEW** ⌁ ROUTES panel and ◎ ROUTE PROJECTION, layers and legend.
+
+![3D layers panel listing terrain, USGS, rover and overlay layers each tagged with its evidence class](assets/screenshots/tour/17-3d-layers.png)
+
+**3D layers.** Every layer is tagged with its evidence class (OBSERVED or DERIVED): 3D terrain, Viking imagery, colourised elevation, local MOLA slope and roughness, USGS named features, geologic units, contacts and structures, landing sites, and Curiosity and Perseverance traverses.
+
+![3D map legend for features, routes and rover traverses](assets/screenshots/tour/18-3d-legend.png)
+
+**Map legend.** The symbols for features, routes, landing sites, rovers and overlays.
+
+### Mission awareness and workspace
+
+![Near-Mars orbital tracking: log-distance schematic and close-approach table with status and uncertainty ranges](assets/screenshots/tour/14-orbital-tracking.png)
+
+**Near-Mars orbital tracking.** Live NASA/JPL close approaches within a selectable horizon, drawn on a log-distance schematic and listed with distance, 3-sigma range, relative velocity and status (MONITORING or REVIEW). Awareness only: a close approach is not an impact prediction, and NeuroNexus performs no interception planning.
+
+![Field notes and mission checklist inside the Command Index](assets/screenshots/tour/13-field-notes-and-checklist.png)
+
+**Field notes and checklist.** A persistent mission objective note and a ten-item checklist, with JSON, CSV, route CSV and print/PDF exports. **NEW:** it now lives in a tab of the ☰ Command Index.
 
 # Team
 
