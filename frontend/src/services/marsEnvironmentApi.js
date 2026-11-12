@@ -36,6 +36,18 @@ async function fetchJson(
 }
 
 
+function normaliseLongitude(
+  longitude,
+) {
+  return (
+    (
+      Number(longitude) % 360
+    ) +
+    360
+  ) % 360
+}
+
+
 export async function fetchPlaces(
   limit = 2052,
 ) {
@@ -83,6 +95,34 @@ export async function fetchEnvironmentByPlace(
 }
 
 
+export async function fetchEnvironmentByCoordinate(
+  latitude,
+  longitude,
+  sol,
+) {
+  const params =
+    new URLSearchParams({
+      latitude: String(
+        Number(latitude),
+      ),
+
+      longitude: String(
+        normaliseLongitude(
+          longitude,
+        ),
+      ),
+
+      sol: String(
+        Number(sol),
+      ),
+    })
+
+  return fetchJson(
+    `${API_BASE}/environment?${params.toString()}`,
+  )
+}
+
+
 export async function fetchTerrainMetadata() {
   return fetchJson(
     `${API_BASE}/terrain/metadata`,
@@ -115,9 +155,9 @@ export async function fetchRoutePlan(
                 ),
 
               longitude_deg:
-                Number(
+                normaliseLongitude(
                   point.longitude_deg,
-                ) % 360,
+                ),
 
               label:
                 point.label ??

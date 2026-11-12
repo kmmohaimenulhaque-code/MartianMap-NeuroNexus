@@ -13,3 +13,733 @@ html {
 body {
   overflow: hidden;
 }
+
+/* =========================================================
+   NEURONEXUS / HARVESINE TOPO UPGRADE
+   ========================================================= */
+
+.nn-route-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid rgba(117, 230, 255, 0.12);
+  background: rgba(4, 9, 12, 0.94);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.nn-route-tools-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.nn-route-eyebrow {
+  font-size: 7px;
+  letter-spacing: 0.15em;
+  color: #6d848e;
+  text-transform: uppercase;
+}
+
+.nn-route-tools h3 {
+  margin: 4px 0 4px;
+  color: #dce9ee;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+
+.nn-route-tools p {
+  margin: 0;
+  color: #72848c;
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+.nn-status {
+  align-self: flex-start;
+  padding: 4px 6px;
+  border: 1px solid rgba(117, 230, 255, 0.15);
+  color: #75e6ff;
+  font-size: 7px;
+  letter-spacing: 0.1em;
+}
+
+.nn-status.loading {
+  color: #f2db8b;
+  border-color: rgba(242, 219, 139, 0.2);
+}
+
+.nn-route-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.nn-route-metric {
+  padding: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.nn-route-metric span {
+  display: block;
+  color: #65777f;
+  font-size: 6px;
+  letter-spacing: 0.11em;
+}
+
+.nn-route-metric strong {
+  display: block;
+  margin-top: 4px;
+  color: #d4e1e6;
+  font-size: 8px;
+}
+
+.nn-route-eva-control {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.nn-route-eva-control label {
+  color: #65777f;
+  font-size: 7px;
+  letter-spacing: 0.1em;
+}
+
+.nn-route-eva-control > div {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.nn-route-eva-control input {
+  width: 62px;
+  border: 1px solid rgba(117, 230, 255, 0.15);
+  background: #071014;
+  color: #dce9ee;
+  padding: 5px;
+  font: inherit;
+  font-size: 8px;
+}
+
+.nn-route-eva-control span {
+  color: #6f8189;
+  font-size: 7px;
+}
+
+.nn-route-evidence-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.nn-route-evidence-column {
+  min-width: 0;
+}
+
+.nn-route-column-title {
+  margin-bottom: 6px;
+  font-size: 7px;
+  letter-spacing: 0.12em;
+}
+
+.nn-route-column-title.positive {
+  color: #8be8a6;
+}
+
+.nn-route-column-title.caution {
+  color: #e9c97d;
+}
+
+.nn-route-evidence-item {
+  display: grid;
+  grid-template-columns: 14px 1fr;
+  gap: 5px;
+  margin-bottom: 6px;
+}
+
+.nn-route-evidence-icon {
+  font-size: 8px;
+}
+
+.nn-route-evidence-column:first-child
+  .nn-route-evidence-icon {
+  color: #8be8a6;
+}
+
+.nn-route-evidence-column:last-child
+  .nn-route-evidence-icon {
+  color: #e9c97d;
+}
+
+.nn-route-evidence-item strong {
+  display: block;
+  color: #b9c8cd;
+  font-size: 7px;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.nn-route-evidence-item small {
+  display: block;
+  margin-top: 2px;
+  color: #607179;
+  font-size: 6px;
+  letter-spacing: 0.07em;
+}
+
+.nn-route-methodology {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 7px;
+  border: 1px dashed rgba(117, 230, 255, 0.1);
+  color: #64777f;
+  font-size: 6px;
+  line-height: 1.45;
+}
+
+.nn-route-methodology strong {
+  color: #79ddec;
+  letter-spacing: 0.1em;
+}
+
+.nn-route-action-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.nn-route-action-row button,
+.nn-route-save-box button,
+.nn-route-compare-button {
+  border: 1px solid rgba(117, 230, 255, 0.17);
+  background: #071115;
+  color: #8bcddb;
+  padding: 7px;
+  font: inherit;
+  font-size: 7px;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.nn-route-action-row button:hover,
+.nn-route-save-box button:hover,
+.nn-route-compare-button:hover {
+  background: #0b1b21;
+  border-color: rgba(117, 230, 255, 0.4);
+}
+
+.nn-route-action-row button:disabled,
+.nn-route-save-box button:disabled,
+.nn-route-compare-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
+.nn-route-save-box {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px;
+}
+
+.nn-route-save-box > div {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+}
+
+.nn-route-save-box > div span {
+  color: #70838b;
+  font-size: 7px;
+  letter-spacing: 0.1em;
+}
+
+.nn-route-save-box > div small {
+  color: #596a72;
+  font-size: 6px;
+}
+
+.nn-route-save-box input {
+  min-width: 0;
+  border: 1px solid rgba(117, 230, 255, 0.1);
+  background: #061014;
+  color: #d7e3e7;
+  padding: 6px;
+  font: inherit;
+  font-size: 7px;
+}
+
+.nn-route-snapshot-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.nn-route-snapshot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 7px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.nn-route-snapshot > div {
+  min-width: 0;
+}
+
+.nn-route-snapshot strong {
+  display: block;
+  color: #c7d5da;
+  font-size: 7px;
+}
+
+.nn-route-snapshot small {
+  display: block;
+  margin-top: 2px;
+  color: #60717a;
+  font-size: 6px;
+}
+
+.nn-route-snapshot button {
+  border: 0;
+  background: transparent;
+  color: #70828a;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.nn-route-compare-button {
+  width: 100%;
+}
+
+/* ---------------------------------------------------------
+   MAP PLACE CREATOR
+   --------------------------------------------------------- */
+
+.nn-map-create-popup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 190px;
+}
+
+.nn-map-create-popup strong {
+  font-size: 9px;
+}
+
+.nn-map-create-popup span {
+  color: #667980;
+  font-size: 7px;
+}
+
+.nn-map-create-popup label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  color: #65777f;
+  font-size: 6px;
+  letter-spacing: 0.08em;
+}
+
+.nn-map-create-popup input {
+  padding: 5px;
+  border: 1px solid rgba(117, 230, 255, 0.2);
+  background: #071014;
+  color: #dce9ee;
+  font-size: 8px;
+}
+
+.nn-map-create-popup button {
+  border: 1px solid rgba(117, 230, 255, 0.2);
+  background: #08151a;
+  color: #79ddec;
+  padding: 5px;
+  cursor: pointer;
+  font-size: 7px;
+}
+
+.nn-map-create-popup button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ---------------------------------------------------------
+   LIQUID GLASS COMPARISON
+   --------------------------------------------------------- */
+
+.nn-compare-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+}
+
+.nn-compare-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 7, 9, 0.56);
+  backdrop-filter: blur(16px) saturate(0.8);
+  -webkit-backdrop-filter: blur(16px) saturate(0.8);
+}
+
+.nn-compare-workspace {
+  position: relative;
+  z-index: 2;
+  width: min(1500px, 96vw);
+  height: min(900px, 94vh);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
+  border: 1px solid rgba(117, 230, 255, 0.15);
+  background: rgba(6, 13, 16, 0.77);
+  box-shadow:
+    0 25px 100px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.nn-compare-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.nn-compare-header h2 {
+  margin: 5px 0;
+  color: #d8e5e9;
+  font-size: 16px;
+}
+
+.nn-compare-header p {
+  margin: 0;
+  color: #687b83;
+  font-size: 8px;
+}
+
+.nn-compare-close {
+  border: 1px solid rgba(117, 230, 255, 0.15);
+  background: rgba(4, 10, 13, 0.7);
+  color: #87cbd6;
+  padding: 7px 9px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 7px;
+}
+
+.nn-compare-map-grid {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 8px;
+}
+
+.nn-compare-map-panel {
+  min-height: 0;
+  min-width: 0;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(117, 230, 255, 0.08);
+  background: #040a0d;
+}
+
+.nn-compare-map-panel > * {
+  height: 100%;
+}
+
+.nn-compare-map-label {
+  position: absolute;
+  z-index: 500;
+  top: 8px;
+  left: 8px;
+  padding: 5px 6px;
+  background: rgba(3, 9, 11, 0.8);
+  border: 1px solid rgba(117, 230, 255, 0.13);
+  color: #8bd1dc;
+  font-size: 6px;
+  letter-spacing: 0.12em;
+}
+
+.nn-compare-route-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 7px;
+  padding: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.nn-compare-route-card {
+  min-width: 0;
+  text-align: left;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.018);
+  color: inherit;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.nn-compare-route-card.active {
+  border-color: rgba(117, 230, 255, 0.35);
+  background: rgba(117, 230, 255, 0.045);
+}
+
+.nn-compare-route-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.nn-compare-route-card-top strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #c8d6db;
+  font-size: 8px;
+}
+
+.nn-compare-route-card-top span {
+  color: #75e6ff;
+  font-size: 6px;
+}
+
+.nn-compare-mini-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  margin-top: 7px;
+}
+
+.nn-compare-mini-grid span {
+  display: block;
+  color: #5f7179;
+  font-size: 5px;
+  letter-spacing: 0.08em;
+}
+
+.nn-compare-mini-grid strong {
+  display: block;
+  margin-top: 2px;
+  color: #aebfc5;
+  font-size: 7px;
+}
+
+.nn-compare-card-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 7px;
+}
+
+.nn-compare-card-columns small {
+  display: block;
+  margin-bottom: 3px;
+  color: #64767e;
+  font-size: 5px;
+  letter-spacing: 0.08em;
+}
+
+.nn-compare-card-columns span {
+  display: block;
+  margin-bottom: 2px;
+  color: #788b92;
+  font-size: 5px;
+  line-height: 1.35;
+}
+
+/* ---------------------------------------------------------
+   HAMBURGER DRAWER
+   --------------------------------------------------------- */
+
+.nn-drawer-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+}
+
+.nn-drawer-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.nn-utility-drawer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: min(390px, 92vw);
+  height: 100%;
+  padding: 16px;
+  overflow-y: auto;
+  border-left: 1px solid rgba(117, 230, 255, 0.14);
+  background: rgba(5, 12, 15, 0.96);
+  box-shadow: -25px 0 80px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(18px);
+}
+
+.nn-drawer-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 18px;
+}
+
+.nn-drawer-header h2 {
+  margin: 5px 0 0;
+  color: #d5e1e5;
+  font-size: 14px;
+}
+
+.nn-drawer-header > button {
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(117, 230, 255, 0.15);
+  background: transparent;
+  color: #87cbd6;
+  cursor: pointer;
+}
+
+.nn-drawer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 18px;
+}
+
+.nn-drawer-section-title {
+  color: #75ddec;
+  font-size: 7px;
+  letter-spacing: 0.12em;
+}
+
+.nn-drawer-section textarea {
+  min-height: 170px;
+  resize: vertical;
+  padding: 9px;
+  border: 1px solid rgba(117, 230, 255, 0.1);
+  background: #061014;
+  color: #d3e0e4;
+  font: inherit;
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+.nn-drawer-section > small {
+  color: #5f7179;
+  font-size: 6px;
+  text-align: right;
+}
+
+.nn-checklist-entry {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 5px;
+}
+
+.nn-checklist-entry input {
+  min-width: 0;
+  border: 1px solid rgba(117, 230, 255, 0.1);
+  background: #061014;
+  color: #d3e0e4;
+  padding: 7px;
+  font: inherit;
+  font-size: 8px;
+}
+
+.nn-checklist-entry button {
+  width: 30px;
+  border: 1px solid rgba(117, 230, 255, 0.15);
+  background: #08161b;
+  color: #75e6ff;
+  cursor: pointer;
+}
+
+.nn-checklist-meta {
+  display: flex;
+  justify-content: space-between;
+  color: #61737b;
+  font-size: 6px;
+}
+
+.nn-checklist-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.nn-checklist-item {
+  display: grid;
+  grid-template-columns: 18px 1fr 18px;
+  gap: 5px;
+  align-items: start;
+  padding: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.015);
+  color: #aab9be;
+  font-size: 7px;
+  line-height: 1.4;
+}
+
+.nn-checklist-item.done {
+  color: #67817a;
+  text-decoration: line-through;
+}
+
+.nn-check-button,
+.nn-check-delete {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  color: #78cbd5;
+}
+
+.nn-check-delete {
+  color: #687980;
+}
+
+/* ---------------------------------------------------------
+   RESPONSIVE
+   --------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .nn-route-metrics-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .nn-compare-map-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .nn-compare-workspace {
+    height: 96vh;
+  }
+
+  .nn-compare-route-strip {
+    overflow-x: auto;
+    grid-template-columns:
+      repeat(4, minmax(180px, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .nn-route-evidence-grid,
+  .nn-route-action-row {
+    grid-template-columns: 1fr;
+  }
+}

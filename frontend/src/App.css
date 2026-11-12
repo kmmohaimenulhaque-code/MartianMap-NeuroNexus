@@ -1504,3 +1504,1141 @@ a {
     flex: 1 1 auto;
   }
 }
+
+/* =========================================================
+   NEURONEXUS / HERVESINE-TOPO-UPGRADE
+   ========================================================= */
+
+.nn-hamburger-button {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  margin-left: 6px;
+  border: 1px solid rgba(117, 230, 255, 0.16);
+  background: rgba(6, 13, 16, 0.84);
+  color: #75e6ff;
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.nn-hamburger-button:hover {
+  background: rgba(117, 230, 255, 0.06);
+  border-color: rgba(117, 230, 255, 0.35);
+}
+
+/* =========================================================
+   ROUTE INTELLIGENCE
+   ========================================================= */
+
+.nn-route-console {
+  border-top: 1px solid rgba(117, 230, 255, 0.08);
+}
+
+.nn-route-analysis-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(117, 230, 255, 0.08);
+}
+
+.nn-route-analysis-header > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.nn-route-analysis-header span {
+  color: #6d858f;
+  font-size: 7px;
+  letter-spacing: 0.12em;
+}
+
+.nn-route-analysis-header strong {
+  color: #75e6ff;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+}
+
+.nn-route-analysis-header small {
+  color: #586b73;
+  font-size: 6px;
+}
+
+.nn-route-analysis-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  margin-top: 8px;
+}
+
+.nn-route-analysis-metrics .metric {
+  min-width: 0;
+}
+
+.nn-route-pros-cons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.nn-route-column-title {
+  margin-bottom: 6px;
+  font-size: 7px;
+  letter-spacing: 0.12em;
+}
+
+.nn-route-column-title.positive {
+  color: #8be8a6;
+}
+
+.nn-route-column-title.caution {
+  color: #e7ca82;
+}
+
+.nn-route-line {
+  display: grid;
+  grid-template-columns: 12px 1fr;
+  gap: 5px;
+  margin-bottom: 7px;
+}
+
+.nn-route-line > span {
+  font-size: 8px;
+}
+
+.nn-route-pros-cons > div:first-child .nn-route-line > span {
+  color: #8be8a6;
+}
+
+.nn-route-pros-cons > div:last-child .nn-route-line > span {
+  color: #e7ca82;
+}
+
+.nn-route-line strong {
+  display: block;
+  color: #b9c8cd;
+  font-size: 7px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.nn-route-line small {
+  display: block;
+  margin-top: 2px;
+  color: #596b73;
+  font-size: 6px;
+  letter-spacing: 0.05em;
+}
+
+.nn-route-analysis-note {
+  margin-top: 5px;
+  padding: 7px 8px;
+  border: 1px dashed rgba(117, 230, 255, 0.1);
+  color: #64777f;
+  font-size: 6px;
+  line-height: 1.5;
+}
+
+.nn-route-pace {
+  margin-top: 8px;
+}
+
+.nn-route-pace label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: #64777f;
+  font-size: 7px;
+  letter-spacing: 0.1em;
+}
+
+.nn-route-pace input {
+  width: 64px;
+  padding: 5px;
+  border: 1px solid rgba(117, 230, 255, 0.12);
+  background: #061014;
+  color: #cfdde1;
+  font: inherit;
+  font-size: 7px;
+}
+
+.nn-route-save {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.nn-route-save > div {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+}
+
+.nn-route-save > div span {
+  color: #6c7e86;
+  font-size: 7px;
+  letter-spacing: 0.1em;
+}
+
+.nn-route-save > div small {
+  color: #52636b;
+  font-size: 6px;
+}
+
+.nn-route-save input {
+  min-width: 0;
+  padding: 6px;
+  border: 1px solid rgba(117, 230, 255, 0.1);
+  background: #061014;
+  color: #cedde2;
+  font: inherit;
+  font-size: 7px;
+}
+
+.nn-route-save button,
+.nn-compare-trigger {
+  border: 1px solid rgba(117, 230, 255, 0.17);
+  background: #071115;
+  color: #83cede;
+  padding: 7px 8px;
+  font: inherit;
+  font-size: 7px;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.nn-route-save button:disabled,
+.nn-compare-trigger:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.nn-compare-trigger {
+  width: 100%;
+  margin-top: 7px;
+}
+
+.nn-snapshot-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.nn-snapshot-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 7px;
+  align-items: center;
+  padding: 6px 7px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.012);
+}
+
+.nn-snapshot-row span {
+  color: #61737c;
+  font-size: 6px;
+}
+
+.nn-snapshot-row strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #b9c9ce;
+  font-size: 7px;
+}
+
+.nn-snapshot-row small {
+  color: #65767d;
+  font-size: 6px;
+}
+
+/* =========================================================
+   CUSTOM PLACES / SAFE HAVENS
+   ========================================================= */
+
+.nn-unnamed-location {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 9px;
+  padding: 8px;
+  border: 1px dashed rgba(117, 230, 255, 0.12);
+  background: rgba(117, 230, 255, 0.02);
+}
+
+.nn-unnamed-location strong {
+  color: #75e6ff;
+  font-size: 7px;
+  letter-spacing: 0.1em;
+}
+
+.nn-unnamed-location span {
+  color: #61747d;
+  font-size: 7px;
+  line-height: 1.45;
+}
+
+.nn-map-create-popup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 190px;
+}
+
+.nn-map-create-popup strong {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 9px;
+}
+
+.nn-map-create-popup span {
+  color: #65777f;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 7px;
+}
+
+.nn-map-create-popup label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  color: #65777f;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 6px;
+  letter-spacing: 0.08em;
+}
+
+.nn-map-create-popup input {
+  padding: 5px;
+  border: 1px solid rgba(117, 230, 255, 0.18);
+  background: #071014;
+  color: #d7e2e6;
+  font-size: 8px;
+}
+
+.nn-map-create-popup button {
+  padding: 6px;
+  border: 1px solid rgba(117, 230, 255, 0.18);
+  background: #08161b;
+  color: #77d8e5;
+  cursor: pointer;
+  font-size: 7px;
+}
+
+.nn-map-create-popup button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   UTILITY DRAWER
+   ========================================================= */
+
+.nn-drawer-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+}
+
+.nn-drawer-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.nn-utility-drawer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: min(390px, 92vw);
+  height: 100%;
+  overflow-y: auto;
+  padding: 16px;
+  border-left: 1px solid rgba(117, 230, 255, 0.14);
+  background: rgba(5, 12, 15, 0.97);
+  box-shadow: -28px 0 80px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.nn-drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.nn-drawer-kicker {
+  color: #667d86;
+  font-size: 7px;
+  letter-spacing: 0.13em;
+}
+
+.nn-drawer-header h2 {
+  margin: 5px 0 0;
+  color: #d5e2e6;
+  font-size: 14px;
+}
+
+.nn-drawer-header > button {
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(117, 230, 255, 0.14);
+  background: transparent;
+  color: #85cbd6;
+  cursor: pointer;
+}
+
+.nn-drawer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 18px;
+}
+
+.nn-drawer-title {
+  color: #75ddec;
+  font-size: 7px;
+  letter-spacing: 0.12em;
+}
+
+.nn-drawer-section textarea {
+  min-height: 160px;
+  resize: vertical;
+  padding: 9px;
+  border: 1px solid rgba(117, 230, 255, 0.1);
+  background: #061014;
+  color: #d2e0e4;
+  font: inherit;
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+.nn-drawer-section > small {
+  color: #596b73;
+  font-size: 6px;
+  text-align: right;
+}
+
+.nn-check-entry {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 5px;
+}
+
+.nn-check-entry input {
+  min-width: 0;
+  padding: 7px;
+  border: 1px solid rgba(117, 230, 255, 0.1);
+  background: #061014;
+  color: #d2e0e4;
+  font: inherit;
+  font-size: 8px;
+}
+
+.nn-check-entry button {
+  width: 30px;
+  border: 1px solid rgba(117, 230, 255, 0.14);
+  background: #08161b;
+  color: #75e6ff;
+  cursor: pointer;
+}
+
+.nn-check-meta {
+  display: flex;
+  justify-content: space-between;
+  color: #5f7178;
+  font-size: 6px;
+}
+
+.nn-check-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nn-check-item {
+  display: grid;
+  grid-template-columns: 18px 1fr 18px;
+  gap: 5px;
+  align-items: start;
+  padding: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.014);
+  color: #aebdc2;
+  font-size: 7px;
+  line-height: 1.4;
+}
+
+.nn-check-item.done {
+  color: #6a817a;
+  text-decoration: line-through;
+}
+
+.nn-check-item button {
+  border: 0;
+  background: transparent;
+  color: #76ced9;
+  cursor: pointer;
+}
+
+.nn-check-item button:last-child {
+  color: #67777e;
+}
+
+.nn-export-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+}
+
+.nn-export-grid button {
+  min-height: 35px;
+  padding: 6px;
+  border: 1px solid rgba(117, 230, 255, 0.14);
+  background: #071115;
+  color: #84cad6;
+  font: inherit;
+  font-size: 6px;
+  letter-spacing: 0.07em;
+  cursor: pointer;
+}
+
+/* =========================================================
+   LIQUID GLASS ROUTE COMPARISON
+   ========================================================= */
+
+.nn-compare-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.nn-compare-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 7, 9, 0.56);
+  backdrop-filter: blur(17px) saturate(0.78);
+  -webkit-backdrop-filter: blur(17px) saturate(0.78);
+}
+
+.nn-compare-workspace {
+  position: relative;
+  z-index: 2;
+  width: min(1500px, 96vw);
+  height: min(900px, 94vh);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
+  border: 1px solid rgba(117, 230, 255, 0.16);
+  background: rgba(6, 13, 16, 0.75);
+  box-shadow:
+    0 30px 110px rgba(0, 0, 0, 0.58),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+}
+
+.nn-compare-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.nn-compare-kicker {
+  color: #657a83;
+  font-size: 7px;
+  letter-spacing: 0.14em;
+}
+
+.nn-compare-header h2 {
+  margin: 5px 0;
+  color: #d6e2e6;
+  font-size: 16px;
+}
+
+.nn-compare-header p {
+  margin: 0;
+  color: #687b82;
+  font-size: 8px;
+}
+
+.nn-compare-close {
+  padding: 7px 9px;
+  border: 1px solid rgba(117, 230, 255, 0.15);
+  background: rgba(4, 10, 13, 0.7);
+  color: #84cad6;
+  cursor: pointer;
+  font: inherit;
+  font-size: 7px;
+}
+
+.nn-compare-map-area {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 8px;
+}
+
+.nn-compare-map-card {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid rgba(117, 230, 255, 0.08);
+  background: #040a0d;
+}
+
+.nn-compare-map-card > .leaflet-container {
+  width: 100%;
+  height: 100%;
+}
+
+.nn-compare-map-tag {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 500;
+  padding: 5px 6px;
+  border: 1px solid rgba(117, 230, 255, 0.13);
+  background: rgba(3, 9, 11, 0.84);
+  color: #8bd1dc;
+  font-size: 6px;
+  letter-spacing: 0.11em;
+  pointer-events: none;
+}
+
+.nn-compare-cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 7px;
+  padding: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.nn-compare-route-card {
+  min-width: 0;
+  text-align: left;
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.015);
+  color: inherit;
+  cursor: pointer;
+}
+
+.nn-compare-route-card.active {
+  border-color: rgba(117, 230, 255, 0.35);
+  background: rgba(117, 230, 255, 0.045);
+}
+
+.nn-compare-route-top {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.nn-compare-route-top span {
+  color: #5f747d;
+  font-size: 5px;
+  letter-spacing: 0.1em;
+}
+
+.nn-compare-route-top strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #c6d5da;
+  font-size: 8px;
+}
+
+.nn-compare-route-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  margin-top: 8px;
+}
+
+.nn-compare-route-metrics .metric {
+  min-width: 0;
+}
+
+.nn-compare-route-metrics .metric span {
+  font-size: 5px;
+}
+
+.nn-compare-route-metrics .metric strong {
+  font-size: 7px;
+}
+
+.nn-compare-route-pros-cons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  margin-top: 8px;
+}
+
+.nn-compare-route-pros-cons small {
+  display: block;
+  margin-bottom: 3px;
+  color: #64767d;
+  font-size: 5px;
+  letter-spacing: 0.08em;
+}
+
+.nn-compare-route-pros-cons span {
+  display: block;
+  margin-bottom: 2px;
+  color: #788b92;
+  font-size: 5px;
+  line-height: 1.35;
+}
+
+/* =========================================================
+   LEGEND
+   ========================================================= */
+
+.legend-mark.route {
+  background: #75e6ff;
+}
+
+.legend-mark.haven {
+  background: #9dffbe;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1100px) {
+  .nn-compare-map-area {
+    grid-template-columns: 1fr;
+  }
+
+  .nn-compare-workspace {
+    height: 96vh;
+  }
+
+  .nn-compare-cards {
+    overflow-x: auto;
+    grid-template-columns: repeat(4, minmax(180px, 1fr));
+  }
+}
+
+@media (max-width: 850px) {
+  .nn-route-analysis-metrics {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .nn-route-pros-cons {
+    grid-template-columns: 1fr;
+  }
+
+  .nn-export-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .nn-compare-overlay {
+    padding: 8px;
+  }
+
+  .nn-compare-header {
+    flex-direction: column;
+  }
+}
+
+/* =========================================================
+   ROUTE COMPARISON
+   ========================================================= */
+
+.comparison-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+
+  padding: 3vh 3vw;
+
+  background:
+    rgba(2, 5, 7, 0.74);
+
+  backdrop-filter:
+    blur(14px);
+}
+
+.comparison-workspace {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+
+  padding: 16px;
+
+  border: 1px solid
+    rgba(117, 230, 255, 0.22);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(9, 15, 18, 0.96),
+      rgba(4, 7, 9, 0.98)
+    );
+
+  box-shadow:
+    0 32px 100px
+      rgba(0, 0, 0, 0.55);
+}
+
+.comparison-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.comparison-header h2 {
+  margin: 5px 0;
+
+  color: #edfaff;
+
+  font-family: monospace;
+  font-size: 19px;
+  letter-spacing: 0.07em;
+}
+
+.comparison-header p {
+  margin: 0;
+
+  max-width: 700px;
+
+  color: #6f828a;
+
+  font-family: monospace;
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+.comparison-close {
+  min-height: 32px;
+
+  padding: 0 10px;
+
+  border: 1px solid
+    rgba(117, 230, 255, 0.2);
+
+  background: #091115;
+  color: var(--cyan);
+
+  font-family: monospace;
+  font-size: 8px;
+  letter-spacing: 0.08em;
+
+  cursor: pointer;
+}
+
+.comparison-selectors {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 8px;
+
+  margin: 12px 0;
+}
+
+.comparison-selectors label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  color: #61757e;
+
+  font-family: monospace;
+  font-size: 7px;
+  letter-spacing: 0.1em;
+}
+
+.comparison-selectors select {
+  min-height: 32px;
+
+  padding: 0 8px;
+
+  border: 1px solid
+    rgba(117, 230, 255, 0.14);
+
+  background: #080f12;
+  color: #e7f4f7;
+
+  font-family: monospace;
+  font-size: 8px;
+}
+
+.comparison-main {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 8px;
+}
+
+.comparison-map-card {
+  overflow: hidden;
+
+  border: 1px solid
+    rgba(117, 230, 255, 0.11);
+
+  background: #06090b;
+}
+
+.comparison-card-head {
+  display: grid;
+  grid-template-columns:
+    auto 1fr;
+
+  gap: 8px;
+
+  padding: 8px;
+
+  border-bottom: 1px solid
+    rgba(117, 230, 255, 0.08);
+}
+
+.comparison-card-head span {
+  color: var(--cyan);
+
+  font-family: monospace;
+  font-size: 7px;
+  letter-spacing: 0.1em;
+}
+
+.comparison-card-head strong {
+  overflow: hidden;
+
+  color: #dcecef;
+
+  font-family: monospace;
+  font-size: 8px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.comparison-map {
+  height: 390px;
+  min-height: 300px;
+}
+
+.comparison-map
+  .mars-map-inner-shell {
+  height: 100%;
+}
+
+.comparison-detail-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 8px;
+
+  margin-top: 8px;
+}
+
+.comparison-detail-card {
+  padding: 10px;
+
+  border: 1px solid
+    rgba(117, 230, 255, 0.09);
+
+  background: #080f12;
+}
+
+.comparison-detail-card h3 {
+  margin: 4px 0 9px;
+
+  color: #edfaff;
+
+  font-family: monospace;
+  font-size: 11px;
+}
+
+.comparison-metric-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 5px;
+}
+
+.comparison-metric {
+  padding: 6px;
+
+  border: 1px solid
+    rgba(117, 230, 255, 0.06);
+
+  background: #070c0f;
+}
+
+.comparison-metric span {
+  display: block;
+
+  color: #5f737c;
+
+  font-family: monospace;
+  font-size: 6px;
+  letter-spacing: 0.1em;
+}
+
+.comparison-metric strong {
+  display: inline-block;
+
+  margin-top: 4px;
+
+  color: #e9f9fc;
+
+  font-family: monospace;
+  font-size: 9px;
+}
+
+.comparison-metric small {
+  margin-left: 3px;
+
+  color: #63777f;
+
+  font-family: monospace;
+  font-size: 6px;
+}
+
+.comparison-pros-cons {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 8px;
+
+  margin-top: 8px;
+}
+
+.comparison-pros-cons span {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: #687c84;
+
+  font-family: monospace;
+  font-size: 6px;
+  letter-spacing: 0.1em;
+}
+
+.comparison-pros-cons p {
+  margin: 0 0 4px;
+
+  padding: 5px 6px;
+
+  border: 1px solid
+    rgba(117, 230, 255, 0.05);
+
+  color: #8da1a8;
+  background: #070c0f;
+
+  font-family: monospace;
+  font-size: 7px;
+  line-height: 1.4;
+}
+
+.comparison-all-routes {
+  margin-top: 10px;
+}
+
+.comparison-route-strip {
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 5px;
+
+  margin-top: 5px;
+}
+
+.comparison-route-strip button {
+  min-width: 0;
+
+  padding: 7px;
+
+  border: 1px solid
+    rgba(117, 230, 255, 0.08);
+
+  background: #080e11;
+
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.comparison-route-strip button.selected {
+  border-color:
+    rgba(117, 230, 255, 0.4);
+
+  background: #0b171c;
+}
+
+.comparison-route-strip strong {
+  display: block;
+
+  overflow: hidden;
+
+  color: #dceef2;
+
+  font-family: monospace;
+  font-size: 7px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.comparison-route-strip span {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #63777f;
+
+  font-family: monospace;
+  font-size: 6px;
+}
+
+@media (max-width: 900px) {
+  .comparison-main,
+  .comparison-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .comparison-metric-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .comparison-route-strip {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}

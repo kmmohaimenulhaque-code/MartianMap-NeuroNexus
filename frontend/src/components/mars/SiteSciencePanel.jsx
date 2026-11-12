@@ -25,7 +25,7 @@ function statusLabel(
     labels[status] ??
     String(
       status ??
-      'UNKNOWN',
+        'UNKNOWN',
     )
       .replaceAll(
         '_',
@@ -58,9 +58,8 @@ function ScienceField({
         </strong>
 
         <p>
-          This dataset has not been
-          loaded for the selected
-          location.
+          This dataset has not been loaded
+          for the selected location.
         </p>
       </div>
     )
@@ -104,7 +103,7 @@ function ScienceField({
             rel="noreferrer"
           >
             {data.source ??
-              'NASA'} ↗
+              'SOURCE'} ↗
           </a>
         ) : (
           <span>
@@ -136,19 +135,37 @@ export default function SiteSciencePanel({
           </div>
 
           <strong>
-            SELECT A MARS SITE
+            SELECT A MARS LOCATION
           </strong>
 
           <p>
-            Site-linked science
-            context will appear
-            after a USGS feature
-            is selected.
+            Science context will appear after
+            a location is selected.
           </p>
         </div>
       </div>
     )
   }
+
+  const isCoordinate =
+    science.query_mode ===
+    'coordinate'
+
+  const featureName =
+    science.feature_name?.trim()
+
+  const title =
+    featureName ||
+    (isCoordinate
+      ? 'SELECTED COORDINATE'
+      : 'MARS')
+
+  const headerStatus =
+    featureName
+      ? 'SITE CONTEXT'
+      : isCoordinate
+        ? 'COORDINATE CONTEXT'
+        : 'GLOBAL CONTEXT'
 
   const atmosphere =
     science.atmosphere
@@ -162,32 +179,62 @@ export default function SiteSciencePanel({
       <div className="science-block">
         <div className="science-block-head">
           <span>
-            SELECTED FEATURE
+            SELECTED CONTEXT
           </span>
 
           <small>
-            {
-              science.feature_name
-                ? 'SITE CONTEXT'
-                : 'UNSELECTED'
-            }
+            {headerStatus}
           </small>
         </div>
 
         <strong>
-          {
-            science.feature_name ??
-            'MARS'
-          }
+          {title}
         </strong>
+
+        {isCoordinate &&
+          science.coordinate && (
+          <p>
+            Coordinate:
+            {' '}
+            {Number(
+              science.coordinate.latitude_deg,
+            ).toFixed(5)}
+            °
+            {' '}
+            /
+            {' '}
+            {Number(
+              science.coordinate.longitude_deg,
+            ).toFixed(5)}
+            °E
+          </p>
+        )}
+
+        {science.nearest_feature_context && (
+          <p>
+            Nearest registered feature:
+            {' '}
+            <strong>
+              {
+                science
+                  .nearest_feature_context
+                  .feature_name
+              }
+            </strong>
+            . This is contextual only and
+            is not treated as the selected
+            location.
+          </p>
+        )}
 
         <p>
           The science layer distinguishes
-          measured site context, global
-          reference, proxies and datasets
+          site-linked measurements, global
+          references, proxies and datasets
           that have not yet been ingested.
         </p>
       </div>
+
 
       <ScienceField
         label="SOIL / REGOLITH"
@@ -196,12 +243,14 @@ export default function SiteSciencePanel({
         }
       />
 
+
       <ScienceField
         label="MINERALS / COMPOSITION"
         data={
           science.minerals
         }
       />
+
 
       <div className="science-block">
         <div className="science-block-head">
@@ -210,19 +259,15 @@ export default function SiteSciencePanel({
           </span>
 
           <small>
-            {
-              statusLabel(
-                atmosphere?.status,
-              )
-            }
+            {statusLabel(
+              atmosphere?.status,
+            )}
           </small>
         </div>
 
         <strong>
-          {
-            atmosphere?.reference ??
-            'Mars atmosphere'
-          }
+          {atmosphere?.reference ??
+            'Mars atmosphere'}
         </strong>
 
         <div className="gas-grid">
@@ -230,23 +275,17 @@ export default function SiteSciencePanel({
             (gas) => (
               <div
                 className="gas-row"
-                key={
-                  gas.name
-                }
+                key={gas.name}
               >
                 <span>
-                  {
-                    gas.name
-                  }
+                  {gas.name}
                 </span>
 
                 <strong>
-                  {
-                    gas.volume_percent ==
-                    null
-                      ? 'NO SITE VALUE'
-                      : `${gas.volume_percent}%`
-                  }
+                  {gas.volume_percent ==
+                  null
+                    ? 'NO SITE VALUE'
+                    : `${gas.volume_percent}%`}
                 </strong>
               </div>
             ),
@@ -255,9 +294,7 @@ export default function SiteSciencePanel({
 
         {atmosphere?.note && (
           <p>
-            {
-              atmosphere.note
-            }
+            {atmosphere.note}
           </p>
         )}
 
@@ -275,21 +312,18 @@ export default function SiteSciencePanel({
               target="_blank"
               rel="noreferrer"
             >
-              {
-                atmosphere.source ??
-                'NASA'
-              } ↗
+              {atmosphere.source ??
+                'SOURCE'} ↗
             </a>
           ) : (
             <span>
-              {
-                atmosphere?.source ??
-                '—'
-              }
+              {atmosphere?.source ??
+                '—'}
             </span>
           )}
         </div>
       </div>
+
 
       <ScienceField
         label="WATER / ICE"
@@ -308,12 +342,14 @@ export default function SiteSciencePanel({
         }}
       />
 
+
       <ScienceField
         label="BIOAVAILABILITY"
         data={
           science.bioavailability
         }
       />
+
 
       <ScienceField
         label="VEGETATION / BIOLOGY"
@@ -322,11 +358,10 @@ export default function SiteSciencePanel({
         }
       />
 
+
       {science.provenance?.note && (
         <div className="science-provenance">
-          {
-            science.provenance.note
-          }
+          {science.provenance.note}
         </div>
       )}
     </div>
