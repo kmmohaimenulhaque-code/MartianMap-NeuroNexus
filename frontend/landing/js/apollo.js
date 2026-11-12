@@ -171,13 +171,28 @@ export function initApolloStory(root = document) {
       const r = bg.getBoundingClientRect();
       p = clamp01((innerHeight - r.top) / (innerHeight * 1.05));
     }
-    const next = clamp01((p - 0.18) / 0.55);
-    card.style.setProperty("--burst", next.toFixed(3));
-    card.style.setProperty("--copy", ease(clamp01((p - 0.32) / 0.3)).toFixed(3));
-    if (Math.abs(next - burst) > 0.0005 || !w) {
-      burst = next;
+    target = clamp01((p - 0.18) / 0.55);
+    copyTarget = ease(clamp01((p - 0.32) / 0.3));
+    glide();
+  };
+  // Smooth scroll: the glass and the copy ease toward the scroll position instead of jumping with each wheel step.
+  let target = 0;
+  let copyTarget = 0;
+  let copyNow = 0;
+  let gliding = 0;
+  const glide = () => {
+    if (gliding) return;
+    const step = () => {
+      burst += (target - burst) * 0.14;
+      copyNow += (copyTarget - copyNow) * 0.14;
+      if (Math.abs(target - burst) < 0.0008) burst = target;
+      if (Math.abs(copyTarget - copyNow) < 0.0008) copyNow = copyTarget;
+      card.style.setProperty("--burst", burst.toFixed(4));
+      card.style.setProperty("--copy", copyNow.toFixed(4));
       draw();
-    }
+      gliding = burst !== target || copyNow !== copyTarget ? requestAnimationFrame(step) : 0;
+    };
+    gliding = requestAnimationFrame(step);
   };
   poster.addEventListener("load", buildFrost, { once: true });
   new ResizeObserver(buildFrost).observe(bg);

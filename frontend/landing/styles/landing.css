@@ -3113,6 +3113,7 @@ body.lp {
 .lp-moon {
   position: relative;
   height: 230vh;
+  padding: 0 !important; /* full bleed: no section gutter around the scene */
 }
 
 .lp-moon__stage {
@@ -3128,6 +3129,11 @@ body.lp {
 .lp-moon__bg {
   position: absolute;
   inset: 0;
+  /* Feathered edges: the scene melts into the sections above and below instead of a hard frame. */
+  -webkit-mask-image: linear-gradient(transparent, #000 16%, #000 84%, transparent), linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(transparent, #000 16%, #000 84%, transparent), linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
+  mask-composite: intersect;
 }
 
 .lp-moon__video {
