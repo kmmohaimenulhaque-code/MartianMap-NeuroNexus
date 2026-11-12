@@ -15,12 +15,11 @@ env/
 
 # Data — NEVER commit raw NASA datasets
 data/raw/*
-data/processed/*
+
 data/cache/*
 
 # Generated assets
-assets/meshes/*
-assets/textures/*
+
 
 # Node
 node_modules/
