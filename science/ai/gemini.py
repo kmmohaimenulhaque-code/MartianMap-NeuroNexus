@@ -6,7 +6,7 @@ import json
 import time
 from typing import Any
 
-from science.ai.config import api_key, model_name, status
+from science.ai.config import api_key, model_name, resolve_model, status
 from science.ai.tools import DECLARATIONS, call_tool
 
 MAX_TOOL_ROUNDS = 6
@@ -85,19 +85,29 @@ def _types():
     return types
 
 
-def _failure(exc: Exception) -> dict[str, Any]:
+def _failure(exc: Exception, model: str | None = None) -> dict[str, Any]:
     message = str(exc)
     lowered = message.lower()
-    if "not found" in lowered or "unsupported" in lowered or "404" in lowered:
-        reason = f"Model '{model_name()}' is unavailable for this API key. Set GEMINI_MODEL to a model you can access."
-    elif "permission" in lowered or "api key" in lowered or "401" in lowered or "403" in lowered:
-        reason = "The Gemini API key was rejected."
-    elif "quota" in lowered or "429" in lowered or "resource_exhausted" in lowered:
-        reason = "The Gemini API quota or rate limit was reached."
+    code = getattr(exc, "code", None)
+    model = model or model_name()
+    if code in (401, 403) or "api key not valid" in lowered or "permission" in lowered or "unauthenticated" in lowered:
+        reason = "The Gemini API key was rejected. Check GEMINI_API_KEY on the server."
+    elif code == 429 or "quota" in lowered or "resource_exhausted" in lowered or "rate limit" in lowered:
+        reason = "The Gemini API quota or rate limit was reached. Try again later."
+    elif code == 404 or "404" in lowered or "not_found" in lowered or "not found" in lowered or "no longer available" in lowered or "not supported for generatecontent" in lowered:
+        reason = (f"Model '{model}' is unavailable for this API key. Set GEMINI_MODEL to a current model "
+                  "(see /ai/status for the models this key can use).")
+    elif code == 400:
+        reason = f"Gemini rejected the request (400): {message[:200]}"
     else:
         reason = "The Gemini request failed."
-    return {"status": "unavailable", "reason": reason, "error": message[:400], "model": model_name(),
+    return {"status": "unavailable", "reason": reason, "error": message[:400], "model": model,
             "note": "Deterministic route generation, metrics, maps, exports and tracking continue to work without Gemini."}
+
+
+def _resolved(client) -> tuple[str | None, dict[str, Any]]:
+    info = resolve_model(client)
+    return info["model"], info
 
 
 def chat(messages: list[dict[str, str]], mission_state: dict[str, Any] | None = None,
@@ -129,10 +139,15 @@ def chat(messages: list[dict[str, str]], mission_state: dict[str, Any] | None = 
         automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
     )
 
+    model, resolution = _resolved(client)
+    if model is None:
+        return {"status": "unavailable", "reason": resolution["notice"], "model": resolution["requested"],
+                "available_models": resolution["available"]}
+
     tool_log: list[dict[str, Any]] = []
     try:
         for _ in range(MAX_TOOL_ROUNDS):
-            response = client.models.generate_content(model=model_name(), contents=contents, config=config)
+            response = client.models.generate_content(model=model, contents=contents, config=config)
             candidate = (response.candidates or [None])[0]
             parts = list(getattr(getattr(candidate, "content", None), "parts", None) or [])
             calls = [p.function_call for p in parts if getattr(p, "function_call", None)]
@@ -140,7 +155,8 @@ def chat(messages: list[dict[str, str]], mission_state: dict[str, Any] | None = 
                 text = (response.text or "").strip()
                 grounding = getattr(candidate, "grounding_metadata", None)
                 return {
-                    "status": "ok", "model": model_name(), "text": text or "(no content returned)",
+                    "status": "ok", "model": model, "model_notice": resolution["notice"],
+                    "text": text or "(no content returned)",
                     "tool_calls": tool_log,
                     "search_grounding": [
                         {"title": getattr(getattr(c, "web", None), "title", None),
@@ -160,9 +176,9 @@ def chat(messages: list[dict[str, str]], mission_state: dict[str, Any] | None = 
                 responses.append(types.Part.from_function_response(name=call.name, response={"result": result}))
             contents.append(types.Content(role="user", parts=responses))
         return {"status": "error", "reason": f"Stopped after {MAX_TOOL_ROUNDS} tool rounds without a final answer.",
-                "tool_calls": tool_log, "model": model_name()}
+                "tool_calls": tool_log, "model": model}
     except Exception as exc:
-        return {**_failure(exc), "tool_calls": tool_log}
+        return {**_failure(exc, model), "tool_calls": tool_log, "model_notice": resolution["notice"]}
 
 
 def analyse_routes(payload: dict[str, Any]) -> dict[str, Any]:
@@ -185,19 +201,40 @@ def analyse_routes(payload: dict[str, Any]) -> dict[str, Any]:
         response_schema=ROUTE_ANALYSIS_SCHEMA,
         temperature=0.15,
     )
+    model, resolution = _resolved(client)
+    if model is None:
+        return {"status": "unavailable", "reason": resolution["notice"], "model": resolution["requested"],
+                "available_models": resolution["available"]}
     try:
-        response = client.models.generate_content(model=model_name(), contents=prompt, config=config)
+        response = client.models.generate_content(model=model, contents=prompt, config=config)
         analysis = json.loads(response.text)
     except json.JSONDecodeError as exc:
-        return {"status": "error", "reason": "Gemini returned invalid JSON.", "error": str(exc)[:200], "model": model_name()}
+        return {"status": "error", "reason": "Gemini returned invalid JSON.", "error": str(exc)[:200], "model": model}
     except Exception as exc:
-        return _failure(exc)
-    return {"status": "ok", "model": model_name(), "analysis": analysis,
+        return _failure(exc, model)
+    return {"status": "ok", "model": model, "model_notice": resolution["notice"], "analysis": analysis,
             "elapsed_ms": round((time.perf_counter() - started) * 1000, 1),
             "evidence_note": "AI INTERPRETATION. Numerical values remain those computed by the deterministic engine.",
             "schema": "neuronexus.route-analysis.v1"}
 
 
 def service_status() -> dict[str, Any]:
-    return {**status(), "tools": [d["name"] for d in DECLARATIONS],
-            "route_analysis_schema": ROUTE_ANALYSIS_SCHEMA}
+    payload: dict[str, Any] = {**status(), "tools": [d["name"] for d in DECLARATIONS],
+                               "route_analysis_schema": ROUTE_ANALYSIS_SCHEMA}
+    if not payload["configured"]:
+        payload["model_check"] = {"status": "NOT CONFIGURED", "detail": "GEMINI_API_KEY is not set on the server."}
+        return payload
+    try:
+        client = _client()
+        info = resolve_model(client)
+    except Exception as exc:
+        payload["model_check"] = {"status": "CHECK FAILED", "detail": str(exc)[:200]}
+        return payload
+    payload["model"] = info["model"] or info["requested"]
+    payload["requested_model"] = info["requested"]
+    payload["available_models"] = info["available"]
+    payload["model_check"] = {
+        "status": "NO MODEL AVAILABLE" if info["model"] is None else ("SUBSTITUTED" if info["substituted"] else "OK"),
+        "detail": info["notice"] or info["listing_error"] or f"Using '{info['model']}'.",
+    }
+    return payload
