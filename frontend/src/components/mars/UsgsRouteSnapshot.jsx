@@ -10,6 +10,8 @@
  * correct rather than a visually impressive approximation.
  */
 
+import { snapshotMarkScale } from "../../utils/snapshotScale";
+
 function format(value, digits = 2, suffix = "") {
   if (value === null || value === undefined || Number.isNaN(Number(value))) {
     return "UNAVAILABLE";
@@ -24,6 +26,7 @@ export default function UsgsRouteSnapshot({ open, onClose, snapshot, loading, er
   const image = snapshot?.image;
   const width = image?.width ?? 900;
   const height = image?.height ?? 600;
+  const k = snapshotMarkScale(width, height);
   const units = snapshot?.geology?.units_crossed ?? [];
 
   return (
@@ -70,7 +73,7 @@ export default function UsgsRouteSnapshot({ open, onClose, snapshot, loading, er
                       fillOpacity="0.28"
                       stroke={polygon.color}
                       strokeOpacity="0.55"
-                      strokeWidth="1"
+                      strokeWidth={1 * k}
                     />
                   )),
                 )}
@@ -82,8 +85,8 @@ export default function UsgsRouteSnapshot({ open, onClose, snapshot, loading, er
                       fill="none"
                       stroke="#e5e7eb"
                       strokeOpacity="0.5"
-                      strokeWidth="1"
-                      strokeDasharray="4 3"
+                      strokeWidth={1 * k}
+                      strokeDasharray={`${4 * k} ${3 * k}`}
                     />
                   )),
                 )}
@@ -95,16 +98,16 @@ export default function UsgsRouteSnapshot({ open, onClose, snapshot, loading, er
                       fill="none"
                       stroke="#4ea8de"
                       strokeOpacity="0.8"
-                      strokeWidth="1.4"
+                      strokeWidth={1.4 * k}
                     />
                   )),
                 )}
                 {(snapshot.routes ?? []).map((overlay, overlayIndex) => (
                   <g key={overlay.route_id ?? overlayIndex}>
-                    <polyline points={overlay.route_px.map((point) => point.join(",")).join(" ")} fill="none" stroke={overlay.colour ?? "#01ffff"} strokeOpacity="0.3" strokeWidth="9" strokeLinecap="round" strokeLinejoin="round" />
-                    <polyline points={overlay.route_px.map((point) => point.join(",")).join(" ")} fill="none" stroke={overlay.colour ?? "#01ffff"} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                    <polyline points={overlay.route_px.map((point) => point.join(",")).join(" ")} fill="none" stroke={overlay.colour ?? "#01ffff"} strokeOpacity="0.3" strokeWidth={9 * k} strokeLinecap="round" strokeLinejoin="round" />
+                    <polyline points={overlay.route_px.map((point) => point.join(",")).join(" ")} fill="none" stroke={overlay.colour ?? "#01ffff"} strokeWidth={3 * k} strokeLinecap="round" strokeLinejoin="round" />
                     {[overlay.route_px[0], overlay.route_px[overlay.route_px.length - 1]].map((point, end) => (
-                      <circle key={end} cx={point[0]} cy={point[1]} r="6" fill={end ? "#ff647c" : "#62f59a"} stroke={overlay.colour ?? "#04080b"} strokeWidth="2" />
+                      <circle key={end} cx={point[0]} cy={point[1]} r={6 * k} fill={end ? "#ff647c" : "#62f59a"} stroke={overlay.colour ?? "#04080b"} strokeWidth={2 * k} />
                     ))}
                   </g>
                 ))}
@@ -113,7 +116,7 @@ export default function UsgsRouteSnapshot({ open, onClose, snapshot, loading, er
                     points={(snapshot.route_px ?? []).map((point) => point.join(",")).join(" ")}
                     fill="none"
                     stroke="#01ffff"
-                    strokeWidth="3"
+                    strokeWidth={3 * k}
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
@@ -123,16 +126,16 @@ export default function UsgsRouteSnapshot({ open, onClose, snapshot, loading, er
                     key={index}
                     cx={point[0]}
                     cy={point[1]}
-                    r={index === 0 || index === snapshot.route_px.length - 1 ? 6 : 3}
+                    r={(index === 0 || index === snapshot.route_px.length - 1 ? 6 : 3) * k}
                     fill={index === 0 ? "#62f59a" : index === snapshot.route_px.length - 1 ? "#ff647c" : "#01ffff"}
                     stroke="#04080b"
-                    strokeWidth="1.5"
+                    strokeWidth={1.5 * k}
                   />
                 ))}
                 {(snapshot.geology?.landing_sites ?? []).map((site, index) => (
                   <g key={`l-${index}`}>
-                    <rect x={site.px[0] - 4} y={site.px[1] - 4} width="8" height="8" fill="#d8f6ff" stroke="#04080b" />
-                    <text x={site.px[0] + 8} y={site.px[1] + 4} fontSize="11" fill="#d8f6ff">
+                    <rect x={site.px[0] - 4 * k} y={site.px[1] - 4 * k} width={8 * k} height={8 * k} fill="#d8f6ff" stroke="#04080b" />
+                    <text x={site.px[0] + 8 * k} y={site.px[1] + 4 * k} fontSize={11 * k} fill="#d8f6ff">
                       {site.attributes?.NAME}
                     </text>
                   </g>
