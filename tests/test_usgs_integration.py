@@ -79,3 +79,23 @@ def test_snapshot_answers_within_its_budget_when_usgs_hangs(monkeypatch):
     assert snap["status"] == "partial" and snap["image"]
     assert sum("no answer within" in e for e in snap["errors"]) == 4
     assert not arcgis._CACHE  # a partial snapshot is not cached
+
+
+def test_vectorized_point_in_polygon_matches_the_scalar_test():
+    """The route-snapshot unit count uses a vectorized even-odd test; it must agree point for point with
+    the scalar one (a long route used to take minutes on a 0.1-CPU instance)."""
+    import numpy as np
+
+    from science.usgs.arcgis import _point_in_polygon, _points_in_polygon
+
+    rng = np.random.default_rng(7)
+    outer = [[0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [5.0, 4.0], [0.0, 10.0]]  # concave
+    hole = [[2.0, 1.0], [4.0, 1.0], [4.0, 3.0], [2.0, 3.0]]
+    flat = [[0.0, 5.0], [10.0, 5.0], [10.0, 5.0], [0.0, 5.0]]  # horizontal edges
+    vertices = np.array([p for ring in (outer, hole) for p in ring])
+    for rings in ([outer], [outer, hole], [flat], [outer, hole, flat]):
+        xs = np.concatenate([rng.uniform(-2, 12, 3000), vertices[:, 0]])
+        ys = np.concatenate([rng.uniform(-2, 12, 3000), vertices[:, 1]])
+        fast = _points_in_polygon(xs, ys, rings)
+        slow = [_point_in_polygon(x, y, rings) for x, y in zip(xs, ys, strict=True)]
+        assert fast.tolist() == slow

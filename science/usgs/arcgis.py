@@ -22,6 +22,8 @@ from concurrent.futures import ThreadPoolExecutor, wait
 from functools import lru_cache
 from typing import Any
 
+import numpy as np
+
 from science.usgs.robinson import MARS_2000_SPHERE_RADIUS_M, forward, to_longitude_180
 
 WAB_APP_ID = "fc004c3d21b64c398ed5458580ab7c58"
@@ -230,6 +232,35 @@ def _point_in_polygon(x: float, y: float, rings: list[list[list[float]]]) -> boo
     return sum(_point_in_ring(x, y, ring) for ring in rings) % 2 == 1
 
 
+_EDGE_CHUNK = 256  # edges per vectorized step: bounds memory to (points x 256) floats on a 512 MB instance
+
+
+def _points_in_polygon(xs: np.ndarray, ys: np.ndarray, rings: list[list[list[float]]]) -> np.ndarray:
+    """Vectorized `_point_in_polygon` for many points: the same even-odd ray test with the same arithmetic,
+    so every decision matches the scalar version. Points outside a ring's bounding box are skipped (they
+    cannot toggle it: the y test needs min y <= y < max y, and the crossing x never exceeds the ring's max x)."""
+    inside = np.zeros(xs.shape, dtype=bool)
+    for ring in rings:
+        if not ring:
+            continue
+        r = np.asarray(ring, dtype=float)
+        cand = np.nonzero((ys >= r[:, 1].min()) & (ys <= r[:, 1].max()) & (xs <= r[:, 0].max() + 1.0))[0]
+        if not cand.size:
+            continue
+        px, py = xs[cand][:, None], ys[cand][:, None]
+        x1, y1 = r[:, 0], r[:, 1]
+        x2, y2 = np.roll(x1, -1), np.roll(y1, -1)
+        odd = np.zeros(cand.size, dtype=bool)
+        for s in range(0, len(r), _EDGE_CHUNK):
+            a, b, c, d = x1[s:s + _EDGE_CHUNK], y1[s:s + _EDGE_CHUNK], x2[s:s + _EDGE_CHUNK], y2[s:s + _EDGE_CHUNK]
+            dy = d - b
+            dy = np.where(dy == 0, 1e-12, dy)  # the scalar `(y2 - y1) or 1e-12`
+            hit = ((b > py) != (d > py)) & (px < (c - a) * (py - b) / dy + a)
+            odd ^= (np.count_nonzero(hit, axis=1) % 2).astype(bool)
+        inside[cand] ^= odd
+    return inside
+
+
 _CACHE: dict[str, Any] = {}
 _CACHE_LOCK = threading.Lock()
 
@@ -240,6 +271,8 @@ def _units_crossed(coords: list[tuple[float, float]], cached: dict[str, Any]) ->
 
     lat_s, lon_s = densify(coords, 0.25)
     samples = [project(a, b) for a, b in zip(lat_s, lon_s, strict=True)]
+    xs = np.array([x for x, _ in samples], dtype=float)
+    ys = np.array([y for _, y in samples], dtype=float)
     counts: dict[str, int] = {}
     unit_info: dict[str, dict[str, Any]] = {}
     for feature in cached["units"]:
@@ -247,7 +280,7 @@ def _units_crossed(coords: list[tuple[float, float]], cached: dict[str, Any]) ->
         rings = (feature.get("geometry") or {}).get("rings") or []
         unit = str(attrs.get("Unit"))
         unit_info.setdefault(unit, attrs)
-        hits = sum(1 for x, y in samples if _point_in_polygon(x, y, rings)) if rings else 0
+        hits = int(np.count_nonzero(_points_in_polygon(xs, ys, rings))) if rings else 0
         if hits:
             counts[unit] = counts.get(unit, 0) + hits
     total = max(len(samples), 1)
