@@ -107,6 +107,43 @@ The API sends permissive CORS headers. With these rewrites the browser only ever
 
 ---
 
+## 3b. Split API for 512 MB instances (branch `feature/mission-console-v3`)
+
+The full API idles at about 400 MB, and one MARSWALK terrain frame (3 km at 2 m) adds several hundred MB,
+so a 512 MB instance (Render free) is killed on the first MARSWALK request. `science/serve_part.py` serves
+one slice per instance, imports only that slice (about 130 MB idle) and runs one heavy request at a time:
+
+| Service | Start command | Paths |
+|---|---|---|
+| core | `uvicorn science.serve:app` | everything else |
+| terrain window | `NN_PART=terrain-window uvicorn science.serve_part:app` | `/api/terrain/hires/window`, `/api/terrain/sources` |
+| terrain image | `NN_PART=terrain-image uvicorn science.serve_part:app` | `/api/terrain/hires/image` |
+| marswalk | `NN_PART=marswalk uvicorn science.serve_part:app` | `/api/marswalk/*` |
+
+Part build command: `pip install -r deploy/requirements-api.txt && python tools/fetch_mola.py --sites gale jezero`
+(MOLA straight from NASA PDS, no Git LFS). `frontend/vercel.json` routes each path. Each part also caps GDAL's
+cache, keeps a small thread pool and frame cache, fixes glibc's mmap threshold and trims the heap after every
+heavy request; without that, idle memory crept up with each new location until Render killed the instance.
+Measured (Curiosity's latest position, 100% HiRISE): MARSWALK load peaks window 324 MB, image 330 MB, marswalk
+293 MB; a soak of 12 new frames plus 6 route plans peaks at 414 MB (image) and 415 MB (marswalk).
+
+---
+
+## 3c. Sharded split API: 20 services (branch `feature/mission-console-v4`)
+
+The 3b layout has one terrain queue, so about 2-3 people can use MARSWALK at once. v4 runs 2 core services and
+6 shards of the 3 parts (20 free services, names `neuronexus-v4-core-a|b`, `neuronexus-v4-s<k>-window|image|marswalk`, in the Render workspace "NeuroNexus"). The console
+sets a sticky `nn_shard` cookie (1-6, 7 days, `frontend/src/shard.js`); `frontend/vercel.json` routes by it, so one
+browser always reaches the same shard (its cached frames and stored plans). Shards 1-3 use core-a, 4-6 core-b; no
+cookie means shard 1. Regenerate the routes with `python tools/gen_vercel_rewrites.py` (tests check it is current).
+Each part answers with `X-NeuroNexus-Served-By: <service name>`.
+
+Render limits to keep in mind: 750 free instance hours per workspace per month (only while awake; if they run out,
+Render suspends every free service until the month resets) and 500 build minutes (one deploy of all 20 is about
+120). The v4 services therefore have auto-deploy off: deploy them deliberately.
+
+---
+
 ## 4. Production build without Docker
 
 ```bash

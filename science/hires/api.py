@@ -84,7 +84,7 @@ def hires_window(lat: float = Query(..., ge=-88, le=88), lon: float = Query(...,
         raise bad_request(f"unknown layers: {unknown}", f"choose from {list(LAYER_NAMES)}")
     window = _window(lat, ((lon + 180) % 360) - 180, half_width_m, res_m, mode)
     v = config.values(config.resolve())
-    computed = layers.compute(window, v)
+    computed = layers.compute(window, v, only=set(requested))
     result = {**_meta(window), "layers": {}}
     for name in requested:
         array = computed[name]
@@ -133,7 +133,8 @@ def hires_image(layer: str = Query(...), lat: float = Query(..., ge=-88, le=88),
         raise bad_request(f"unknown image layer: {layer}", f"choose from {list(IMAGE_LAYERS)}")
     window = _window(lat, ((lon + 180) % 360) - 180, half_width_m, res_m, mode)
     v = config.values(config.resolve())
-    computed = layers.compute(window, v, baselines=(baseline_m,), extras=False)
+    needs = {"walkability": {"walkability", "walk_class"}, "slope": {f"slope_{baseline_m}m"}}.get(layer, set())
+    computed = layers.compute(window, v, baselines=(baseline_m,), extras=False, only=needs)
     ortho = ortho_on_grid(window) if layer == "ortho" else None
     if layer == "ortho" and ortho is None:
         raise unavailable("no readable orthoimage covers this window")

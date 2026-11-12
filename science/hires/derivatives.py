@@ -24,12 +24,12 @@ def _box_mean(z: np.ndarray, k: int) -> np.ndarray:
     if k <= 1:
         return z.astype("float64")
     valid = np.isfinite(z)
-    filled = np.where(valid, z, 0.0).astype("float64")
-    total = uniform_filter(filled, size=k, mode="constant")
+    total = uniform_filter(np.where(valid, z, 0.0).astype("float64"), size=k, mode="constant")
     count = uniform_filter(valid.astype("float64"), size=k, mode="constant")
+    del valid
     out = np.full(z.shape, np.nan)
-    full = count > 1.0 - 1e-6
-    out[full] = total[full] / count[full]
+    # Same division as total[full] / count[full], without the three masked copies.
+    np.divide(total, count, out=out, where=count > 1.0 - 1e-6)
     return out
 
 
@@ -61,9 +61,27 @@ def horn_gradient(z: np.ndarray, spacing_m: float, step: int = 1) -> tuple[np.nd
     z4, z6 = at(0, -s), at(0, s)
     z7, z8, z9 = at(s, -s), at(s, 0), at(s, s)
     d = 8.0 * spacing_m * s
-    p = ((z3 + z9 + 2.0 * z6) - (z1 + z7 + 2.0 * z4)) / d
-    q_south = ((z7 + z9 + 2.0 * z8) - (z1 + z3 + 2.0 * z2)) / d
-    return p, -q_south
+    # p = ((z3 + z9 + 2 z6) - (z1 + z7 + 2 z4)) / d and the same for q, evaluated in that order
+    # with in-place operations: identical results, a third of the temporaries.
+    tmp = np.multiply(2.0, z6)
+    p = np.add(z3, z9)
+    p += tmp
+    rest = np.add(z1, z7)
+    np.multiply(2.0, z4, out=tmp)
+    rest += tmp
+    p -= rest
+    p /= d
+    q = np.add(z7, z9)
+    np.multiply(2.0, z8, out=tmp)
+    q += tmp
+    np.add(z1, z3, out=rest)
+    np.multiply(2.0, z2, out=tmp)
+    rest += tmp
+    q -= rest
+    q /= d
+    del tmp, rest
+    np.negative(q, out=q)  # q_south -> dz/dy north
+    return p, q
 
 
 def baseline_step(baseline_m: float, res_m: float) -> int:
@@ -75,7 +93,11 @@ def slope_at_baseline(z: np.ndarray, res_m: float, baseline_m: float) -> tuple[n
     step = baseline_step(baseline_m, res_m)
     box = step if step % 2 == 1 else step + 1
     p, q = horn_gradient(_box_mean(z, box), res_m, step)
-    return np.degrees(np.arctan(np.hypot(p, q))), step * res_m
+    np.hypot(p, q, out=p)
+    del q
+    np.arctan(p, out=p)
+    np.degrees(p, out=p)
+    return p, step * res_m
 
 
 def directional_slope(p: np.ndarray, q_north: np.ndarray, azimuth_deg: float) -> np.ndarray:
@@ -98,16 +120,32 @@ def detrended_roughness(z: np.ndarray, res_m: float, window_m: float) -> np.ndar
     def box(a):
         return correlate1d(correlate1d(a, ones, axis=0, mode="constant"), ones, axis=1, mode="constant")
 
-    count = box(valid.astype("float64"))
-    s_z, s_zz = box(zf), box(zf * zf)
-    s_xz = correlate1d(correlate1d(zf, ones, axis=0, mode="constant"), ramp, axis=1, mode="constant")
-    s_yz = correlate1d(correlate1d(zf, ramp, axis=0, mode="constant"), ones, axis=1, mode="constant")
+    partial = box(valid.astype("float64")) < n - 1e-6
+    del valid
     s_xx = k * float(np.sum(ramp * ramp))  # same for y on a square window
-    mean = s_z / n
-    var = s_zz / n - mean ** 2 - (s_xz ** 2 + s_yz ** 2) / (s_xx * n)
-    out = np.sqrt(np.clip(var, 0.0, None))
-    out[count < n - 1e-6] = np.nan
-    return out
+    # var = s_zz / n - mean ** 2 - (s_xz ** 2 + s_yz ** 2) / (s_xx * n), mean = s_z / n, evaluated
+    # in that order with in-place operations (identical results, far fewer full-size temporaries).
+    var = box(np.square(zf))
+    var /= n
+    mean = box(zf)
+    mean /= n
+    np.square(mean, out=mean)
+    var -= mean
+    del mean
+    s_xz = correlate1d(correlate1d(zf, ones, axis=0, mode="constant"), ramp, axis=1, mode="constant")
+    np.square(s_xz, out=s_xz)
+    s_yz = correlate1d(correlate1d(zf, ramp, axis=0, mode="constant"), ones, axis=1, mode="constant")
+    del zf
+    np.square(s_yz, out=s_yz)
+    s_xz += s_yz
+    del s_yz
+    s_xz /= s_xx * n
+    var -= s_xz
+    del s_xz
+    np.clip(var, 0.0, None, out=var)
+    np.sqrt(var, out=var)
+    var[partial] = np.nan
+    return var
 
 
 def local_relief_3x3(z: np.ndarray) -> np.ndarray:

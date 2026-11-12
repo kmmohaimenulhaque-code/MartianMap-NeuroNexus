@@ -43,10 +43,17 @@ export const peekDustFrame = (sol) => frames.get(Number(sol))?.data ?? null;
 export const dustFrameFailed = (sol) => Boolean(frames.get(Number(sol))?.error);
 
 /* Warm the cache for the sols playback will show next (step 2, wrapping at 668), a few requests at a time. */
+export const SCENARIO_SOLS = 668; // MY34 scenario length (GET /api/dust/meta "sols")
+
+/* Next playback sol, wrapping to 1 instead of stepping past the last sol (667 + 2 used to request sol 669). */
+export function nextPlaybackSol(sol, step = 2) {
+  return sol + step > SCENARIO_SOLS ? 1 : sol + step;
+}
+
 export function prefetchDustFrames(fromSol, count = 16, step = 2) {
   let s = fromSol;
   for (let i = 0; i < count; i += 1) {
-    s = s >= 668 ? 1 : s + step;
+    s = nextPlaybackSol(s, step);
     if (!frames.has(s)) loadDustFrame(s).catch(() => {});
   }
 }
