@@ -2,14 +2,14 @@
    American spelling, no emoji, no em dashes in copy. Animate transform and opacity only. */
 
 :root {
-  --paper: #f2f0ec;
-  --paper-2: #e8e5df;
-  --ink: #0b1114;
-  --ink-2: #56615f;
-  --line: rgba(11, 17, 20, 0.12);
-  --teal: #0e6b78;
-  --rust: #a4441f;
-  --night: #05090b;
+  --paper: #060c14;
+  --paper-2: #0b1622;
+  --ink: #e6f4f6;
+  --ink-2: #8da3aa;
+  --line: rgba(1, 255, 255, 0.14);
+  --teal: #36d6e0;
+  --rust: #ff8a5c;
+  --night: #03070c;
   --night-2: #0b1418;
   --cyan: #01ffff;
   --night-text: #9fb0b4;
@@ -1962,4 +1962,175 @@ main > section {
 .no-js .lp-word > span {
   opacity: 1;
   transform: none;
+}
+
+/* Mission theme: deep navy, cyan glow and HUD lines, after the team's motion mockup. The moving parts are
+   canvases driven by js/fx.js (flow lines, the MOLA terrain wireframe, sparks, the point wave) and the finale
+   globe's orbital rings in js/finale.js. Cards keep their content and layout; they gain a glass edge and tilt. */
+
+body.lp {
+  background:
+    radial-gradient(1200px 800px at 85% -10%, rgba(1, 255, 255, 0.08), transparent 60%),
+    radial-gradient(900px 700px at -10% 60%, rgba(255, 138, 92, 0.05), transparent 60%),
+    var(--paper);
+}
+
+body.lp::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(1, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(1, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse at center, #000 30%, transparent 80%);
+}
+
+.lp-header {
+  color: #eef6f7;
+}
+
+.lp-hero__backdrop {
+  opacity: 0.14;
+}
+
+.lp-approach,
+.lp-proof {
+  position: relative;
+}
+
+.lp-fx {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.lp-approach > :not(.lp-fx),
+.lp-proof > :not(.lp-fx),
+.lp-statement--two .lp-principles {
+  position: relative;
+  z-index: 1;
+}
+
+.lp-holo {
+  justify-self: stretch;
+  width: 100%;
+  margin: 32px 0 0;
+}
+
+.lp-holo__canvas {
+  display: block;
+  width: 100%;
+  height: clamp(300px, 42vw, 520px);
+  border-radius: var(--radius);
+  background: radial-gradient(closest-side, rgba(1, 255, 255, 0.1), transparent 72%);
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+.lp-holo__canvas:active {
+  cursor: grabbing;
+}
+
+.lp-holo--proof .lp-holo__canvas {
+  height: clamp(260px, 34vw, 440px);
+}
+
+.lp-holo__cap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--night-text);
+}
+
+@media (min-width: 960px) {
+  .lp-approach {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    column-gap: clamp(24px, 4vw, 64px);
+    align-items: center;
+  }
+
+  .lp-approach > :not(.lp-fx):not(.lp-holo) {
+    grid-column: 1;
+  }
+
+  .lp-approach .lp-holo {
+    grid-column: 2;
+    grid-row: 1 / span 4;
+    margin: 0;
+  }
+}
+
+.lp-proof__number {
+  background: linear-gradient(100deg, #ffd27a 0%, #fff3d6 38%, #01ffff 78%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 22px rgba(1, 255, 255, 0.35)) drop-shadow(0 0 60px rgba(255, 210, 122, 0.22));
+}
+
+.lp-proof__x {
+  color: inherit;
+}
+
+.lp-card {
+  --rx: 0deg;
+  --ry: 0deg;
+  --mx: 50%;
+  --my: 50%;
+  transform: perspective(1100px) rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform 400ms var(--ease-out);
+}
+
+.lp-card__media {
+  background: #08111b;
+}
+
+.lp-card__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(1, 255, 255, 0.32), inset 0 0 40px rgba(1, 255, 255, 0.08);
+  background: radial-gradient(420px circle at var(--mx) var(--my), rgba(1, 255, 255, 0.16), transparent 45%);
+  background-size: 0 0;
+  background-repeat: no-repeat;
+}
+
+.lp-card:hover .lp-card__media::after {
+  background-size: 100% 100%;
+}
+
+.lp-card__play {
+  background: rgba(1, 255, 255, 0.92);
+  color: #03070c;
+  box-shadow: 0 0 30px rgba(1, 255, 255, 0.55);
+}
+
+.lp-finale::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(1, 255, 255, 0.05) 1px, transparent 1px) 0 0 / 80px 80px,
+    linear-gradient(90deg, rgba(1, 255, 255, 0.05) 1px, transparent 1px) 0 0 / 80px 80px;
+  mask-image: radial-gradient(ellipse at center, transparent 25%, #000 75%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-card {
+    transform: none;
+  }
 }

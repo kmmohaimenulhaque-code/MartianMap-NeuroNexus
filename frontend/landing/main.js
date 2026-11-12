@@ -18,6 +18,7 @@ import { renderCards } from "./js/features.js";
 import { createPlayer } from "./js/player.js";
 import { initFinale } from "./js/finale.js";
 import { initGlass, initIntro } from "./js/hero.js";
+import { initFx } from "./js/fx.js";
 
 const doc = document;
 doc.documentElement.classList.remove("no-js");
@@ -49,3 +50,4 @@ initTerms(doc, glossary);
 initLens(headline.hero);
 initFinale();
 initGlass();
+initFx(doc);

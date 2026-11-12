@@ -65,6 +65,20 @@ async function start(section, host) {
   );
   scene.add(rim);
 
+  // Orbital rings with a marker riding each one (mission theme). Decorative: no orbit is implied.
+  const rings = new THREE.Group();
+  [[1.95, 0.42, 0.1], [2.3, 0.18, -0.5], [2.7, 0.62, 0.9]].forEach(([r, tilt, roll], i) => {
+    const pts = new THREE.EllipseCurve(0, 0, r, r).getPoints(180).map((q) => new THREE.Vector3(q.x, 0, q.y));
+    const ring = new THREE.Group();
+    ring.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: 0x01ffff, transparent: true, opacity: 0.55 - i * 0.12 })));
+    const marker = new THREE.Mesh(new THREE.SphereGeometry(0.035, 12, 8), new THREE.MeshBasicMaterial({ color: i === 1 ? 0xffd27a : 0x01ffff }));
+    marker.position.set(r, 0, 0);
+    ring.add(marker);
+    ring.rotation.set(tilt, 0, roll);
+    rings.add(ring);
+  });
+  scene.add(rings);
+
   scene.add(new THREE.AmbientLight(0xffffff, 0.18));
   const sun = new THREE.DirectionalLight(0xfff1e0, 2.6);
   sun.position.set(-4, 2, 3);
@@ -112,6 +126,7 @@ async function start(section, host) {
       slow = 0;
     }
     globe.rotation.y += dt * 0.00006;
+    rings.children.forEach((ring, i) => (ring.rotation.y += dt * (0.00018 + i * 0.00006) * (i % 2 ? -1 : 1)));
     scene.rotation.y += (target.x - scene.rotation.y) * 0.04;
     scene.rotation.x += (target.y - scene.rotation.x) * 0.04;
     renderer.render(scene, camera);

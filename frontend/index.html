@@ -15,8 +15,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>NeuroNexus: Know the Ground Before You Walk It</title>
     <meta name="description" content="NeuroNexus turns NASA's sharpest Mars terrain into walking plans for future astronauts, checks the map against what NASA's rovers really felt, and shows how sure every number is." />
-    <meta name="theme-color" content="#f2f0ec" />
-    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#060c14" />
+    <meta name="color-scheme" content="dark" />
     <meta name="format-detection" content="telephone=no" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="NeuroNexus: Know the Ground Before You Walk It" />
@@ -94,6 +94,7 @@
 
       <!-- 2. Statement -->
       <section class="lp-statement" aria-labelledby="st1">
+        <canvas class="lp-fx" data-fx="streams" aria-hidden="true"></canvas>
         <svg class="lp-brush" viewBox="0 0 1200 400" preserveAspectRatio="none" aria-hidden="true" data-brush>
           <path d="M-40 300 C 180 120, 420 80, 600 190 S 980 360, 1240 120" />
         </svg>
@@ -102,6 +103,11 @@
 
       <!-- 3. Approach -->
       <section class="lp-approach" id="approach" aria-labelledby="ap-title">
+        <canvas class="lp-fx" data-fx="streams" aria-hidden="true"></canvas>
+        <figure class="lp-holo" data-reveal>
+          <canvas class="lp-holo__canvas" data-fx="terrain" role="img" aria-label="Wireframe of Gale crater and Aeolis Mons drawn from NASA MOLA elevations, colored by height"></canvas>
+          <figcaption class="lp-holo__cap"><span class="lp-dot" aria-hidden="true"></span>Gale crater, NASA MOLA 463 m, height exaggerated. Drag to turn.</figcaption>
+        </figure>
         <p class="lp-eyebrow" data-reveal><span class="lp-dot" aria-hidden="true"></span>Our Approach</p>
         <h2 class="lp-lead" id="ap-title" data-reveal>
           Orbital maps blur the short, steep pitches a person would actually walk on. NeuroNexus stacks NASA's
@@ -142,6 +148,10 @@
           <button class="lp-term" type="button" data-term="hirise">HiRISE</button> terrain the
           <button class="lp-term" type="button" data-term="p90-ratio">p90 ratio</button> is <strong data-fill="gale.hirise_ratio"></strong>: the map matches what the rover felt.
         </p>
+        <figure class="lp-holo lp-holo--proof" data-reveal>
+          <canvas class="lp-holo__canvas" data-fx="terrain-sparks" role="img" aria-label="Wireframe of Gale crater drawn from NASA MOLA elevations, colored by height"></canvas>
+          <figcaption class="lp-holo__cap"><span class="lp-dot" aria-hidden="true"></span>The MOLA view of Gale. Drag to turn.</figcaption>
+        </figure>
         <dl class="lp-stats" data-reveal>
           <div><dt>Gale, MOLA only</dt><dd><span data-fill="gale.mola_ratio"></span>x</dd><dd class="lp-small"><button class="lp-term" type="button" data-term="ci95">95% CI</button> <span data-fill="gale.mola_ci95"></span>, n = <span data-fill="gale.mola_n"></span></dd></div>
           <div><dt>Gale, HiRISE 3 m</dt><dd><span data-fill="gale.hirise_ratio"></span>x</dd><dd class="lp-small">95% CI <span data-fill="gale.hirise_ci95"></span>, n = <span data-fill="gale.hirise_n"></span></dd></div>
@@ -157,6 +167,7 @@
 
       <!-- 7. Statement 2 + principles -->
       <section class="lp-statement lp-statement--two" id="principles" aria-labelledby="st2">
+        <canvas class="lp-fx lp-fx--wave" data-fx="wave" aria-hidden="true"></canvas>
         <svg class="lp-brush lp-brush--rust" viewBox="0 0 1200 400" preserveAspectRatio="none" aria-hidden="true" data-brush>
           <path d="M1240 90 C 980 260, 760 330, 560 210 S 160 60, -40 260" />
         </svg>
