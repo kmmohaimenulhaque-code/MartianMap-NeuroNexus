@@ -58,6 +58,10 @@ from science.ai.api import (
     router as ai_router,
 )
 
+from science.mars3d.api import (
+    router as mars3d_router,
+)
+
 
 app = FastAPI(
     title=(
@@ -602,3 +606,4 @@ app.include_router(routes_router)
 app.include_router(usgs_router)
 app.include_router(orbital_router)
 app.include_router(ai_router)
+app.include_router(mars3d_router)
