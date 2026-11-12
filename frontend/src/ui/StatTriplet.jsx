@@ -30,7 +30,7 @@ export function StatTable({ columns = ["AT SITE", "MIN", "MEAN", "MAX"], rows, b
               <span
                 key={columns[index]}
                 role="cell"
-                className={[columns[index] === "AT SITE" ? "nn-at-site" : "", row.flags?.[index] ? `nn-flag-${row.flags[index]}` : ""].join(" ")}
+                className={["nn-stat-val", columns[index] === "AT SITE" ? "nn-at-site" : "", row.flags?.[index] ? `nn-flag-${row.flags[index]}` : "", text === null ? "is-na" : ""].filter(Boolean).join(" ")}
                 title={text === null ? missingReason : undefined}
               >
                 {text ?? "n/a"}

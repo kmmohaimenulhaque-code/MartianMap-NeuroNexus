@@ -111,16 +111,6 @@ const cockpit = async (page, w, label) => {
   }
   check(errors.length === before, "desktop 1440: switching to MARSWALK mid-zoom raises no Leaflet error");
 
-  // Install as app: manifest linked and the app service worker registered.
-  const pwa = await page.evaluate(async () => ({
-    manifest: document.querySelector('link[rel="manifest"]')?.getAttribute("href"),
-    sw: (await navigator.serviceWorker.getRegistration())?.active?.scriptURL ?? "",
-  }));
-  check(pwa.manifest === "/manifest.webmanifest" && /\/(app|demo)-sw\.js$/.test(pwa.sw), `desktop 1440: installable (manifest + ${pwa.sw.split("/").pop()})`);
-  const cdp = await context.newCDPSession(page);
-  const { installabilityErrors } = await cdp.send("Page.getInstallabilityErrors");
-  check(installabilityErrors.length === 0, `desktop 1440: Chrome reports no installability errors${installabilityErrors.length ? ` (${installabilityErrors.map((e) => e.errorId).join(", ")})` : ""}`);
-
   // Shared LAYERS: a layer turned on from the ArcGIS map's menu is on in the 2D map's menu too.
   await page.click('#panel-usgs-map [role="radio"]:first-child');
   await page.waitForSelector("[data-testid=arcgis-layered] canvas", { timeout: 90000 });

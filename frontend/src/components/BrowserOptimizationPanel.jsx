@@ -81,12 +81,18 @@ export default function BrowserOptimizationPanel() {
           {t.heap.limitMb ? ` of ${mb(t.heap.limitMb)}` : ""}
           {t.heap.estimated ? " (estimate: performance.memory is Chromium-only)" : ""}
         </dd>
-        <dt>Device memory</dt>
-        <dd>{memory != null ? `${memory} GB (navigator.deviceMemory)` : "not exposed by this browser"}</dd>
+        {/* Only when the browser exposes it (Chromium rounds it to a privacy bucket, at most 8 GB); never a default. */}
+        {memory != null && (
+          <>
+            <dt>Device memory</dt>
+            <dd>{`about ${memory} GB (navigator.deviceMemory, rounded by the browser)`}</dd>
+          </>
+        )}
         <dt>Worker</dt>
-        <dd>
-          {t.worker.status}
-          {t.worker.latencyMs != null ? ` · last job ${t.worker.latencyMs.toFixed(1)} ms` : ""}
+        <dd data-testid="perf-worker">
+          {toggles.workerMath
+            ? `READY · offload active${t.worker.latencyMs != null ? ` · last job ${t.worker.latencyMs.toFixed(1)} ms` : " · no job yet"}`
+            : "STANDBY · main thread"}
         </dd>
         <dt>IndexedDB tile cache</dt>
         <dd>{t.cache ? `${mb(t.cache.bytes / 2 ** 20)} in ${t.cache.entries} entries (cap ${mb(t.cache.capBytes / 2 ** 20)})${t.cache.unavailable ? " · unavailable" : ""}` : "…"}</dd>

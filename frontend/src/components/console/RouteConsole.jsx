@@ -186,7 +186,7 @@ export default function RouteConsole({
           SAVED ROUTES{" "}
           <strong
             style={{
-              color: "#9bb1b8",
+              color: "var(--nn-cyan)",
             }}
           >
             {savedRoutes.length}
@@ -197,7 +197,7 @@ export default function RouteConsole({
           CUSTOM PLACES{" "}
           <strong
             style={{
-              color: "#9bb1b8",
+              color: "var(--nn-cyan)",
             }}
           >
             {customPlacesCount}

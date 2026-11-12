@@ -1718,7 +1718,28 @@ label:has(> .m3d-layer-tag) { flex-wrap: wrap; }
 .nn-arcgis-status.is-error { color: var(--nn-amber); border-color: rgba(255, 196, 107, 0.4); }
 
 
-.nn-manual-install-msg { color: var(--nn-cyan); }
 
 /* Popover cards rendered on <body> (FloatingCard): above panels, sheets and drawers. */
 .nn-floating { z-index: 6000 !important; box-sizing: border-box; }
+
+/* ------------------------------------------------------------------ Key figures: electric cyan, bold
+ * Every primary number in the HUD reads in --nn-cyan. Status colors (amber review flags, coral exceeds,
+ * green nominal) keep their meaning and are not overridden; missing values ("n/a") stay dim.
+ */
+#root .metric strong,
+#root .coordinate-block strong,
+#root .nn-solcond-grid dd,
+#root .nn-thermal-bar > span,
+#root .nn-stat-row .nn-stat-val:not([class*="nn-flag-"]),
+#root .morph-aspect strong,
+#root .mission-stat strong,
+#root .mission-row strong.project,
+#root .mw-row > strong,
+#root .mw-stops strong,
+#root .mw-stops b,
+#root .topbar .nn-solscrub-value {
+  color: var(--nn-cyan);
+  font-family: var(--nn-font);
+  font-weight: 700;
+}
+#root .metric strong.is-na, #root .nn-stat-row .is-na { color: var(--nn-text-dim); font-weight: 400; }

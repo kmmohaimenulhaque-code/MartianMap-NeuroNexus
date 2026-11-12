@@ -434,3 +434,14 @@
 @media (min-width: 768px) {
   .mw-shell button { white-space: nowrap; letter-spacing: 0.04em; overflow-x: auto; scrollbar-width: none; }
 }
+
+/* ------------------------------------------------------------------ Panel separation depth (laptops, desktops, tablets)
+ * Ambient shadows on the four cockpit boundaries only: under the top bar, beside the left and right
+ * columns, and above the center map and its route / profile strip. Phones (< 768 px) are untouched.
+ */
+@media (min-width: 768px) {
+  .topbar { position: relative; z-index: 3000; /* not 30: the search suggestions must stay above the map panes (z 400+) */ box-shadow: 0 8px 24px rgba(0, 0, 0, 0.72), 0 1px 0 rgba(117, 230, 255, 0.14); }
+  .left-column, .mw-left { position: relative; z-index: 20; box-shadow: 10px 0 28px -4px rgba(0, 0, 0, 0.68), 1px 0 0 rgba(117, 230, 255, 0.12); }
+  .right-column, .mw-right { position: relative; z-index: 20; box-shadow: -10px 0 28px -4px rgba(0, 0, 0, 0.68), -1px 0 0 rgba(117, 230, 255, 0.12); }
+  .site-field, .mw-center, .route-console, .mw-bottom { box-shadow: 0 -8px 24px -4px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(117, 230, 255, 0.12); }
+}

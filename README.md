@@ -73,7 +73,6 @@ Captured by the Playwright e2e tour (`node frontend/e2e/screenshots.mjs`), which
 | Parameter sensitivity | MARSWALK decision column, wheel, Command Index | The planned route re-evaluated with each planning slider at its low and high bound: margin change bars and status changes. The route is simplified (Douglas-Peucker, at most 480 vertices) for `/marswalk/evaluate`; when that re-evaluation's status differs from the plan's, the panel says so. Shows which choices drive the result; it is not an uncertainty estimate. |
 | Visual printable brief | MARSWALK PRINT BRIEF | Hillshade with the route, numbered stops and turnaround, the elevation and slope profile, the STATUS BY SOL strip, dose screening, key numbers and sources, on one printable page. |
 | Layer opacity | Every LAYERS menu | Per layer, shared by the three maps, remembered in this browser. |
-| Install as app (PWA) | [MENU] INSTALL AS APP, wheel, Command Index; browser install button | Own window and home-screen icon on desktop, Android, iPhone and iPad (Share, then Add to Home Screen). The service worker caches no data: with no connection it shows an offline page instead of stale numbers. |
 
 | | |
 | --- | --- |
@@ -89,7 +88,7 @@ PCs, laptops and tablets (768 px and wider, iPads in portrait and landscape) get
 
 The Radial Feature Wheel opens from the dock, a 500 ms long-press or a two-finger tap (touch tablets also get a WHEEL chip). On phones it is at most 340 px wide and stays 12 px inside the screen edges. The 3D globe has a one-row phone toolbar (GALE, JEZERO, 3D TOOLS, close). Where hardware acceleration is off it renders with software WebGL; where WebGL is missing entirely it shows a 2D canvas globe instead of an error. Its software or hardware status appears in the menu's Browser Optimization panel.
 
-Mobile web-app meta tags, `100dvh` with fallbacks, safe areas, 16 px inputs (so iOS does not zoom) and `-webkit-` prefixes are in place, and no viewport from 320 to 2560 px scrolls sideways. `node frontend/e2e/devices.mjs` checks a PC (1440), three iPads (768, 820, 1024 landscape), an iPhone 15 (393 at 3x) and an Android phone (360) in Chromium device emulation; it also checks the shared layers, map sync, search, popovers, multi-stop, sensitivity and PWA installability. It has not been run on real devices.
+Mobile web-app meta tags, `100dvh` with fallbacks, safe areas, 16 px inputs (so iOS does not zoom) and `-webkit-` prefixes are in place, and no viewport from 320 to 2560 px scrolls sideways. `node frontend/e2e/devices.mjs` checks a PC (1440), three iPads (768, 820, 1024 landscape), an iPhone 15 (393 at 3x) and an Android phone (360) in Chromium device emulation; it also checks the shared layers, map sync, search, popovers, multi-stop and sensitivity. It has not been run on real devices.
 
 | | | |
 | --- | --- | --- |

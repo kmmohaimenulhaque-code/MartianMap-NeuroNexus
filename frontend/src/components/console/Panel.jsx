@@ -26,7 +26,7 @@ export function Metric({ label, value, detail }) {
     <div className="metric">
       <span>{label}</span>
 
-      <strong>{value ?? "n/a"}</strong>
+      <strong className={value == null || /^(n\/a|unavailable|none)$/i.test(String(value)) ? "is-na" : undefined}>{value ?? "n/a"}</strong>
 
       {detail && <small>{detail}</small>}
     </div>
