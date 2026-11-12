@@ -5,6 +5,8 @@ from pathlib import Path
 
 import numpy as np
 
+from science.terrain import mola_store
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 CATALOG_PATH = PROJECT_ROOT / "data" / "manifests" / "mola_tiles.json"
@@ -189,6 +191,9 @@ class MolaSpatialCore:
     ) -> np.memmap:
 
         image_path = PROJECT_ROOT / tile["path"]
+        if not mola_store.is_real_tile(image_path):
+            # Git LFS stub in a fresh clone: use the PDS cache filled by tools/fetch_mola.py.
+            image_path = mola_store.resolve_tile(image_path.stem) or image_path
 
         key = str(image_path)
 

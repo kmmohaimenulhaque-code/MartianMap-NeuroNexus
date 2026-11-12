@@ -45,7 +45,8 @@ export default function RoverPhotosPanel({
     if (
       !feature?.feature_name
     ) {
-      setData(null)
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- clears derived UI state when its input empties; no cascade
+setData(null)
       return undefined
     }
 

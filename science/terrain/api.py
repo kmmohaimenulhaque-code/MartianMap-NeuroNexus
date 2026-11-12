@@ -295,10 +295,14 @@ def terrain_window(
             )
         )
 
-    except (
-        ValueError,
-        FileNotFoundError,
-    ) as exc:
+    except FileNotFoundError as exc:
+        # Data not on this server (LFS stub, tile not fetched): unavailable, not a bad request.
+        raise HTTPException(
+            status_code=503,
+            detail=str(exc),
+        ) from exc
+
+    except ValueError as exc:
         raise HTTPException(
             status_code=400,
             detail=str(exc),

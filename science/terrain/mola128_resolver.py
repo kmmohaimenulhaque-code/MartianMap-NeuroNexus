@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from science.terrain import mola_store
 from science.terrain.mola128 import MOLA128Tile
 
 
@@ -41,12 +42,8 @@ class MOLA128Resolver:
         lon_start = int(longitude // 90) * 90
         lon_code = self.LON_BANDS[lon_start]
 
-        path = self.ROOT / f"megt{lat_code}{lon_code}hb.img"
-
-        if not path.exists():
-            raise FileNotFoundError(
-                f"MOLA tile not found: {path}"
-            )
+        # Repository copy when it is real data, else the PDS cache (tools/fetch_mola.py).
+        path = mola_store.tile_path(f"megt{lat_code}{lon_code}hb")
 
         return MOLA128Tile(
             path=path,

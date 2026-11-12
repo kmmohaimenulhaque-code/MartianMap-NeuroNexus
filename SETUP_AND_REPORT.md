@@ -39,7 +39,7 @@ science/provenance.py
 tests/{conftest,synthetic_terrain,test_routing_engine,test_orbital_tracking,test_usgs_integration,test_ai_layer}.py
 ```
 
-`modified-files.patch` is the same change to the 8 replaced files as a `git apply` patch, if you prefer
+`docs/archive/modified-files.patch` is the same change to the 8 replaced files as a `git apply` patch, if you prefer
 reviewing a diff.
 
 Verified: this exact tree copied onto a pristine clone of `Master-Ai` builds and passes all tests.

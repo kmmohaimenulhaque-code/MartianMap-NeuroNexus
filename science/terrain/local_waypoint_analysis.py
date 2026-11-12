@@ -8,7 +8,7 @@ import numpy as np
 from science.spatial.mola_unified import MolaUnified
 
 
-MARS_RADIUS_M = 3_396_000.0
+from science.constants import MARS_RADIUS_M
 MOLA_PPD = 128
 DEGREE_STEP = 1.0 / MOLA_PPD
 

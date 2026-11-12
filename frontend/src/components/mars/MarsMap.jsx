@@ -338,6 +338,7 @@ function CoordinateCreator({ draftLocation, setDraftLocation, onCreateUserPlace,
 
   useEffect(() => {
     if (!draftLocation) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- clears derived UI state when its input empties; no cascade
       setName("");
       setHavenName("");
     }

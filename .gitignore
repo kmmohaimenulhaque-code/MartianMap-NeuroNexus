@@ -54,3 +54,10 @@ data/indexes/themis/metadata/themis_seasonal_candidates.jsonl
 data/indexes/themis/metadata/themis_selected_observations.jsonl
 data/indexes/themis/metadata/checkpoint.json
 data/indexes/themis/metadata/failed_products.jsonl
+
+# Marswalk caches and derived rasters (never committed)
+data/derived/
+data/demo_pack/rasters/
+*.part
+validation/reports/*/*/figures/*.png
+frontend/test-results/

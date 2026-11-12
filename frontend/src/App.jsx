@@ -1391,8 +1391,6 @@ export default function App() {
 
   const siteScience = environment?.site_science;
 
-  const comparisonRoutes = useMemo(() => savedRoutes.filter((route) => compareRouteIds.includes(route.id)), [savedRoutes, compareRouteIds]);
-
   /*
    * TWO MAPS, ONE LOCATION
    *
@@ -1557,6 +1555,7 @@ export default function App() {
     const value = query.trim();
 
     if (!value) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- clears derived UI state when its input empties; no cascade
       setSuggestions([]);
 
       return undefined;
@@ -1777,16 +1776,6 @@ export default function App() {
         },
       ];
     });
-  }
-
-  function handleMapLocationSelect(point) {
-    if (routeMode) {
-      handleRoutePointAdd(point);
-
-      return;
-    }
-
-    handleSelectCoordinate(point);
   }
 
   function handleAddSelected() {

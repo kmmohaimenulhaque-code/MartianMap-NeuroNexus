@@ -10,7 +10,7 @@ from typing import Any, Iterable, Sequence
 
 import numpy as np
 
-MARS_RADIUS_KM = 3396.0  # identical to science.terrain.route_geometry
+from science.constants import MARS_RADIUS_KM  # IAU 2015 sphere; identical to science.terrain.route_geometry
 
 REFERENCES: dict[str, float] = {
     "burden_slope_deg": 25.0,
@@ -40,7 +40,7 @@ METHODOLOGY: dict[str, Any] = {
         "astronaut safety certification. No route is labelled safe."
     ),
     "terrain_input": "NASA MOLA MEGDR 128 pixels/degree elevation; slope and 3x3 roughness from science.terrain.derivatives",
-    "distance": "Haversine great-circle distance on a 3396.0 km sphere (same as /terrain/route-plan).",
+    "distance": "Haversine great-circle distance on the 3396.19 km IAU 2015 Mars sphere (same as /terrain/route-plan).",
     "estimated_eva_time": (
         "ESTIMATED EVA TIME = distance_km / eva_pace_kmh + elevation_gain_m / ascent_allowance_m_per_h "
         "(Naismith-style ascent allowance, Earth heuristic, configurable; set to 0 for the original "

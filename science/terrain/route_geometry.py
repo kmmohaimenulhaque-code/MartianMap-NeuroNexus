@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from math import atan2, cos, radians, sin, sqrt
 
 
-MARS_RADIUS_KM = 3396.0
+from science.constants import MARS_RADIUS_KM
 
 
 @dataclass(frozen=True)

@@ -1,0 +1,6 @@
+# Test and lint tooling, plus the raster stack used by the hi-res terrain ladder.
+# CI installs: pip install -r deploy/requirements-api.txt -r requirements-dev.txt
+pytest==9.1.1
+ruff==0.17.1
+rasterio==1.5.2
+jsonschema==4.26.0
