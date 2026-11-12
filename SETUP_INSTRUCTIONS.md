@@ -64,13 +64,14 @@ foreach ($t in $tiles) {
 ## 3. Add the `.env` file (Gemini AI key)
 
 Create a file named **`.env`** in the **repository root** (the same folder as `requirements.txt`):
-write this 
+
+write this (If you are working from terminal/CLI/codespaces)
 ```
 nano .env
 ```
-And paste inside .env
+And paste inside .env file
 ```
-GEMINI_API_KEY=PASTE_YOUR_API_KEY
+GEMINI_API_KEY=PASTE_YOUR_API_KEY #real API key obtained from Google AI Studio
 ```
 You can obtain a Gemini API key from Google AI Studio.
 #NB: Gemini-powered functionality can be tested by providing a valid Gemini API key in the backend .env file. No API key is required to explore the core terrain, mapping, USGS, 3D, environmental, routing, and visualization features.
