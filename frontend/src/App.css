@@ -53,7 +53,7 @@ a {
 
 .topbar {
   position: relative;
-  z-index: 20;
+  z-index: 3000; /* the search suggestions must stay above the maps (Leaflet panes 400-1000) */
   display: grid;
   grid-template-columns: 260px minmax(260px, 1fr) auto;
   align-items: center;
@@ -3215,4 +3215,10 @@ a.briefing-card-link:hover {
   border-color: #75e6ff;
   color: #e3f7ff;
   background: #0d2028;
+}
+
+/* Keep each map's internal z-index (Leaflet panes, floating buttons) inside its own panel,
+   so nothing in the maps can cover the search suggestions or other page chrome. */
+.map-panel-body {
+  isolation: isolate;
 }
