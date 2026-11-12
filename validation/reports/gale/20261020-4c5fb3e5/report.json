@@ -1,0 +1,715 @@
+{
+ "schema_version": "neuronexus.validation.v1",
+ "run_id": "20261020-4c5fb3e5",
+ "site": "gale",
+ "V1": {
+  "metric": "rover elev_geoid minus DTM elevation at the waypoint",
+  "unit": "m",
+  "hirise": {
+   "n": 1386,
+   "bias_m": -8.678674745854192,
+   "bias_ci95": [
+    -8.989378510754516,
+    -8.379473082756265
+   ],
+   "rmse_m": 10.524702065949725,
+   "rmse_ci95": [
+    10.18882973977752,
+    10.826504928005763
+   ],
+   "nmad_m": 4.816893559570042,
+   "nmad_ci95": [
+    4.407949577918836,
+    5.15192007678182
+   ],
+   "median_m": -8.062459716796866
+  },
+  "ctx": {
+   "n": 1386,
+   "bias_m": -1.769726472312412,
+   "bias_ci95": [
+    -2.113628328609057,
+    -1.4192418354161078
+   ],
+   "rmse_m": 6.644422230697391,
+   "rmse_ci95": [
+    6.408139032663251,
+    6.872116350986369
+   ],
+   "nmad_m": 6.4585165261227635,
+   "nmad_ci95": [
+    6.083725317741009,
+    7.003944769054024
+   ],
+   "median_m": -1.2570983886719205
+  },
+  "mola": {
+   "n": 1386,
+   "bias_m": -14.080624825723172,
+   "bias_ci95": [
+    -14.83169303108395,
+    -13.311633464998204
+   ],
+   "rmse_m": 20.77891755005803,
+   "rmse_ci95": [
+    19.985428390815457,
+    21.59381457410727
+   ],
+   "nmad_m": 10.961079012501525,
+   "nmad_ci95": [
+    10.136251212919493,
+    11.779376350950681
+   ],
+   "median_m": -11.265539338180588
+  },
+  "caveat": "Rover localization is registered to HiRISE base maps and the DTMs are tied to MOLA: a consistency check, not an accuracy check."
+ },
+ "V3": {
+  "metric": "rover IMU tilt vs DTM slope at the waypoint",
+  "unit": "deg",
+  "series": [
+   {
+    "family": "HIRISE",
+    "baseline_m": 1,
+    "n": 1386,
+    "spearman_rho": 0.3527664058761671,
+    "spearman_ci95": [
+     0.30383482450285987,
+     0.3992888066444899
+    ],
+    "bias_deg": 0.19822072173077182,
+    "bias_ci95": [
+     -0.14940153717225327,
+     0.5367138286678675
+    ],
+    "p90_ratio": 0.9430562475078291,
+    "p90_ratio_ci95": [
+     0.8738459806443365,
+     1.0067538996608878
+    ],
+    "p90_tilt_deg": 14.625,
+    "p90_slope_deg": 15.508088768457668,
+    "median_slope_deg": 7.274017241728907
+   },
+   {
+    "family": "HIRISE",
+    "baseline_m": 3,
+    "n": 1386,
+    "spearman_rho": 0.3663386822506888,
+    "spearman_ci95": [
+     0.3188742361139986,
+     0.4112559609751766
+    ],
+    "bias_deg": -0.1274474267289915,
+    "bias_ci95": [
+     -0.462426250940732,
+     0.20643766929089818
+    ],
+    "p90_ratio": 0.9918099927791593,
+    "p90_ratio_ci95": [
+     0.8918459743491403,
+     1.0687604469043879
+    ],
+    "p90_tilt_deg": 14.625,
+    "p90_slope_deg": 14.745767945954206,
+    "median_slope_deg": 7.153549342284262
+   },
+   {
+    "family": "HIRISE",
+    "baseline_m": 5,
+    "n": 1385,
+    "spearman_rho": 0.382337669118908,
+    "spearman_ci95": [
+     0.33717928622335325,
+     0.42792580854278545
+    ],
+    "bias_deg": -0.35751132623006737,
+    "bias_ci95": [
+     -0.6866946731794649,
+     -0.04642609221451709
+    ],
+    "p90_ratio": 1.0479156149939055,
+    "p90_ratio_ci95": [
+     0.9589806067743316,
+     1.1282027502380474
+    ],
+    "p90_tilt_deg": 14.630000000000006,
+    "p90_slope_deg": 13.961047808305722,
+    "median_slope_deg": 6.998463701706035
+   },
+   {
+    "family": "HIRISE",
+    "baseline_m": 10,
+    "n": 1384,
+    "spearman_rho": 0.42382650365624724,
+    "spearman_ci95": [
+     0.3794021382859239,
+     0.4688084511917051
+    ],
+    "bias_deg": -0.786798673013978,
+    "bias_ci95": [
+     -1.1026437563895093,
+     -0.5054309484007943
+    ],
+    "p90_ratio": 1.1374231349082655,
+    "p90_ratio_ci95": [
+     1.031599411070289,
+     1.2090331365401383
+    ],
+    "p90_tilt_deg": 14.635000000000002,
+    "p90_slope_deg": 12.866803523545641,
+    "median_slope_deg": 6.753589109937069
+   },
+   {
+    "family": "HIRISE",
+    "baseline_m": 20,
+    "n": 1383,
+    "spearman_rho": 0.4799899410758199,
+    "spearman_ci95": [
+     0.43670015821024466,
+     0.5201547948268846
+    ],
+    "bias_deg": -1.3088865810833752,
+    "bias_ci95": [
+     -1.6064921378933297,
+     -1.0388246036900972
+    ],
+    "p90_ratio": 1.1728994426348245,
+    "p90_ratio_ci95": [
+     1.0992769864665881,
+     1.2796510895449136
+    ],
+    "p90_tilt_deg": 14.639999999999999,
+    "p90_slope_deg": 12.481888444854585,
+    "median_slope_deg": 6.530880089652689
+   },
+   {
+    "family": "HIRISE",
+    "baseline_m": 100,
+    "n": 1366,
+    "spearman_rho": 0.5029210701857828,
+    "spearman_ci95": [
+     0.4620680295847659,
+     0.5402734149493635
+    ],
+    "bias_deg": -2.4995823218886306,
+    "bias_ci95": [
+     -2.738770940554497,
+     -2.2654747077147515
+    ],
+    "p90_ratio": 1.458917002122348,
+    "p90_ratio_ci95": [
+     1.3885218252633358,
+     1.521121489425313
+    ],
+    "p90_tilt_deg": 14.65,
+    "p90_slope_deg": 10.041695297736627,
+    "median_slope_deg": 6.203119258688458
+   },
+   {
+    "family": "CTX",
+    "baseline_m": 20,
+    "n": 1386,
+    "spearman_rho": 0.4893428608453353,
+    "spearman_ci95": [
+     0.44967330555081014,
+     0.5294494604753202
+    ],
+    "bias_deg": -2.0246740406120893,
+    "bias_ci95": [
+     -2.2544826146260752,
+     -1.8123766122462144
+    ],
+    "p90_ratio": 1.4022924314020757,
+    "p90_ratio_ci95": [
+     1.3284167129990485,
+     1.46094606587244
+    ],
+    "p90_tilt_deg": 14.625,
+    "p90_slope_deg": 10.429351020155803,
+    "median_slope_deg": 6.405691152042527
+   },
+   {
+    "family": "CTX",
+    "baseline_m": 100,
+    "n": 1386,
+    "spearman_rho": 0.5051646319048506,
+    "spearman_ci95": [
+     0.4687893356082289,
+     0.542659034424996
+    ],
+    "bias_deg": -2.3608273107482276,
+    "bias_ci95": [
+     -2.5829620112597214,
+     -2.143495171091685
+    ],
+    "p90_ratio": 1.5345089357293302,
+    "p90_ratio_ci95": [
+     1.4445188314550115,
+     1.5970565372190928
+    ],
+    "p90_tilt_deg": 14.625,
+    "p90_slope_deg": 9.53073628929306,
+    "median_slope_deg": 5.928144731496214
+   },
+   {
+    "family": "MOLA",
+    "baseline_m": 463,
+    "n": 1386,
+    "spearman_rho": 0.41363242338056966,
+    "spearman_ci95": [
+     0.36805405731843593,
+     0.4592992691326032
+    ],
+    "bias_deg": -2.8418297058275606,
+    "bias_ci95": [
+     -3.067162970614274,
+     -2.627012388765497
+    ],
+    "p90_ratio": 1.7932392250223754,
+    "p90_ratio_ci95": [
+     1.6992298378699866,
+     1.8460792986219983
+    ],
+    "p90_tilt_deg": 14.625,
+    "p90_slope_deg": 8.155632442078392,
+    "median_slope_deg": 7.177362952198353
+   }
+  ],
+  "tilt": {
+   "median_deg": 7.675,
+   "p90_deg": 14.625,
+   "max_deg": 29.12,
+   "n": 1386
+  },
+  "caveats": [
+   "Rocks under the wheels tilt the rover without being in any DTM.",
+   "Drivers park deliberately on gentle ground and avoid hazards: drivable ground is over-sampled.",
+   "Curiosity's wheelbase is about 1.9 m and both rovers are about 3 m long: the 3 m baseline is the closest to the vehicle footprint."
+  ]
+ },
+ "V6": {
+  "metric": "per-waypoint median elevation step between overlapping products",
+  "unit": "m",
+  "flag_threshold_m": 2.0,
+  "hirise_minus_ctx_20m": {
+   "n": 1386,
+   "bias_m": 7.302864724251443,
+   "bias_ci95": [
+    6.97196994798008,
+    7.667960449042602
+   ],
+   "rmse_m": 9.845288667845125,
+   "rmse_ci95": [
+    9.574499035429074,
+    10.14376209132744
+   ],
+   "nmad_m": 5.445731689453125,
+   "nmad_ci95": [
+    4.795379390258789,
+    5.937793092041015
+   ],
+   "median_m": 6.55859375,
+   "share_flagged": 0.9206349206349206
+  },
+  "hirise_minus_mola": {
+   "n": 1386,
+   "bias_m": -5.401950079868981,
+   "bias_ci95": [
+    -6.153627834712321,
+    -4.699572577658572
+   ],
+   "rmse_m": 15.251603341861781,
+   "rmse_ci95": [
+    14.654226673502004,
+    15.892414806877662
+   ],
+   "nmad_m": 15.010810770431014,
+   "nmad_ci95": [
+    13.855183252795337,
+    15.834477008517528
+   ],
+   "median_m": -4.345801159270195
+  },
+  "ctx_minus_mola": {
+   "n": 1386,
+   "bias_m": -12.310898353410758,
+   "bias_ci95": [
+    -13.1803533413494,
+    -11.416478857575608
+   ],
+   "rmse_m": 21.114790571018002,
+   "rmse_ci95": [
+    20.25067627606531,
+    21.967033252792287
+   ],
+   "nmad_m": 18.633626706003266,
+   "nmad_ci95": [
+    17.564172093828716,
+    19.332722444578316
+   ],
+   "median_m": -10.677608381187383
+  },
+  "note": "HiRISE was averaged to 20 m before differencing with CTX. A step above 2 m between rungs is flagged; the console marks seam pixels on the map and lists per-pair steps in the window provenance."
+ },
+ "V2": {
+  "metric": "MOLA shot height above the areoid minus DTM elevation",
+  "unit": "m",
+  "shots": 261,
+  "shot_sources": [
+   "B07_012340_1750_XN_05S222W__B07_012195_1750_XN_05S222W",
+   "D03_028335_1754_XI_04S222W__D03_028269_1752_XI_04S222W",
+   "D09_030880_1751_XN_04S222W__D07_030102_1751_XN_04S222W",
+   "D15_033082_1746_XN_05S222W__G17_025012_1751_XN_04S222W"
+  ],
+  "hirise": {
+   "n": 240,
+   "bias_m": -1.163247198774828,
+   "bias_ci95": [
+    -2.670790657043143,
+    0.4708295476113906
+   ],
+   "rmse_m": 12.114894644881497,
+   "rmse_ci95": [
+    10.260628976705554,
+    14.065073665251308
+   ],
+   "nmad_m": 5.986657410772836,
+   "nmad_ci95": [
+    4.315311985330437,
+    7.825682958514874
+   ],
+   "median_m": 0.591813094405552
+  },
+  "ctx": {
+   "n": 261,
+   "bias_m": 6.144526167680628,
+   "bias_ci95": [
+    4.9354299704588795,
+    7.414922963813323
+   ],
+   "rmse_m": 11.733122361947222,
+   "rmse_ci95": [
+    10.609646282693484,
+    12.948961349232206
+   ],
+   "nmad_m": 9.628103928688358,
+   "nmad_ci95": [
+    8.41884450729505,
+    10.769140862868156
+   ],
+   "median_m": 5.006998410475717
+  },
+  "caveat": "CTX DTMs were aligned to MOLA with pc_align, so CTX-vs-shots is not independent; HiRISE-vs-shots is the stronger check."
+ },
+ "V7": {
+  "n": 121,
+  "sols": [
+   4157,
+   4843
+  ],
+  "spearman_rho": 0.09928268465601738,
+  "spearman_ci95": [
+   -0.08248788961501685,
+   0.2660993011449399
+  ],
+  "linear_slope_ugy_day_per_pa": 0.01717319605853704,
+  "reproduces_published_sign": false,
+  "verdict": "published anticorrelation NOT reproduced in this sample",
+  "sources": [
+   "MSL_RAD_RDR",
+   "MSL_REMS_OUTREACH"
+  ],
+  "caveats": [
+   "REMS values come from the outreach feed (not the PDS science archive).",
+   "Solar modulation over the sampled period also changes the GCR dose.",
+   "One sol in seven over about a Mars year plus the last 30 archived sols."
+  ]
+ },
+ "V4": {
+  "legs_eligible": 110,
+  "legs_used": 40,
+  "leg_rule": "200-800 m straight line, at most 40 evenly spaced",
+  "methods": {
+   "straight": {
+    "n": 40,
+    "frechet_m": {
+     "median": 34.99772842267545,
+     "ci95": [
+      27.627773673730985,
+      41.42580433452224
+     ]
+    },
+    "hausdorff_m": {
+     "median": 34.99772842267545,
+     "ci95": [
+      27.627773673730985,
+      41.42580433452224
+     ]
+    },
+    "length_ratio": {
+     "median": 0.8364291686008823,
+     "ci95": [
+      0.7147379298376804,
+      0.8837323495361148
+     ]
+    },
+    "within_10m": {
+     "median": 0.517718715393134,
+     "ci95": [
+      0.4941860465116279,
+      0.5764119601328903
+     ]
+    }
+   },
+   "mola": {
+    "n": 40,
+    "frechet_m": {
+     "median": 38.309156575329766,
+     "ci95": [
+      31.256220763120123,
+      46.60432651361479
+     ]
+    },
+    "hausdorff_m": {
+     "median": 38.309156575329766,
+     "ci95": [
+      31.256220763120123,
+      46.60432651361479
+     ]
+    },
+    "length_ratio": {
+     "median": 0.8733167453758321,
+     "ci95": [
+      0.7357326933991308,
+      0.9252020903273537
+     ]
+    },
+    "within_10m": {
+     "median": 0.4120926243567753,
+     "ci95": [
+      0.3409090909090909,
+      0.54
+     ]
+    }
+   },
+   "ladder": {
+    "n": 40,
+    "frechet_m": {
+     "median": 40.371068049574404,
+     "ci95": [
+      33.458736817756964,
+      50.44831448199704
+     ]
+    },
+    "hausdorff_m": {
+     "median": 40.371068049574404,
+     "ci95": [
+      33.082450994115554,
+      50.37552226166126
+     ]
+    },
+    "length_ratio": {
+     "median": 0.8639314966082413,
+     "ci95": [
+      0.7844920932578594,
+      0.9217906548560846
+     ]
+    },
+    "within_10m": {
+     "median": 0.4476190476190476,
+     "ci95": [
+      0.4024621212121212,
+      0.5368782161234991
+     ]
+    }
+   }
+  },
+  "failures": {
+   "mola": 0,
+   "ladder": 0
+  },
+  "failure_examples": {
+   "mola": [],
+   "ladder": []
+  },
+  "caveats": [
+   "Rovers are not astronauts.",
+   "Rover drivers also weighed sand, wheel wear, science stops and communication windows, which the planner does not see."
+  ]
+ },
+ "data_versions": {
+  "rover_retrieved_at": "2026-10-20T04:22:50+00:00",
+  "rover_origin": "live",
+  "hirise_products": [
+   "DTEEC_001488_1750_001752_1750_U02",
+   "DTEEC_009149_1750_009294_1750_U01",
+   "DTEEC_009505_1755_009571_1755_U01",
+   "DTEEC_009650_1755_009716_1755_U01",
+   "DTEEC_010573_1755_010639_1755_U01",
+   "DTEEC_018854_1755_018920_1755_U01",
+   "DTEEC_019698_1750_019988_1750_U01",
+   "DTEEC_023957_1755_024023_1755_U01"
+  ],
+  "ctx_product": "T01_000815_1749_XN_05S222W__P22_009650_1772_XI_02S222W",
+  "excluded": [
+   {
+    "product_id": "DTEEC_040770_1755_039280_1755_A01",
+    "family": "HIRISE",
+    "reason": "HTTP 404"
+   }
+  ],
+  "datum_checks": {
+   "DTEEC_001488_1750_001752_1750_U02": {
+    "status": "ACCEPTED",
+    "median_m": -5.229362801710522,
+    "nmad_m": 28.74101140241965,
+    "n": 4169
+   },
+   "DTEEC_009149_1750_009294_1750_U01": {
+    "status": "ACCEPTED",
+    "median_m": -2.450907455971901,
+    "nmad_m": 27.271805059439192,
+    "n": 4197
+   },
+   "DTEEC_009505_1755_009571_1755_U01": {
+    "status": "ACCEPTED",
+    "median_m": 0.7014743212348549,
+    "nmad_m": 6.99953727031247,
+    "n": 4073
+   },
+   "DTEEC_009650_1755_009716_1755_U01": {
+    "status": "ACCEPTED",
+    "median_m": -1.6897539307992702,
+    "nmad_m": 10.546687033054683,
+    "n": 4117
+   },
+   "DTEEC_010573_1755_010639_1755_U01": {
+    "status": "ACCEPTED",
+    "median_m": -8.409646384840926,
+    "nmad_m": 5.048590421180485,
+    "n": 4143
+   },
+   "DTEEC_018854_1755_018920_1755_U01": {
+    "status": "ACCEPTED",
+    "median_m": -0.9991418194276775,
+    "nmad_m": 3.673812405120675,
+    "n": 4039
+   },
+   "DTEEC_019698_1750_019988_1750_U01": {
+    "status": "ACCEPTED",
+    "median_m": -5.556727191688196,
+    "nmad_m": 21.54414113096093,
+    "n": 4120
+   },
+   "DTEEC_023957_1755_024023_1755_U01": {
+    "status": "ACCEPTED",
+    "median_m": -2.4723444608430327,
+    "nmad_m": 7.72537625835017,
+    "n": 4954
+   },
+   "T01_000815_1749_XN_05S222W__P22_009650_1772_XI_02S222W": {
+    "status": "ACCEPTED",
+    "median_m": -3.9308870584536635,
+    "nmad_m": 20.45806748251883,
+    "n": 4283
+   }
+  }
+ },
+ "headline": [
+  {
+   "id": "V3",
+   "label": "Rover tilt vs HiRISE slope @3 m",
+   "value": "\u03c1 = 0.37",
+   "number": 0.3663386822506888,
+   "ci95": [
+    0.32,
+    0.41
+   ],
+   "n": 1386,
+   "meaning": "rank correlation between the rover's IMU tilt and the DTM slope at the vehicle's scale"
+  },
+  {
+   "id": "V3",
+   "label": "HiRISE @3 m p90 ratio (tilt / slope)",
+   "value": "0.99\u00d7",
+   "number": 0.9918099927791593,
+   "ci95": [
+    0.89,
+    1.07
+   ],
+   "n": 1386,
+   "meaning": "1.00\u00d7 means the meter-scale map reproduces the steep tail the rover felt"
+  },
+  {
+   "id": "V3",
+   "label": "MOLA-only p90 underestimate",
+   "value": "1.79\u00d7",
+   "number": 1.7932392250223754,
+   "ci95": [
+    1.7,
+    1.85
+   ],
+   "n": 1386,
+   "meaning": "the rover's 90th-percentile tilt is this many times the MOLA 463 m slope"
+  },
+  {
+   "id": "V1",
+   "label": "Rover vs HiRISE elevation NMAD",
+   "value": "4.8 m",
+   "number": 4.816893559570042,
+   "ci95": [
+    4.4,
+    5.2
+   ],
+   "n": 1386,
+   "meaning": "consistency check (bias -8.7 m); localization is tied to HiRISE"
+  },
+  {
+   "id": "V4",
+   "label": "Ladder plan within 10 m of the real drive",
+   "value": "45%",
+   "number": 0.4476190476190476,
+   "ci95": [
+    40.0,
+    54.0
+   ],
+   "n": 40,
+   "meaning": "median share per leg; MOLA-only 41%"
+  },
+  {
+   "id": "V7",
+   "label": "RAD dose rate vs surface pressure",
+   "value": "\u03c1 = 0.10",
+   "number": 0.09928268465601738,
+   "ci95": [
+    -0.08,
+    0.27
+   ],
+   "n": 121,
+   "meaning": "published anticorrelation NOT reproduced in this sample"
+  },
+  {
+   "id": "V6",
+   "label": "HiRISE \u2212 CTX vertical step (median)",
+   "value": "6.6 m",
+   "number": 6.55859375,
+   "ci95": [
+    7.0,
+    7.7
+   ],
+   "n": 1386,
+   "meaning": "92% of waypoint windows exceed the 2 m seam flag"
+  }
+ ],
+ "V5": {
+  "plans": 20,
+  "ran": 20,
+  "identical": 20,
+  "all_identical": true,
+  "not_run": []
+ },
+ "figures": [
+  "v3_p90_ratio.png"
+ ]
+}

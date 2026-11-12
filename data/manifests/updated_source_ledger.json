@@ -163,8 +163,8 @@
       "id": "NASA_RAD",
       "organization": "NASA / Mars Science Laboratory / Radiation Assessment Detector",
       "role": "surface_radiation_reference",
-      "status": "USED_AS_REFERENCE",
-      "url": "https://science.nasa.gov/resource/radiation-measurements-on-mars/",
+      "status": "USED_AND_INGESTED",
+      "url": "https://pds-ppi.igpp.ucla.edu/",
       "used_for": [
         "historical Gale Crater surface-radiation reference"
       ],
@@ -429,7 +429,7 @@
       "id": "MSL_REMS",
       "organization": "NASA / Mars Science Laboratory / REMS",
       "role": "surface_weather",
-      "status": "CATALOGUED_NOT_INGESTED",
+      "status": "USED",
       "used_for": [
         "science catalogue/provenance roadmap"
       ]
@@ -561,7 +561,8 @@
       "status": "USED",
       "url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_traverse.json",
       "used_for": [
-        "Curiosity traverse (MSL_traverse.json)"
+        "GET /rovers/msl/traverse",
+        "validation V1-V6"
       ]
     },
     {
@@ -571,7 +572,8 @@
       "status": "USED",
       "url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
       "used_for": [
-        "Curiosity end-of-drive waypoints (MSL_waypoints.json) with rover attitude"
+        "GET /rovers/msl/*",
+        "validation V1-V6"
       ]
     },
     {
@@ -581,7 +583,8 @@
       "status": "USED",
       "url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_traverse.json",
       "used_for": [
-        "Perseverance traverse (M20_traverse.json)"
+        "GET /rovers/m2020/traverse",
+        "validation V1-V6"
       ]
     },
     {
@@ -591,7 +594,8 @@
       "status": "USED",
       "url": "https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json",
       "used_for": [
-        "Perseverance waypoints (M20_waypoints.json) with rover attitude"
+        "GET /rovers/m2020/*",
+        "validation V1-V6"
       ]
     },
     {
@@ -618,20 +622,21 @@
       "id": "MSL_REMS_OUTREACH",
       "organization": "NASA / JPL / CAB (Centro de Astrobiologia)",
       "role": "observed",
-      "status": "CATALOGUED_NOT_INGESTED",
+      "status": "USED",
       "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
       "used_for": [
-        "REMS weather outreach feed"
+        "GET /conditions",
+        "validation V7"
       ]
     },
     {
       "id": "M2020_MEDA_OUTREACH",
       "organization": "NASA / JPL",
       "role": "observed",
-      "status": "CATALOGUED_NOT_INGESTED",
+      "status": "USED",
       "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=mars2020&feedtype=json",
       "used_for": [
-        "MEDA weather outreach feed"
+        "GET /conditions?site=jezero"
       ]
     }
   ],
@@ -754,7 +759,7 @@
       "type": "TEAM_METHOD",
       "title": "EVA dose screening from archived RAD dose rates (Appendix A8)",
       "status": "IMPLEMENTED",
-      "description": "GET /conditions"
+      "description": "GET /conditions; MARSWALK conditions strip"
     },
     {
       "id": "NEURONEXUS_VALIDATION_SUITE",

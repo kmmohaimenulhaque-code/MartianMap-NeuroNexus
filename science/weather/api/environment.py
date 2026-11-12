@@ -638,3 +638,9 @@ app.include_router(thermal_samples_router)
 from science.landing_sites.api import router as landing_sites_router  # noqa: E402
 
 app.include_router(landing_sites_router)
+from science.validation.api import router as validation_router  # noqa: E402
+
+app.include_router(validation_router)
+from science.conditions.api import router as conditions_router  # noqa: E402
+
+app.include_router(conditions_router)

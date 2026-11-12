@@ -78,6 +78,9 @@ const LAYER_LEDGER = {
   walkability: "NN_WALKABILITY",
 };
 const FLY_TARGETS = { gale: { lat: -4.82, lon: 137.39, km: 60, label: "GALE" }, jezero: { lat: 18.44, lon: 77.45, km: 60, label: "JEZERO" } };
+/* Camera kept across WebGL suspensions (Browser Optimization): restored when the globe reopens on the same site. */
+const savedView = { camera: null, siteKey: null };
+
 const prefersReducedMotion = () => typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
 const MARS_RADIUS_KM = 3396.19;
@@ -381,12 +384,16 @@ export default function Mars3DView({
           qualityProfile: "medium",
           popupEnabled: false,
           environment: { lighting: { type: "virtual" }, atmosphereEnabled: false, starsEnabled: true },
-          camera: {
-            position: { x: lon180(start.longitude_deg), y: Number(start.latitude_deg) - 6, z: 900000, spatialReference: MARS_SR },
-            heading: 0,
-            tilt: 45,
-          },
+          camera:
+            savedView.camera && savedView.siteKey === `${start.latitude_deg},${start.longitude_deg}`
+              ? savedView.camera
+              : {
+                  position: { x: lon180(start.longitude_deg), y: Number(start.latitude_deg) - 6, z: 900000, spatialReference: MARS_SR },
+                  heading: 0,
+                  tilt: 45,
+                },
         });
+        savedView.siteKey = `${start.latitude_deg},${start.longitude_deg}`;
         viewRef.current = view;
         overlayRef.current = labelContainerRef.current ? createLabelOverlay(view, labelContainerRef.current) : null;
 
@@ -512,6 +519,11 @@ export default function Mars3DView({
       widgetRef.current = null;
       overlayRef.current?.destroy();
       overlayRef.current = null;
+      try {
+        savedView.camera = viewRef.current?.camera?.clone?.() ?? savedView.camera;
+      } catch {
+        // Keep the previous camera.
+      }
       viewRef.current?.destroy();
       viewRef.current = null;
       layersRef.current = {};

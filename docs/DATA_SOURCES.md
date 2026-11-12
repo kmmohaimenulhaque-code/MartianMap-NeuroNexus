@@ -14,17 +14,17 @@ Evidence classes: **OBSERVED**: A real instrument measurement from a mission arc
 | `CTX_STAC_DTM` | NASA / MRO / CTX (MSSS); USGS Astrogeology | MRO CTX controlled USGS DTMs (collection mro_ctx_controlled_usgs_dtms, Ames Stereo Pipeline, pc_align to MOLA) | INGESTED | CC0-1.0 | 2026-10-20 | [link](https://stac.astrogeology.usgs.gov/docs/data/mars/ctxdtms/) |
 | `HIRISE_STAC_DTM` | NASA / MRO / HiRISE (University of Arizona); USGS Astrogeology | MRO HiRISE SOCET DTMs (collection mro_hirise_socet_dtms) | INGESTED | CC0-1.0 | 2026-10-20 | [link](https://www.uahirise.org/dtm/) |
 | `HIRISE_STAC_ORTHO` | NASA / MRO / HiRISE; USGS Astrogeology | HiRISE orthoimages paired with the SOCET DTMs | INGESTED | CC0-1.0 | 2026-10-20 | [link](https://stac.astrogeology.usgs.gov/api/collections/mro_hirise_socet_dtms) |
-| `M2020_MEDA_OUTREACH` | NASA / JPL | MEDA weather outreach feed | CATALOGED NOT INGESTED |  |  | [link](https://mars.nasa.gov/rss/api/?feed=weather&category=mars2020&feedtype=json) |
+| `M2020_MEDA_OUTREACH` | NASA / JPL | MEDA weather outreach feed | QUERIED LIVE (STALE) |  | 2026-10-20 | [link](https://mars.nasa.gov/rss/api/?feed=weather&category=mars2020&feedtype=json) |
 | `M2020_TRN_DTM_MOSAIC` | USGS Astrogeology | Mars 2020 TRN HiRISE DTM Mosaic (Fergason et al., 2020) | CATALOGED NOT INGESTED | CC0-1.0 |  | [link](https://astrogeology.usgs.gov/search/map/mars_2020_terrain_relative_navigation_hirise_dtm_mosaic) |
 | `M2020_TRN_ORTHO_MOSAIC` | USGS Astrogeology | Mars 2020 TRN HiRISE orthomosaic | CATALOGED NOT INGESTED | CC0-1.0 |  | [link](https://astrogeology.usgs.gov/search/map/mars_2020_terrain_relative_navigation_hirise_dtm_mosaic) |
-| `MMGIS_M2020_TRAVERSE` | NASA / JPL MMGIS | Perseverance traverse (M20_traverse.json) | QUERIED LIVE |  |  | [link](https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_traverse.json) |
-| `MMGIS_M2020_WAYPOINTS` | NASA / JPL MMGIS | Perseverance waypoints (M20_waypoints.json) with rover attitude | QUERIED LIVE |  |  | [link](https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json) |
-| `MMGIS_MSL_TRAVERSE` | NASA / JPL MMGIS | Curiosity traverse (MSL_traverse.json) | QUERIED LIVE |  |  | [link](https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_traverse.json) |
-| `MMGIS_MSL_WAYPOINTS` | NASA / JPL MMGIS | Curiosity end-of-drive waypoints (MSL_waypoints.json) with rover attitude | QUERIED LIVE |  |  | [link](https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json) |
+| `MMGIS_M2020_TRAVERSE` | NASA / JPL MMGIS | Perseverance traverse (M20_traverse.json) | QUERIED LIVE |  | 2026-10-20 | [link](https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_traverse.json) |
+| `MMGIS_M2020_WAYPOINTS` | NASA / JPL MMGIS | Perseverance waypoints (M20_waypoints.json) with rover attitude | QUERIED LIVE |  | 2026-10-20 | [link](https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json) |
+| `MMGIS_MSL_TRAVERSE` | NASA / JPL MMGIS | Curiosity traverse (MSL_traverse.json) | QUERIED LIVE |  | 2026-10-20 | [link](https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_traverse.json) |
+| `MMGIS_MSL_WAYPOINTS` | NASA / JPL MMGIS | Curiosity end-of-drive waypoints (MSL_waypoints.json) with rover attitude | QUERIED LIVE |  | 2026-10-20 | [link](https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json) |
 | `MOLA_MEGDR` | NASA / Mars Global Surveyor / MOLA | MOLA MEGDR 128 pixels/degree topography (MGS-M-MOLA-5-MEGDR-L3-V1.0) | INGESTED | public domain (NASA PDS) | 2026-10-20 | [link](https://pds-geosciences.wustl.edu/missions/mgs/megdr.html) |
 | `MSL_GALE_DEM_1M` | USGS Astrogeology | MSL Gale Merged DEM 1m (Parker & Calef, 2016) | CATALOGED NOT INGESTED | public domain (USGS) |  | [link](https://astrogeology.usgs.gov/search/map/mars_msl_gale_merged_dem_1m) |
-| `MSL_RAD_RDR` | NASA / Mars Science Laboratory / Radiation Assessment Detector | Radiation Assessment Detector surface measurements (Gale crater) | REFERENCE ONLY |  |  | [link](https://science.nasa.gov/resource/radiation-measurements-on-mars/) |
-| `MSL_REMS_OUTREACH` | NASA / JPL / CAB (Centro de Astrobiologia) | REMS weather outreach feed | CATALOGED NOT INGESTED |  |  | [link](https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json) |
+| `MSL_RAD_RDR` | NASA / Mars Science Laboratory / Radiation Assessment Detector | Radiation Assessment Detector surface measurements (Gale crater) | INGESTED (ARCHIVED, LAG) |  | 2026-10-20 | [link](https://pds-ppi.igpp.ucla.edu/) |
+| `MSL_REMS_OUTREACH` | NASA / JPL / CAB (Centro de Astrobiologia) | REMS weather outreach feed | QUERIED LIVE (OUTREACH) | outreach use only (feed disclaimer) | 2026-10-20 | [link](https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json) |
 | `NASA_JPL_CAD` | NASA / JPL Solar System Dynamics | Small-Body Database Close-Approach Data API | QUERIED LIVE |  |  | [link](https://ssd-api.jpl.nasa.gov/doc/cad.html) |
 | `NASA_MMGIS` | NASA | Nasa Mmgis | QUERIED LIVE |  |  | [link](https://mars.nasa.gov/mmgis/) |
 | `PDS_PLACES_M2020` | NASA PDS Geosciences Node | Mars 2020 rover PLACES bundle | CATALOGED NOT INGESTED |  |  | [link](https://pds-geosciences.wustl.edu/missions/mars2020/places.htm) |
@@ -49,7 +49,7 @@ Evidence classes: **OBSERVED**: A real instrument measurement from a mission arc
 | `MARS2020_MEDA` | NASA / Mars 2020 / MEDA | Mars2020 Meda | CATALOGED NOT INGESTED |  |  |  |
 | `MAVEN` | NASA / MAVEN | Maven | CATALOGED NOT INGESTED |  |  |  |
 | `MCS` | NASA / Mars Reconnaissance Orbiter / MCS | Mcs | CATALOGED NOT INGESTED |  |  |  |
-| `MSL_REMS` | NASA / Mars Science Laboratory / REMS | Msl Rems | CATALOGED NOT INGESTED |  |  |  |
+| `MSL_REMS` | NASA / Mars Science Laboratory / REMS | Msl Rems | QUERIED LIVE (OUTREACH) |  | 2026-10-20 |  |
 | `NASA_CURIOSITY` | NASA / Mars Science Laboratory | Nasa Curiosity | REFERENCE ONLY |  |  | [link](https://science.nasa.gov/mission/msl-curiosity/) |
 | `NASA_EVA` | NASA | Nasa Eva | REFERENCE ONLY |  |  | [link](https://www.nasa.gov/suits-and-rovers/) |
 | `NASA_HUMANS_TO_MARS` | NASA | Nasa Humans To Mars | REFERENCE ONLY |  |  | [link](https://www.nasa.gov/humans-in-space/humans-to-mars/) |

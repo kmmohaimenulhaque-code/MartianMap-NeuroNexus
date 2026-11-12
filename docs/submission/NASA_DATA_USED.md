@@ -15,11 +15,15 @@ Sources whose data NeuroNexus actually reads (ingested or queried live), from th
 | `HIRISE` | Mars Reconnaissance Orbiter / HiRISE | Hirise |  | INGESTED |
 | `HIRISE_STAC_DTM` | Mars Reconnaissance Orbiter / HiRISE | MRO HiRISE SOCET DTMs (collection mro_hirise_socet_dtms) | /terrain/hires/*; /marswalk/*; validation V1-V6 | INGESTED |
 | `HIRISE_STAC_ORTHO` | Mars Reconnaissance Orbiter / HiRISE | HiRISE orthoimages paired with the SOCET DTMs | GET /terrain/hires/image?layer=ortho | INGESTED |
-| `MMGIS_M2020_TRAVERSE` | Mars 2020 | Perseverance traverse (M20_traverse.json) | live GeoJSON with dated snapshot fallback | QUERIED LIVE |
-| `MMGIS_M2020_WAYPOINTS` | Mars 2020 | Perseverance waypoints (M20_waypoints.json) with rover attitude | live GeoJSON with dated snapshot fallback | QUERIED LIVE |
-| `MMGIS_MSL_TRAVERSE` | Mars Science Laboratory | Curiosity traverse (MSL_traverse.json) | live GeoJSON with dated snapshot fallback | QUERIED LIVE |
-| `MMGIS_MSL_WAYPOINTS` | Mars Science Laboratory | Curiosity end-of-drive waypoints (MSL_waypoints.json) with rover attitude | live GeoJSON with dated snapshot fallback | QUERIED LIVE |
+| `M2020_MEDA_OUTREACH` | Mars 2020 / MEDA | MEDA weather outreach feed | GET /conditions?site=jezero | QUERIED LIVE (STALE) |
+| `MMGIS_M2020_TRAVERSE` | Mars 2020 | Perseverance traverse (M20_traverse.json) | GET /rovers/m2020/traverse; validation V1-V6 | QUERIED LIVE |
+| `MMGIS_M2020_WAYPOINTS` | Mars 2020 | Perseverance waypoints (M20_waypoints.json) with rover attitude | GET /rovers/m2020/*; validation V1-V6 | QUERIED LIVE |
+| `MMGIS_MSL_TRAVERSE` | Mars Science Laboratory | Curiosity traverse (MSL_traverse.json) | GET /rovers/msl/traverse; validation V1-V6 | QUERIED LIVE |
+| `MMGIS_MSL_WAYPOINTS` | Mars Science Laboratory | Curiosity end-of-drive waypoints (MSL_waypoints.json) with rover attitude | GET /rovers/msl/*; validation V1-V6 | QUERIED LIVE |
 | `MOLA_MEGDR` | Mars Global Surveyor / MOLA | MOLA MEGDR 128 pixels/degree topography (MGS-M-MOLA-5-MEGDR-L3-V1.0) | tools/fetch_mola.py (size-checked, sha256 logged); memory-mapped | INGESTED |
+| `MSL_RAD_RDR` | Mars Science Laboratory / RAD | Radiation Assessment Detector surface measurements (Gale crater) | GET /conditions; MARSWALK conditions strip; validation V7 | INGESTED (ARCHIVED, LAG) |
+| `MSL_REMS` | Mars Science Laboratory / REMS | Msl Rems | GET /conditions | QUERIED LIVE (OUTREACH) |
+| `MSL_REMS_OUTREACH` | Mars Science Laboratory / REMS | REMS weather outreach feed | GET /conditions; validation V7 | QUERIED LIVE (OUTREACH) |
 | `NASA_AMES_MGCM` | NASA Ames Research Center | Mars Global Climate Model MY34 dust scenario |  | INGESTED |
 | `NASA_JPL_CAD` | NASA / JPL Solar System Dynamics | Small-Body Database Close-Approach Data API |  | QUERIED LIVE |
 | `NASA_MMGIS` | NASA | Nasa Mmgis |  | QUERIED LIVE |

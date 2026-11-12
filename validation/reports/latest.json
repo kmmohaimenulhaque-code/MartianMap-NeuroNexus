@@ -1,0 +1,216 @@
+{
+ "sites": {
+  "gale": {
+   "run_id": "20261020-4c5fb3e5",
+   "report": "validation/reports/gale/20261020-4c5fb3e5/report.json",
+   "headline": [
+    {
+     "id": "V3",
+     "label": "Rover tilt vs HiRISE slope @3 m",
+     "value": "\u03c1 = 0.37",
+     "number": 0.3663386822506888,
+     "ci95": [
+      0.32,
+      0.41
+     ],
+     "n": 1386,
+     "meaning": "rank correlation between the rover's IMU tilt and the DTM slope at the vehicle's scale"
+    },
+    {
+     "id": "V3",
+     "label": "HiRISE @3 m p90 ratio (tilt / slope)",
+     "value": "0.99\u00d7",
+     "number": 0.9918099927791593,
+     "ci95": [
+      0.89,
+      1.07
+     ],
+     "n": 1386,
+     "meaning": "1.00\u00d7 means the meter-scale map reproduces the steep tail the rover felt"
+    },
+    {
+     "id": "V3",
+     "label": "MOLA-only p90 underestimate",
+     "value": "1.79\u00d7",
+     "number": 1.7932392250223754,
+     "ci95": [
+      1.7,
+      1.85
+     ],
+     "n": 1386,
+     "meaning": "the rover's 90th-percentile tilt is this many times the MOLA 463 m slope"
+    },
+    {
+     "id": "V1",
+     "label": "Rover vs HiRISE elevation NMAD",
+     "value": "4.8 m",
+     "number": 4.816893559570042,
+     "ci95": [
+      4.4,
+      5.2
+     ],
+     "n": 1386,
+     "meaning": "consistency check (bias -8.7 m); localization is tied to HiRISE"
+    },
+    {
+     "id": "V4",
+     "label": "Ladder plan within 10 m of the real drive",
+     "value": "45%",
+     "number": 0.4476190476190476,
+     "ci95": [
+      40.0,
+      54.0
+     ],
+     "n": 40,
+     "meaning": "median share per leg; MOLA-only 41%"
+    },
+    {
+     "id": "V7",
+     "label": "RAD dose rate vs surface pressure",
+     "value": "\u03c1 = 0.10",
+     "number": 0.09928268465601738,
+     "ci95": [
+      -0.08,
+      0.27
+     ],
+     "n": 121,
+     "meaning": "published anticorrelation NOT reproduced in this sample"
+    },
+    {
+     "id": "V6",
+     "label": "HiRISE \u2212 CTX vertical step (median)",
+     "value": "6.6 m",
+     "number": 6.55859375,
+     "ci95": [
+      7.0,
+      7.7
+     ],
+     "n": 1386,
+     "meaning": "92% of waypoint windows exceed the 2 m seam flag"
+    }
+   ],
+   "V5": {
+    "plans": 20,
+    "ran": 20,
+    "identical": 20,
+    "all_identical": true
+   },
+   "figures": [
+    "validation/reports/gale/20261020-4c5fb3e5/figures/v3_p90_ratio.png"
+   ]
+  },
+  "jezero": {
+   "run_id": "20261020-4c5fb3e5",
+   "report": "validation/reports/jezero/20261020-4c5fb3e5/report.json",
+   "headline": [
+    {
+     "id": "V3",
+     "label": "Rover tilt vs HiRISE slope @3 m",
+     "value": "\u03c1 = 0.51",
+     "number": 0.5148264355903215,
+     "ci95": [
+      0.42,
+      0.6
+     ],
+     "n": 321,
+     "meaning": "rank correlation between the rover's IMU tilt and the DTM slope at the vehicle's scale"
+    },
+    {
+     "id": "V3",
+     "label": "HiRISE @3 m p90 ratio (tilt / slope)",
+     "value": "0.92\u00d7",
+     "number": 0.9219508532074852,
+     "ci95": [
+      0.77,
+      1.09
+     ],
+     "n": 321,
+     "meaning": "1.00\u00d7 means the meter-scale map reproduces the steep tail the rover felt"
+    },
+    {
+     "id": "V3",
+     "label": "MOLA-only p90 underestimate",
+     "value": "2.35\u00d7",
+     "number": 2.347185815238214,
+     "ci95": [
+      1.77,
+      2.62
+     ],
+     "n": 706,
+     "meaning": "the rover's 90th-percentile tilt is this many times the MOLA 463 m slope"
+    },
+    {
+     "id": "V1",
+     "label": "Rover vs HiRISE elevation NMAD",
+     "value": "6.7 m",
+     "number": 6.712640012547991,
+     "ci95": [
+      5.7,
+      7.4
+     ],
+     "n": 321,
+     "meaning": "consistency check (bias -7.0 m); localization is tied to HiRISE"
+    },
+    {
+     "id": "V4",
+     "label": "Ladder plan within 10 m of the real drive",
+     "value": "41%",
+     "number": 0.41106719367588934,
+     "ci95": [
+      30.0,
+      50.0
+     ],
+     "n": 40,
+     "meaning": "median share per leg; MOLA-only 27%"
+    },
+    {
+     "id": "V6",
+     "label": "HiRISE \u2212 CTX vertical step (median)",
+     "value": "-19.4 m",
+     "number": -19.448486328125,
+     "ci95": [
+      -19.5,
+      -17.3
+     ],
+     "n": 321,
+     "meaning": "96% of waypoint windows exceed the 2 m seam flag"
+    }
+   ],
+   "V5": {
+    "plans": 20,
+    "ran": 20,
+    "identical": 20,
+    "all_identical": true
+   },
+   "figures": [
+    "validation/reports/jezero/20261020-4c5fb3e5/figures/v3_p90_ratio.png"
+   ]
+  }
+ },
+ "schema_version": "neuronexus.validation.v1",
+ "run_id": "20261020-4c5fb3e5",
+ "generated_at": "2026-10-20T04:43:42+00:00",
+ "engine_versions": {
+  "ladder": "ladder-1.0.0",
+  "planner": "marswalk-1.0.0",
+  "sampler": "sampling-1.0.0"
+ },
+ "source_ids": [
+  "HIRISE_STAC_DTM",
+  "CTX_STAC_DTM",
+  "CTX_MOLA_SHOTS",
+  "MOLA_MEGDR",
+  "MMGIS_MSL_WAYPOINTS",
+  "MMGIS_MSL_TRAVERSE",
+  "MMGIS_M2020_WAYPOINTS",
+  "MMGIS_M2020_TRAVERSE",
+  "NEURONEXUS_VALIDATION_SUITE",
+  "NEURONEXUS_TERRAIN_LADDER",
+  "NEURONEXUS_MARSWALK_PLANNER"
+ ],
+ "caveats": [
+  "Rover localization is tied to HiRISE base maps (V1 is a consistency check).",
+  "Rovers are not astronauts; drivers avoided hazards, so drivable ground is over-sampled.",
+  "Hazards below DTM resolution are not represented."
+ ]
+}

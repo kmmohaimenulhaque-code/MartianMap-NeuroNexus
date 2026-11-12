@@ -8,7 +8,6 @@ import SiteSciencePanel from "./components/mars/SiteSciencePanel";
 import MissionOpsPanel from "./components/mission/MissionOpsPanel";
 
 import AiRouteDesigner from "./components/route/AiRouteDesigner";
-import Mars3DView from "./components/mars3d/Mars3DView";
 import UsgsRouteSnapshot from "./components/mars/UsgsRouteSnapshot";
 import OrbitalTrackingPanel from "./components/mission/OrbitalTrackingPanel";
 import MarsIntelligence from "./components/mission/MarsIntelligence";
@@ -52,7 +51,9 @@ import { DEFAULT_MISSION_PROFILE, buildMissionConsoleState, safeHavenRelationshi
 import { CANDIDATE_COLOURS } from "./utils/routeObjectives";
 import { EXPORT_SCHEMA, exportFilename, missionToCsv, routeToCsv } from "./utils/missionExport";
 import { buildThermalPanel } from "./utils/thermalPanel";
-import MissionManualDrawer from "./components/MissionManualDrawer";
+import BrowserOptimizationPanel from "./components/BrowserOptimizationPanel";
+import { perfStore } from "./perf/perfStore";
+import { usePerfSettings } from "./perf/usePerf";
 import ThermalHeatmapCard from "./components/ThermalHeatmapCard";
 import CategorizedLayersMenu from "./components/CategorizedLayersMenu";
 import DynamicMapLegend from "./components/DynamicMapLegend";
@@ -62,23 +63,28 @@ import { DEFAULT_VISIBILITY } from "./components/layers/layerCatalog";
 import { DEMOS } from "./components/manualContent";
 import SourcesDrawer from "./sources/SourcesDrawer";
 import { SourcesContext } from "./sources/SourcesContext";
-import { SourceTags } from "./sources/SourceTag";
+
+import { MAX_CHECKLIST_POINTS, MAX_CHECKLIST_WORDS, MAX_ROUTE_POINTS, countWords, createId, downloadTextFile, isNetworkFailure, normaliseLocation, normaliseLongitude, readStorage, writeStorage } from "./utils/appHelpers";
+import { Metric, Panel } from "./components/console/Panel";
+import MissionMenu from "./components/console/MissionMenu";
+import RouteConsole from "./components/console/RouteConsole";
+import TopBar from "./components/console/TopBar";
 
 import "./ui/tokens.css";
 import "./App.css";
 import "./ui/ui.css";
 
-const MarswalkView = lazy(() => import("./marswalk/MarswalkView"));
+const loadMarswalk = () => import("./marswalk/MarswalkView");
+const loadGlobe = () => import("./components/mars3d/Mars3DView");
+const loadManual = () => import("./components/MissionManualDrawer");
+const MarswalkView = lazy(loadMarswalk);
+const Mars3DView = lazy(loadGlobe);
+const MissionManualDrawer = lazy(loadManual);
 
 const DEFAULT_PLACE = "Gale";
 const DEFAULT_SOL = 100;
 const MAX_SOL = 668;
 
-const MAX_ROUTE_POINTS = 32;
-
-const MAX_TODO_WORDS = 150;
-const MAX_CHECKLIST_POINTS = 10;
-const MAX_CHECKLIST_WORDS = 150;
 
 const STORAGE_KEYS = {
   routes: STORAGE_KEY_V4,
@@ -111,1001 +117,6 @@ const APP_VERSION = "2.0.0";
 const USGS_SYNC_HALF_WIDTH_KM = 40;
 
 
-function readStorage(key, fallback) {
-  try {
-    const raw = localStorage.getItem(key);
-
-    if (!raw) {
-      return fallback;
-    }
-
-    const parsed = JSON.parse(raw);
-
-    return parsed ?? fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-function writeStorage(key, value) {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch {
-    // Local persistence is optional.
-  }
-}
-
-function createId(prefix) {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-}
-
-function normaliseLongitude(longitude) {
-  return ((Number(longitude) % 360) + 360) % 360;
-}
-
-function normaliseLocation(point, label = null) {
-  return {
-    latitude_deg: Number(point.latitude_deg ?? point.lat),
-
-    longitude_deg: normaliseLongitude(point.longitude_deg ?? point.longitude ?? point.lon ?? point.lng),
-
-    label: label ?? point.label ?? null,
-  };
-}
-
-function countWords(text = "") {
-  return String(text).trim().split(/\s+/).filter(Boolean).length;
-}
-
-function trimToWordLimit(text, maximum) {
-  const words = String(text).trim().split(/\s+/).filter(Boolean);
-
-  if (words.length <= maximum) {
-    return text;
-  }
-
-  return words.slice(0, maximum).join(" ");
-}
-
-function isNetworkFailure(error) {
-  const message = String(error?.message ?? error ?? "").toLowerCase();
-
-  return (
-    message.includes("failed to fetch") ||
-    message.includes("networkerror") ||
-    message.includes("load failed") ||
-    message.includes("econnrefused") ||
-    message.includes("fetch failed")
-  );
-}
-
-function downloadTextFile(filename, content, mimeType) {
-  const blob = new Blob([content], {
-    type: mimeType,
-  });
-
-  const url = URL.createObjectURL(blob);
-
-  const anchor = document.createElement("a");
-
-  anchor.href = url;
-
-  anchor.download = filename;
-
-  document.body.appendChild(anchor);
-
-  anchor.click();
-
-  anchor.remove();
-
-  URL.revokeObjectURL(url);
-}
-
-function Panel({ eyebrow, title, children, className = "", id, sources }) {
-  return (
-    <section className={`panel ${className}`} id={id}>
-      <div className="panel-heading">
-        <div>
-          {eyebrow && <div className="eyebrow">{eyebrow}</div>}
-
-          <h2>{title}</h2>
-
-          {sources?.length > 0 && <SourceTags ids={sources} />}
-        </div>
-
-        <span className="panel-mark">+</span>
-      </div>
-
-      <div className="panel-body">{children}</div>
-    </section>
-  );
-}
-
-function Metric({ label, value, detail }) {
-  return (
-    <div className="metric">
-      <span>{label}</span>
-
-      <strong>{value ?? "—"}</strong>
-
-      {detail && <small>{detail}</small>}
-    </div>
-  );
-}
-
-function SearchBar({ query, suggestions, onQueryChange, onSelect }) {
-  return (
-    <div className="search-wrapper">
-      <div className="search-box">
-        <span className="search-icon">⌕</span>
-
-        <input
-          value={query}
-          onChange={(event) => onQueryChange(event.target.value)}
-          placeholder="Search Mars place..."
-          aria-label="Search Mars place"
-        />
-
-        <span className="search-hint">USGS</span>
-      </div>
-
-      {suggestions.length > 0 && (
-        <div className="suggestions">
-          <div className="suggestions-header">MARS PLACES</div>
-
-          {suggestions.map((suggestion) => (
-            <button
-              key={[suggestion.feature_name, suggestion.latitude_deg, suggestion.longitude_deg].join(":")}
-              type="button"
-              onClick={() => onSelect(suggestion)}
-            >
-              <span className="suggestion-dot" />
-
-              <span className="suggestion-main">
-                <strong>{suggestion.feature_name}</strong>
-
-                <small>{suggestion.feature_type}</small>
-              </span>
-
-              <span className="suggestion-meta">{suggestion.diameter_km == null ? "—" : `${Number(suggestion.diameter_km).toFixed(2)} km`}</span>
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-const glassButtonStyle = {
-  minHeight: "34px",
-
-  padding: "0 10px",
-
-  border: "1px solid rgba(117,230,255,0.22)",
-
-  background: "rgba(7,15,19,0.76)",
-
-  color: "#9ab0b8",
-
-  fontFamily: "monospace",
-
-  fontSize: "10px",
-
-  letterSpacing: "0.06em",
-
-  cursor: "pointer",
-};
-
-function MissionMenu({
-  open,
-  onClose,
-  todoText,
-  setTodoText,
-  checklist,
-  onChecklistTextChange,
-  onChecklistToggle,
-  onAddChecklistItem,
-  onRemoveChecklistItem,
-  onExportJson,
-  onExportCsv,
-  onExportRouteCsv,
-  routeExportAvailable = true,
-  onPrint,
-  embedded = false,
-}) {
-  if (!open && !embedded) {
-    return null;
-  }
-
-  const todoWords = countWords(todoText);
-
-  const checklistWords = countWords(checklist.map((item) => item.text).join(" "));
-
-  const body = (
-        <div
-          style={{
-            display: "grid",
-
-            gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr)",
-
-            gap: "12px",
-
-            padding: "14px",
-          }}
-        >
-          <section
-            style={{
-              minWidth: 0,
-
-              border: "1px solid rgba(117,230,255,0.14)",
-
-              background: "rgba(7,15,19,0.72)",
-            }}
-          >
-            <div
-              style={{
-                padding: "12px",
-
-                borderBottom: "1px solid rgba(117,230,255,0.1)",
-              }}
-            >
-              <div
-                style={{
-                  color: "#75e6ff",
-
-                  fontSize: "10px",
-
-                  letterSpacing: "0.12em",
-                }}
-              >
-                ✍️ TO-DO LIST MAKER
-              </div>
-
-              <strong
-                style={{
-                  display: "block",
-
-                  marginTop: "5px",
-
-                  fontSize: "13px",
-                }}
-              >
-                Mission objective / field note
-              </strong>
-            </div>
-
-            <div
-              style={{
-                padding: "12px",
-              }}
-            >
-              <textarea
-                value={todoText}
-                onChange={(event) => setTodoText(trimToWordLimit(event.target.value, MAX_TODO_WORDS))}
-                placeholder="Write what needs to be completed..."
-                style={{
-                  width: "100%",
-
-                  minHeight: "280px",
-
-                  resize: "vertical",
-
-                  boxSizing: "border-box",
-
-                  padding: "12px",
-
-                  border: "1px solid #29414b",
-
-                  background: "#071014",
-
-                  color: "#d8e5e9",
-
-                  fontFamily: "monospace",
-
-                  fontSize: "10px",
-
-                  lineHeight: 1.6,
-
-                  outline: "none",
-                }}
-              />
-
-              <div
-                style={{
-                  display: "flex",
-
-                  justifyContent: "space-between",
-
-                  gap: "10px",
-
-                  marginTop: "7px",
-
-                  color: todoWords >= MAX_TODO_WORDS ? "#ff8997" : "#6f828a",
-
-                  fontFamily: "monospace",
-
-                  fontSize: "10px",
-                }}
-              >
-                <span>MAXIMUM 150 WORDS</span>
-
-                <strong>
-                  {todoWords} / {MAX_TODO_WORDS}
-                </strong>
-              </div>
-            </div>
-          </section>
-
-          <section
-            style={{
-              minWidth: 0,
-
-              border: "1px solid rgba(117,230,255,0.14)",
-
-              background: "rgba(7,15,19,0.72)",
-            }}
-          >
-            <div
-              style={{
-                padding: "12px",
-
-                borderBottom: "1px solid rgba(117,230,255,0.1)",
-              }}
-            >
-              <div
-                style={{
-                  color: "#75e6ff",
-
-                  fontSize: "10px",
-
-                  letterSpacing: "0.12em",
-                }}
-              >
-                📋 CHECKLIST MAKER
-              </div>
-
-              <strong
-                style={{
-                  display: "block",
-
-                  marginTop: "5px",
-
-                  fontSize: "13px",
-                }}
-              >
-                Tickable mission actions
-              </strong>
-            </div>
-
-            <div
-              style={{
-                padding: "12px",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-
-                  justifyContent: "space-between",
-
-                  gap: "10px",
-
-                  marginBottom: "9px",
-
-                  color: "#6f828a",
-
-                  fontFamily: "monospace",
-
-                  fontSize: "10px",
-                }}
-              >
-                <span>
-                  {checklist.length} / {MAX_CHECKLIST_POINTS} POINTS
-                </span>
-
-                <strong
-                  style={{
-                    color: checklistWords >= MAX_CHECKLIST_WORDS ? "#ff8997" : "#9bb1b8",
-                  }}
-                >
-                  {checklistWords} / {MAX_CHECKLIST_WORDS} WORDS
-                </strong>
-              </div>
-
-              <div
-                style={{
-                  display: "grid",
-
-                  gap: "7px",
-
-                  minHeight: "285px",
-
-                  alignContent: "start",
-                }}
-              >
-                {checklist.map((item, index) => (
-                  <div
-                    key={item.id}
-                    style={{
-                      display: "grid",
-
-                      gridTemplateColumns: "30px minmax(0,1fr) 32px",
-
-                      gap: "7px",
-
-                      alignItems: "center",
-                    }}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => onChecklistToggle(item.id)}
-                      style={{
-                        width: "30px",
-
-                        height: "30px",
-
-                        border: item.done ? "1px solid #8cf0b1" : "1px solid #29414b",
-
-                        background: item.done ? "rgba(80,180,120,0.12)" : "#071014",
-
-                        color: "#8cf0b1",
-
-                        cursor: "pointer",
-
-                        fontSize: "15px",
-                      }}
-                    >
-                      {item.done ? "✓" : ""}
-                    </button>
-
-                    <input
-                      value={item.text}
-                      onChange={(event) => onChecklistTextChange(item.id, event.target.value)}
-                      placeholder={`Checklist point ${index + 1}`}
-                      style={{
-                        minWidth: 0,
-
-                        width: "100%",
-
-                        boxSizing: "border-box",
-
-                        minHeight: "34px",
-
-                        padding: "7px 9px",
-
-                        border: "1px solid #29414b",
-
-                        background: "#071014",
-
-                        color: item.done ? "#6d858d" : "#d5e1e5",
-
-                        textDecoration: item.done ? "line-through" : "none",
-
-                        fontFamily: "monospace",
-
-                        fontSize: "10px",
-
-                        outline: "none",
-                      }}
-                    />
-
-                    <button
-                      type="button"
-                      onClick={() => onRemoveChecklistItem(item.id)}
-                      style={{
-                        minHeight: "34px",
-
-                        border: "1px solid #50333a",
-
-                        background: "#0b1114",
-
-                        color: "#ff9aa9",
-
-                        cursor: "pointer",
-
-                        fontSize: "13px",
-                      }}
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-
-                {!checklist.length && (
-                  <div
-                    style={{
-                      minHeight: "160px",
-
-                      display: "grid",
-
-                      placeItems: "center",
-
-                      padding: "16px",
-
-                      border: "1px dashed #29414b",
-
-                      color: "#667980",
-
-                      fontSize: "10px",
-
-                      textAlign: "center",
-                    }}
-                  >
-                    NO CHECKLIST ITEMS
-                    <br />
-                    ADD YOUR FIRST MISSION ACTION
-                  </div>
-                )}
-              </div>
-
-              <button
-                type="button"
-                disabled={checklist.length >= MAX_CHECKLIST_POINTS || checklistWords >= MAX_CHECKLIST_WORDS}
-                onClick={onAddChecklistItem}
-                style={{
-                  ...glassButtonStyle,
-
-                  width: "100%",
-
-                  marginTop: "10px",
-
-                  opacity: checklist.length >= MAX_CHECKLIST_POINTS || checklistWords >= MAX_CHECKLIST_WORDS ? 0.4 : 1,
-                }}
-              >
-                + ADD CHECKLIST POINT
-              </button>
-            </div>
-          </section>
-
-          <section
-            style={{
-              gridColumn: "1 / -1",
-
-              border: "1px solid rgba(117,230,255,0.14)",
-
-              background: "rgba(7,15,19,0.72)",
-
-              padding: "12px",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-
-                flexWrap: "wrap",
-
-                gap: "7px",
-
-                justifyContent: "space-between",
-
-                alignItems: "center",
-              }}
-            >
-              <div>
-                <div
-                  style={{
-                    color: "#75e6ff",
-
-                    fontSize: "10px",
-
-                    letterSpacing: "0.12em",
-                  }}
-                >
-                  MISSION RECORD
-                </div>
-
-                <small
-                  style={{
-                    display: "block",
-
-                    marginTop: "4px",
-
-                    color: "#687b83",
-
-                    fontSize: "10px",
-                  }}
-                >
-                  Notes and checklist are saved locally and included in both mission exports. The complete CSV flattens every value in the mission
-                  record, one row per measurement.
-                </small>
-              </div>
-
-              <div
-                style={{
-                  display: "flex",
-
-                  flexWrap: "wrap",
-
-                  gap: "6px",
-                }}
-              >
-                <button type="button" onClick={onExportJson} style={glassButtonStyle}>
-                  EXPORT JSON
-                </button>
-
-                <button type="button" onClick={onExportCsv} style={glassButtonStyle}>
-                  EXPORT COMPLETE CSV
-                </button>
-
-                <button
-                  type="button"
-                  onClick={onExportRouteCsv}
-                  style={{ ...glassButtonStyle, opacity: routeExportAvailable ? 1 : 0.55 }}
-                  title={routeExportAvailable ? "Per-waypoint route CSV" : "Plan, apply or save a route first"}
-                >
-                  EXPORT ROUTE CSV
-                </button>
-
-                <button type="button" onClick={onPrint} style={glassButtonStyle}>
-                  PRINT / PDF
-                </button>
-              </div>
-            </div>
-          </section>
-        </div>
-  );
-
-  if (embedded) {
-    return body;
-  }
-
-  return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label="NeuroNexus mission workspace"
-      style={{
-        position: "fixed",
-
-        inset: 0,
-
-        zIndex: 5000,
-
-        display: "flex",
-
-        alignItems: "center",
-
-        justifyContent: "center",
-
-        padding: "24px",
-
-        background: "rgba(2,7,10,0.72)",
-
-        backdropFilter: "blur(22px) saturate(120%)",
-
-        WebkitBackdropFilter: "blur(22px) saturate(120%)",
-      }}
-    >
-      <div
-        style={{
-          width: "min(1180px, 100%)",
-
-          height: "min(820px, calc(100vh - 48px))",
-
-          overflow: "auto",
-
-          border: "1px solid rgba(117,230,255,0.25)",
-
-          background: "linear-gradient(180deg, rgba(11,21,27,0.9), rgba(4,10,13,0.92))",
-
-          boxShadow: "0 30px 120px rgba(0,0,0,0.65)",
-
-          backdropFilter: "blur(28px)",
-
-          WebkitBackdropFilter: "blur(28px)",
-        }}
-      >
-        <header
-          style={{
-            position: "sticky",
-
-            top: 0,
-
-            zIndex: 2,
-
-            display: "flex",
-
-            justifyContent: "space-between",
-
-            alignItems: "center",
-
-            gap: "16px",
-
-            padding: "16px 18px",
-
-            borderBottom: "1px solid rgba(117,230,255,0.13)",
-
-            background: "rgba(5,12,16,0.82)",
-
-            backdropFilter: "blur(18px)",
-
-            WebkitBackdropFilter: "blur(18px)",
-          }}
-        >
-          <div>
-            <div
-              style={{
-                color: "#75e6ff",
-
-                fontSize: "10px",
-
-                letterSpacing: "0.16em",
-              }}
-            >
-              NEURONEXUS / MISSION WORKSPACE
-            </div>
-
-            <h2
-              style={{
-                margin: "5px 0 0",
-
-                fontSize: "18px",
-
-                letterSpacing: "0.06em",
-              }}
-            >
-              FIELD NOTES + CHECKLIST
-            </h2>
-
-            <small
-              style={{
-                display: "block",
-
-                marginTop: "5px",
-
-                color: "#74868e",
-
-                fontSize: "10px",
-              }}
-            >
-              Persistent local mission planning workspace.
-            </small>
-          </div>
-
-          <button
-            type="button"
-            onClick={onClose}
-            style={{
-              minWidth: "38px",
-
-              minHeight: "38px",
-
-              border: "1px solid #29414b",
-
-              background: "#091115",
-
-              color: "#75e6ff",
-
-              fontSize: "20px",
-
-              cursor: "pointer",
-            }}
-          >
-            ×
-          </button>
-        </header>
-
-        {body}
-      </div>
-    </div>
-  );
-}
-
-function RouteConsole({
-  routeMode,
-  routePoints,
-  routePlan,
-  loading,
-  hasSelectedLocation,
-  selectedLocation,
-  savedRoutes,
-  compareCount,
-  customPlacesCount,
-  safeHavensCount,
-  onToggle,
-  onAddSelected,
-  onAnalyze,
-  onClear,
-  onRemoveLast,
-  onSaveRoute,
-  onOpenCompare,
-  onSavePlace,
-  onAddSafeHaven,
-}) {
-  const displacement = routePlan?.displacement?.distance_km;
-
-  const planned = routePlan?.planned_route?.planned_route_km;
-
-  const extension = routePlan?.planned_route?.extension_km;
-
-  return (
-    <div className="route-console">
-      <div className="route-console-main">
-        <div className="route-console-heading">
-          <span>NAVIGATION / USER WAYPOINTS</span>
-
-          <strong>
-            {routeMode ? "PLAN ROUTE ACTIVE" : routePoints.length ? `${routePoints.length} WAYPOINT${routePoints.length === 1 ? "" : "S"}` : "READY"}
-          </strong>
-        </div>
-
-        <small>
-          {routeMode
-            ? "Click anywhere on the coloured Mars map to add a waypoint."
-            : "User-defined Haversine route geometry with local MOLA waypoint analysis."}
-        </small>
-      </div>
-
-      <div className="route-console-actions">
-        <button type="button" className={routeMode ? "active" : ""} onClick={onToggle}>
-          {routeMode ? "STOP PLANNING" : "PLAN ROUTE"}
-        </button>
-
-        <button type="button" disabled={!hasSelectedLocation || routePoints.length >= MAX_ROUTE_POINTS} onClick={onAddSelected}>
-          ADD SELECTED
-        </button>
-
-        <button type="button" disabled={!routePoints.length} onClick={onRemoveLast}>
-          UNDO LAST
-        </button>
-
-        <button type="button" className="primary" disabled={routePoints.length < 2 || loading} onClick={onAnalyze}>
-          {loading ? "ANALYZING…" : "ANALYZE"}
-        </button>
-
-        <button type="button" disabled={routePoints.length < 2} onClick={onSaveRoute}>
-          SAVE ROUTE
-        </button>
-
-        <button type="button" disabled={savedRoutes.length < 2} onClick={onOpenCompare}>
-          COMPARE
-          {compareCount > 0 ? ` ${compareCount}/${MAX_COMPARE_ROUTES}` : ""}
-        </button>
-
-        <button type="button" className="danger" disabled={!routePoints.length} onClick={onClear}>
-          CLEAR
-        </button>
-      </div>
-
-      {routePoints.length > 0 && (
-        <div className="route-console-strip">
-          {routePoints.map((point, index) => (
-            <span key={`${point.latitude_deg}:${point.longitude_deg}:${index}`}>
-              {index === 0 ? "A" : `P${index}`}{" "}
-              {point.label || `${Number(point.latitude_deg).toFixed(2)}°,${Number(point.longitude_deg).toFixed(2)}°E`}
-            </span>
-          ))}
-        </div>
-      )}
-
-      {routePlan && (
-        <div className="route-console-results">
-          <Metric label="Displacement" value={displacement == null ? "—" : `${Number(displacement).toFixed(2)} km`} />
-
-          <Metric label="Planned route" value={planned == null ? "—" : `${Number(planned).toFixed(2)} km`} />
-
-          <Metric label="Extension" value={extension == null ? "—" : `${Number(extension).toFixed(2)} km`} />
-        </div>
-      )}
-
-      <div
-        style={{
-          display: "grid",
-
-          gridTemplateColumns: "1fr 1fr",
-
-          gap: "6px",
-        }}
-      >
-        <button
-          type="button"
-          disabled={!selectedLocation}
-          onClick={onSavePlace}
-          style={{
-            minHeight: "29px",
-
-            padding: "0 9px",
-
-            border: "1px solid #29414b",
-
-            background: "#0a1318",
-
-            color: "#93a7af",
-
-            fontFamily: "monospace",
-
-            fontSize: "7px",
-
-            letterSpacing: "0.08em",
-
-            cursor: "pointer",
-          }}
-        >
-          SAVE CURRENT PLACE
-        </button>
-
-        <button
-          type="button"
-          disabled={!selectedLocation}
-          onClick={onAddSafeHaven}
-          style={{
-            minHeight: "29px",
-
-            padding: "0 9px",
-
-            border: "1px solid #3a6650",
-
-            background: "#0a1318",
-
-            color: "#8cf0b1",
-
-            fontFamily: "monospace",
-
-            fontSize: "7px",
-
-            letterSpacing: "0.08em",
-
-            cursor: "pointer",
-          }}
-        >
-          ADD SAFE HAVEN
-        </button>
-      </div>
-
-      <div
-        style={{
-          display: "flex",
-
-          flexWrap: "wrap",
-
-          gap: "8px 14px",
-
-          paddingTop: "2px",
-
-          color: "#65777f",
-
-          fontFamily: "monospace",
-
-          fontSize: "7px",
-        }}
-      >
-        <span>
-          SAVED ROUTES{" "}
-          <strong
-            style={{
-              color: "#9bb1b8",
-            }}
-          >
-            {savedRoutes.length}
-          </strong>
-        </span>
-
-        <span>
-          CUSTOM PLACES{" "}
-          <strong
-            style={{
-              color: "#9bb1b8",
-            }}
-          >
-            {customPlacesCount}
-          </strong>
-        </span>
-
-        <span>
-          SAFE HAVENS{" "}
-          <strong
-            style={{
-              color: "#8cf0b1",
-            }}
-          >
-            {safeHavensCount}
-          </strong>
-        </span>
-      </div>
-    </div>
-  );
-}
-
 export default function App() {
   const [appMode, setAppMode] = useState(() => (readStorage("nn.appMode", "global") === "marswalk" ? "marswalk" : "global"));
   const [marswalkDemo, setMarswalkDemo] = useState({ key: 0, demo: null });
@@ -1123,13 +134,14 @@ export default function App() {
     writeStorage("nn.layers", layerVisibility);
   }, [layerVisibility]);
 
-  const startDemo = useCallback((demoId) => {
-    const demo = DEMOS[demoId];
-    if (!demo) return;
-    setManualOpen(false);
-    setAppMode("marswalk");
-    setMarswalkDemo((current) => ({ key: current.key + 1, demo }));
-  }, []);
+  const perf = usePerfSettings();
+  const [globeWasOpen, setGlobeWasOpen] = useState(false);
+
+  useEffect(() => {
+    // With lazy loading off, fetch the heavy chunks right away so they open instantly.
+    if (!perf.toggles.lazyHeavyViews) [loadMarswalk, loadGlobe, loadManual].forEach((load) => load());
+  }, [perf.toggles.lazyHeavyViews]);
+
 
   const [places, setPlaces] = useState([]);
 
@@ -1209,6 +221,34 @@ export default function App() {
   const [designerOpen, setDesignerOpen] = useState(false);
 
   const [map3dOpen, setMap3dOpen] = useState(false);
+
+  const switchMode = useCallback(
+    (next) => {
+      if (next === appMode) return;
+      // Suspend the 3D globe's WebGL context while planning in MARSWALK; reopen it (same camera) on return.
+      if (next === "marswalk" && perfStore.enabled("suspendWebGL") && map3dOpen) {
+        setGlobeWasOpen(true);
+        setMap3dOpen(false);
+      }
+      if (next === "global" && globeWasOpen) {
+        setGlobeWasOpen(false);
+        setMap3dOpen(true);
+      }
+      setAppMode(next);
+    },
+    [appMode, map3dOpen, globeWasOpen],
+  );
+
+  const startDemo = useCallback(
+    (demoId) => {
+      const demo = DEMOS[demoId];
+      if (!demo) return;
+      setManualOpen(false);
+      switchMode("marswalk");
+      setMarswalkDemo((current) => ({ key: current.key + 1, demo }));
+    },
+    [switchMode],
+  );
 
   const [designStart, setDesignStart] = useState(null);
 
@@ -2644,7 +1684,8 @@ export default function App() {
   const contextLayers = useContextLayerData(appMode === "global" ? layerVisibility : {}, selectedLocation, sol);
 
   const commandHandlers = {
-    "marswalk-mode": { run: () => setAppMode((mode) => (mode === "marswalk" ? "global" : "marswalk")) },
+    "marswalk-mode": { run: () => switchMode(appMode === "marswalk" ? "global" : "marswalk") },
+    "browser-optimization": { run: () => setManualOpen(true) },
     "marswalk-demo": { run: () => startDemo("gale") },
     "mission-manual": { run: () => setManualOpen(true) },
     "sources-ledger": { run: () => setSourcesDrawer({ open: true, focusId: null }) },
@@ -2926,160 +1967,28 @@ export default function App() {
   return (
     <SourcesContext.Provider value={sourcesContext}>
     <main className="mission-shell">
-      <header className="topbar">
-        <div className="brand-block">
-          <img className="brand-logo" src="/team-neuronexus-logo.png" alt="Team NeuroNexus" width="40" height="40" />
-
-          <div className="brand-kicker">NASA SPACE APPS 2026</div>
-
-          <h1>NEURONEXUS</h1>
-
-          <span>MARTIAN MAP / MISSION CONTROL</span>
-        </div>
-
-        <SearchBar query={query} suggestions={suggestions} onQueryChange={setQuery} onSelect={handleSelectPlace} />
-
-        <div
-          className="mission-state"
-          style={{
-            display: "flex",
-
-            alignItems: "flex-end",
-
-            justifyContent: "center",
-
-            gap: "12px",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-
-              gap: "14px",
-
-              alignItems: "center",
-            }}
-          >
-            <div>
-              <span className="state-label">SOL</span>
-
-              <strong>{sol}</strong>
-            </div>
-
-            <div>
-              <span className="state-label">FEATURES</span>
-
-              <strong>{places.length.toLocaleString()}</strong>
-            </div>
-          </div>
-
-          <div
-            style={{
-              display: "flex",
-
-              flexDirection: "column",
-
-              alignItems: "flex-end",
-
-              gap: "6px",
-            }}
-          >
-            <div className="topbar-row">
-              <div className="mode-switch" role="radiogroup" aria-label="Console mode (M)">
-                {[
-                  ["global", "GLOBAL CONSOLE"],
-                  ["marswalk", "MARSWALK"],
-                ].map(([key, label]) => (
-                  <button key={key} type="button" role="radio" aria-checked={appMode === key} className={appMode === key ? "active" : undefined} onClick={() => setAppMode(key)} title="Switch mode (M)">
-                    {label}
-                  </button>
-                ))}
-              </div>
-              <div
-                className="status-dot"
-                style={
-                  backendConnected
-                    ? undefined
-                    : {
-                        color: "#ff647c",
-
-                        borderColor: "rgba(255,100,124,0.24)",
-                      }
-                }
-                title={backendConnected ? "NeuroNexus backend reachable" : "NeuroNexus backend unavailable"}
-              >
-                <span
-                  style={
-                    backendConnected
-                      ? undefined
-                      : {
-                          background: "#ff5267",
-
-                          boxShadow: "0 0 12px rgba(255,82,103,0.75)",
-                        }
-                  }
-                />
-
-                {backendConnected ? "SYSTEM ONLINE" : "SYSTEM DEGRADED"}
-              </div>
-            </div>
-
-            <div className="topbar-row">
-              <div className="mission-actions">
-                <button type="button" className="mission-action" onClick={() => setDesignerOpen(true)}>
-                  AI ROUTE DESIGN
-                </button>
-
-                <button type="button" className="mission-action" onClick={() => setIntelligenceOpen(true)}>
-                  MARS INTELLIGENCE
-                </button>
-
-                <button type="button" className="mission-action" onClick={handleOpenSnapshot} disabled={comparedRoutes.length < 2 && routePoints.length < 2 && !selectedCandidateId}>
-                  USGS SNAPSHOT
-                </button>
-
-                <button type="button" className="mission-action" onClick={handleOpenOrbital}>
-                  ORBITAL TRACKING
-                </button>
-              </div>
-              <button
-                type="button"
-                aria-label="Open mission command index"
-                aria-expanded={commandIndex.open}
-                title="Mission Command Index (Ctrl/⌘+K)"
-                onClick={() => setCommandIndex((state) => ({ open: !state.open, tab: "commands" }))}
-                style={{
-                  minWidth: "42px",
-
-                  minHeight: "32px",
-
-                  border: "1px solid #29414b",
-
-                  background: "#091115",
-
-                  color: "#75e6ff",
-
-                  fontFamily: "monospace",
-
-                  fontSize: "18px",
-
-                  lineHeight: 1,
-
-                  cursor: "pointer",
-
-                  boxShadow: "0 0 16px rgba(117,230,255,0.06)",
-                }}
-              >
-                ☰
-              </button>
-
-              <button type="button" className="burger-button" aria-label="Open Mission Operations Manual" aria-expanded={manualOpen} title="Mission Operations Manual" onClick={() => setManualOpen(true)}>
-                🍔
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+      <TopBar
+        appMode={appMode}
+        backendConnected={backendConnected}
+        commandIndex={commandIndex}
+        comparedRoutes={comparedRoutes}
+        handleOpenOrbital={handleOpenOrbital}
+        handleOpenSnapshot={handleOpenSnapshot}
+        handleSelectPlace={handleSelectPlace}
+        manualOpen={manualOpen}
+        places={places}
+        query={query}
+        routePoints={routePoints}
+        selectedCandidateId={selectedCandidateId}
+        setCommandIndex={setCommandIndex}
+        setDesignerOpen={setDesignerOpen}
+        setIntelligenceOpen={setIntelligenceOpen}
+        setManualOpen={setManualOpen}
+        setQuery={setQuery}
+        sol={sol}
+        suggestions={suggestions}
+        switchMode={switchMode}
+      />
 
       <CommandIndex
         key={commandIndex.open ? `open-${commandIndex.tab}` : "closed"}
@@ -3385,7 +2294,7 @@ export default function App() {
                     status={contextLayers.status}
                     onToggle={(id) => setLayerVisibility((v) => ({ ...v, [id]: !v[id] }))}
                     onLink={(action) => {
-                      if (action === "marswalk") setAppMode("marswalk");
+                      if (action === "marswalk") switchMode("marswalk");
                       else document.getElementById({ usgs: "panel-usgs-map", thermal: "panel-thermal", solar: "panel-solar" }[action])?.scrollIntoView({ behavior: "smooth", block: "center" });
                     }}
                   />
@@ -3698,6 +2607,8 @@ export default function App() {
         </div>
       </footer>
 
+      {map3dOpen && (
+      <Suspense fallback={<div className="nn-loading">Loading the 3D globe…</div>}>
       <Mars3DView
         sol={sol}
         open={map3dOpen}
@@ -3731,6 +2642,8 @@ export default function App() {
         routeStatsFor={routeStats}
         requestedPanel={requested3dPanel}
       />
+      </Suspense>
+      )}
 
       <AiRouteDesigner
         open={designerOpen}
@@ -3820,7 +2733,10 @@ export default function App() {
         />
       )}
 
+      {manualOpen && (
+      <Suspense fallback={null}>
       <MissionManualDrawer
+        optimizationPanel={<BrowserOptimizationPanel />}
         open={manualOpen}
         onClose={() => setManualOpen(false)}
         onQuickStart={startDemo}
@@ -3830,6 +2746,8 @@ export default function App() {
           setCommandIndex({ open: true, tab: "commands" });
         }}
       />
+      </Suspense>
+      )}
 
       <SourcesDrawer open={sourcesDrawer.open} focusId={sourcesDrawer.focusId} onClose={() => setSourcesDrawer({ open: false, focusId: null })} />
     </main>

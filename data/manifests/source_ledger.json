@@ -482,28 +482,34 @@
       "mission": "Mars Science Laboratory",
       "instrument": "RAD",
       "product_title": "Radiation Assessment Detector surface measurements (Gale crater)",
-      "product_id_pattern": null,
+      "product_id_pattern": "RAD_RDR_YYYY_DDD_HH_MM_SSSS_V00.TXT",
       "doi": null,
-      "url": "https://science.nasa.gov/resource/radiation-measurements-on-mars/",
-      "landing_page": null,
+      "url": "https://pds-ppi.igpp.ucla.edu/data/MSL-M-RAD-3-RDR-V1.0/",
+      "landing_page": "https://pds-ppi.igpp.ucla.edu/",
       "license": null,
-      "citation": null,
+      "citation": "Hassler et al. (2014), Science 343, 1244797",
       "evidence_class": "OBSERVED",
-      "ingestion_status": "REFERENCE ONLY",
-      "access_method": null,
-      "used_by": [],
-      "retrieved_at": null,
-      "version": null,
-      "archive_lag_days": null,
-      "caveats": [
-        "Historical measurement context only; not presented as a live forecast."
+      "ingestion_status": "INGESTED (ARCHIVED, LAG)",
+      "access_method": "tools/fetch_rad.py streams each sol file into per-sol summaries (raw files are not kept)",
+      "used_by": [
+        "GET /conditions",
+        "MARSWALK conditions strip",
+        "validation V7"
       ],
-      "verified_on": null,
-      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "retrieved_at": "2026-10-20T04:39:00+00:00",
+      "version": "MSL-M-RAD-3-RDR-V1.0",
+      "archive_lag_days": 212,
+      "caveats": [
+        "Archived with a lag of months: never live",
+        "Historical measurement context only; not presented as a live forecast.",
+        "Measured at Gale by Curiosity"
+      ],
+      "verified_on": "2026-10-20",
+      "verification_note": "RAD_RDR_SIS: DOSIMETRY_TOTAL_DOSE_B/E in microgray per hour. Latest archived sol 4843 (2026-03-21); 30-sol median E 156 uGy/day.",
       "legacy": {
         "id": "NASA_RAD",
         "role": "surface_radiation_reference",
-        "status": "USED_AS_REFERENCE",
+        "status": "USED_AND_INGESTED",
         "used_for": [
           "historical Gale Crater surface-radiation reference"
         ],
@@ -1328,19 +1334,21 @@
       "license": null,
       "citation": null,
       "evidence_class": "NASA REFERENCE",
-      "ingestion_status": "CATALOGED NOT INGESTED",
+      "ingestion_status": "QUERIED LIVE (OUTREACH)",
       "access_method": null,
-      "used_by": [],
+      "used_by": [
+        "GET /conditions"
+      ],
       "retrieved_at": null,
       "version": null,
       "archive_lag_days": null,
       "caveats": [],
-      "verified_on": null,
-      "verification_note": "Carried over from the v2 ledgers; not re-verified.",
+      "verified_on": "2026-10-20",
+      "verification_note": "Used through the CAB/NASA outreach feed (MSL_REMS_OUTREACH), not the PDS science archive.",
       "legacy": {
         "id": "MSL_REMS",
         "role": "surface_weather",
-        "status": "CATALOGUED_NOT_INGESTED",
+        "status": "USED",
         "used_for": [
           "science catalogue/provenance roadmap"
         ]
@@ -1971,15 +1979,18 @@
       "evidence_class": "OBSERVED",
       "ingestion_status": "QUERIED LIVE",
       "access_method": "live GeoJSON with dated snapshot fallback",
-      "used_by": [],
-      "retrieved_at": null,
+      "used_by": [
+        "GET /rovers/msl/traverse",
+        "validation V1-V6"
+      ],
+      "retrieved_at": "2026-10-20T03:44:00+00:00",
       "version": null,
       "archive_lag_days": null,
       "caveats": [
         "Operations localization, not the archival PDS product"
       ],
-      "verified_on": null,
-      "verification_note": "Carried over from the v2 ledgers; not re-verified."
+      "verified_on": "2026-10-20",
+      "verification_note": "Live fetch: 1,314 features (1,318 drive parts). Snapshot data/snapshots/rovers/mmgis_2026-10-20.json.gz (sha256 file alongside)."
     },
     {
       "id": "MMGIS_MSL_WAYPOINTS",
@@ -1997,16 +2008,19 @@
       "evidence_class": "OBSERVED",
       "ingestion_status": "QUERIED LIVE",
       "access_method": "live GeoJSON with dated snapshot fallback",
-      "used_by": [],
-      "retrieved_at": null,
+      "used_by": [
+        "GET /rovers/msl/*",
+        "validation V1-V6"
+      ],
+      "retrieved_at": "2026-10-20T03:44:00+00:00",
       "version": null,
       "archive_lag_days": null,
       "caveats": [
         "-9999 is a missing-value sentinel",
         "Operations localization registered to HiRISE base maps"
       ],
-      "verified_on": null,
-      "verification_note": "Carried over from the v2 ledgers; not re-verified."
+      "verified_on": "2026-10-20",
+      "verification_note": "Live fetch: 1,386 waypoints; latest sol 5045, 38,480 m driven; tilt median 7.68, p90 14.6, max 29.1 deg. Snapshot data/snapshots/rovers/mmgis_2026-10-20.json.gz (sha256 file alongside)."
     },
     {
       "id": "MMGIS_M2020_TRAVERSE",
@@ -2024,15 +2038,18 @@
       "evidence_class": "OBSERVED",
       "ingestion_status": "QUERIED LIVE",
       "access_method": "live GeoJSON with dated snapshot fallback",
-      "used_by": [],
-      "retrieved_at": null,
+      "used_by": [
+        "GET /rovers/m2020/traverse",
+        "validation V1-V6"
+      ],
+      "retrieved_at": "2026-10-20T03:44:00+00:00",
       "version": null,
       "archive_lag_days": null,
       "caveats": [
         "Operations localization, not the archival PDS product"
       ],
-      "verified_on": null,
-      "verification_note": "Carried over from the v2 ledgers; not re-verified."
+      "verified_on": "2026-10-20",
+      "verification_note": "Live fetch: 558 drives. Snapshot data/snapshots/rovers/mmgis_2026-10-20.json.gz (sha256 file alongside)."
     },
     {
       "id": "MMGIS_M2020_WAYPOINTS",
@@ -2050,15 +2067,18 @@
       "evidence_class": "OBSERVED",
       "ingestion_status": "QUERIED LIVE",
       "access_method": "live GeoJSON with dated snapshot fallback",
-      "used_by": [],
-      "retrieved_at": null,
+      "used_by": [
+        "GET /rovers/m2020/*",
+        "validation V1-V6"
+      ],
+      "retrieved_at": "2026-10-20T03:44:00+00:00",
       "version": null,
       "archive_lag_days": null,
       "caveats": [
         "-9999 is a missing-value sentinel"
       ],
-      "verified_on": null,
-      "verification_note": "Carried over from the v2 ledgers; not re-verified."
+      "verified_on": "2026-10-20",
+      "verification_note": "Live fetch: 706 waypoints; latest sol 2009, 45,224 m driven. Snapshot data/snapshots/rovers/mmgis_2026-10-20.json.gz (sha256 file alongside)."
     },
     {
       "id": "PDS_PLACES_MSL",
@@ -2119,20 +2139,23 @@
       "doi": null,
       "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
       "landing_page": null,
-      "license": null,
+      "license": "outreach use only (feed disclaimer)",
       "citation": null,
       "evidence_class": "OBSERVED",
-      "ingestion_status": "CATALOGED NOT INGESTED",
-      "access_method": null,
-      "used_by": [],
-      "retrieved_at": null,
+      "ingestion_status": "QUERIED LIVE (OUTREACH)",
+      "access_method": "live JSON (6 h cache) with a dated snapshot in data/snapshots/weather/",
+      "used_by": [
+        "GET /conditions",
+        "validation V7"
+      ],
+      "retrieved_at": "2026-10-20T04:33:56+00:00",
       "version": null,
       "archive_lag_days": null,
       "caveats": [
         "OUTREACH FEED (CAB/NASA), not for operations"
       ],
-      "verified_on": null,
-      "verification_note": "Carried over from the v2 ledgers; not re-verified."
+      "verified_on": "2026-10-20",
+      "verification_note": "4,745 sols; latest sol 4995 (2026-08-25). Disclaimer: intended for outreach purposes only."
     },
     {
       "id": "M2020_MEDA_OUTREACH",
@@ -2148,17 +2171,19 @@
       "license": null,
       "citation": null,
       "evidence_class": "OBSERVED",
-      "ingestion_status": "CATALOGED NOT INGESTED",
-      "access_method": null,
-      "used_by": [],
+      "ingestion_status": "QUERIED LIVE (STALE)",
+      "access_method": "live JSON with a dated snapshot",
+      "used_by": [
+        "GET /conditions?site=jezero"
+      ],
       "retrieved_at": null,
       "version": null,
       "archive_lag_days": null,
       "caveats": [
         "Latest entry 2024-04 at prompt time: NO RECENT DATA"
       ],
-      "verified_on": null,
-      "verification_note": "Carried over from the v2 ledgers; not re-verified."
+      "verified_on": "2026-10-20",
+      "verification_note": "Latest entry sol 1133 (2024-04-27): shown as NO RECENT DATA."
     },
     {
       "id": "NEURONEXUS_TERRAIN_LADDER",
@@ -2387,7 +2412,8 @@
       "ingestion_status": "INGESTED",
       "access_method": "computed in this application",
       "used_by": [
-        "GET /conditions"
+        "GET /conditions",
+        "MARSWALK conditions strip"
       ],
       "retrieved_at": null,
       "version": null,

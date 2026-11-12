@@ -25,3 +25,12 @@ tests/test_marswalk_planner.py
 tests/test_marswalk_contracts.py
 science/thermal/samples_api.py
 science/landing_sites/api.py
+science/validation
+tests/test_validation_stats.py
+tools/update_readme_validation.py
+tests/test_readme_numbers.py
+science/conditions
+tools/fetch_rad.py
+tests/test_rad_parser.py
+tools/gen_parity_fixture.py
+tests/test_parity_fixture.py

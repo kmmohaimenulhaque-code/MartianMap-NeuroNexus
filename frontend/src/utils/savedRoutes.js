@@ -1,3 +1,5 @@
+import { openNeuronexusDb } from "../perf/tileCache";
+
 /*
  * Saved route records (schema v4) and comparison metrics.
  * v4 adds resolution_ladder, data_versions, config_hash and source_ids (reproducibility, T3.7).
@@ -168,21 +170,10 @@ export function comparisonToCsv(routes) {
 
 /* ---------------------------------------------------------------- snapshot cache (IndexedDB) */
 
-const DB_NAME = "neuronexus";
 const STORE = "usgsSnapshots";
 
-function openDb() {
-  return new Promise((resolve, reject) => {
-    if (!globalThis.indexedDB) {
-      reject(new Error("IndexedDB unavailable"));
-      return;
-    }
-    const request = indexedDB.open(DB_NAME, 1);
-    request.onupgradeneeded = () => request.result.createObjectStore(STORE);
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
+/* Shared with the Browser Optimization tile cache (database version 2 keeps every snapshot). */
+const openDb = openNeuronexusDb;
 
 export async function readSnapshot(key) {
   try {

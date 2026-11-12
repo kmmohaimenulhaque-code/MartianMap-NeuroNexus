@@ -1,0 +1,30 @@
+"""The README "What's validated" table equals validation/reports/latest.json (no hand-typed numbers)."""
+from __future__ import annotations
+
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+import pytest
+
+ROOT = Path(__file__).resolve().parents[1]
+LATEST = ROOT / "validation" / "reports" / "latest.json"
+
+
+@pytest.mark.skipif(not LATEST.exists(), reason="validation suite not run yet")
+def test_readme_table_matches_latest_json():
+    result = subprocess.run([sys.executable, str(ROOT / "tools/update_readme_validation.py"), "--check"],
+                            capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+
+
+@pytest.mark.skipif(not LATEST.exists(), reason="validation suite not run yet")
+def test_every_headline_number_carries_n_and_ci():
+    latest = json.loads(LATEST.read_text())
+    assert latest["schema_version"] == "neuronexus.validation.v1"
+    for site in latest["sites"].values():
+        assert site["headline"], "no headline metrics"
+        for h in site["headline"]:
+            assert h["n"] > 0 and h["value"] and h["meaning"]
+            assert h["ci95"] is None or h["ci95"][0] <= h["ci95"][1]

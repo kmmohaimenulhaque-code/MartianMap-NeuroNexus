@@ -59,5 +59,4 @@ data/indexes/themis/metadata/failed_products.jsonl
 data/derived/
 data/demo_pack/rasters/
 *.part
-validation/reports/*/*/figures/*.png
 frontend/test-results/

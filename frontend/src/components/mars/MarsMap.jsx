@@ -6,6 +6,8 @@ import { CRS, Transformation } from "leaflet";
 
 import "leaflet/dist/leaflet.css";
 
+import { perfStore } from "../../perf/perfStore";
+
 const MARS_BOUNDS = [
   [-90, 0],
   [90, 360],
@@ -707,6 +709,13 @@ function CandidateRoutesLayer({ candidates = [], selectedId = null, onSelect }) 
   );
 }
 
+/* Reports the visible bounds so canvas markers outside the view are not drawn (Browser Optimization). */
+function ViewportTracker({ onBounds }) {
+  const map = useMap();
+  useMapEvents({ moveend: () => onBounds(map.getBounds().pad(0.2)), zoomend: () => onBounds(map.getBounds().pad(0.2)) });
+  return null;
+}
+
 export default function MarsMap({
   features = [],
   showBasemap = true,
@@ -762,6 +771,12 @@ export default function MarsMap({
   interactive = true,
 }) {
   const [draftLocation, setDraftLocation] = useState(null);
+  const [viewBounds, setViewBounds] = useState(null);
+  const culling = perfStore.enabled("canvasCulling");
+  // Selected feature always stays drawn; others only inside the (padded) viewport when culling is on.
+  const indexed = features.map((f, i) => [f, i]); // keep each feature's own index so keys stay stable
+  const culledFeatures =
+    culling && viewBounds ? indexed.filter(([f]) => f === selectedFeature || viewBounds.contains(marsPosition(f))) : indexed;
 
   const places = customPlaces.length ? customPlaces : savedPlaces;
 
@@ -912,7 +927,9 @@ export default function MarsMap({
           />
         )}
 
-        {showFeatures && features.map((feature, featureIndex) => {
+        <ViewportTracker onBounds={setViewBounds} />
+
+        {showFeatures && culledFeatures.map(([feature, featureIndex]) => {
           const position = marsPosition(feature);
 
           if (!validPosition(position)) {

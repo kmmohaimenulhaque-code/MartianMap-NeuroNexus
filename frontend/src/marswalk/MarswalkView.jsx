@@ -12,7 +12,9 @@ import ConditionsStrip from "./ConditionsStrip";
 import DecisionCard from "./DecisionCard";
 import { downloadBrief, openPrintableBrief } from "./evaBrief";
 import { marswalkApi } from "./marswalkApi";
-import { displayGrid, evaluateProfile, toLocal, trackFromGrids } from "./marswalkMath";
+import { perfStore } from "../perf/perfStore";
+import { runMath, setGrids } from "../perf/workerClient";
+import { displayGrid, toLocal } from "./marswalkMath";
 import ProfileStrip from "./ProfileStrip";
 import SiteMap from "./SiteMap";
 import TerrainLadder from "./TerrainLadder";
@@ -70,6 +72,8 @@ export default function MarswalkView({ demo, onNotice }) {
   const [hoverIndex, setHoverIndex] = useState(null);
   const planAbort = useRef(null);
   const autoPlanned = useRef(false);
+  const estimateSeq = useRef(0);
+  const dragTimer = useRef(null);
 
   useEffect(() => writePref("nn.marswalk.site", site), [site]);
 
@@ -136,14 +140,24 @@ export default function MarswalkView({ demo, onNotice }) {
     return { ...v, ...overrides, eva_duration_h: evaHours };
   }, [config, overrides, evaHours]);
 
-  const clientEstimate = useCallback(
+  useEffect(() => {
+    if (grids?.elevation) setGrids(windowKey, grids);
+  }, [grids, windowKey]);
+
+  /* Browser estimate (worker when enabled, identical math on the main thread otherwise). */
+  const requestEstimate = useCallback(
     (pts) => {
-      if (!grids?.elevation || !values || !frame || pts.length < 2) return null;
+      const seq = ++estimateSeq.current;
+      if (!grids?.elevation || !values || !frame || pts.length < 2) {
+        setEstimate(null);
+        return;
+      }
       const local = pts.map((p) => toLocal(p.lat, p.lon, frame));
-      const track = trackFromGrids(local, grids, windowJson.display_grid.step_m);
-      return { ...evaluateProfile(track.ds, track.dz, track.rough, values), pts: track.pts };
+      runMath("track", { gridsKey: windowKey, grids, localPts: local, step: windowJson.display_grid.step_m, v: values })
+        .then((result) => seq === estimateSeq.current && setEstimate(result))
+        .catch(() => seq === estimateSeq.current && setEstimate(null));
     },
-    [grids, values, frame, windowJson],
+    [grids, values, frame, windowJson, windowKey],
   );
 
   const runPlan = useCallback(
@@ -153,7 +167,7 @@ export default function MarswalkView({ demo, onNotice }) {
       const controller = new AbortController();
       planAbort.current = controller;
       const pts = [base, ...nextTargets];
-      setEstimate(clientEstimate(pts));
+      requestEstimate(pts);
       setPlanState({ loading: true, error: "" });
       const shared = { eva_hours: evaHours, terrain_mode: mode, overrides };
       const call =
@@ -172,7 +186,7 @@ export default function MarswalkView({ demo, onNotice }) {
           setPlanState({ loading: false, error: error.hint ? `${error.message} (${error.hint})` : error.message });
         });
     },
-    [base, targets, evaHours, mode, overrides, site, clientEstimate],
+    [base, targets, evaHours, mode, overrides, site, requestEstimate],
   );
 
   useEffect(() => {
@@ -187,18 +201,21 @@ export default function MarswalkView({ demo, onNotice }) {
       const next = [{ lat: point.lat, lon: point.lon }];
       setTargets(next);
       setPlan(null);
-      setEstimate(clientEstimate(base ? [base, ...next] : []));
+      requestEstimate(base ? [base, ...next] : []);
     },
-    [base, clientEstimate],
+    [base, requestEstimate],
   );
 
   const onDragPoint = useCallback(
     (index, point) => {
       const next = targets.map((t, i) => (i === index - 1 ? point : t));
       setTargets(next);
-      runPlan(next);
+      if (base) requestEstimate([base, ...next]);
+      // Debounced replan; a newer drag cancels the stale request (AbortController in runPlan).
+      clearTimeout(dragTimer.current);
+      dragTimer.current = setTimeout(() => runPlan(next), perfStore.enabled("debounceDrags") ? 250 : 0);
     },
-    [targets, runPlan],
+    [targets, runPlan, base, requestEstimate],
   );
 
   const changeMode = (next) => {

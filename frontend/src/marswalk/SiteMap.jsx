@@ -8,6 +8,8 @@ import { CircleMarker, ImageOverlay, MapContainer, Marker, Pane, Polyline, Toolt
 import { CRS, divIcon } from "leaflet";
 import "leaflet/dist/leaflet.css";
 
+import { perfStore } from "../perf/perfStore";
+import { cachedObjectUrl } from "../perf/tileCache";
 import { marswalkApi } from "./marswalkApi";
 import { sampleGrid, toLatLon, toLocal } from "./marswalkMath";
 import { CLASS_TOKENS, cssVar, SOURCE_TOKENS } from "./walkabilityRamp";
@@ -49,6 +51,33 @@ function ScaleBar() {
       <b className="mw-north" aria-label="North is up">N ↑</b>
     </div>
   );
+}
+
+/* Overlay PNGs go through the IndexedDB tile cache and are pre-decoded with createImageBitmap. */
+function CachedOverlay({ url, bounds, opacity }) {
+  const enabled = perfStore.enabled("tileCache");
+  const [state, setState] = useState({ url: null, src: null });
+  useEffect(() => {
+    if (!enabled) return undefined;
+    let objectUrl = null;
+    let cancelled = false;
+    cachedObjectUrl(url)
+      .then((src) => {
+        if (cancelled) {
+          if (src.startsWith("blob:")) URL.revokeObjectURL(src);
+          return;
+        }
+        objectUrl = src;
+        setState({ url, src });
+      })
+      .catch(() => !cancelled && setState({ url, src: url }));
+    return () => {
+      cancelled = true;
+      if (objectUrl?.startsWith("blob:")) URL.revokeObjectURL(objectUrl);
+    };
+  }, [url, enabled]);
+  const src = enabled ? (state.url === url ? state.src : null) : url;
+  return src ? <ImageOverlay url={src} bounds={bounds} opacity={opacity} /> : null;
 }
 
 function FitFrame({ extent }) {
@@ -116,11 +145,11 @@ export default function SiteMap({ frame, mode, overlays, plan, estimate, editPts
     <div className="mw-sitemap">
       <MapContainer crs={CRS.Simple} minZoom={-4} maxZoom={3} zoomSnap={0.25} preferCanvas attributionControl={false} className="mw-leaflet" bounds={bounds}>
         <FitFrame extent={extent} />
-        {overlays.hillshade && <ImageOverlay url={layerUrl("hillshade")} bounds={bounds} opacity={1} />}
-        {overlays.ortho && <ImageOverlay url={layerUrl("ortho")} bounds={bounds} opacity={0.92} />}
-        {overlays.walkability && <ImageOverlay url={layerUrl("walkability")} bounds={bounds} opacity={0.62} />}
-        {overlays.slope && <ImageOverlay url={layerUrl("slope")} bounds={bounds} opacity={0.62} />}
-        {overlays.source && <ImageOverlay url={layerUrl("source")} bounds={bounds} opacity={0.55} />}
+        {overlays.hillshade && <CachedOverlay url={layerUrl("hillshade")} bounds={bounds} opacity={1} />}
+        {overlays.ortho && <CachedOverlay url={layerUrl("ortho")} bounds={bounds} opacity={0.92} />}
+        {overlays.walkability && <CachedOverlay url={layerUrl("walkability")} bounds={bounds} opacity={0.62} />}
+        {overlays.slope && <CachedOverlay url={layerUrl("slope")} bounds={bounds} opacity={0.62} />}
+        {overlays.source && <CachedOverlay url={layerUrl("source")} bounds={bounds} opacity={0.55} />}
         <Pane name="rovers" style={{ zIndex: 420 }}>
           {groundTruth &&
             rovers.map((rover) =>
