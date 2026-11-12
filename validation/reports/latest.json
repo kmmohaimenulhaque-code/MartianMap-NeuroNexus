@@ -78,15 +78,15 @@
     },
     {
      "id": "V6",
-     "label": "HiRISE \u2212 CTX vertical step (median)",
-     "value": "6.6 m",
-     "number": 6.55859375,
+     "label": "HiRISE \u2212 CTX vertical step (mean bias)",
+     "value": "7.3 m",
+     "number": 7.302864724251443,
      "ci95": [
       7.0,
       7.7
      ],
      "n": 1386,
-     "meaning": "92% of waypoint windows exceed the 2 m seam flag"
+     "meaning": "median 6.6 m; 92% of waypoint windows exceed the 2 m seam flag"
     }
    ],
    "V5": {
@@ -165,15 +165,15 @@
     },
     {
      "id": "V6",
-     "label": "HiRISE \u2212 CTX vertical step (median)",
-     "value": "-19.4 m",
-     "number": -19.448486328125,
+     "label": "HiRISE \u2212 CTX vertical step (mean bias)",
+     "value": "-18.4 m",
+     "number": -18.39846335913162,
      "ci95": [
       -19.5,
       -17.3
      ],
      "n": 321,
-     "meaning": "96% of waypoint windows exceed the 2 m seam flag"
+     "meaning": "median -19.4 m; 96% of waypoint windows exceed the 2 m seam flag"
     }
    ],
    "V5": {

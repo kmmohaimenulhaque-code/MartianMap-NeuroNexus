@@ -621,15 +621,15 @@
   },
   {
    "id": "V6",
-   "label": "HiRISE \u2212 CTX vertical step (median)",
-   "value": "-19.4 m",
-   "number": -19.448486328125,
+   "label": "HiRISE \u2212 CTX vertical step (mean bias)",
+   "value": "-18.4 m",
+   "number": -18.39846335913162,
    "ci95": [
     -19.5,
     -17.3
    ],
    "n": 321,
-   "meaning": "96% of waypoint windows exceed the 2 m seam flag"
+   "meaning": "median -19.4 m; 96% of waypoint windows exceed the 2 m seam flag"
   }
  ],
  "V5": {

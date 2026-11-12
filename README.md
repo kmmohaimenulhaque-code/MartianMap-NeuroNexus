@@ -562,14 +562,14 @@ Run `20261020-4c5fb3e5` · generated 2026-10-20T04:43:42+00:00 · `python -m sci
 | Gale | V1 | Rover vs HiRISE elevation NMAD | **4.8 m** | 4.4 – 5.2 | 1,386 | consistency check (bias -8.7 m); localization is tied to HiRISE |
 | Gale | V4 | Ladder plan within 10 m of the real drive | **45%** | 40.0 – 54.0 | 40 | median share per leg; MOLA-only 41% |
 | Gale | V7 | RAD dose rate vs surface pressure | **ρ = 0.10** | -0.08 – 0.27 | 121 | published anticorrelation NOT reproduced in this sample |
-| Gale | V6 | HiRISE − CTX vertical step (median) | **6.6 m** | 7.0 – 7.7 | 1,386 | 92% of waypoint windows exceed the 2 m seam flag |
+| Gale | V6 | HiRISE − CTX vertical step (mean bias) | **7.3 m** | 7.0 – 7.7 | 1,386 | median 6.6 m; 92% of waypoint windows exceed the 2 m seam flag |
 | Gale | V5 | Plans byte-identical on rerun | **20/20** |  | 20 | same request + data versions → same plan |
 | Jezero | V3 | Rover tilt vs HiRISE slope @3 m | **ρ = 0.51** | 0.42 – 0.6 | 321 | rank correlation between the rover's IMU tilt and the DTM slope at the vehicle's scale |
 | Jezero | V3 | HiRISE @3 m p90 ratio (tilt / slope) | **0.92×** | 0.77 – 1.09 | 321 | 1.00× means the meter-scale map reproduces the steep tail the rover felt |
 | Jezero | V3 | MOLA-only p90 underestimate | **2.35×** | 1.77 – 2.62 | 706 | the rover's 90th-percentile tilt is this many times the MOLA 463 m slope |
 | Jezero | V1 | Rover vs HiRISE elevation NMAD | **6.7 m** | 5.7 – 7.4 | 321 | consistency check (bias -7.0 m); localization is tied to HiRISE |
 | Jezero | V4 | Ladder plan within 10 m of the real drive | **41%** | 30.0 – 50.0 | 40 | median share per leg; MOLA-only 27% |
-| Jezero | V6 | HiRISE − CTX vertical step (median) | **-19.4 m** | -19.5 – -17.3 | 321 | 96% of waypoint windows exceed the 2 m seam flag |
+| Jezero | V6 | HiRISE − CTX vertical step (mean bias) | **-18.4 m** | -19.5 – -17.3 | 321 | median -19.4 m; 96% of waypoint windows exceed the 2 m seam flag |
 | Jezero | V5 | Plans byte-identical on rerun | **20/20** |  | 20 | same request + data versions → same plan |
 
 <!-- VALIDATION:END -->

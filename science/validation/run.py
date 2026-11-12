@@ -65,9 +65,10 @@ def headline(site_report: dict) -> list[dict]:
                     "meaning": v7["verdict"]})
     hc = v6.get("hirise_minus_ctx_20m", {})
     if hc.get("n", 0) >= 3:
-        out.append({"id": "V6", "label": "HiRISE − CTX vertical step (median)", "value": f"{hc['median_m']:.1f} m",
-                    "number": hc["median_m"], "ci95": _fmt_ci(hc["bias_ci95"], 1), "n": hc["n"],
-                    "meaning": f"{100 * hc['share_flagged']:.0f}% of waypoint windows exceed the 2 m seam flag"})
+        # The CI is the bootstrap CI of the mean bias, so the value shown is the mean bias (the median goes in the text).
+        out.append({"id": "V6", "label": "HiRISE − CTX vertical step (mean bias)", "value": f"{hc['bias_m']:.1f} m",
+                    "number": hc["bias_m"], "ci95": _fmt_ci(hc["bias_ci95"], 1), "n": hc["n"],
+                    "meaning": f"median {hc['median_m']:.1f} m; {100 * hc['share_flagged']:.0f}% of waypoint windows exceed the 2 m seam flag"})
     return out
 
 

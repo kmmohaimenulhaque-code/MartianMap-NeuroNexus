@@ -28,3 +28,17 @@ def test_every_headline_number_carries_n_and_ci():
         for h in site["headline"]:
             assert h["n"] > 0 and h["value"] and h["meaning"]
             assert h["ci95"] is None or h["ci95"][0] <= h["ci95"][1]
+
+
+def test_every_headline_value_lies_inside_its_own_ci():
+    """A headline must pair a statistic with that statistic's CI (regression: V6 once showed a median with the mean's CI)."""
+    import json
+    from pathlib import Path
+
+    latest = json.loads((Path(__file__).resolve().parents[1] / "validation/reports/latest.json").read_text())
+    for site, entry in latest["sites"].items():
+        for h in entry["headline"]:
+            if h.get("ci95") and isinstance(h.get("number"), (int, float)):
+                lo, hi = h["ci95"]
+                value = h["number"] * (100 if h["id"] == "V4" and hi > 1 >= h["number"] else 1)
+                assert lo - 0.051 <= value <= hi + 0.051, (site, h["id"], h["label"], h["number"], h["ci95"])

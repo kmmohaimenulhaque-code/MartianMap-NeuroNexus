@@ -1621,3 +1621,12 @@ textarea {
 @keyframes nn-wheel-fade { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .nn-wheel-sub, .nn-wheel-overlay { animation: none; } }
 .nn-wheel-hub-hint.is-blocked { fill: #ffc46b; }
+
+/* Static demo banner (VITE_DEMO_PACK=1 builds only) */
+.nn-demo-banner {
+  position: fixed; left: 50%; bottom: 10px; transform: translateX(-50%); z-index: 2500;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; max-width: min(1100px, calc(100vw - 32px));
+  padding: 8px 14px; border: 1px solid var(--nn-amber); background: rgba(8, 16, 20, 0.94); backdrop-filter: blur(8px);
+  color: var(--nn-text-strong); font: 500 13px/1.4 var(--nn-font);
+}
+.nn-demo-banner strong { color: var(--nn-amber); letter-spacing: 0.06em; }
