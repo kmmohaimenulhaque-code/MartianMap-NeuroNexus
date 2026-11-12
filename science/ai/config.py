@@ -15,28 +15,41 @@ import threading
 import time
 from typing import Any
 
-# Current generally-available Flash model. Override with GEMINI_MODEL.
-DEFAULT_MODEL = "gemini-3.5-flash"
+# Default Flash model. Override with GEMINI_MODEL. If it is unavailable or
+# overloaded for a key, calls fail over to the next working model.
+DEFAULT_MODEL = "gemini-3.6-flash"
 ENV_KEY = "GEMINI_API_KEY"
 ENV_MODEL = "GEMINI_MODEL"
 
 # Preferred fallbacks, newest first. Only models the key can actually call
 # are ever used; this list only orders the choice.
 PREFERRED_MODELS = [
+    # Ordered to alternate model families: when Google overloads one family
+    # (503 "high demand"), the next attempt goes to a different one.
     "gemini-3.6-flash",
-    "gemini-3.5-flash",
-    "gemini-3-flash",
     "gemini-3-flash-preview",
     "gemini-3.1-flash-lite",
+    "gemini-3.5-flash",
+    "gemini-flash-latest",
+    "gemini-3.7-flash",
+    "gemini-3.8-flash",
+    "gemini-3-flash",
+    "gemini-3.5-flash-lite",
+    "gemini-flash-lite-latest",
     "gemini-2.5-flash",
     "gemini-2.5-flash-lite",
 ]
+
+# How long a model that returned 404 / 429 / 5xx is skipped before being retried.
+FAILED_MODEL_COOLDOWN_S = {404: 6 * 3600, 429: 300, 500: 120, 503: 180}
+MAX_MODEL_ATTEMPTS = 5
 
 _EXCLUDED = ("image", "audio", "live", "tts", "embedding", "embed", "veo", "imagen", "lyria", "robotics", "aqa", "computer-use")
 MODEL_CACHE_SECONDS = 600
 
 _lock = threading.Lock()
 _cache: dict[str, Any] = {"key_fingerprint": None, "at": 0.0, "models": None, "error": None}
+_health: dict[str, Any] = {"working": None, "working_at": 0.0, "cooldown": {}}
 
 
 def _load_dotenv_once() -> None:
@@ -109,15 +122,65 @@ def choose_model(available: list[str], requested: str) -> str | None:
     return sorted(pool, key=_version_key, reverse=True)[0] if pool else None
 
 
+def mark_model_failed(model: str, code: int | None) -> None:
+    seconds = FAILED_MODEL_COOLDOWN_S.get(code or 503, 180)
+    with _lock:
+        _health["cooldown"][model] = time.time() + seconds
+        if _health["working"] == model:
+            _health["working"] = None
+
+
+def mark_model_ok(model: str) -> None:
+    with _lock:
+        _health["working"] = model
+        _health["working_at"] = time.time()
+        _health["cooldown"].pop(model, None)
+
+
+def _cooling(model: str) -> bool:
+    until = _health["cooldown"].get(model)
+    return bool(until and until > time.time())
+
+
+def model_attempt_order(available: list[str] | None, requested: str) -> list[str]:
+    """Models to try, in order: last known-good, requested, preferred, other Flash models.
+
+    A model listed by the Models API can still refuse calls (e.g. gemini-2.5-flash
+    returns 404 "no longer available to new users", or a model is overloaded with
+    503), so the listing only orders the attempts; real calls decide.
+    """
+    with _lock:
+        working = _health["working"]
+        order: list[str] = []
+        if working and (available is None or working in available) and not _cooling(working):
+            order.append(working)
+        pool = list(available) if available is not None else []
+        if requested not in order and (available is None or requested in pool) and not _cooling(requested):
+            order.append(requested)
+        for name in PREFERRED_MODELS:
+            if name in pool and name not in order and not _cooling(name):
+                order.append(name)
+        others = sorted((n for n in pool if "flash" in n and n not in order and not _cooling(n)), key=_version_key, reverse=True)
+        order.extend(others)
+        if not order and pool:  # everything is cooling down: retry the best candidates anyway
+            order = [n for n in PREFERRED_MODELS if n in pool] or pool[:MAX_MODEL_ATTEMPTS]
+    return order[:MAX_MODEL_ATTEMPTS]
+
+
 def resolve_model(client: Any) -> dict[str, Any]:
     """Resolve which model to call and explain any substitution clearly."""
     requested = configured_model()
     try:
         available = list_available_models(client)
     except Exception as exc:  # listing failed: try the requested model as-is
-        return {"model": requested, "requested": requested, "available": None, "substituted": False,
-                "notice": None, "listing_error": str(exc)[:200]}
-    chosen = choose_model(available, requested)
+        order = model_attempt_order(None, requested) or [requested]
+        for name in PREFERRED_MODELS:
+            if name not in order and len(order) < MAX_MODEL_ATTEMPTS:
+                order.append(name)
+        return {"model": order[0], "requested": requested, "available": None, "substituted": order[0] != requested,
+                "notice": None, "listing_error": str(exc)[:200], "attempt_order": order}
+    order = model_attempt_order(available, requested)
+    chosen = order[0] if order else choose_model(available, requested)
     if chosen is None:
         return {"model": None, "requested": requested, "available": available, "substituted": False,
                 "notice": "This API key has no Gemini text-generation model available.", "listing_error": None}
@@ -129,7 +192,7 @@ def resolve_model(client: Any) -> dict[str, Any]:
             f"Set GEMINI_MODEL to one of: {', '.join(sorted(available)[:12])}."
         )
     return {"model": chosen, "requested": requested, "available": available, "substituted": chosen != requested,
-            "notice": notice, "listing_error": None}
+            "notice": notice, "listing_error": None, "attempt_order": order or [chosen]}
 
 
 def model_name() -> str:
