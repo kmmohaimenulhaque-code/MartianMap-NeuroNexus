@@ -1,1 +1,1 @@
-"""USGS / ArcGIS integration: map synchronisation and route scientific snapshots."""
+"""USGS / ArcGIS integration: map synchronization and route scientific snapshots."""

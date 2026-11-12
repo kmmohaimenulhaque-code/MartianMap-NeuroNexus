@@ -80,7 +80,7 @@ def collect_usgs_features(lat: float, lon: float, radius_km: float) -> list[Evid
                 longitude_deg=float(feature["longitude_deg"]) % 360.0,
                 engagement_radius_km=round(min(max(diameter / 2.0, 0.5), 5.0), 3),
                 status="NASA REFERENCE",
-                provenance="USGS/IAU catalogued feature centre point; proximity is not a confirmed science target.",
+                provenance="USGS/IAU cataloged feature center point; proximity is not a confirmed science target.",
                 url=feature.get("usgs_feature_url"),
                 timestamp=feature.get("approval_date"),
                 extra={"feature_type": feature.get("feature_type"), "diameter_km": feature.get("diameter_km")},

@@ -355,7 +355,7 @@ def build_route_snapshot(route: dict[str, Any]) -> dict[str, Any]:
         "routes": overlay_routes,
         "geology": {"units_crossed": crossed, "polygons": polygons, "contacts": lines(cached["contacts"]),
                     "structures": lines(cached["structures"]), "landing_sites": landing,
-                    "note": "SIM 3292 is a 1:20,000,000 global map; unit boundaries are generalised at km scale."},
+                    "note": "SIM 3292 is a 1:20,000,000 global map; unit boundaries are generalized at km scale."},
         "wab_sync_url": sync["url"],
         "source": SOURCE,
         "provenance": {

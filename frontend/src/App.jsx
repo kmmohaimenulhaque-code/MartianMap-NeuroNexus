@@ -60,7 +60,7 @@ import { DEMOS } from "./components/manualContent";
 import SourcesDrawer from "./sources/SourcesDrawer";
 import { SourcesContext } from "./sources/SourcesContext";
 
-import { MAX_CHECKLIST_POINTS, MAX_CHECKLIST_WORDS, MAX_ROUTE_POINTS, countWords, createId, downloadTextFile, isNetworkFailure, normaliseLocation, normaliseLongitude, readStorage, writeStorage } from "./utils/appHelpers";
+import { MAX_CHECKLIST_POINTS, MAX_CHECKLIST_WORDS, MAX_ROUTE_POINTS, countWords, createId, downloadTextFile, isNetworkFailure, normaliseLocation, normaliseLongitude, probeBackend, readStorage, writeStorage } from "./utils/appHelpers";
 import MissionMenu from "./components/console/MissionMenu";
 import RouteConsole from "./components/console/RouteConsole";
 import RightColumn from "./components/console/RightColumn";
@@ -407,21 +407,8 @@ export default function App() {
     let cancelled = false;
 
     async function checkBackend() {
-      try {
-        const response = await fetch("/api/places?limit=1", {
-          cache: "no-store",
-        });
-
-        if (cancelled) {
-          return;
-        }
-
-        setBackendConnected(response.ok);
-      } catch {
-        if (!cancelled) {
-          setBackendConnected(false);
-        }
-      }
+      const online = await probeBackend();
+      if (!cancelled) setBackendConnected(online);
     }
 
     checkBackend();
@@ -523,7 +510,7 @@ export default function App() {
     }
     return {
       id: routePlan ? "current-route" : "route-draft",
-      name: routePlan ? "Current analysed route" : "Route draft",
+      name: routePlan ? "Current analyzed route" : "Route draft",
       coordinates: routePoints,
       metrics: routeMetrics?.metrics ?? null,
       analysed: Boolean(routePlan),
@@ -1739,7 +1726,7 @@ export default function App() {
       run: () =>
         setNotice("Ctrl/Cmd+K command index · / search · R route mode · S save route · A route designer · C compare · I intelligence · 3 3D · O orbital · P print · N notes · [ ] sol"),
     },
-    "backend-status": { run: () => setNotice(backendConnected ? "Backend online (FastAPI, port 8002)." : "Backend unreachable · start uvicorn on port 8002.") },
+    "backend-status": { run: () => setNotice(backendConnected ? "Backend online: GET /api/health answered ok." : "Backend unreachable: start it with python tools/run_backend.py (port 8002).") },
     about: { run: () => setCommandIndex({ open: true, tab: "team" }) },
     "meet-the-team": { run: () => window.open(TEAM_URL, "_blank", "noopener,noreferrer") },
     ...buildConsoleHandlers({ appMode, switchMode, setLayerVisibility, setLegendOpen, scrollToPanel, setCommandIndex, setNotice, setSol, setDustPlaying }),
@@ -1889,7 +1876,7 @@ export default function App() {
         eva: { source: "NeuroNexus estimated EVA time (configurable pace)", status: "DERIVED" },
         mission_simulation: { source: "NeuroNexus mission simulation profile", status: "SIMULATED" },
         ai: { source: `Google Gemini (${aiStatus?.model ?? "not configured"})`, status: "AI INTERPRETATION" },
-        note: "Observed, reference, modelled, derived, computed, simulated and unavailable evidence are kept explicitly distinct.",
+        note: "Observed, reference, modeled, derived, computed, simulated and unavailable evidence are kept explicitly distinct.",
       },
 
       software: {
@@ -2109,7 +2096,7 @@ export default function App() {
           <div className="maps-grid">
             <div className="map-panel">
               <div className="map-panel-title">
-                <span>COLOURED GLOBAL MAP</span>
+                <span>COLORED GLOBAL MAP</span>
 
                 <small>USGS FEATURE + COORDINATE NAVIGATION</small>
               </div>

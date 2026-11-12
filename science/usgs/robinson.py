@@ -72,7 +72,7 @@ def to_longitude_180(longitude_deg: float) -> float:
 
 
 def forward(longitude_deg: float, latitude_deg: float, radius_m: float = MARS_2000_SPHERE_RADIUS_M) -> tuple[float, float]:
-    """(east longitude, planetocentric latitude) in degrees -> (x, y) metres."""
+    """(east longitude, planetocentric latitude) in degrees -> (x, y) meters."""
     lam = math.radians(to_longitude_180(longitude_deg))
     phi = math.radians(float(latitude_deg))
     dphi = abs(phi)

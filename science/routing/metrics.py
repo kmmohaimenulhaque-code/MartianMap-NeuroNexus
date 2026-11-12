@@ -37,7 +37,7 @@ METHODOLOGY: dict[str, Any] = {
     "name": "NEURONEXUS DERIVED TERRAIN-RISK PROXY",
     "certification": (
         "Research aid only. Not NASA-certified, not mission-certified and not an "
-        "astronaut safety certification. No route is labelled safe."
+        "astronaut safety certification. No route is labeled safe."
     ),
     "terrain_input": "NASA MOLA MEGDR 128 pixels/degree elevation; slope and 3x3 roughness from science.terrain.derivatives",
     "distance": "Haversine great-circle distance on the 3396.19 km IAU 2015 Mars sphere (same as /terrain/route-plan).",
@@ -61,8 +61,8 @@ METHODOLOGY: dict[str, Any] = {
         "If no Safe Haven exists, distance to the route start (return-path exposure) is used."
     ),
     "science_opportunity_score": (
-        "100 * (catalogued evidence items within their engagement radius of the route) / "
-        "(evidence items catalogued in the planning window). UNAVAILABLE when the window "
+        "100 * (cataloged evidence items within their engagement radius of the route) / "
+        "(evidence items cataloged in the planning window). UNAVAILABLE when the window "
         "contains no ingested evidence."
     ),
     "data_support_score": "100 * fraction of route samples with a finite MOLA elevation inside the planning window.",
@@ -72,10 +72,10 @@ METHODOLOGY: dict[str, Any] = {
         "Objectives UNAVAILABLE for any candidate are excluded from the comparison."
     ),
     "limitations": [
-        "MOLA MEGDR (~463 m/pixel at the equator) cannot resolve boulders, small craters or metre-scale hazards.",
+        "MOLA MEGDR (~463 m/pixel at the equator) cannot resolve boulders, small craters or meter-scale hazards.",
         "Slope is computed on the MOLA grid and underestimates short steep slopes.",
         "Reference values are planning choices; they are not rover or suit limits.",
-        "Science score measures proximity to catalogued evidence, not confirmed scientific value.",
+        "Science score measures proximity to cataloged evidence, not confirmed scientific value.",
     ],
 }
 

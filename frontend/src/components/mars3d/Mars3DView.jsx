@@ -45,11 +45,11 @@ const SERVICES = {
 const LAYERS = [
   { key: "terrain", group: "TERRAIN", label: "3D terrain · MOLA/HRSC blended DEM (200 m)", status: "OBSERVED", on: true },
   { key: "imagery", group: "TERRAIN", label: "Viking MDIM 2.1 imagery", status: "OBSERVED", on: true },
-  { key: "colorDem", group: "TERRAIN", label: "Colourised MOLA elevation", status: "OBSERVED", on: false },
+  { key: "colorDem", group: "TERRAIN", label: "Colorized MOLA elevation", status: "OBSERVED", on: false },
   { key: "dtmFootprints", group: "TERRAIN", label: "HiRISE 1 m and CTX 20 m DTM footprints near the site (bounding boxes)", status: "OBSERVED", on: false },
   { key: "slope", group: "TERRAIN", label: "Slope · local MOLA 128 ppd grid", status: "DERIVED", on: false },
   { key: "roughness", group: "TERRAIN", label: "Roughness · local MOLA 128 ppd grid", status: "DERIVED", on: false },
-  { key: "features", group: "USGS", label: "USGS/IAU named features (2,052, coloured-map classes)", status: "OBSERVED", on: true },
+  { key: "features", group: "USGS", label: "USGS/IAU named features (2,052, colored-map classes)", status: "OBSERVED", on: true },
   { key: "labels", group: "USGS", label: "Persistent labels (all named entities)", status: "OBSERVED", on: true },
   { key: "units", group: "USGS", label: "Geologic units (SIM 3292)", status: "DERIVED", on: false },
   { key: "contacts", group: "USGS", label: "Geologic contacts", status: "DERIVED", on: false },
@@ -314,7 +314,7 @@ export default function Mars3DView({
         const L = {
           elevation,
           imagery: new TileLayer({ url: SERVICES.imagery, title: "Viking MDIM 2.1" }),
-          colorDem: new TileLayer({ url: SERVICES.colorDem, title: "Colourised elevation", opacity: 0.65 }),
+          colorDem: new TileLayer({ url: SERVICES.colorDem, title: "Colorized elevation", opacity: 0.65 }),
           units: new FeatureLayer({ url: `${SERVICES.geology}/3`, opacity: 0.4, outFields: ["*"], popupEnabled: false }),
           contacts: new FeatureLayer({ url: `${SERVICES.geology}/1`, outFields: ["*"], popupEnabled: false }),
           structures: new FeatureLayer({ url: `${SERVICES.geology}/2`, outFields: ["*"], popupEnabled: false }),

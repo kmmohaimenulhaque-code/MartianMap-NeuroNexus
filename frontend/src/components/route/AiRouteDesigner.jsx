@@ -261,7 +261,7 @@ export default function AiRouteDesigner({
                 </label>
               ))}
               <small>
-                Weights always total 100%. The optimisation is a weighted sum of objectives normalised by each objective's own optimum on the same
+                Weights always total 100%. The optimization is a weighted sum of objectives normalized by each objective's own optimum on the same
                 planning grid.
               </small>
             </div>
@@ -422,7 +422,7 @@ export default function AiRouteDesigner({
               {!candidates.length && !loading && (
                 <div className="ai-empty">
                   Set a start and a destination, choose objectives, then generate candidates. All generated candidates stay visible together on the
-                  coloured map.
+                  colored map.
                 </div>
               )}
             </div>

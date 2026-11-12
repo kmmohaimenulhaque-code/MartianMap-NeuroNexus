@@ -24,7 +24,7 @@ class MolaSpatialCore:
         longitude = east longitude, normalized to [0, 360)
 
     Elevation:
-        metres
+        meters
     """
 
     def __init__(self, catalog_path: Path = CATALOG_PATH):
@@ -231,7 +231,7 @@ class MolaSpatialCore:
         latitude: float,
         longitude: float,
     ) -> float:
-        """Return MOLA elevation in metres."""
+        """Return MOLA elevation in meters."""
 
         tile, row, column = self.pixel_for(
             latitude,

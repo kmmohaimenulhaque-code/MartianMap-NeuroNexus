@@ -59,7 +59,7 @@ export default function MarsTopographicMap({
 
   const status = useMemo(() => {
     if (syncStatus === "loading") {
-      return { text: "SYNCHRONISING…", tone: "pending" };
+      return { text: "SYNCHRONIZING…", tone: "pending" };
     }
     if (syncStatus === "error") {
       return { text: "SYNC FAILED", tone: "error" };

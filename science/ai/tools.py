@@ -1,7 +1,7 @@
 """Application tools exposed to Gemini function calling.
 
 Every tool returns compact structured data. Large arrays (terrain rasters,
-full evidence tables) are summarised before they are sent to the model.
+full evidence tables) are summarized before they are sent to the model.
 The mission state is supplied by the browser each turn; server-side sources
 (JPL, USGS, THEMIS, NASA feeds) are queried live.
 """
@@ -278,7 +278,7 @@ DECLARATIONS: list[dict[str, Any]] = [
     {"name": "get_rover_photos", "description": "NASA rover/media metadata associated with the selected site.", "parameters": {"type": "object", "properties": {}}},
     {"name": "get_USGS_features", "description": "USGS/IAU named features near the selected coordinate.", "parameters": {"type": "object", "properties": {"radius_km": {"type": "number", "description": "Search radius in km (default 100)."}}}},
     {"name": "get_THEMIS_context", "description": "Historical NASA THEMIS IR-PBT brightness-temperature observations near the selected coordinate.", "parameters": {"type": "object", "properties": {"radius_km": {"type": "number", "description": "Search radius in km (default 50)."}}}},
-    {"name": "get_Mars_weather_context", "description": "Modelled dust and solar context for the selected site.", "parameters": {"type": "object", "properties": {}}},
+    {"name": "get_Mars_weather_context", "description": "Modeled dust and solar context for the selected site.", "parameters": {"type": "object", "properties": {}}},
     {"name": "get_NASA_briefing", "description": "Recent items from the NASA Science Mars photojournal feed.", "parameters": {"type": "object", "properties": {"limit": {"type": "integer"}}}},
     {"name": "get_safe_havens", "description": "User-defined Safe Havens and their relationship to the route.", "parameters": {"type": "object", "properties": {}}},
     {"name": "get_custom_places", "description": "User-created custom places.", "parameters": {"type": "object", "properties": {}}},

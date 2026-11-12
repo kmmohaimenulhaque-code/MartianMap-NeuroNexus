@@ -539,7 +539,9 @@ Master-Ai
 
 Backend:
 ```
-python -m uvicorn science.weather.api.environment:app --host 127.0.0.1 --port 8002
+python tools/run_backend.py   # = python -m uvicorn science.weather.api.environment:app --host 127.0.0.1 --port 8002
+# "[Errno 98] address already in use": a backend is already running on 8002.
+# run_backend.py reuses a healthy one, or tells you which program holds the port; --stop stops ours.
 ```
 Frontend:
 ```

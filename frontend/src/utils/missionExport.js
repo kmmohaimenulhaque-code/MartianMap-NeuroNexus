@@ -292,7 +292,7 @@ export function routeToCsv(route, options = {}) {
       Number.isFinite(Number(row.longitude_deg)) ? Number(Number(row.longitude_deg).toFixed(6)) : "",
       Number(segment.toFixed(4)),
       Number(cumulative.toFixed(4)),
-      row.status ?? (analysed.length ? "" : "NOT ANALYSED"),
+      row.status ?? (analysed.length ? "" : "NOT ANALYZED"),
       row.elevation_m ?? "",
       row.slope_deg ?? "",
       row.aspect_deg ?? "",

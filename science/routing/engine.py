@@ -551,7 +551,7 @@ def _plan_single_window(
     preset_list = [(k, v) for k, v in PRESETS.items()]
     if custom and not any(weights_equal(custom, v["weights"]) for _, v in preset_list):
         preset_list.append(("CUSTOM", {"label": "Custom weights", "weights": custom,
-                                        "basis": "User-defined weighted sum of normalised objectives."}))
+                                        "basis": "User-defined weighted sum of normalized objectives."}))
     for key, preset in preset_list:
         w = preset["weights"]
         if sum(1 for k in OBJECTIVE_KEYS if w[k] > 0) == 1:
@@ -590,15 +590,15 @@ def _plan_single_window(
             for i, (lat, lon) in enumerate(simple)
         ]
         uncertainties = [
-            f"Planning grid cell ~{coarse.cell_km * 1000:.0f} m (MOLA 128 ppd coarsened x{coarse.coarsen_factor}); metre-scale hazards are not resolved.",
+            f"Planning grid cell ~{coarse.cell_km * 1000:.0f} m (MOLA 128 ppd coarsened x{coarse.coarsen_factor}); meter-scale hazards are not resolved.",
             f"Estimated EVA time assumes {eva_pace_kmh} km/h plus {ascent_allowance_m_per_h:.0f} m/h ascent allowance; not operational data.",
         ]
         if metrics["science_opportunity_score"] is None:
             uncertainties.append("SCIENCE EVIDENCE UNAVAILABLE for this planning window.")
         else:
-            uncertainties.append("Science score counts proximity to catalogued evidence, not confirmed scientific value.")
+            uncertainties.append("Science score counts proximity to cataloged evidence, not confirmed scientific value.")
         if (metrics["data_support_score"] or 0) < 100:
-            uncertainties.append("Part of the route lacks finite MOLA samples; those samples are not analysed.")
+            uncertainties.append("Part of the route lacks finite MOLA samples; those samples are not analyzed.")
         candidates.append({
             "id": f"cand-{spec['key'].lower().replace('_', '-')}",
             "key": spec["key"],
@@ -634,7 +634,7 @@ def _plan_single_window(
         for c in candidates
     ]
     flags, used = pareto_flags(vectors)
-    names = ["estimated_eva_hours", "terrain_burden_score", "terrain_risk_proxy", "operational_burden_score", "science_opportunity_score (maximised)"]
+    names = ["estimated_eva_hours", "terrain_burden_score", "terrain_risk_proxy", "operational_burden_score", "science_opportunity_score (maximized)"]
     for candidate, flag in zip(candidates, flags):
         candidate["pareto_non_dominated"] = bool(flag)
         candidate["pareto_label"] = "PARETO / NON-DOMINATED" if flag else "DOMINATED IN THIS SET"
@@ -660,7 +660,7 @@ def _plan_single_window(
         "pareto": {"objectives_compared": [names[i] for i in used], "non_dominated_ids": [c["id"] for c in candidates if c["pareto_non_dominated"]]},
         "methodology": {**METHODOLOGY, "scalarisation": SCALARISATION, "objective_optima": {k: round(v, 5) for k, v in optimum.items()}},
         "timing_ms": timing,
-        "safety_notice": "Candidates are research outputs. None is labelled safe or certified.",
+        "safety_notice": "Candidates are research outputs. None is labeled safe or certified.",
     }
 
 
@@ -862,7 +862,7 @@ def _family_identity(key: str, base: dict[str, Any], custom: dict[str, int] | No
     elif key in PRESETS:
         label, basis, weights = PRESETS[key]["label"], PRESETS[key]["basis"], dict(PRESETS[key]["weights"])
     elif key == "CUSTOM" and custom:
-        label, basis, weights = "Custom weights", "User-defined weighted sum of normalised objectives.", dict(custom)
+        label, basis, weights = "Custom weights", "User-defined weighted sum of normalized objectives.", dict(custom)
     else:
         label, basis, weights = base["name"], base["objective_basis"], base["objective_weights"]
     return {"id": f"cand-{key.lower().replace('_', '-')}", "key": key, "name": label,
@@ -970,7 +970,7 @@ def _plan_segmented(a: tuple[float, float], b: tuple[float, float], anchors: lis
         for c in candidates
     ]
     flags, used = pareto_flags(vectors)
-    names = ["estimated_eva_hours", "terrain_burden_score", "terrain_risk_proxy", "operational_burden_score", "science_opportunity_score (maximised)"]
+    names = ["estimated_eva_hours", "terrain_burden_score", "terrain_risk_proxy", "operational_burden_score", "science_opportunity_score (maximized)"]
     for candidate, flag in zip(candidates, flags):
         candidate["pareto_non_dominated"] = bool(flag)
         candidate["pareto_label"] = "PARETO / NON-DOMINATED" if flag else "DOMINATED IN THIS SET"

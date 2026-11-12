@@ -212,7 +212,7 @@ export default function DustScenarioPanel({ location, sol, onSolChange, onSelect
 
       <div className="nn-footnote">
         {filled ? "This sol's value is gap-filled in the source climatology. " : ""}
-        Normalised column dust optical depth reconstructed for Mars Year 34 (2017–2019, including the 2018 global storm). It is MODELED, not a forecast.
+        Normalized column dust optical depth reconstructed for Mars Year 34 (2017–2019, including the 2018 global storm). It is MODELED, not a forecast.
       </div>
     </div>
   );

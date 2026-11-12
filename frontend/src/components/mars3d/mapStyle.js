@@ -88,20 +88,20 @@ export const ENTITY_STYLES = {
   zone: { label: "Potential Exploration Zone (NeuroNexus-derived)", colour: "#2ef0b4", shape: "kite", size: 13, status: "DERIVED" },
   ancient: { label: "Ancient habitability evidence (not present-day)", colour: "#6fd3c1", shape: "circle", size: 12, status: "OBSERVED" },
   iceRegion: { label: "Documented ice study region (not the SWIM ice map)", colour: "#b8ecff", shape: "circle", size: 13, status: "DERIVED" },
-  thermal: { label: "THEMIS observation (colour = brightness temperature)", colour: "#ffc46b", shape: "circle", size: 9, status: "OBSERVED" },
+  thermal: { label: "THEMIS observation (color = brightness temperature)", colour: "#ffc46b", shape: "circle", size: 9, status: "OBSERVED" },
 };
 
 export const LINE_STYLES = {
   curiosity: { label: "Curiosity traverse (NASA MMGIS)", colour: "#8cf0b1", width: 3, status: "OBSERVED" },
   perseverance: { label: "Perseverance traverse (NASA MMGIS)", colour: "#a7d8ff", width: 3, status: "OBSERVED" },
   route: { label: "Active route", colour: "#75e6ff", width: 4, status: "DERIVED" },
-  candidate: { label: "AI candidate route (colour per candidate; selected = solid)", colour: "#3fbcd4", width: 3, dashed: true, status: "DERIVED" },
+  candidate: { label: "AI candidate route (color per candidate; selected = solid)", colour: "#3fbcd4", width: 3, dashed: true, status: "DERIVED" },
   contact: { label: "USGS geologic contact", colour: "#e5e7eb", width: 1, dashed: true, status: "DERIVED" },
   structure: { label: "USGS geologic structure", colour: "#4ea8de", width: 1.5, status: "DERIVED" },
 };
 
 export const AREA_STYLES = {
-  units: { label: "USGS geologic unit (SIM 3292 colours)", colour: "#b07a5a", status: "DERIVED" },
+  units: { label: "USGS geologic unit (SIM 3292 colors)", colour: "#b07a5a", status: "DERIVED" },
   zone: { label: "Potential Exploration Zone candidate cells", colour: "#2ef0b4", status: "DERIVED" },
   slope: { label: "Slope 0° (green) → 20°+ (red)", gradient: true, status: "DERIVED" },
   roughness: { label: "Roughness 0 m (green) → 60 m+ (red)", gradient: true, status: "DERIVED" },

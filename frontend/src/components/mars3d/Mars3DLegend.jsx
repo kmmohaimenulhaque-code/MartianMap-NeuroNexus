@@ -37,7 +37,7 @@ export default function Mars3DLegend({ visible, traverses, candidateRoutes = [],
   const rovers = traverses?.rovers ?? [];
   return (
     <div className="m3d-legend">
-      <h4>USGS / IAU NAMED FEATURES · same colours as the coloured 2D map</h4>
+      <h4>USGS / IAU NAMED FEATURES · same colors as the colored 2D map</h4>
       <ul className="m3d-legend-grid">
         {Object.entries(USGS_CLASS_COLOURS).map(([cls, colour]) => (
           <Row key={cls} swatch={<Swatch colour={colour} />} label={cls} off={!visible.features} />
@@ -148,7 +148,7 @@ export default function Mars3DLegend({ visible, traverses, candidateRoutes = [],
         <Row swatch={<AreaSwatch gradient />} label={AREA_STYLES.walkability.label} status="DERIVED" off={!visible.walkability} />
         <Row swatch={<AreaSwatch colour="#555" />} label="NASA SWIM water-ice consensus map · not integrated" status="UNAVAILABLE" off />
       </ul>
-      <small>Greyed entries are currently switched off in LAYERS.</small>
+      <small>Grayed entries are currently switched off in LAYERS.</small>
     </div>
   );
 }

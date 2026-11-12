@@ -58,7 +58,7 @@ SOURCES: dict[str, dict[str, Any]] = {
         "url": "https://www.nasa.gov/general/dust-cycle/",
         "use": (
             "Martian dust lifting, transport, atmospheric feedback and "
-            "local-to-global dust-storm behaviour."
+            "local-to-global dust-storm behavior."
         ),
     },
     "nasa_dust_modeling": {
@@ -85,7 +85,7 @@ SOURCES: dict[str, dict[str, Any]] = {
         ),
         "use": (
             "Evidence that Mars supports large-scale cyclones, "
-            "anticyclones and travelling weather systems."
+            "anticyclones and traveling weather systems."
         ),
     },
     "nasa_mars_greenhouse": {
@@ -644,7 +644,7 @@ def build_hazard_overview(
             "JPL close approaches are not automatically impact predictions.",
             "ENSO is kept as an Earth analogue rather than a Mars forcing.",
             "Acid rain is not treated as ordinary present-day Martian rainfall.",
-            "Defence actions are prototype mission-contingency concepts.",
+            "Defense actions are prototype mission-contingency concepts.",
         ],
     }
 
@@ -670,7 +670,7 @@ def build_ai_context(
             "sol": int(sol),
         },
         "instruction_to_future_ai": (
-            "Use evidence only as labelled. Never turn missing evidence "
+            "Use evidence only as labeled. Never turn missing evidence "
             "into a safe-state assumption. Never present a model output "
             "as a direct observation. Never claim NASA certification."
         ),

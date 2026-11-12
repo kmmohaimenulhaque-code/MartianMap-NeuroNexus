@@ -42,7 +42,7 @@ export default function RouteConsole({
 
         <small>
           {routeMode
-            ? "Click anywhere on the coloured Mars map to add a waypoint."
+            ? "Click anywhere on the colored Mars map to add a waypoint."
             : "User-defined Haversine route geometry with local MOLA waypoint analysis."}
         </small>
       </div>

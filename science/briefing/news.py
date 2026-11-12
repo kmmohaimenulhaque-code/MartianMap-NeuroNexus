@@ -74,7 +74,7 @@ def is_mars_article(title: str, description: str, link: str, mars_only_feed: boo
     """Relevance rule: the article itself must be about Mars.
 
     General feeds need Mars in the title. Mars-specific feeds need Mars in the
-    title, the summary or the article path. Programme slogans such as
+    title, the summary or the article path. Program slogans such as
     "Moon to Mars" do not count on their own.
     """
     title_hit = bool(MARS_PATTERN.search(_PROGRAMME_PHRASES.sub(" ", title)))
@@ -204,7 +204,7 @@ def latest_mars_news(limit: int = 8, days: int = 30, *, now: datetime | None = N
     ok = [s for s in sources if s["status"] == "ok"]
     return {
         "status": "ok" if chosen else ("unavailable" if not ok else "empty"),
-        "source": "NASA and partner organisations (NASA, NASA Science, ESA, The Planetary Society)",
+        "source": "NASA and partner organizations (NASA, NASA Science, ESA, The Planetary Society)",
         "feed_url": FEEDS[0]["url"],
         "window_days": window_days,
         "window_widened": window_days > days,

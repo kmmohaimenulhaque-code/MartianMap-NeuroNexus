@@ -22,7 +22,7 @@ from science.weather.models.environment_assessment import DUST_LEVELS
 SOURCE = "NASA Ames Mars GCM V3.2 · DustScenario_MY34.nc"
 DATA_CLASS = "MODELED"
 QUANTITY = (
-    "Normalised column dust optical depth (Montabone et al. 2015 MY34 climatology, "
+    "Normalized column dust optical depth (Montabone et al. 2015 MY34 climatology, "
     "as distributed with the NASA Ames Mars GCM V3.2)"
 )
 LEVELS = DUST_LEVELS

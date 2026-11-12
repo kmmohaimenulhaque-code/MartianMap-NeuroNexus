@@ -194,7 +194,7 @@ export default function MissionOpsPanel({ consoleState, missionInput, profile, o
 
       {activeTab === "CREW" && (
         <>
-          <Section title="Crew manifest (simulation)" link={NASA_LINKS.eva} linkLabel="NASA EVA programme">
+          <Section title="Crew manifest (simulation)" link={NASA_LINKS.eva} linkLabel="NASA EVA program">
             {state.crew.manifest.map((member) => (
               <div className="mission-crew-row" key={member.id}>
                 <div>
@@ -454,7 +454,7 @@ export default function MissionOpsPanel({ consoleState, missionInput, profile, o
           </Section>
 
           <div className="mission-source-note">
-            Resource fields distinguish observed, modelled, derived and simulated values. Missing site-specific evidence stays marked rather than
+            Resource fields distinguish observed, modeled, derived and simulated values. Missing site-specific evidence stays marked rather than
             being inferred.
           </div>
         </>

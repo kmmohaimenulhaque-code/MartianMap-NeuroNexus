@@ -300,7 +300,7 @@ test("route CSV includes segment and cumulative Haversine distances", () => {
   const last = lines[3].split(",");
   assert.ok(Math.abs(Number(last[7]) - 2 * oneDegree) < 1e-3);
   assert.equal(last[3], "DESTINATION");
-  assert.equal(last[8], "NOT ANALYSED");
+  assert.equal(last[8], "NOT ANALYZED");
 });
 
 test("route CSV uses an AI candidate's full terrain-aware path when present", () => {

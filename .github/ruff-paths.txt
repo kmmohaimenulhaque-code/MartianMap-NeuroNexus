@@ -36,3 +36,4 @@ tools/gen_parity_fixture.py
 tests/test_parity_fixture.py
 tests/test_conditions_sol.py
 tools/deploy_static_space.py
+tools/run_backend.py

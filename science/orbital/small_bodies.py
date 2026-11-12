@@ -151,7 +151,7 @@ def get_near_mars_tracking(days: int = 365, dist_max_au: float = 0.05, limit: in
         "classification_basis": BAND_BASIS,
         "limitations": [
             "A close approach is not an impact prediction.",
-            "Distances are between object and Mars centre (JPL nominal plus 3-sigma min/max).",
+            "Distances are between object and Mars center (JPL nominal plus 3-sigma min/max).",
             "JPL CAD does not provide approach direction; any schematic orientation is illustrative.",
         ],
     }

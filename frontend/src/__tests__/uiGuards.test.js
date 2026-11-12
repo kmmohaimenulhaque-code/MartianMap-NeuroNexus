@@ -28,3 +28,19 @@ describe("icons", () => {
     for (const cat of catalogue.categories) expect(ICON_PATHS[cat.icon], cat.id).toBeTruthy();
   });
 });
+
+describe("backend status probe", () => {
+  const res = (status, body, headers = {}) => ({ ok: status < 400, status, headers: { get: (k) => headers[k] ?? null }, json: async () => body });
+  it("is ONLINE only for a real health reply", async () => {
+    const { probeBackend } = await import("../utils/appHelpers");
+    expect(await probeBackend(async () => res(200, { status: "ok" }))).toBe(true);
+    expect(await probeBackend(async () => res(502, {}))).toBe(false);
+    expect(await probeBackend(async () => res(200, null))).toBe(false);
+    expect(await probeBackend(async () => { throw new TypeError("Failed to fetch"); })).toBe(false);
+  });
+  it("times out instead of hanging on a stalled backend", async () => {
+    const { probeBackend } = await import("../utils/appHelpers");
+    const stalled = (url, { signal }) => new Promise((_, reject) => signal.addEventListener("abort", () => reject(new DOMException("aborted", "AbortError"))));
+    expect(await probeBackend(stalled, 20)).toBe(false);
+  });
+});

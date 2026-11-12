@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { CircleMarker, ImageOverlay, MapContainer, Polyline, Popup, Tooltip, useMap, useMapEvents } from "react-leaflet";
 
@@ -346,13 +346,18 @@ function CoordinateCreator({ draftLocation, setDraftLocation, onCreateUserPlace,
     }
   }, [draftLocation]);
 
+  const latitude = Number(draftLocation?.lat ?? draftLocation?.latitude_deg);
+
+  const longitude = normaliseLongitude(draftLocation?.lng ?? draftLocation?.longitude_deg);
+
+  // Stable props: a new array/object each render made Leaflet re-place and auto-pan the popup, which moved the
+  // map, re-rendered the map layers and re-opened the popup: the visible shaking loop.
+  const position = useMemo(() => [latitude, longitude], [latitude, longitude]);
+  const popupHandlers = useMemo(() => ({ remove: () => setDraftLocation?.(null) }), [setDraftLocation]);
+
   if (!draftLocation) {
     return null;
   }
-
-  const latitude = Number(draftLocation.lat ?? draftLocation.latitude_deg);
-
-  const longitude = normaliseLongitude(draftLocation.lng ?? draftLocation.longitude_deg);
 
   if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
     return null;
@@ -399,13 +404,7 @@ function CoordinateCreator({ draftLocation, setDraftLocation, onCreateUserPlace,
   }
 
   return (
-    <Popup
-      position={[latitude, longitude]}
-      closeOnClick={false}
-      eventHandlers={{
-        remove: () => setDraftLocation?.(null),
-      }}
-    >
+    <Popup position={position} closeOnClick={false} autoPan={false} eventHandlers={popupHandlers}>
       <div className="nn-map-create-popup">
         <strong>LOCATION SELECTED</strong>
 

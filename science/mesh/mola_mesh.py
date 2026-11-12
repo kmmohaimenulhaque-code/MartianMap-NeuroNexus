@@ -165,7 +165,7 @@ class MolaMeshGenerator:
                 "# NeuroNexus MOLA terrain mesh\n"
             )
             handle.write(
-                "# Coordinates: Mars-centered Cartesian metres\n"
+                "# Coordinates: Mars-centered Cartesian meters\n"
             )
 
             for vertex in mesh.vertices_m:

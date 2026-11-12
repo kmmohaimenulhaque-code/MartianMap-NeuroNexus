@@ -18,22 +18,22 @@ PRESETS: dict[str, dict[str, Any]] = {
     "LOW_EVA": {
         "label": "Low EVA",
         "weights": {"eva": 100, "terrain": 0, "science": 0, "operational": 0},
-        "basis": "Single objective: minimise ESTIMATED EVA TIME (distance / pace + ascent allowance).",
+        "basis": "Single objective: minimize ESTIMATED EVA TIME (distance / pace + ascent allowance).",
     },
     "LOW_TERRAIN": {
         "label": "Low terrain burden",
         "weights": {"eva": 0, "terrain": 100, "science": 0, "operational": 0},
-        "basis": "Single objective: minimise length-weighted MOLA slope/roughness burden.",
+        "basis": "Single objective: minimize length-weighted MOLA slope/roughness burden.",
     },
     "SCIENCE_FIRST": {
         "label": "Science first",
         "weights": {"eva": 15, "terrain": 20, "science": 55, "operational": 10},
-        "basis": "Weighted sum dominated by proximity to catalogued evidence items.",
+        "basis": "Weighted sum dominated by proximity to cataloged evidence items.",
     },
     "BALANCED": {
         "label": "Balanced",
         "weights": {"eva": 25, "terrain": 25, "science": 25, "operational": 25},
-        "basis": "Equal weights across the four normalised objectives.",
+        "basis": "Equal weights across the four normalized objectives.",
     },
 }
 
@@ -42,12 +42,12 @@ PRESETS: dict[str, dict[str, Any]] = {
 SPECIAL_CANDIDATES: dict[str, dict[str, str]] = {
     "LOW_DISTANCE": {
         "label": "Low distance",
-        "basis": "Single objective: minimise surface path length on the planning grid.",
+        "basis": "Single objective: minimize surface path length on the planning grid.",
     },
     "LOW_RISK": {
         "label": "Low terrain-risk proxy",
         "basis": (
-            "Single objective: minimise a convex extreme-terrain edge cost "
+            "Single objective: minimize a convex extreme-terrain edge cost "
             "L * (1 + (slope/15 deg)^3 + (max slope/15 deg)^3 + (roughness/50 m)^3)."
         ),
     },

@@ -53,10 +53,10 @@ class MolaTerrainSampler:
             Longitude in degrees. Any longitude is accepted and normalized
             by the underlying MOLA engine.
         radius:
-            Number of samples on each side of the centre.
+            Number of samples on each side of the center.
             radius=2 produces a 5x5 window.
         spacing_deg:
-            Angular spacing between neighbouring samples.
+            Angular spacing between neighboring samples.
 
         Returns
         -------

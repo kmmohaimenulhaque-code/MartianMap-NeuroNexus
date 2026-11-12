@@ -351,7 +351,7 @@ export default function MarsBriefingPanel() {
             feed && (
             <p className="briefing-note">
               Latest Mars articles from NASA and
-              partner organisations, newest first,
+              partner organizations, newest first,
               published in the last{' '}
               {feed.window_days ?? 30} days
               {feed.window_widened

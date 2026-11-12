@@ -1,1 +1,1 @@
-"""Latest Mars news from NASA and partner organisations."""
+"""Latest Mars news from NASA and partner organizations."""

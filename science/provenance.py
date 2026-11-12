@@ -22,9 +22,9 @@ CLASSES = ["EXTERNAL SOURCE", "DERIVED OUTPUT", "TEAM EXPERIMENT", "TEAM BENCHMA
 EVIDENCE_STATUSES = {
     "PROJECT DATA": "Stored in this application's own state.",
     "NASA OBSERVED": "A real instrument measurement from a NASA mission archive.",
-    "NASA REFERENCE": "A published NASA/USGS reference value or catalogue entry.",
+    "NASA REFERENCE": "A published NASA/USGS reference value or catalog entry.",
     "MODELED": "Output of a physical model (e.g. NASA Ames Mars GCM).",
-    "DERIVED": "Computed by NeuroNexus from observed or modelled inputs.",
+    "DERIVED": "Computed by NeuroNexus from observed or modeled inputs.",
     "COMPUTED": "Pure geometry or arithmetic computed by NeuroNexus.",
     "SIMULATED": "A configurable NeuroNexus simulation value, not a measurement.",
     "UNAVAILABLE": "No evidence is ingested; nothing is inferred.",

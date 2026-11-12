@@ -1650,3 +1650,4 @@ label:has(> .m3d-layer-tag) { flex-wrap: wrap; }
 .burger-button .nn-icon { stroke: var(--nn-cyan); }
 .burger-button:hover { box-shadow: 0 0 18px rgba(117, 230, 255, 0.55); }
 .map-toolbar > .mission-action, .map-toolbar .map-ai-route-button { position: static !important; inset: auto !important; transform: none !important; }
+.brand-block > span { font-size: 12px; letter-spacing: 0.04em; white-space: nowrap; }

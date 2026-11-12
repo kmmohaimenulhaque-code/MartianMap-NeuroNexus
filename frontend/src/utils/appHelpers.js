@@ -95,3 +95,29 @@ export function downloadTextFile(filename, content, mimeType) {
 
   URL.revokeObjectURL(url);
 }
+
+/*
+ * SYSTEM ONLINE only when the API itself answers: GET /api/health must return {"status": "ok"} within 4 s.
+ * A dev-proxy 502/504, an HTML error page, a timeout or a network error all mean SYSTEM DEGRADED.
+ * The static demo replays recorded responses, so there the recorded /api/places probe stands in.
+ */
+export async function probeBackend(fetchImpl = globalThis.fetch, timeoutMs = 4000) {
+  const ask = async (url) => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      return await fetchImpl(url, { cache: "no-store", signal: controller.signal });
+    } finally {
+      clearTimeout(timer);
+    }
+  };
+  try {
+    const r = await ask("/api/health");
+    if (r.headers?.get?.("x-nn-demo") === "miss") return (await ask("/api/places?limit=1")).ok;
+    if (!r.ok) return false;
+    const body = await r.json();
+    return body?.status === "ok";
+  } catch {
+    return false;
+  }
+}

@@ -59,7 +59,7 @@ def search_mars_knowledge(state, query: str, k: int = 5, **_):
 
 @tool("search_project_docs",
       "Search NeuroNexus' own documentation: README, setup and deployment guides, data sources (MLA), results, "
-      "architecture, team and NASA Space Apps 2026 context, and the UI command catalogue.",
+      "architecture, team and NASA Space Apps 2026 context, and the UI command catalog.",
       {"query": {"type": "string"}, "k": {"type": "integer"}}, ["query"])
 def search_project_docs(state, query: str, k: int = 5, **_):
     return _hits(KNOWLEDGE.search(query, k=max(1, min(int(k), 8)), kinds=("project", "ui", "reference")
@@ -103,7 +103,7 @@ def lookup_mars_place(state, name: str, **_):
             "features": [{k: m.get(k) for k in keep if k in m} for m in items]}
 
 
-@tool("get_landing_sites", "Catalogue of Mars landing sites with coordinates, dates and status.",
+@tool("get_landing_sites", "Catalog of Mars landing sites with coordinates, dates and status.",
       {"mission": {"type": "string", "description": "Optional mission-name filter."}})
 def get_landing_sites(state, mission: str = "", **_):
     data = json.loads((ROOT / "data" / "manifests" / "mars_landing_sites.json").read_text(encoding="utf-8"))

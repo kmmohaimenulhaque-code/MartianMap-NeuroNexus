@@ -49,7 +49,7 @@ function SchematicTrack({ objects }) {
       width="100%"
       className="orbital-schematic"
       role="img"
-      aria-label="Mars-centred close-approach distance schematic"
+      aria-label="Mars-centered close-approach distance schematic"
     >
       <line x1={marsX} y1="26" x2={marsX} y2={height - 18} stroke="#75e6ff" strokeOpacity="0.35" strokeDasharray="3 3" />
       <circle cx={marsX} cy={height / 2} r="12" fill="#c1440e" stroke="#4ea8de" strokeWidth="1.5" />
@@ -100,7 +100,7 @@ export default function OrbitalTrackingPanel({ open, onClose, data, loading, err
           <div>
             <span className="eyebrow">SITUATIONAL AWARENESS · NASA/JPL</span>
             <h2>NEAR-MARS ORBITAL TRACKING</h2>
-            <small>Detection, tracking and close-approach awareness. Not an interception or defence system.</small>
+            <small>Detection, tracking and close-approach awareness. Not an interception or defense system.</small>
           </div>
           <div className="orbital-actions">
             <label>

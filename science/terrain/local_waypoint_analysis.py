@@ -83,7 +83,7 @@ def sample_waypoint(
 
     if np.any(latitudes < -90.0) or np.any(latitudes > 90.0):
         raise ValueError(
-            "Waypoint neighbourhood crosses the planetary latitude boundary."
+            "Waypoint neighborhood crosses the planetary latitude boundary."
         )
 
     values = np.empty(

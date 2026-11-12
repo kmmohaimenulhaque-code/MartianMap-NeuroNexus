@@ -21,7 +21,7 @@ CHUNK_ROWS = 256
 
 
 def decode_elevation(stored: np.ndarray) -> np.ndarray:
-    """Decode MOLA polar unsigned-16-bit samples into metres."""
+    """Decode MOLA polar unsigned-16-bit samples into meters."""
     return stored.astype(np.float64) * 0.25 - 8000.0
 
 
@@ -63,7 +63,7 @@ def latlon_to_xyz(
     longitude_deg: np.ndarray,
     elevation_m: np.ndarray,
 ) -> np.ndarray:
-    """Convert Mars latitude/longitude/elevation to planet-centred XYZ."""
+    """Convert Mars latitude/longitude/elevation to planet-centered XYZ."""
     lat = np.radians(latitude_deg)
     lon = np.radians(longitude_deg)
 

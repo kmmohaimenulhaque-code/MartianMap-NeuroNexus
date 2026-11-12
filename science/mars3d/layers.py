@@ -4,7 +4,7 @@
   decimated for rendering.
 - Local terrain grid: a BOUNDED NASA MOLA 128 ppd window around a site
   (reuses the route engine's loader; never a global raster), with slope,
-  roughness and a clearly labelled NeuroNexus-derived walkability score.
+  roughness and a clearly labeled NeuroNexus-derived walkability score.
 - Exploration context: documented locations (USGS/IAU gazetteer coordinates)
   for ancient-habitability missions and SWIM accessible-ice study regions.
   The SWIM ice-consensus raster itself is NOT integrated and is reported as
@@ -275,7 +275,7 @@ def exploration_context() -> dict[str, Any]:
                 "note": "Ancient habitability evidence from rover investigations; no present-day habitability is implied.",
             },
         },
-        "boundary": "No region is labelled NASA-certified safe or universally the best place to walk or land.",
+        "boundary": "No region is labeled NASA-certified safe or universally the best place to walk or land.",
     }
 
 
@@ -290,7 +290,7 @@ PEZ_CRITERIA = {
 PEZ_METHOD = (
     "DERIVED · NEURONEXUS. Within a bounded +/-30 km NASA MOLA 128 ppd window, a cell is a candidate when "
     "NeuroNexus walkability >= 70, mean slope <= 5 deg and elevation <= 0 m (below the MOLA datum, i.e. more "
-    "atmosphere above the surface for entry, descent and landing). The zone reports whether its centre lies in the "
+    "atmosphere above the surface for entry, descent and landing). The zone reports whether its center lies in the "
     "30-50 deg latitude band where SWIM documents accessible shallow-ice study regions. Exploration context only: "
     "not a NASA-certified safe zone, no guarantee of habitability and no confirmed resource."
 )

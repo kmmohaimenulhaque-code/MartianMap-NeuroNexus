@@ -89,7 +89,7 @@ def hausdorff(a: np.ndarray, b: np.ndarray) -> float:
 
 
 def discrete_frechet(a: np.ndarray, b: np.ndarray) -> float:
-    """Eiter and Mannila (1994) dynamic programme."""
+    """Eiter and Mannila (1994) dynamic program."""
     d = np.hypot(a[:, None, 0] - b[None, :, 0], a[:, None, 1] - b[None, :, 1])
     n, m = d.shape
     ca = np.full((n, m), math.inf)

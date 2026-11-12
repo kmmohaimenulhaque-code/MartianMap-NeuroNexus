@@ -144,7 +144,7 @@ const SUGGESTIONS = [
   },
   {
     group: "MISSIONS & HISTORY",
-    items: ["Summarise every NASA Mars rover and what each discovered.", "What did Mars Global Surveyor's MOLA instrument measure?"],
+    items: ["Summarize every NASA Mars rover and what each discovered.", "What did Mars Global Surveyor's MOLA instrument measure?"],
   },
   {
     group: "USING NEURONEXUS",
