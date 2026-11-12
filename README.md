@@ -128,7 +128,7 @@ The mission workspace keeps field notes and tickable checklist actions alongside
 
 * NASA/JPL Solar System Dynamics Close-Approach Data API: near-Mars small-body close-approach awareness, distance and uncertainty information.
 
-Other external services and partners
+# Other external services and partners
 
 * Esri / ArcGIS Mars services: public Mars terrain/elevation services, Viking MDIM imagery, colourised elevation, and ArcGIS delivery of USGS geology used by the 3D experience.
 * ESA: Mars Express and ExoMars public feeds used by the Mars briefing subsystem.
@@ -137,7 +137,7 @@ Other external services and partners
 
 The machine-readable provenance ledger is available at data/manifests/source_ledger.json.
 
-Evidence and provenance
+# Evidence and provenance
 
 NeuroNexus distinguishes:
 
