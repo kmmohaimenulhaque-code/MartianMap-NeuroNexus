@@ -26,15 +26,22 @@ if [ -d "$NN_WORK/martian-map/.git" ]; then git -C "$NN_WORK/martian-map" pull -
   git clone -q --depth 1 -b "$BRANCH" "$REPO" "$NN_WORK/martian-map"; fi
 SCRIPT="$NN_WORK/martian-map/training/qwen3_14b_mi300x.py"
 
-if python3 -c "import torch,sys; sys.exit(0 if torch.version.hip and torch.cuda.is_available() else 1)" 2>/dev/null; then
-  echo "== host has ROCm PyTorch: using a venv that inherits it"
-  [ -d "$NN_WORK/venv" ] || python3 -m venv --system-site-packages "$NN_WORK/venv"
-  # shellcheck disable=SC1091
-  source "$NN_WORK/venv/bin/activate"
-  python -m pip install -q -U pip
-  nohup setsid python -u "$SCRIPT" > "$NN_WORK/run.log" 2>&1 &
+# Find the Python that has ROCm PyTorch (the Unsloth image may keep it in a venv or conda env).
+PY="${PYTHON:-}"
+if [ -z "$PY" ]; then
+  for c in $(which -a python3 python 2>/dev/null) /opt/conda/bin/python /opt/venv/bin/python \
+           $(ls -d /opt/*/bin/python /root/*/bin/python "$HOME"/*/bin/python "$HOME"/.*/bin/python 2>/dev/null); do
+    if [ -x "$c" ] && "$c" -c "import torch,sys; sys.exit(0 if torch.version.hip and torch.cuda.is_available() else 1)" 2>/dev/null; then
+      PY="$c"; break; fi
+  done
+fi
+
+if [ -n "$PY" ]; then
+  echo "== using $PY ($("$PY" -c 'import torch;print("torch",torch.__version__,"hip",torch.version.hip)'))"
+  "$PY" -c "import unsloth" >/dev/null 2>&1 && echo "   Unsloth found: the script uses it as shipped" || echo "   no Unsloth: the script uses PEFT"
+  nohup setsid "$PY" -u "$SCRIPT" > "$NN_WORK/run.log" 2>&1 &
 else
-  echo "== no ROCm PyTorch on host: running in the rocm/pytorch container"
+  echo "== no ROCm PyTorch found (set PYTHON=/path/to/python to choose one): running in the rocm/pytorch container"
   docker run -d --name nn-qwen14b --rm --device=/dev/kfd --device=/dev/dri --group-add video \
     --ipc=host --shm-size 64G --security-opt seccomp=unconfined \
     -e HF_TOKEN -e HF_USER -e GEMINI_API_KEY -e NN_WORK=/workspace/nn \

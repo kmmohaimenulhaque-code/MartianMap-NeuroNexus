@@ -82,17 +82,24 @@ def sh(cmd, check=True):
 
 INSTALL = "mi300x"
 if INSTALL == "mi300x":
+    import importlib.util
     import torch
-    assert torch.version.hip, "Expected a ROCm build of PyTorch (use a rocm/pytorch or rocm/vllm image)."
-    sh(f'{sys.executable} -m pip install -q "transformers==4.56.2" "peft==0.17.1" "accelerate>=1.10" datasets hf_transfer '
-       '"huggingface_hub>=0.34" sentencepiece protobuf requests')
+    assert torch.version.hip, "Expected a ROCm build of PyTorch (use the Unsloth ROCm or rocm/pytorch image)."
+    # Light extras only; never touches torch, transformers or a preinstalled Unsloth.
+    sh(f'{sys.executable} -m pip install -q hf_transfer sentencepiece protobuf requests')
     USE_UNSLOTH = False
-    if sh(f"{sys.executable} -m pip install -q --no-deps unsloth unsloth_zoo", check=False).returncode == 0:
-        try:
-            import unsloth  # noqa: F401  (ROCm support varies by version; PEFT fallback below)
-            USE_UNSLOTH = True
-        except Exception as exc:
-            print("Unsloth import failed on ROCm, using PEFT:", repr(exc)[:300])
+    if importlib.util.find_spec("unsloth"):
+        print("Using the image's preinstalled Unsloth (left as shipped).")
+    else:
+        sh(f'{sys.executable} -m pip install -q "transformers==4.56.2" "peft==0.17.1" "accelerate>=1.10" datasets '
+           '"huggingface_hub>=0.34"')
+        sh(f"{sys.executable} -m pip install -q --no-deps unsloth unsloth_zoo", check=False)
+    try:
+        import unsloth  # noqa: F401  (PEFT fallback below if it does not import on this ROCm stack)
+        USE_UNSLOTH = True
+    except Exception as exc:
+        print("Unsloth import failed on ROCm, using PEFT:", repr(exc)[:300])
+        sh(f'{sys.executable} -m pip install -q peft datasets accelerate')
     import torch
     assert torch.version.hip, "torch was replaced by a non-ROCm build; restart from a clean image."
 else:
