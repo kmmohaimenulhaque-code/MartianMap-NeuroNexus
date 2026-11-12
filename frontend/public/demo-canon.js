@@ -14,7 +14,7 @@
   function canonBody(text) {
     try {
       return canonJson(JSON.parse(text));
-    } catch (e) {
+    } catch {
       return text;
     }
   }

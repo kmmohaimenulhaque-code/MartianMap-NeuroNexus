@@ -3,6 +3,7 @@
  * responses recorded from the live NeuroNexus backend (tools/record_demo_pack.mjs). A request that
  * was not recorded gets an honest 503 NOT_IN_DEMO_PACK; nothing is synthesized.
  */
+/* global importScripts */
 importScripts("/demo-canon.js");
 
 const PACK = "/demo-pack/";

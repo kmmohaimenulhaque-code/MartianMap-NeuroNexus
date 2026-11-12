@@ -8,11 +8,13 @@ import Icon from "../../ui/Icon";
  */
 export default function ScrollJumpButton({ scrollRef, watch, downLabel = "WAYPOINTS", upLabel = "MAP" }) {
   const [state, setState] = useState("none"); // none | down | up
+  const [upTop, setUpTop] = useState(0);
 
   const measure = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
     const overflow = el.scrollHeight - el.clientHeight;
+    setUpTop(el.offsetTop + 10);
     if (overflow <= 4) setState("none");
     else setState(el.scrollHeight - el.clientHeight - el.scrollTop > 8 ? "down" : "up");
   }, [scrollRef]);
@@ -33,7 +35,7 @@ export default function ScrollJumpButton({ scrollRef, watch, downLabel = "WAYPOI
 
   if (state === "none") return null;
   const down = state === "down";
-  const top = down ? undefined : (scrollRef.current?.offsetTop ?? 0) + 10;
+  const top = down ? undefined : upTop;
   return (
     <button
       type="button"
