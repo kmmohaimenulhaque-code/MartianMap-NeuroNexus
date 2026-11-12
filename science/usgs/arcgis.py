@@ -278,7 +278,7 @@ def build_route_snapshot(route: dict[str, Any]) -> dict[str, Any]:
     level = _choose_level(extent["xmax"] - extent["xmin"], extent["ymax"] - extent["ymin"])
     res = LOD_RESOLUTIONS[level]
 
-    scale = float((cached or {}).get("image", {}).get("display_scale", 1) or 1) if isinstance(cached, dict) else 1.0
+    scale = 1.0  # set from the stitched image below, before any pixel coordinate is computed
 
     def px(x: float, y: float) -> list[float]:
         return [round(scale * (x - extent["xmin"]) / res, 2), round(scale * (extent["ymax"] - y) / res, 2)]
@@ -303,6 +303,10 @@ def build_route_snapshot(route: dict[str, Any]) -> dict[str, Any]:
                 if len(_CACHE) > 32:
                     _CACHE.clear()
                 _CACHE[key] = cached
+
+    # Read the display scale only now: a freshly stitched image may be upsampled for display,
+    # and every pixel coordinate below must use the same scale as that image.
+    scale = float((cached.get("image") or {}).get("display_scale", 1) or 1)
 
     polygons = []
     for feature in cached["units"]:

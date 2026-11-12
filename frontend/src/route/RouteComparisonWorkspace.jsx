@@ -91,7 +91,7 @@ function useRouteSnapshots(routes) {
   return state;
 }
 
-export default function RouteComparisonWorkspace({ routes, compareRouteIds, onToggleRoute, onClose, onDeleteRoute, onReevaluate, onShowIn3D, onExportFile }) {
+export default function RouteComparisonWorkspace({ routes, compareRouteIds, onToggleRoute, onClose, onDeleteRoute, onReevaluate, onRename, onVerify, onShowIn3D, onExportFile }) {
   const [view, setView] = useState("map");
   const [combinedState, setCombined] = useState({ key: null, loading: false, snapshot: null, error: "" });
 
@@ -167,7 +167,7 @@ export default function RouteComparisonWorkspace({ routes, compareRouteIds, onTo
                       schema: "neuronexus.route-comparison.v1",
                       generated_at: new Date().toISOString(),
                       provenance: "NASA MOLA MEGDR 128 ppd along-track sampling (DERIVED) · USGS SIM 3292",
-                      routes: selected.map((r, i) => ({ id: r.id, name: r.name, colour: r.colour, points: r.points, stats: statsList[i] })),
+                      routes: selected.map((r, i) => ({ id: r.id, name: r.name, colour: r.colour, points: r.points, generation: r.generation ?? null, reproducibility: r.reproducibility ?? null, stats: statsList[i] })),
                     },
                     null,
                     2,
@@ -292,7 +292,10 @@ export default function RouteComparisonWorkspace({ routes, compareRouteIds, onTo
                 return (
                   <article key={route.id} className="cmp-card" style={{ "--chip": route.colour }}>
                     <header>
-                      <strong>■ {route.name}</strong>
+                      <strong>
+                        ■ {route.name}
+                        <small className="cmp-source">{route.generation?.source === "ai-route-designer" ? ` AI · ${route.generation.candidate_name ?? ""}` : " MANUAL"}</small>
+                      </strong>
                       {entry.snapshot?.wab_sync_url && (
                         <a href={entry.snapshot.wab_sync_url} target="_blank" rel="noreferrer">
                           USGS MAP ↗
@@ -321,7 +324,18 @@ export default function RouteComparisonWorkspace({ routes, compareRouteIds, onTo
                       </b>
                     </div>
                     <UnitsCrossed units={entry.snapshot?.geology?.units_crossed} />
+                    {route.reproducibility && (
+                      <div className={`cmp-repro cmp-repro-${route.reproducibility.status}`}>
+                        {route.reproducibility.status === "checking" ? "VERIFYING…" : `${route.reproducibility.status.toUpperCase()} — ${route.reproducibility.detail}`}
+                      </div>
+                    )}
                     <footer>
+                      <button type="button" onClick={() => onRename(route.id)}>
+                        RENAME
+                      </button>
+                      <button type="button" onClick={() => onVerify(route.id)} title="Regenerate or re-evaluate and compare with the saved record">
+                        VERIFY
+                      </button>
                       {route.evaluation?.status === "error" && (
                         <button type="button" onClick={() => onReevaluate(route.id)}>
                           RETRY EVALUATION

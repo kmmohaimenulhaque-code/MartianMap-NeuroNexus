@@ -19,7 +19,7 @@ function format(value, digits = 2, suffix = "") {
   return `${Number(value).toFixed(digits)}${suffix}`;
 }
 
-function CandidateCard({ candidate, colour, active, onSelect, onApply, analysis }) {
+function CandidateCard({ candidate, colour, active, onSelect, onApply, onSave, saved, analysis }) {
   const metrics = candidate.metrics ?? {};
   const weights = candidate.objective_weights ?? candidate.scoring_weights ?? {};
   return (
@@ -133,6 +133,11 @@ function CandidateCard({ candidate, colour, active, onSelect, onApply, analysis 
         <button type="button" className="primary" onClick={() => onApply(candidate)}>
           APPLY ROUTE
         </button>
+        {onSave && (
+          <button type="button" onClick={() => onSave(candidate)} title="Save this candidate as a named, reproducible route">
+            {saved ? "SAVED ✓ · SAVE AGAIN" : "SAVE AS ROUTE"}
+          </button>
+        )}
       </div>
     </article>
   );
@@ -165,6 +170,9 @@ export default function AiRouteDesigner({
   onGenerate,
   onSelectCandidate,
   onApplyCandidate,
+  onSaveCandidate,
+  onSaveAllCandidates,
+  savedCandidateKeys = [],
   onRequestAnalysis,
 }) {
   const activePreset = useMemo(() => matchPreset(weights), [weights]);
@@ -388,6 +396,15 @@ export default function AiRouteDesigner({
               <div className="ai-error">GEMINI UNAVAILABLE — {analysis.reason ?? analysis.error}. Deterministic candidates above are unaffected.</div>
             )}
 
+            {candidates.length > 1 && onSaveAllCandidates && (
+              <div className="ai-save-all">
+                <button type="button" onClick={onSaveAllCandidates}>
+                  SAVE ALL {candidates.length} CANDIDATES AS ROUTES
+                </button>
+                <small>Saved routes keep their exact geometry and the generation inputs, so they can be reproduced and compared later.</small>
+              </div>
+            )}
+
             <div className="ai-candidate-grid">
               {candidates.map((candidate, index) => (
                 <CandidateCard
@@ -397,6 +414,8 @@ export default function AiRouteDesigner({
                   active={candidate.id === selectedCandidateId}
                   onSelect={onSelectCandidate}
                   onApply={onApplyCandidate}
+                  onSave={onSaveCandidate}
+                  saved={savedCandidateKeys.includes(candidate.id)}
                   analysis={null}
                 />
               ))}

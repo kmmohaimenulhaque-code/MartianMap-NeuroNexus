@@ -208,6 +208,7 @@ export default function Mars3DView({
   compareRouteIds = [],
   onToggleCompareRoute,
   onSnapshotRoute,
+  onRenameRoute,
   routeStatsFor = () => null,
   requestedPanel = null,
 }) {
@@ -1159,6 +1160,7 @@ export default function Mars3DView({
                         <div className="m3d-route-name">
                           <span className="m3d-route-swatch" style={{ background: route.colour }} />
                           <strong>{route.name}</strong>
+                          {route.generation?.source === "ai-route-designer" && <em className="m3d-route-ai">AI</em>}
                           <small>{n(stats.distanceKm, 1)} km</small>
                         </div>
                         <div className="m3d-route-stats">
@@ -1178,6 +1180,9 @@ export default function Mars3DView({
                           </button>
                           <button type="button" onClick={() => onSnapshotRoute?.(route.id)} title="USGS snapshot of this route">
                             ▣ USGS
+                          </button>
+                          <button type="button" onClick={() => onRenameRoute?.(route.id)} title="Rename">
+                            ✎
                           </button>
                         </div>
                       </li>

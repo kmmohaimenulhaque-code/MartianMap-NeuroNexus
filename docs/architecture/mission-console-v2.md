@@ -456,3 +456,17 @@ W3 comes last on purpose. The registry has to list the commands that W1, W2, W4 
 - **`RoutesContext`.** It was not introduced as a React context. Saved routes stay in `App` state, but all of their logic lives in `utils/savedRoutes.js`. Moving that state into a context is a mechanical follow-up.
 - **`App.jsx` size.** The file is still about 3,600 lines (target: under 1,500). The new features live in their own modules; the remaining inline JSX (left column, route console) is the next extraction.
 - **Dust map while playing.** It refreshes every 4th sol to limit requests. The τ chart and KPI update every sol.
+
+### Follow-up: named, reproducible routes from every source
+
+- **Saving AI Route Designer candidates.** Each candidate card has SAVE AS ROUTE, and there is also SAVE ALL CANDIDATES (with a name prefix). Applied, unedited candidates saved from the route editor keep their AI provenance.
+- **What every saved route records.** Its exact geometry plus a `generation` block:
+  - Manual routes: method and EVA parameters.
+  - AI routes: the exact `/routes/candidates` request, `candidate_id`, objective weights, `algorithm_version` and the metrics at save time.
+- **Renaming.** RENAME is available on comparison cards and in the 3D ROUTES panel.
+- **VERIFY (reproducibility check).**
+  - AI routes: replays the stored request and checks the candidate's geometry hash.
+  - Manual routes: re-runs the deterministic MOLA evaluation and compares the statistics.
+  - Results show as REPRODUCED, DIFFERS or ERROR. Candidate generation determinism is covered by a test.
+- **USGS SNAPSHOT button.** With two or more routes selected for comparison, it draws all of them in one SIM 3292 frame, each in its colour with the units it crosses.
+- **Fix:** freshly stitched (upsampled) snapshots placed routes at the wrong pixel scale on their first build.

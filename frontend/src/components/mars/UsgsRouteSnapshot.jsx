@@ -99,15 +99,26 @@ export default function UsgsRouteSnapshot({ open, onClose, snapshot, loading, er
                     />
                   )),
                 )}
-                <polyline
-                  points={(snapshot.route_px ?? []).map((point) => point.join(",")).join(" ")}
-                  fill="none"
-                  stroke="#75e6ff"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                {(snapshot.route_px ?? []).map((point, index) => (
+                {(snapshot.routes ?? []).map((overlay, overlayIndex) => (
+                  <g key={overlay.route_id ?? overlayIndex}>
+                    <polyline points={overlay.route_px.map((point) => point.join(",")).join(" ")} fill="none" stroke={overlay.colour ?? "#75e6ff"} strokeOpacity="0.3" strokeWidth="9" strokeLinecap="round" strokeLinejoin="round" />
+                    <polyline points={overlay.route_px.map((point) => point.join(",")).join(" ")} fill="none" stroke={overlay.colour ?? "#75e6ff"} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                    {[overlay.route_px[0], overlay.route_px[overlay.route_px.length - 1]].map((point, end) => (
+                      <circle key={end} cx={point[0]} cy={point[1]} r="6" fill={end ? "#ff647c" : "#62f59a"} stroke={overlay.colour ?? "#04080b"} strokeWidth="2" />
+                    ))}
+                  </g>
+                ))}
+                {!(snapshot.routes ?? []).length && (
+                  <polyline
+                    points={(snapshot.route_px ?? []).map((point) => point.join(",")).join(" ")}
+                    fill="none"
+                    stroke="#75e6ff"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                )}
+                {!(snapshot.routes ?? []).length && (snapshot.route_px ?? []).map((point, index) => (
                   <circle
                     key={index}
                     cx={point[0]}
@@ -160,7 +171,27 @@ export default function UsgsRouteSnapshot({ open, onClose, snapshot, loading, er
                 </dl>
               </div>
 
-              <div className="snapshot-block">
+              {(snapshot.routes ?? []).length > 0 && (
+                <div className="snapshot-block">
+                  <h3>Routes in this frame ({snapshot.routes.length})</h3>
+                  <ul className="snapshot-units">
+                    {snapshot.routes.map((overlay) => (
+                      <li key={overlay.route_id ?? overlay.name}>
+                        <span className="unit-swatch" style={{ background: overlay.colour }} />
+                        <div>
+                          <strong>{overlay.name}</strong>
+                          <small>
+                            {(overlay.units_crossed ?? []).map((unit) => `${unit.unit} ${(unit.fraction_of_route * 100).toFixed(0)}%`).join(" · ") ||
+                              "No mapped unit crossed"}
+                          </small>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {!(snapshot.routes ?? []).length && <div className="snapshot-block">
                 <h3>USGS geologic units crossed</h3>
                 {units.length === 0 && <p>No SIM 3292 unit polygon intersects the sampled route in this extent.</p>}
                 <ul className="snapshot-units">
@@ -176,7 +207,7 @@ export default function UsgsRouteSnapshot({ open, onClose, snapshot, loading, er
                     </li>
                   ))}
                 </ul>
-              </div>
+              </div>}
 
               <div className="snapshot-block">
                 <h3>Provenance</h3>

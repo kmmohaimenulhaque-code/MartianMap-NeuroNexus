@@ -152,3 +152,34 @@ def test_calculator_rejects_unknown_operations():
 
     assert "error" in mars_calculator({}, operation="warp_speed", value="1")
     assert mars_calculator({}, operation="sols_to_earth_days", value="668")["result"] == pytest.approx(686.37, abs=0.1)
+
+
+# ------------------------------------------------------------------ reproducibility of saved AI routes
+
+
+def test_candidate_generation_is_deterministic():
+    """Saved AI routes are verified by replaying the stored request: same input → same ids and geometry."""
+    from science.routing.engine import plan_route_candidates
+    from tests.test_routing_engine import DESTINATION, START
+
+    first = plan_route_candidates(START, DESTINATION, grid=ridge_grid(), evidence=[])
+    second = plan_route_candidates(START, DESTINATION, grid=ridge_grid(), evidence=[])
+    as_geometry = lambda result: {c["id"]: c["coordinates"] for c in result["candidates"]}  # noqa: E731
+    assert as_geometry(first) == as_geometry(second)
+    assert all(c["algorithm_version"] for c in first["candidates"])
+
+
+def test_multi_route_snapshot_draws_every_route(monkeypatch):
+    from science.usgs import arcgis
+
+    monkeypatch.setattr(arcgis, "stitch_tiles", lambda extent, level: None)
+    monkeypatch.setattr(arcgis, "unit_colors", lambda: {})
+    monkeypatch.setattr(arcgis, "query_layer", lambda *args, **kwargs: [])
+    monkeypatch.setattr(arcgis, "build_wab_sync_url", lambda coords, **kw: {"url": "https://example.invalid"})
+    arcgis._CACHE.clear()
+    routes = [{"route_id": "a", "name": "A", "colour": "#75e6ff", "coordinates": ROUTE},
+              {"route_id": "b", "name": "B", "colour": "#ff9f68", "coordinates": list(reversed(ROUTE))},
+              {"route_id": "c", "name": "C", "colour": "#8cf0b1", "coordinates": [ROUTE[0], {"latitude_deg": -5.6, "longitude_deg": 138.0}]}]
+    snapshot = arcgis.build_route_snapshot({"routes": routes})
+    assert [r["route_id"] for r in snapshot["routes"]] == ["a", "b", "c"]
+    assert all(len(r["route_px"]) == 2 for r in snapshot["routes"])

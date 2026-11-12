@@ -41,6 +41,7 @@ import {
   fetchPlaceSuggestions,
   fetchPlaces,
   fetchRoutePlan,
+  fetchUsgsMultiRouteSnapshot,
   fetchUsgsRouteSnapshot,
   fetchUsgsSync,
   generateRouteCandidates,
@@ -937,7 +938,7 @@ function RouteConsole({
           {loading ? "ANALYZING…" : "ANALYZE"}
         </button>
 
-        <button type="button" disabled={!routePlan} onClick={onSaveRoute}>
+        <button type="button" disabled={routePoints.length < 2} onClick={onSaveRoute}>
           SAVE ROUTE
         </button>
 
@@ -1997,78 +1998,178 @@ export default function App() {
     });
   }
 
-  function handleSaveRoute() {
-    if (!routePlan || routePoints.length < 2) {
-      return;
-    }
-
-    const defaultName = `Marswalk ${savedRoutes.length + 1}`;
-
+  /*
+   * Every saved route — manual or AI-designed — is one schema-v3 record with
+   * its exact geometry and a `generation` block holding the inputs needed to
+   * reproduce it (see verifyRouteReproducibility).
+   */
+  function promptRouteName(defaultName) {
     const name = window.prompt("Name this route:", defaultName);
+    return name?.trim() ? name.trim().slice(0, 80) : null;
+  }
 
-    if (!name?.trim()) {
-      return;
-    }
-
-    /*
-     * Deep-copy the route plan so the saved route can never
-     * be mutated by the next route being created.
-     */
-    const points = routePoints.map((point) => ({
-      ...point,
+  function saveRouteRecord({ name, points, plan = null, generation }) {
+    const exactPoints = points.map((point, index) => ({
+      latitude_deg: Number(point.latitude_deg),
+      longitude_deg: normaliseLongitude(point.longitude_deg),
+      label: point.label ?? (index === 0 ? "START" : index === points.length - 1 ? "DESTINATION" : `WP ${index}`),
     }));
 
-    const savedRoute = {
+    const record = {
       id: createId("route"),
-
       schema: 3,
-
-      name: name.trim(),
-
+      name,
       createdAt: new Date().toISOString(),
-
-      colourIndex: nextColourIndex(savedRoutes),
-
-      points,
-
-      geometryHash: geometryHash(points),
-
-      plan: JSON.parse(JSON.stringify(routePlan)),
-
+      colourIndex: 0,
+      points: exactPoints,
+      geometryHash: geometryHash(exactPoints),
+      // Deep copy so later edits can never mutate a saved route.
+      plan: plan ? JSON.parse(JSON.stringify(plan)) : null,
+      generation: { ...generation, app_version: APP_VERSION, saved_at: new Date().toISOString() },
       // Filled by the along-track evaluation effect.
       evaluation: { status: "pending" },
     };
 
-    setSavedRoutes((current) => [...current, savedRoute]);
+    setSavedRoutes((current) => [...current, { ...record, colourIndex: nextColourIndex(current) }]);
+    setCompareRouteIds((current) => (current.includes(record.id) || current.length >= MAX_COMPARE_ROUTES ? current : [...current, record.id]));
+    return record;
+  }
 
-    /*
-     * Put the newly saved route into comparison automatically
-     * while capacity remains.
-     */
-    setCompareRouteIds((current) => {
-      if (current.includes(savedRoute.id)) {
-        return current;
-      }
+  function candidateGeneration(candidate) {
+    return {
+      source: "ai-route-designer",
+      candidate_id: candidate.id,
+      candidate_name: candidate.name,
+      objective_basis: candidate.objective_basis ?? null,
+      objective_weights: candidate.objective_weights ?? candidate.scoring_weights ?? null,
+      algorithm_version: candidate.algorithm_version ?? null,
+      request: routeCandidates?.request ?? null,
+      request_key: routeCandidates?.requestKey ?? null,
+      metrics_at_save: candidate.metrics ?? null,
+    };
+  }
 
-      if (current.length >= MAX_COMPARE_ROUTES) {
-        return current;
-      }
+  function handleSaveRoute() {
+    if (routePoints.length < 2) {
+      return;
+    }
 
-      return [...current, savedRoute.id];
+    const name = promptRouteName(`Marswalk ${savedRoutes.length + 1}`);
+
+    if (!name) {
+      return;
+    }
+
+    // An applied AI candidate that was not edited keeps its AI provenance.
+    const candidate = candidateRoutes.find((item) => item.id === selectedCandidateId);
+    const unchangedCandidate =
+      candidate && geometryHash(candidate.coordinates ?? []) === geometryHash(routePoints.map((p) => ({ ...p, longitude_deg: normaliseLongitude(p.longitude_deg) })));
+
+    saveRouteRecord({
+      name,
+      points: routePoints,
+      plan: routePlan,
+      generation: unchangedCandidate
+        ? candidateGeneration(candidate)
+        : {
+            source: "manual",
+            method: "user-defined waypoints · haversine geometry · NASA MOLA along-track evaluation",
+            eva: { pace_kmh: evaPaceKmh, ascent_allowance_m_per_h: ascentAllowance },
+          },
     });
 
-    /*
-     * CRITICAL:
-     *
-     * Saving a route finalises that route and clears the editor.
-     * Route 2 therefore starts independently from Route 1.
-     */
+    // Saving finalises the route and clears the editor, so the next route starts independently.
     setRoutePoints([]);
-
     setRoutePlan(null);
-
+    setRouteMetrics(null);
     setRouteMode(false);
   }
+
+  function handleSaveCandidate(candidate, { name: givenName = null } = {}) {
+    if ((candidate.coordinates ?? []).length < 2) return null;
+    const name = givenName ?? promptRouteName(candidate.name ?? `AI route ${savedRoutes.length + 1}`);
+    if (!name) return null;
+    const record = saveRouteRecord({ name, points: candidate.coordinates, generation: candidateGeneration(candidate) });
+    setNotice(`Saved "${name}" from the AI Route Designer.`);
+    return record;
+  }
+
+  function handleSaveAllCandidates() {
+    const candidates = routeCandidates?.candidates ?? [];
+    if (!candidates.length) return;
+    const prefix = window.prompt("Name prefix for the saved candidates:", "AI");
+    if (prefix === null) return;
+    candidates.forEach((candidate) => handleSaveCandidate(candidate, { name: `${prefix.trim() || "AI"} · ${candidate.name}`.slice(0, 80) }));
+    setNotice(`Saved ${candidates.length} AI candidates as named routes (the first ${MAX_COMPARE_ROUTES} are selected for comparison).`);
+  }
+
+  function handleRenameRoute(routeId) {
+    const route = savedRoutes.find((item) => item.id === routeId);
+    if (!route) return;
+    const name = promptRouteName(route.name);
+    if (!name || name === route.name) return;
+    setSavedRoutes((current) => current.map((item) => (item.id === routeId ? { ...item, name } : item)));
+  }
+
+  /*
+   * Reproducibility check. AI routes: replay the stored /routes/candidates
+   * request and compare the same candidate's geometry vertex by vertex.
+   * Manual routes: geometry is the stored waypoints themselves; re-run the
+   * deterministic along-track evaluation and compare its numbers.
+   */
+  async function verifyRouteReproducibility(routeId) {
+    const route = savedRoutes.find((item) => item.id === routeId);
+    if (!route) return;
+    const mark = (reproducibility) =>
+      setSavedRoutes((current) => current.map((item) => (item.id === routeId ? { ...item, reproducibility } : item)));
+    mark({ status: "checking" });
+    try {
+      let detail;
+      let ok;
+      const generation = route.generation ?? {};
+      if (generation.source === "ai-route-designer" && generation.request) {
+        const r = generation.request;
+        const replay = await generateRouteCandidates({
+          start: r.start,
+          destination: r.destination,
+          weights: r.weights,
+          evaPaceKmh: r.eva_pace_kmh,
+          ascentAllowanceMPerH: r.ascent_allowance_m_per_h,
+          safeHavens: r.safe_havens ?? [],
+          includeScience: r.include_science,
+        });
+        const match = (replay.candidates ?? []).find((c) => c.id === generation.candidate_id);
+        ok = Boolean(match) && geometryHash(match.coordinates ?? []) === route.geometryHash;
+        detail = !match
+          ? `Candidate ${generation.candidate_id} not returned by the engine (${replay.candidates?.[0]?.algorithm_version ?? "unknown version"}).`
+          : ok
+            ? `Engine regenerated identical geometry (${match.coordinates.length} vertices, ${match.algorithm_version}).`
+            : `Engine ${match.algorithm_version} now returns different geometry (saved with ${generation.algorithm_version}).`;
+      } else {
+        const response = await evaluateRoute({
+          coordinates: route.points,
+          evaPaceKmh: generation.eva?.pace_kmh ?? evaPaceKmh,
+          ascentAllowanceMPerH: generation.eva?.ascent_allowance_m_per_h ?? ascentAllowance,
+          safeHavens,
+          includeScience: false,
+          includeProfile: true,
+        });
+        const fresh = evaluationFromResponse(response);
+        const before = route.evaluation ?? {};
+        const same = (a, b) => a === b || (Number.isFinite(a) && Number.isFinite(b) && Math.abs(a - b) < 1e-6);
+        ok = same(fresh.distanceKm, before.distanceKm) && same(fresh.slope_deg?.max, before.slope_deg?.max) && same(fresh.elevation_m?.mean, before.elevation_m?.mean);
+        detail = ok
+          ? `Stored waypoints re-evaluated to identical MOLA statistics (${fresh.sampleCount} samples).`
+          : "Re-evaluation differs from the stored statistics (terrain data or evaluation parameters changed).";
+      }
+      mark({ status: ok ? "reproduced" : "differs", checkedAt: new Date().toISOString(), detail });
+      setNotice(`${route.name}: ${detail}`);
+    } catch (err) {
+      mark({ status: "error", checkedAt: new Date().toISOString(), detail: err.message });
+      setNotice(`${route.name}: reproducibility check failed — ${err.message}`);
+    }
+  }
+
 
   function handleToggleCompareRoute(routeId) {
     setCompareRouteIds((current) => {
@@ -2215,17 +2316,28 @@ export default function App() {
       setCandidatesError("");
       setRouteAnalysis(null);
 
+      const request = {
+        start: { latitude_deg: Number(designStart.latitude_deg), longitude_deg: Number(designStart.longitude_deg), label: designStart.label ?? null },
+        destination: { latitude_deg: Number(designDestination.latitude_deg), longitude_deg: Number(designDestination.longitude_deg), label: designDestination.label ?? null },
+        weights: { ...objectiveWeights },
+        eva_pace_kmh: evaPaceKmh,
+        ascent_allowance_m_per_h: ascentAllowance,
+        safe_havens: safeHavens.map((h) => ({ id: h.id, name: h.name, latitude_deg: h.latitude_deg, longitude_deg: h.longitude_deg })),
+        include_science: includeScience,
+      };
+
       const response = await generateRouteCandidates({
-        start: designStart,
-        destination: designDestination,
-        weights: objectiveWeights,
-        evaPaceKmh,
-        ascentAllowanceMPerH: ascentAllowance,
-        safeHavens,
-        includeScience,
+        start: request.start,
+        destination: request.destination,
+        weights: request.weights,
+        evaPaceKmh: request.eva_pace_kmh,
+        ascentAllowanceMPerH: request.ascent_allowance_m_per_h,
+        safeHavens: request.safe_havens,
+        includeScience: request.include_science,
       });
 
-      setRouteCandidates(response);
+      // The exact request is kept so saved candidates can be regenerated and verified.
+      setRouteCandidates({ ...response, request, requestKey: JSON.stringify(request) });
       setSelectedCandidateId(response.candidates?.[0]?.id ?? null);
       setBackendConnected(true);
     } catch (err) {
@@ -2321,17 +2433,21 @@ export default function App() {
     return candidate ?? null;
   }
 
+  const comparedRoutes = savedRoutes.filter((route) => compareRouteIds.includes(route.id)).map((route) => ({ ...route, colour: routeColour(route) }));
+
   async function handleOpenSnapshot() {
-    const subject = snapshotSubject();
-    if (!subject) {
+    // Two or more routes selected for comparison → one USGS frame with all of them.
+    const multi = comparedRoutes.length >= 2;
+    const subject = multi ? null : snapshotSubject();
+    if (!multi && !subject) {
       return;
     }
     setSnapshotOpen(true);
     setSnapshotLoading(true);
     setSnapshotError("");
     try {
-      const response = await fetchUsgsRouteSnapshot(subject);
-      setSnapshot(response);
+      const response = multi ? await fetchUsgsMultiRouteSnapshot(comparedRoutes) : await fetchUsgsRouteSnapshot(subject);
+      setSnapshot(multi ? { ...response, route: { name: comparedRoutes.map((r) => r.name).join(" · ") } } : response);
     } catch (err) {
       setSnapshot(null);
       setSnapshotError(err.message);
@@ -2339,6 +2455,7 @@ export default function App() {
       setSnapshotLoading(false);
     }
   }
+
 
   function handleExportSnapshot() {
     if (!snapshot) {
@@ -2507,11 +2624,22 @@ export default function App() {
     "analyze-route": { run: handleAnalyzeRoute, available: () => (routePoints.length >= 2 ? true : "Needs at least 2 waypoints") },
     "remove-last-waypoint": { run: removeLastWaypoint, available: () => (routePoints.length ? true : "No waypoints yet") },
     "clear-route": { run: clearRoute, available: () => (routePoints.length || routePlan ? true : "No route to clear") },
-    "save-route": { run: handleSaveRoute, available: () => (routePlan && routePoints.length >= 2 ? true : "Analyze a route with at least 2 waypoints first") },
+    "save-route": { run: handleSaveRoute, available: () => (routePoints.length >= 2 ? true : "Plan or apply a route with at least 2 waypoints first") },
+    "save-candidates": {
+      run: handleSaveAllCandidates,
+      available: () => (routeCandidates?.candidates?.length ? true : "Generate AI route candidates first"),
+    },
+    "verify-routes": {
+      run: () => savedRoutes.forEach((route) => verifyRouteReproducibility(route.id)),
+      available: () => (savedRoutes.length ? true : "No saved routes"),
+    },
     "ai-route-design": { run: () => setDesignerOpen(true) },
     "compare-routes": { run: handleOpenComparison, available: () => (savedRoutes.length >= 2 ? true : "Save at least 2 routes") },
     "routes-3d": { run: () => open3dPanel("routes") },
-    "route-snapshot": { run: handleOpenSnapshot, available: () => (routePoints.length >= 2 || selectedCandidateId ? true : "Plan or apply a route first") },
+    "route-snapshot": {
+      run: handleOpenSnapshot,
+      available: () => (comparedRoutes.length >= 2 || routePoints.length >= 2 || selectedCandidateId ? true : "Plan, apply or select routes for comparison first"),
+    },
     "reevaluate-routes": { run: () => reevaluateRoutes(), available: () => (savedRoutes.length ? true : "No saved routes") },
     "mars-intelligence": { run: () => setIntelligenceOpen(true) },
     "hazard-overview": { run: () => scrollToPanel("panel-interpretation") },
@@ -2857,7 +2985,7 @@ export default function App() {
                 MARS INTELLIGENCE
               </button>
 
-              <button type="button" className="mission-action" onClick={handleOpenSnapshot} disabled={routePoints.length < 2 && !selectedCandidateId}>
+              <button type="button" className="mission-action" onClick={handleOpenSnapshot} disabled={comparedRoutes.length < 2 && routePoints.length < 2 && !selectedCandidateId}>
                 USGS SNAPSHOT
               </button>
 
@@ -2921,7 +3049,7 @@ export default function App() {
               onExportJson={handleExportJson}
               onExportCsv={handleExportCsv}
               onExportRouteCsv={handleExportRouteCsv}
-              routeExportAvailable={routePoints.length >= 2 || Boolean(selectedCandidateId) || savedRoutes.length > 0}
+              routeExportAvailable={comparedRoutes.length >= 2 || routePoints.length >= 2 || Boolean(selectedCandidateId) || savedRoutes.length > 0}
               onPrint={handlePrint}
             />
         }
@@ -3287,7 +3415,7 @@ export default function App() {
                   syncStatus={usgsSyncStatus}
                   syncError={usgsSync.error}
                   halfWidthKm={USGS_SYNC_HALF_WIDTH_KM}
-                  snapshotAvailable={routePoints.length >= 2 || Boolean(selectedCandidateId)}
+                  snapshotAvailable={comparedRoutes.length >= 2 || routePoints.length >= 2 || Boolean(selectedCandidateId)}
                   onOpenSnapshot={handleOpenSnapshot}
                   onRequestSync={requestUsgsSync}
                 />
@@ -3507,13 +3635,14 @@ export default function App() {
         onApplyCandidate={handleApplyCandidate}
         onOpenDesigner={() => setDesignerOpen(true)}
         onOpenSnapshot={handleOpenSnapshot}
-        snapshotAvailable={routePoints.length >= 2 || Boolean(selectedCandidateId)}
+        snapshotAvailable={comparedRoutes.length >= 2 || routePoints.length >= 2 || Boolean(selectedCandidateId)}
         onOpenCompare={handleOpenComparison}
         compareAvailable={savedRoutes.length >= 2 || compareRouteIds.length >= 2}
         savedRoutes={savedWithColour}
         compareRouteIds={compareRouteIds}
         onToggleCompareRoute={handleToggleCompareRoute}
         onSnapshotRoute={handleSnapshotSavedRoute}
+        onRenameRoute={handleRenameRoute}
         routeStatsFor={routeStats}
         requestedPanel={requested3dPanel}
       />
@@ -3545,6 +3674,11 @@ export default function App() {
         onGenerate={handleGenerateCandidates}
         onSelectCandidate={setSelectedCandidateId}
         onApplyCandidate={handleApplyCandidate}
+        onSaveCandidate={(candidate) => handleSaveCandidate(candidate)}
+        onSaveAllCandidates={handleSaveAllCandidates}
+        savedCandidateKeys={savedRoutes
+          .filter((route) => route.generation?.request_key && route.generation.request_key === routeCandidates?.requestKey)
+          .map((route) => route.generation.candidate_id)}
         onRequestAnalysis={handleRequestRouteAnalysis}
       />
 
@@ -3591,6 +3725,8 @@ export default function App() {
           onClose={() => setComparisonOpen(false)}
           onDeleteRoute={handleDeleteSavedRoute}
           onReevaluate={(id) => reevaluateRoutes([id])}
+          onRename={handleRenameRoute}
+          onVerify={verifyRouteReproducibility}
           onShowIn3D={() => {
             setComparisonOpen(false);
             open3dPanel("routes");

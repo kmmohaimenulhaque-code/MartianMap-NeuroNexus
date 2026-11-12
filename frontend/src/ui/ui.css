@@ -1300,3 +1300,64 @@ kbd {
     display: none !important;
   }
 }
+
+/* ---------------------------------------------------- saved-route provenance + reproducibility */
+
+.cmp-source {
+  margin-left: 6px;
+  color: var(--nn-text-dim);
+  font-size: 8.5px;
+  letter-spacing: 0.08em;
+}
+
+.cmp-repro {
+  padding: 5px 7px;
+  border: 1px solid var(--nn-cyan-faint);
+  font-family: var(--nn-mono);
+  font-size: 8.5px;
+  line-height: 1.45;
+}
+
+.cmp-repro-reproduced {
+  border-color: rgba(140, 240, 177, 0.4);
+  color: var(--nn-green);
+}
+
+.cmp-repro-differs,
+.cmp-repro-error {
+  border-color: rgba(255, 196, 107, 0.4);
+  color: var(--nn-amber);
+}
+
+.m3d-route-ai {
+  padding: 0 4px;
+  border: 1px solid var(--nn-cyan-dim);
+  color: var(--nn-cyan);
+  font-size: 8px;
+  font-style: normal;
+}
+
+.ai-save-all {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0;
+}
+
+.ai-save-all button {
+  min-height: 30px;
+  padding: 0 12px;
+  border: 1px solid var(--nn-cyan);
+  background: var(--nn-surface);
+  color: var(--nn-cyan);
+  font-family: var(--nn-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  box-shadow: var(--nn-glow);
+}
+
+.ai-save-all small {
+  color: var(--nn-text-dim);
+  font-size: 9.5px;
+}
