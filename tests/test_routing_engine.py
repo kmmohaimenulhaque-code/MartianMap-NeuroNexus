@@ -223,3 +223,96 @@ def test_simplify_keeps_endpoints_and_vertex_budget():
     simple, tolerance = simplify(coordinates, cell_km=0.46, limit=8)
     assert simple[0] == coordinates[0] and simple[-1] == coordinates[-1]
     assert len(simple) <= 8 and tolerance > 0
+
+
+# --------------------------------------------------------------- long traverses
+
+
+def _synthetic_loader(window):
+    """Per-window synthetic terrain so segmentation is testable without MOLA LFS."""
+    from tests.synthetic_terrain import ridge_grid
+
+    span = 1.2 * max(window["width_km"], window["height_km"]) / (3396.0 * math.pi / 180.0)
+    return ridge_grid(window["center_latitude_deg"], window["center_longitude_deg"], span_deg=span)
+
+
+def test_long_traverse_is_segmented_not_refused(monkeypatch):
+    import science.routing.engine as engine
+
+    monkeypatch.setattr(engine, "load_grid", _synthetic_loader)
+    start = {"latitude_deg": -5.0, "longitude_deg": 137.0}
+    end = {"latitude_deg": -2.0, "longitude_deg": 141.0}
+    result = engine.plan_route_candidates(start, end, evidence=[])
+    seg = result["segmentation"]
+    assert seg["segmented"] and seg["segment_count"] >= 4
+    assert result["message"].startswith("Long traverse detected")
+    assert f"{seg['segment_count']} local MOLA segments" in result["message"]
+    ids = [c["id"] for c in result["candidates"]]
+    assert len(ids) == len(set(ids)) and len(ids) >= 2
+    for candidate in result["candidates"]:
+        first, last = candidate["coordinates"][0], candidate["coordinates"][-1]
+        assert first["latitude_deg"] == pytest.approx(-5.0, abs=1e-6)
+        assert first["longitude_deg"] == pytest.approx(137.0, abs=1e-6)
+        assert last["latitude_deg"] == pytest.approx(-2.0, abs=1e-6)
+        assert last["longitude_deg"] == pytest.approx(141.0, abs=1e-6)
+        assert len(candidate["coordinates"]) <= engine.MAX_ROUTE_VERTICES
+        m = candidate["metrics"]
+        assert m["segment_count"] == seg["segment_count"]
+        assert m["distance_km"] == pytest.approx(sum(m["segment_distances_km"]), abs=0.01)
+        assert m["distance_km"] >= m["displacement_km"] - 1e-6
+
+
+def test_every_segment_window_respects_the_bound():
+    import science.routing.engine as engine
+
+    a, b = (-5.0, 137.0), (10.0, 150.0)
+    anchors = engine.segment_anchors(a, b)
+    assert anchors[0] == a and anchors[-1] == b
+    for p, q in zip(anchors, anchors[1:]):
+        window = engine.planning_window([p, q])
+        assert max(window["width_km"], window["height_km"]) <= engine.MAX_WINDOW_KM
+
+
+def test_great_circle_anchors_lie_on_the_direct_path():
+    import science.routing.engine as engine
+    from science.routing.metrics import haversine_km
+
+    a, b = (-5.0, 137.0), (0.0, 145.0)
+    points = engine.great_circle_points(a, b, 5)
+    total = float(haversine_km(*a, *b))
+    walked = sum(float(haversine_km(*p, *q)) for p, q in zip(points, points[1:]))
+    assert walked == pytest.approx(total, rel=1e-6)
+
+
+def test_long_polyline_evaluation_is_segmented(monkeypatch):
+    import science.routing.engine as engine
+
+    monkeypatch.setattr(engine, "load_grid", _synthetic_loader)
+    payload = engine.evaluate_route([{"latitude_deg": -5.0, "longitude_deg": 137.0},
+                                     {"latitude_deg": -2.0, "longitude_deg": 141.0}], evidence=[])
+    assert payload["segmentation"]["segmented"] and payload["status"] == "ok"
+    assert payload["metrics"]["distance_km"] > 250
+
+
+def test_leg_metric_aggregation_is_exact():
+    from science.routing.engine import aggregate_leg_metrics
+
+    legs = [
+        {"distance_km": 10.0, "mean_slope_deg": 2.0, "max_slope_deg": 5.0, "p90_slope_deg": 4.0, "mean_roughness_m": 3.0,
+         "max_roughness_m": 9.0, "elevation_min_m": -100.0, "elevation_max_m": 50.0, "elevation_gain_m": 100.0,
+         "elevation_loss_m": 20.0, "terrain_burden_score": 10.0, "operational_burden_score": 20.0,
+         "max_distance_from_safe_haven_km": 5.0, "science_opportunity_score": None, "data_support_score": 100.0,
+         "sample_count": 40, "sample_spacing_km": 0.2},
+        {"distance_km": 30.0, "mean_slope_deg": 6.0, "max_slope_deg": 12.0, "p90_slope_deg": 9.0, "mean_roughness_m": 7.0,
+         "max_roughness_m": 20.0, "elevation_min_m": -300.0, "elevation_max_m": 10.0, "elevation_gain_m": 200.0,
+         "elevation_loss_m": 400.0, "terrain_burden_score": 30.0, "operational_burden_score": 40.0,
+         "max_distance_from_safe_haven_km": 25.0, "science_opportunity_score": None, "data_support_score": 90.0,
+         "sample_count": 120, "sample_spacing_km": 0.2},
+    ]
+    m = aggregate_leg_metrics(legs, [(0.0, 0.0), (0.0, 1.0)], pace_kmh=2.0, ascent_m_per_h=0.0)
+    assert m["distance_km"] == 40.0 and m["estimated_eva_hours"] == pytest.approx(20.0)
+    assert m["mean_slope_deg"] == pytest.approx(5.0) and m["max_slope_deg"] == 12.0
+    assert m["elevation_gain_m"] == 300.0 and m["elevation_loss_m"] == 420.0
+    assert m["elevation_min_m"] == -300.0 and m["elevation_max_m"] == 50.0
+    assert m["science_opportunity_score"] is None and m["science_evidence_count"] is None
+    assert m["data_support_score"] == pytest.approx(92.5)
