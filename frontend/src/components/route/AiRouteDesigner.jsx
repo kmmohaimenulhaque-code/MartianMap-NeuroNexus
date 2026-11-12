@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 
+import { haversineKm } from "../../utils/missionConsole";
 import { CANDIDATE_COLOURS, OBJECTIVES, OBJECTIVE_PRESETS as PRESETS, matchPreset, rebalanceWeights } from "../../utils/routeObjectives";
 
 /*
@@ -168,6 +169,16 @@ export default function AiRouteDesigner({
 }) {
   const activePreset = useMemo(() => matchPreset(weights), [weights]);
 
+  /* Client-side estimate only (Haversine on the 3396 km sphere, ~60 km legs);
+     the backend decides the exact segment count. */
+  const longTraverseEstimate = useMemo(() => {
+    if (!start || !destination) {
+      return 0;
+    }
+    const km = haversineKm(start, destination);
+    return km && km > 70 ? Math.ceil(km / 60) : 1;
+  }, [start, destination]);
+
   const total = useMemo(() => OBJECTIVES.reduce((sum, [key]) => sum + (Number(weights[key]) || 0), 0), [weights]);
   const candidates = result?.candidates ?? [];
 
@@ -292,6 +303,12 @@ export default function AiRouteDesigner({
               {analysisLoading ? "ASKING GEMINI…" : "AI TRADE-OFF ANALYSIS"}
             </button>
 
+            {loading && longTraverseEstimate > 1 && (
+              <div className="ai-info">
+                Long traverse detected — planning terrain-aware route in about {longTraverseEstimate} local MOLA segments.
+              </div>
+            )}
+            {!loading && result?.segmentation?.segmented && <div className="ai-info">{result.segmentation.message}</div>}
             {error && <div className="ai-error">{error}</div>}
             {safeHavens.length > 0 && <small className="ai-note">{safeHavens.length} Safe Haven(s) inform the operational-burden objective.</small>}
           </aside>
