@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import os
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 import httpx
@@ -26,6 +26,7 @@ class Provider:
     endpoint: str
     models: tuple[str, ...]
     kind: str = "openai"
+    extra: dict[str, Any] = field(default_factory=dict)  # provider-specific request fields
 
 
 @dataclass(frozen=True)
@@ -43,14 +44,18 @@ PROVIDERS = (
              ("llama-3.3-70b-versatile", "openai/gpt-oss-120b")),
     Provider("Mistral", "MISTRAL_API_KEY", "https://api.mistral.ai/v1/chat/completions",
              ("mistral-large-latest", "mistral-small-latest")),
+    # Thinking off: on a 25 KB mission state, Nemotron's reasoning took ~24 s and could leave an empty answer;
+    # off, answers took 2 to 12 s. The 550B Nemotron timed out even then, so Google's DiffusionGemma is second.
     Provider("NVIDIA NIM", "NVIDIA_API_KEY", "https://integrate.api.nvidia.com/v1/chat/completions",
-             ("nvidia/nemotron-3.5-super-vl-120b-a12b", "nvidia/nemotron-3-ultra-550b-a55b")),
+             ("nvidia/nemotron-3.5-super-vl-120b-a12b", "google/diffusiongemma-26b-a4b-it"),
+             extra={"chat_template_kwargs": {"enable_thinking": False}}),
     Provider("GitHub Models", "GITHUB_MODELS_TOKEN", "https://models.github.ai/inference/chat/completions",
              ("openai/gpt-4o", "microsoft/Phi-4")),
     Provider("Cohere", "COHERE_API_KEY", "https://api.cohere.com/v2/chat",
              ("command-r-plus-08-2024",), kind="cohere"),
     Provider("OpenRouter", "OPENROUTER_API_KEY", "https://openrouter.ai/api/v1/chat/completions",
-             ("nvidia/nemotron-3.5-super-vl:free", "nvidia/nemotron-3-ultra-550b-a55b:free")),
+             ("nvidia/nemotron-3.5-super-vl:free", "nvidia/nemotron-3-ultra-550b-a55b:free"),
+             extra={"reasoning": {"enabled": False}}),
 )
 
 
@@ -74,7 +79,7 @@ def _request(provider: Provider, messages: list[dict[str, str]], *, json_mode: b
     if provider.kind == "cohere":
         payload: dict[str, Any] = {"model": model, "messages": messages, "temperature": 0.2, "max_tokens": 2048}
     else:
-        payload = {"model": model, "messages": messages, "temperature": 0.2, "max_tokens": 2048}
+        payload = {"model": model, "messages": messages, "temperature": 0.2, "max_tokens": 2048, **provider.extra}
         if json_mode:
             payload["response_format"] = {"type": "json_object"}
     started = time.perf_counter()

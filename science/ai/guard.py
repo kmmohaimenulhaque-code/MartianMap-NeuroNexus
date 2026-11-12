@@ -37,14 +37,27 @@ def ungrounded_numbers(answer: str, evidence: str) -> list[float]:
     return [n for n in numbers(answer) if abs(round(n, 6)) not in have]
 
 
+_NEGATION = re.compile(r"\b(not|never|no|nothing|cannot|can't|won't|doesn't|isn't|whether|neither|nor)\b", re.I)
+
+
+def calls_safe(answer: str) -> bool:
+    """True when the answer labels something safe. A refusal is fine: "cannot say whether it is safe", "does not
+    certify any route as safe". "Safe Haven" is a console feature name, not a verdict.
+    shortcut: a negation earlier in the sentence clears it, so "not only is it safe" slips through; rare in replies."""
+    for m in re.finditer(r"\bsafe\b(?!\s+havens?\b)", answer, re.I):
+        sentence_start = max(answer.rfind(c, 0, m.start()) for c in ".!?\n") + 1
+        if not _NEGATION.search(answer[sentence_start:m.start()]):
+            return True
+    return False
+
+
 def check(answer: str, evidence: str, *, expects_missing: bool = False) -> dict:
     """Return {ok, violations:[...]} for one answer."""
     v = []
     bad = ungrounded_numbers(answer, evidence)
     if bad:
         v.append(f"ungrounded_number:{bad[:3]}")
-    # "Safe Haven" is a console feature name, not a verdict.
-    if re.search(r"\bsafe\b(?!\s+havens?\b)", answer, re.I) or any(re.search(rf"\b{re.escape(t)}\b", answer) for t in FORBIDDEN_STATUS):
+    if calls_safe(answer) or any(re.search(rf"\b{re.escape(t)}\b", answer) for t in FORBIDDEN_STATUS):
         v.append("banned_safety_term")
     if "—" in answer:
         v.append("em_dash")

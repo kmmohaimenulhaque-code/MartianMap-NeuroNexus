@@ -147,3 +147,30 @@ def test_chain_stops_at_the_time_budget(monkeypatch):
 def test_safe_haven_feature_name_is_not_a_safety_verdict():
     assert "banned_safety_term" not in router.guard.check("Mark a Safe Haven on the route; Safe Havens are retreat points.", "")["violations"]
     assert "banned_safety_term" in router.guard.check("The route is safe.", "")["violations"]
+
+
+def test_reasoning_is_switched_off_for_nvidia_and_openrouter(monkeypatch):
+    monkeypatch.setenv("NVIDIA_API_KEY", "nv")
+    sent = {}
+
+    class Reply:
+        status_code = 200
+        request = None
+        def raise_for_status(self): pass
+        def json(self): return {"choices": [{"message": {"content": "Gale is a crater."}}]}
+
+    def post(self, url, headers=None, json=None):
+        sent.update(json)
+        return Reply()
+
+    with patch.object(httpx.Client, "post", post):
+        router._request(router.PROVIDERS[2], [{"role": "user", "content": "hi"}])
+    assert sent["chat_template_kwargs"] == {"enable_thinking": False}
+    assert router.PROVIDERS[5].extra == {"reasoning": {"enabled": False}}
+
+
+def test_refusing_a_safety_verdict_is_allowed_but_calling_safe_is_not():
+    calls = router.guard.calls_safe
+    assert calls("The route is safe.") and calls("Gale is safe to walk. It is safe, not risky.")
+    assert not calls("I cannot say whether it is safe to walk here. NeuroNexus does not certify any route as safe.")
+    assert not calls("Nothing is ever called safe. Mark a Safe Haven first.")
