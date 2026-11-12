@@ -123,6 +123,15 @@ def load_snapshot(rover: str) -> dict:
             "snapshot": path.name}
 
 
+def content_version(data: dict) -> str:
+    """Hash of the traverse geometry: a refetch that returns the same drives keeps the same version, so
+    derived products (the RDP display lines) are reused instead of recomputed on every TTL refresh."""
+    digest = hashlib.sha1(usedforsecurity=False)
+    for drive in data["traverse"]:
+        digest.update(np.asarray([c[:2] for c in drive["coordinates"]], dtype="float64").tobytes())
+    return digest.hexdigest()[:16]
+
+
 def load(rover: str, *, allow_live: bool = True) -> dict:
     if rover not in ROVERS:
         raise KeyError(rover)
@@ -138,6 +147,7 @@ def load(rover: str, *, allow_live: bool = True) -> dict:
             data = {**load_snapshot(rover), "live_error": str(exc)[:200]}
     if data is None:
         data = load_snapshot(rover)
+    data["content_version"] = content_version(data)
     with _lock:
         _cache[rover] = {"_t": time.time(), "data": data}
     return data
