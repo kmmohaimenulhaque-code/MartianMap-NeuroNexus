@@ -114,9 +114,11 @@
           <p data-apollo-copy>In February 1971, two Apollo 14 astronauts climbed toward the rim of Cone Crater. The terrain was rugged, their orbital maps were inadequate, and every ridge looked the same. They turned back. Orbital images later showed they had stopped just 30 meters from the rim. Hope is not a navigation strategy. With no GPS, up to a 22-minute one-way signal delay, and global dust storms, the first explorers on Mars cannot afford a 30-meter mistake.</p>
           <p class="lp-story__bridge">The same resolution ladder now compares <button class="lp-term" type="button" data-term="hirise">HiRISE</button>, <button class="lp-term" type="button" data-term="ctx">CTX</button> and <button class="lp-term" type="button" data-term="mola">MOLA</button> before an <button class="lp-term" type="button" data-term="eva">EVA</button> reaches its <button class="lp-term" type="button" data-term="pnr">turnaround point</button>. The <button class="lp-term" type="button" data-term="p90-ratio">p90 ratio</button> shows what coarse terrain hides.</p>
           <div class="lp-story__controls" role="tablist" aria-label="Apollo story views">
-            <button type="button" class="is-active" data-apollo-view="story" role="tab" aria-selected="true">1971 · Cone Crater</button>
-            <button type="button" data-apollo-view="map" role="tab" aria-selected="false">2026 · Gale lens</button>
-            <button type="button" data-lens-sweep>View the resolution lesson</button>
+            <div class="lp-story__tabs">
+              <button type="button" class="is-active" data-apollo-view="story" role="tab" aria-selected="true">1971 · Cone Crater</button>
+              <button type="button" data-apollo-view="map" role="tab" aria-selected="false">2026 · Gale lens</button>
+            </div>
+            <button type="button" class="lp-story__sweep" data-lens-sweep>View the resolution lesson <span aria-hidden="true">-&gt;</span></button>
           </div>
           <p class="lp-small">LROC · NASA/GSFC/ASU · AS14-64-9089 · <a href="https://images-assets.nasa.gov/image/AS14-64-9089/" target="_blank" rel="noopener">Open source image</a></p>
         </div>
@@ -158,7 +160,7 @@
       <section class="lp-pareto" id="pareto" aria-labelledby="pareto-title">
         <p class="lp-eyebrow" data-reveal><span class="lp-dot" aria-hidden="true"></span>Multi-Objective Pareto Proof // Gale to Escalante (2,283.9 x 56.3 km window · 60 x 108 grid @ 0.9&#50;6 km · 2,018 ms)</p>
         <h2 class="lp-display lp-display--md" id="pareto-title" data-reveal>When the Shortest Line Is a Trap.</h2>
-        <p class="lp-body" data-reveal>In 2,018 ms, deterministic multi-objective Dijkstra generates six candidates over NASA <button class="lp-term" type="button" data-term="mola">MOLA</button> terrain and cataloged USGS, IAU and <button class="lp-term" type="button" data-term="themis">THEMIS</button> evidence. Five form the non-dominated frontier; the shortest path is mathematically dominated.</p>
+        <p class="lp-body" data-reveal>In 2,018 ms, deterministic multi-objective Dijkstra generates six candidates over NASA <button class="lp-term" type="button" data-term="mola">MOLA</button> terrain and cataloged USGS, IAU and <button class="lp-term" type="button" data-term="themis">THEMIS</button> evidence. Five form the non-dominated frontier; the shortest path is mathematically dominated by the convex <button class="lp-term" type="button" data-term="edge-cost-model">slope and roughness risk proxy</button>.</p>
         <div class="lp-pareto-toolbar" data-reveal>
           <span class="lp-small">Select a candidate to inspect its trade-off.</span>
           <div class="lp-pareto-filters" role="group" aria-label="Pareto candidate filters">

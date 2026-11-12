@@ -20,7 +20,9 @@ export function initPareto(root = document) {
       row.setAttribute("aria-selected", String(active));
     });
     const item = DETAILS[index];
-    section.innerHTML = `<div><span class="lp-eyebrow"><span class="lp-dot" aria-hidden="true"></span>Selected candidate</span><h3>${item.title}</h3><p>${item.status}. ${item.summary} The <button class="lp-term" type="button" data-term="edge-cost-model">edge cost model</button> keeps the trade-off deterministic.</p></div><div class="lp-pareto-bars">${item.values.map((value, i) => `<span><small>${["Distance", "Climb", "EVA time", "Risk proxy"][i]}</small><i><b style="width:${value}%></b></i><em>${item.metrics?.[i] || ""}</em></span>`).join("")}</div>`;
+    section.dataset.status = index === 0 ? "dominated" : "pareto";
+    section.innerHTML = `<div><span class="lp-eyebrow"><span class="lp-dot" aria-hidden="true"></span>Selected candidate</span><h3>${item.title}</h3><p>${item.status}. ${item.summary} The <button class="lp-term" type="button" data-term="edge-cost-model">edge cost model</button> keeps the trade-off deterministic.</p></div><div class="lp-pareto-bars">${item.values.map((value, i) => `<span><small>${["Distance", "Climb", "EVA time", "Risk proxy"][i]}</small><i><b style="width:${value}%"></b></i><em>${item.metrics?.[i] || ""}</em></span>`).join("")}</div>`;
+    section.dispatchEvent(new CustomEvent("nn:terms-refresh", { bubbles: true }));
   };
 
   const filter = (value) => {

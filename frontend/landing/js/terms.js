@@ -10,6 +10,7 @@ export function initTerms(root, glossary) {
   let current = null;
   let hideTimer = 0;
   let showTimer = 0;
+  const bound = new WeakSet();
 
   const place = (btn) => {
     const r = btn.getBoundingClientRect();
@@ -44,9 +45,11 @@ export function initTerms(root, glossary) {
     }, 220);
   };
 
-  root.querySelectorAll("[data-term]").forEach((btn) => {
+  const bind = (btn) => {
+    if (bound.has(btn)) return;
     const entry = glossary.terms[btn.dataset.term];
     if (!entry) return;
+    bound.add(btn);
     btn.setAttribute("aria-expanded", "false");
     btn.setAttribute("aria-describedby", "lp-termcard");
     btn.addEventListener("click", (e) => {
@@ -68,7 +71,9 @@ export function initTerms(root, glossary) {
         hideTimer = setTimeout(hide, 180);
       });
     }
-  });
+  };
+  root.querySelectorAll("[data-term]").forEach(bind);
+  root.addEventListener("nn:terms-refresh", () => root.querySelectorAll("[data-term]").forEach(bind));
   card.id = "lp-termcard";
   card.addEventListener("pointerenter", () => clearTimeout(hideTimer));
   card.addEventListener("pointerleave", () => {
