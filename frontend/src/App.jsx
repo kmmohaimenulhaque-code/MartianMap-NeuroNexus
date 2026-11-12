@@ -68,6 +68,10 @@ import EvidenceBar from "./components/console/EvidenceBar";
 import LeftColumn from "./components/console/LeftColumn";
 import TopBar from "./components/console/TopBar";
 import ScrollJumpButton from "./components/console/ScrollJumpButton";
+import ErrorBoundary from "./ui/ErrorBoundary";
+import { decodePlanLink } from "./marswalk/planLink";
+import MobileDock, { MapViewToggle, SheetHead } from "./components/mobile/MobileDock";
+import { useMobileUi } from "./components/mobile/mobileStore";
 
 import "./ui/tokens.css";
 import "./App.css";
@@ -111,8 +115,10 @@ const USGS_SYNC_HALF_WIDTH_KM = 40;
 
 
 export default function App() {
-  const [appMode, setAppMode] = useState(() => (readStorage("nn.appMode", "global") === "marswalk" ? "marswalk" : "global"));
-  const [marswalkDemo, setMarswalkDemo] = useState({ key: 0, demo: null });
+  // A shared MARSWALK plan link (#mw=...) opens MARSWALK and replans that request.
+  const [sharedPlan] = useState(() => decodePlanLink(typeof window === "undefined" ? "" : window.location.hash));
+  const [appMode, setAppMode] = useState(() => (sharedPlan || readStorage("nn.appMode", "global") === "marswalk" ? "marswalk" : "global"));
+  const [marswalkDemo, setMarswalkDemo] = useState({ key: 0, demo: sharedPlan });
   const [manualOpen, setManualOpen] = useState(false);
   const [legendOpen, setLegendOpen] = useState(false);
   const [layerVisibility, setLayerVisibility] = useState(() => ({ ...DEFAULT_VISIBILITY, ...readStorage("nn.layers", {}) }));
@@ -307,6 +313,7 @@ export default function App() {
   );
 
   const mapPanelScrollRef = useRef(null);
+  const mobileUi = useMobileUi();
   const selectionKeyRef = useRef(null);
   const selectionKey = selectedLocation ? `${selectedLocation.latitude_deg},${selectedLocation.longitude_deg}` : null;
 
@@ -1956,7 +1963,7 @@ export default function App() {
   return (
     <SolProvider sol={sol} setSol={setSol} playing={dustPlaying} setPlaying={setDustPlaying}>
     <SourcesContext.Provider value={sourcesContext}>
-    <main className="mission-shell">
+    <main className="mission-shell" data-mode={appMode} data-sheet={mobileUi.sheet ?? undefined} data-mapview={mobileUi.mapView}>
       <TopBar
         appMode={appMode}
         backendConnected={backendConnected}
@@ -2065,7 +2072,9 @@ export default function App() {
 
       {appMode === "marswalk" ? (
         <Suspense fallback={<div className="nn-loading">Loading MARSWALK…</div>}>
-          <MarswalkView key={marswalkDemo.key} demo={marswalkDemo.demo} onNotice={setNotice} />
+          <ErrorBoundary label="MARSWALK" key={marswalkDemo.key}>
+            <MarswalkView demo={marswalkDemo.demo} onNotice={setNotice} />
+          </ErrorBoundary>
         </Suspense>
       ) : (
       <div className="workspace">
@@ -2088,6 +2097,8 @@ export default function App() {
 
               <strong>{displayName}</strong>
             </div>
+
+            <MapViewToggle />
 
             <div className="map-status-inline">
               <span>{places.length.toLocaleString()} USGS FEATURES</span>
@@ -2186,6 +2197,13 @@ export default function App() {
               </div>
 
               <RouteConsole
+                sheetHead={
+                  <SheetHead title="ROUTE CONSOLE">
+                    <button type="button" className="mission-action nn-sheet-action" onClick={() => setDesignerOpen(true)}>
+                      AI ROUTE DESIGN
+                    </button>
+                  </SheetHead>
+                }
                 routeMode={routeMode}
 
                 routePoints={routePoints}
@@ -2452,6 +2470,7 @@ export default function App() {
 
       <SourcesDrawer open={sourcesDrawer.open} focusId={sourcesDrawer.focusId} onClose={() => setSourcesDrawer({ open: false, focusId: null })} />
       <RadialFeatureWheel onAction={runCommand} availability={commandAvailable} />
+      <MobileDock appMode={appMode} />
     </main>
     </SourcesContext.Provider>
     </SolProvider>

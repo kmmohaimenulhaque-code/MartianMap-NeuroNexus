@@ -5,6 +5,9 @@
  * The deterministic backend is authoritative; while a request runs the browser shows its own estimate.
  */
 
+import { SheetHead } from "../components/mobile/MobileDock";
+import { encodePlanLink } from "./planLink";
+import SeasonRibbon from "./SeasonRibbon";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import SourceTag from "../sources/SourceTag";
@@ -60,9 +63,9 @@ function writePref(key, value) {
 export default function MarswalkView({ demo, onNotice }) {
   const [site, setSite] = useState(() => (demo?.site ?? readPref("nn.marswalk.site", "gale")));
   const [config, setConfig] = useState(null);
-  const [overrides, setOverrides] = useState({});
+  const [overrides, setOverrides] = useState(() => demo?.overrides ?? {});
   const [evaHours, setEvaHours] = useState(demo?.evaHours ?? 4);
-  const [mode, setMode] = useState("ladder");
+  const [mode, setMode] = useState(demo?.mode ?? "ladder");
   const [base, setBase] = useState(null);
   const [targets, setTargets] = useState(demo?.targets ?? []);
   const [plan, setPlan] = useState(null);
@@ -76,12 +79,32 @@ export default function MarswalkView({ demo, onNotice }) {
   const solCtx = useSol();
   const { missionSol } = solCtx;
   const [hoverIndex, setHoverIndex] = useState(null);
+  const [linkCheck, setLinkCheck] = useState(null); // shared link: { shared, now } once the replanned id is known
   const planAbort = useRef(null);
   const autoPlanned = useRef(false);
   const estimateSeq = useRef(0);
   const dragTimer = useRef(null);
 
   useEffect(() => writePref("nn.marswalk.site", site), [site]);
+
+  useEffect(() => {
+    if (demo?.sol) solCtx.setSol(demo.sol);
+    // Only when a shared link (or demo) mounts this view.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [demo]);
+
+  const copyPlanLink = () => {
+    const hash = encodePlanLink({ site, targets, evaHours, mode, overrides, sol: solCtx.sol, planId: plan?.plan_id });
+    const url = `${window.location.origin}${window.location.pathname}${window.location.search}${hash}`;
+    try {
+      window.history.replaceState(null, "", hash);
+    } catch {
+      // History API blocked (sandboxed frame): the URL is still shown below.
+    }
+    const done = () => onNotice?.(`Plan link copied. Opening it replans this request and checks plan_id ${plan?.plan_id ?? ""}.`);
+    if (navigator.clipboard?.writeText) navigator.clipboard.writeText(url).then(done, () => onNotice?.(`Plan link: ${url}`));
+    else onNotice?.(`Plan link: ${url}`);
+  };
 
   useEffect(() => {
     marswalkApi.config().then(setConfig).catch((error) => onNotice?.(`Marswalk config unavailable: ${error.message}`));
@@ -168,7 +191,8 @@ export default function MarswalkView({ demo, onNotice }) {
 
   const runPlan = useCallback(
     (nextTargets = targets, kind = "plan") => {
-      if (!base || nextTargets.length === 0) return;
+      if (!base || nextTargets.length === 0) return Promise.resolve(null);
+      autoPlanned.current = true; // later EVA-length or terrain-mode changes replan this route
       planAbort.current?.abort();
       const controller = new AbortController();
       planAbort.current = controller;
@@ -180,16 +204,18 @@ export default function MarswalkView({ demo, onNotice }) {
         kind === "straight"
           ? marswalkApi.evaluate({ ...shared, polyline: pts.map((p) => [round6(p.lat), round6(p.lon)]) }, { signal: controller.signal })
           : marswalkApi.plan({ ...shared, site, base: { rover: SITES[site].rover }, targets: nextTargets.map((t) => ({ lat: round6(t.lat), lon: round6(t.lon) })) }, { signal: controller.signal });
-      call
+      return call
         .then((result) => {
           setPlan(result);
           setEstimate(null);
           setPlanState({ loading: false, error: "" });
+          return result;
         })
         .catch((error) => {
-          if (error.name === "AbortError") return;
+          if (error.name === "AbortError") return null;
           setPlan(null);
           setPlanState({ loading: false, error: error.hint ? `${error.message} (${error.hint})` : error.message });
+          return null;
         });
     },
     [base, targets, evaHours, mode, overrides, site, requestEstimate],
@@ -198,7 +224,7 @@ export default function MarswalkView({ demo, onNotice }) {
   useEffect(() => {
     if (demo && base && config && !autoPlanned.current && targets.length) {
       autoPlanned.current = true;
-      runPlan(targets);
+      runPlan(targets).then((result) => result && demo.sharedPlanId && setLinkCheck({ shared: demo.sharedPlanId, now: result.plan_id }));
     }
   }, [demo, base, config, targets, runPlan]);
 
@@ -229,8 +255,8 @@ export default function MarswalkView({ demo, onNotice }) {
     setPlan(null);
   };
   useEffect(() => {
-    if (plan === null && targets.length && base && autoPlanned.current) runPlan(targets);
-    // Replan when the terrain mode or EVA length changes after a first plan.
+    if (targets.length && base && autoPlanned.current) runPlan(targets);
+    // Replan when the terrain mode or EVA length changes after a first plan (the old plan is cleared, never shown as current).
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, evaHours]);
 
@@ -248,8 +274,14 @@ export default function MarswalkView({ demo, onNotice }) {
       if (req.type === "verify") {
         if (!targets.length || !base) onNotice?.("Plan a Marswalk first, then VERIFY PLAN re-runs it.");
         else {
-          runPlan(targets);
-          onNotice?.(`VERIFY: re-running plan ${plan?.plan_id ?? "(none yet)"}; the same request and data versions must return the same plan_id (V5).`);
+          const before = plan?.plan_id ?? null;
+          onNotice?.(`VERIFY: re-running plan ${before ?? "(none yet)"} with the same request…`);
+          runPlan(targets).then((result) => {
+            if (!result) return;
+            if (!before) onNotice?.(`VERIFY: first plan_id is ${result.plan_id}; run VERIFY again to compare.`);
+            else if (result.plan_id === before) onNotice?.(`VERIFY PASSED: plan_id ${result.plan_id} reproduced exactly (same request and data versions, V5).`);
+            else onNotice?.(`VERIFY MISMATCH: plan_id was ${before}, now ${result.plan_id}. The request or a data version changed; compare the two briefs.`);
+          });
         }
       }
       if (req.scroll) setTimeout(() => document.getElementById(req.scroll)?.scrollIntoView({ behavior: "smooth", block: "start" }), 400);
@@ -272,6 +304,7 @@ export default function MarswalkView({ demo, onNotice }) {
   return (
     <div className="mw-shell">
       <aside className="mw-left" aria-label="EVA setup">
+        <SheetHead title="EVA SETUP" />
         <section className="mw-card">
           <h3>EVA SETUP</h3>
           <label className="mw-field">
@@ -308,7 +341,11 @@ export default function MarswalkView({ demo, onNotice }) {
             <span>EVA duration</span>
             <div className="mw-mode">
               {[4, 8].map((h) => (
-                <button key={h} type="button" role="radio" aria-checked={evaHours === h} className={evaHours === h ? "active" : undefined} onClick={() => setEvaHours(h)}>
+                <button key={h} type="button" role="radio" aria-checked={evaHours === h} className={evaHours === h ? "active" : undefined} onClick={() => {
+                  if (h === evaHours) return;
+                  setPlan(null);
+                  setEvaHours(h);
+                }}>
                   {h} h
                 </button>
               ))}
@@ -330,6 +367,9 @@ export default function MarswalkView({ demo, onNotice }) {
             </button>
             <button type="button" disabled={!plan?.plan_id} onClick={() => runExport(exportProfileCsv)}>
               EXPORT CSV PROFILE
+            </button>
+            <button type="button" disabled={!plan?.plan_id} onClick={copyPlanLink} title="Copy a link that replans this exact request and checks the plan_id">
+              COPY PLAN LINK
             </button>
             <button type="button" disabled={!plan?.plan_id} onClick={() => openPrintableBrief(plan.plan_id)}>
               PRINT BRIEF
@@ -414,10 +454,23 @@ export default function MarswalkView({ demo, onNotice }) {
         {windowJson?.limitation && <div className="mw-note">{windowJson.limitation}</div>}
       </section>
       <section className="mw-bottom">
+        <SheetHead title="ELEVATION AND SLOPE PROFILE" />
         <ProfileStrip profile={plan?.profile} hoverIndex={hoverIndex} onHover={setHoverIndex} />
       </section>
       <aside className="mw-right" aria-label="Decision">
+        <SheetHead title="DECISION AND VALIDATION" />
+        {linkCheck && (
+          <div className={`mw-linkcheck ${linkCheck.shared === linkCheck.now ? "is-match" : "is-diff"}`} role="status" data-testid="plan-link-check">
+            <strong>{linkCheck.shared === linkCheck.now ? "SHARED PLAN REPRODUCED" : "SHARED PLAN DIFFERS"}</strong>
+            <span>link plan_id {linkCheck.shared}</span>
+            <span>replanned {linkCheck.now}</span>
+            {linkCheck.shared !== linkCheck.now && <small>The rover stand-in habitat or a data version changed since the link was made.</small>}
+          </div>
+        )}
         <DecisionCard plan={plan} estimate={estimate} loading={planState.loading} error={planState.error} conditions={conditions} />
+        {plan?.status?.value && (
+          <SeasonRibbon routeStatus={plan.status.value} lat={conditions?.dust?.cell?.latitude_deg ?? base?.lat} lon={conditions?.dust?.cell?.longitude_deg ?? base?.lon} />
+        )}
         <ConditionsStrip site={site} evaHours={evaHours} onConditions={setConditions} />
         <ValidationPanel site={site} />
         <section className="mw-card">

@@ -65,11 +65,12 @@ export default function TopBar({ appMode, backendConnected, commandIndex, compar
 
             <div className="mode-switch" role="radiogroup" aria-label="Console mode (M)">
               {[
-                ["global", "GLOBAL CONSOLE"],
-                ["marswalk", "MARSWALK"],
-              ].map(([key, label]) => (
+                ["global", "GLOBAL", " CONSOLE"],
+                ["marswalk", "MARSWALK", ""],
+              ].map(([key, label, rest]) => (
                 <button key={key} type="button" role="radio" aria-checked={appMode === key} className={appMode === key ? "active" : undefined} onClick={() => switchMode(key)} title="Switch mode (M)">
                   {label}
+                  {rest && <span className="mode-word">{rest}</span>}
                 </button>
               ))}
             </div>
@@ -98,7 +99,10 @@ export default function TopBar({ appMode, backendConnected, commandIndex, compar
                 }
               />
 
-              {backendConnected ? "SYSTEM ONLINE" : "SYSTEM DEGRADED"}
+              <b className="status-label">
+                <i className="status-word">SYSTEM </i>
+                {backendConnected ? "ONLINE" : "DEGRADED"}
+              </b>
             </div>
           </div>
 

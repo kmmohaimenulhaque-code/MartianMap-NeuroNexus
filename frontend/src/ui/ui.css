@@ -1661,6 +1661,7 @@ label:has(> .m3d-layer-tag) { flex-wrap: wrap; }
 }
 .map-panel-scroll > .route-console { flex: 0 0 auto; }
 .nn-flip-v { transform: scaleY(-1); }
+.status-label, .status-word { font: inherit; }
 .nn-scroll-jump {
   position: absolute; left: 50%; bottom: 12px; z-index: 1200; translate: -50% 0;
   display: inline-flex; align-items: center; gap: 6px; min-height: 30px; padding: 0 12px;
@@ -1678,3 +1679,6 @@ label:has(> .m3d-layer-tag) { flex-wrap: wrap; }
 .left-column { box-shadow: 14px 0 28px -18px rgba(0, 0, 0, 0.8); }
 .right-column { box-shadow: -14px 0 28px -18px rgba(0, 0, 0, 0.8); }
 .site-field { box-shadow: inset 0 12px 18px -14px rgba(0, 0, 0, 0.7); }
+.nn-error-card { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; margin: 16px; padding: 14px; border: 1px solid var(--nn-red); background: var(--nn-surface); color: var(--nn-text-strong); font: 14px/1.45 var(--nn-mono); }
+.nn-error-card strong { color: var(--nn-red); letter-spacing: 0.06em; }
+.nn-error-card button { min-height: 32px; padding: 0 12px; border: 1px solid var(--nn-border); background: var(--nn-surface-2); color: var(--nn-cyan); font: 600 13px var(--nn-mono); cursor: pointer; }

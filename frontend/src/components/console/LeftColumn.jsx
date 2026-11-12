@@ -1,3 +1,4 @@
+import { SheetHead } from "../mobile/MobileDock";
 import { Metric, Panel } from "./Panel";
 import ThermalHeatmapCard from "../ThermalHeatmapCard";
 import SolConditionsCard from "../SolConditionsCard";
@@ -7,6 +8,7 @@ import RoverPhotosPanel from "../mars/RoverPhotosPanel";
 export default function LeftColumn({ activeCustomPlace, displayName, displayType, loading, namedFeature, selectedLocation, solar, thermal, thermalPanel }) {
   return (
     <aside className="left-column">
+      <SheetHead title="SITE INTEL" />
       <Panel eyebrow="GEOGRAPHY / NOMENCLATURE" title="Selected site" sources={["USGS_IAU_GAZETTEER", "MOLA_MEGDR"]}>
         <div className="place-title">
           <span className="signal">●</span>

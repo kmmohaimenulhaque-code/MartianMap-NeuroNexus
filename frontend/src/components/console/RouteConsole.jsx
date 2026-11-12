@@ -22,6 +22,7 @@ export default function RouteConsole({
   onOpenCompare,
   onSavePlace,
   onAddSafeHaven,
+  sheetHead = null,
 }) {
   const displacement = routePlan?.displacement?.distance_km;
 
@@ -31,6 +32,7 @@ export default function RouteConsole({
 
   return (
     <div className="route-console">
+      {sheetHead}
       <div className="route-console-main">
         <div className="route-console-heading">
           <span>NAVIGATION / USER WAYPOINTS</span>

@@ -43,7 +43,7 @@ export function seasonName(ls) {
 /* Solar geometry: same formulas as science/conditions/solar.py (parity-tested). */
 export const OBLIQUITY_DEG = 25.19;
 const RAD = Math.PI / 180;
-const DUST_CLASS = { low: "WITHIN", moderate: "WITHIN", high: "REVIEW", very_high: "EXCEED" };
+export const DUST_CLASS = { low: "WITHIN", moderate: "WITHIN", high: "REVIEW", very_high: "EXCEED" };
 export const DUST_BANDS = [
   { level: "low", max: 0.2 },
   { level: "moderate", max: 0.5 },

@@ -210,12 +210,59 @@ export default function RadialFeatureWheel({ onAction, availability }) {
     const onContext = (event) => {
       if (event.shiftKey || event.target?.closest?.("input, textarea, select, [contenteditable='true']")) return;
       event.preventDefault();
+      if (event.pointerType === "touch" || event.sourceCapabilities?.firesTouchEvents) return; // touch uses the long-press above
       if (isDouble(event.timeStamp)) openAt(event.clientX, event.clientY);
     };
     const onOpen = (event) => openAt(event.detail?.x ?? window.innerWidth / 2, event.detail?.y ?? window.innerHeight / 2);
+    // Touch: a 500 ms stationary single-finger hold, or a quick two-finger tap, on a map opens the wheel.
+    const onMap = (target) => target?.closest?.(".leaflet-container, .esri-view, .mw-center, .map-panel-body") && !target.closest("button, a, input, select, textarea, .leaflet-control, .leaflet-popup");
+    let hold = null;
+    let pair = null;
+    const cancelHold = () => {
+      if (hold) clearTimeout(hold.timer);
+      hold = null;
+    };
+    const onTouchStart = (event) => {
+      if (!onMap(event.target)) return;
+      if (event.touches.length === 1) {
+        const t = event.touches[0];
+        hold = { x: t.clientX, y: t.clientY, timer: setTimeout(() => {
+          hold = null;
+          openAt(t.clientX, t.clientY);
+        }, 500) };
+      } else if (event.touches.length === 2) {
+        cancelHold();
+        const [a, b] = event.touches;
+        pair = { t: event.timeStamp, x: (a.clientX + b.clientX) / 2, y: (a.clientY + b.clientY) / 2, moved: false };
+      }
+    };
+    const onTouchMove = (event) => {
+      const t = event.touches[0];
+      if (hold && t && Math.hypot(t.clientX - hold.x, t.clientY - hold.y) > 10) cancelHold();
+      if (pair && event.touches.length === 2) {
+        const [a, b] = event.touches;
+        if (Math.hypot((a.clientX + b.clientX) / 2 - pair.x, (a.clientY + b.clientY) / 2 - pair.y) > 12) pair.moved = true;
+      }
+    };
+    const onTouchEnd = (event) => {
+      cancelHold();
+      if (pair && event.touches.length === 0) {
+        if (!pair.moved && event.timeStamp - pair.t < 350) openAt(pair.x, pair.y);
+        pair = null;
+      }
+    };
     window.addEventListener("contextmenu", onContext, true);
     window.addEventListener("nn:open-wheel", onOpen);
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
+    window.addEventListener("touchend", onTouchEnd);
+    window.addEventListener("touchcancel", cancelHold);
     return () => {
+      cancelHold();
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("touchcancel", cancelHold);
       window.removeEventListener("contextmenu", onContext, true);
       window.removeEventListener("nn:open-wheel", onOpen);
     };

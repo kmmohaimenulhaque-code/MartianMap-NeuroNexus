@@ -394,6 +394,11 @@ export default function Mars3DView({
                   tilt: 45,
                 },
         });
+        // Phones: cap the WebGL render scale at an effective devicePixelRatio of 2 (iOS Safari WebGL memory limit).
+        if (window.innerWidth < 768 && window.devicePixelRatio > 2 && "resolutionScale" in view) {
+          view.resolutionScale = 2 / window.devicePixelRatio;
+          if (view.resolutionScale < 1) containerRef.current?.setAttribute("data-resolution-scale", view.resolutionScale.toFixed(3)); // only when the SDK accepted it
+        }
         savedView.siteKey = `${start.latitude_deg},${start.longitude_deg}`;
         viewRef.current = view;
         overlayRef.current = labelContainerRef.current ? createLabelOverlay(view, labelContainerRef.current) : null;

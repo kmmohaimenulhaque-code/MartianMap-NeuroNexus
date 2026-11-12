@@ -1,3 +1,4 @@
+import { SheetHead } from "../mobile/MobileDock";
 import { Panel } from "./Panel";
 import DustScenarioPanel from "../../panels/DustScenarioPanel";
 import SiteMorphologyPanel from "../../panels/SiteMorphologyPanel";
@@ -10,6 +11,7 @@ import InterpretationPanel from "./InterpretationPanel";
 export default function RightColumn({ dust, dustPlaying, environment, handleOpenOrbital, handleSelectCoordinate, missionConsoleState, missionProfile, selectedLocation, setDustPlaying, setMissionProfile, setSol, siteScience, sol, terrain }) {
   return (
     <aside className="right-column">
+      <SheetHead title="MISSION" />
       <Panel eyebrow="ATMOSPHERE / NASA AMES" title="Dust scenario" id="panel-dust" sources={["NASA_AMES_MGCM"]}>
         <DustScenarioPanel
           location={selectedLocation}
