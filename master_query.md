@@ -1,0 +1,140 @@
+cat > validation_master_query_result.txt <<'EOF'
+NEURONEXUS — MASTER MARS QUERY VALIDATION RESULT
+=================================================
+
+Project:
+    NeuroNexus
+    NASA Space Apps Challenge 2026
+    Challenge: Interplanetary Survival Guide: Martian Map
+
+Validation coordinate:
+    Latitude:  -4.5895°
+    Longitude: 137.4417°E
+
+Reference location:
+    Curiosity / Mars Science Laboratory landing site
+    Gale Crater
+
+=================================================
+MASTER INTERPRETER OUTPUT
+=================================================
+
+The query produced a derived Mars survival context from the available
+terrain, mission, and thermal evidence.
+
+Terrain elevation is -4503.0 m.
+Local slope is 0.687 degrees.
+Local terrain roughness is approximately 13.0 m.
+
+No validated local thermal observation is currently available in the
+query context.
+
+The nearest registered landing site is Curiosity, approximately 0.0 km
+away.
+
+The survival engine classifies local slope risk as low under its current
+heuristic.
+
+The survival engine classifies local roughness risk as moderate under
+its current heuristic.
+
+
+=================================================
+FINDINGS
+=================================================
+
+- Terrain elevation is -4503.0 m.
+- Local slope is 0.687 degrees.
+- Local terrain roughness is approximately 13.0 m.
+- No validated local thermal observation is currently available in the
+  query context.
+- The nearest registered landing site is Curiosity, approximately
+  0.0 km away.
+- The survival engine classifies local slope risk as low under its
+  current heuristic.
+- The survival engine classifies local roughness risk as moderate under
+  its current heuristic.
+
+
+=================================================
+LIMITATIONS
+=================================================
+
+- Surface temperature was not inferred because no validated thermal
+  observation was available.
+- Thermal suitability cannot currently be assessed from a validated
+  local observation.
+- Risk categories are transparent heuristics, not mission certification.
+- Missing thermal observations are not inferred or fabricated.
+- Atmospheric, radiation, water-ice, and subsurface evidence are still
+  required for a complete survival assessment.
+
+
+=================================================
+PROVENANCE
+=================================================
+
+- MasterMarsQuery:
+    project = NeuroNexus
+    status  = orchestration_contract
+
+- Terrain:
+    NASA MOLA MEGDR
+
+- Mission context:
+    NeuroNexus landing-site registry
+
+- Thermal:
+    NASA THEMIS adapter
+    status = awaiting_validated_thermal_product
+
+
+=================================================
+VALIDATION STATUS
+=================================================
+
+MASTER QUERY:
+    PASS
+
+MOLA TERRAIN:
+    PASS — validated real data
+
+GAZETTEER:
+    PASS — validated Mars nomenclature data
+
+LANDING SITES:
+    PASS — Curiosity correctly resolved at 0.0 km
+
+SURVIVAL ENGINE:
+    PASS — derived indicators generated
+
+MASTER INTERPRETER:
+    PASS — evidence + limitations + provenance generated
+
+THERMAL:
+    NOT YET VALIDATED
+    No temperature was fabricated.
+
+Overall:
+    VALIDATED VERTICAL SLICE
+    with an explicitly documented thermal-data gap.
+
+
+=================================================
+SCIENTIFIC INTEGRITY NOTE
+=================================================
+
+This validation result does not represent live Mars weather.
+
+Unknown measurements remain unknown until a validated observation is
+connected to the query engine.
+
+Future thermal integration should use historical NASA observations
+matched by location and Martian temporal/seasonal context, while
+preserving observation time, product identity, spatial resolution,
+provenance, and uncertainty.
+
+=================================================
+END OF VALIDATION RECORD
+=================================================
+EOF
