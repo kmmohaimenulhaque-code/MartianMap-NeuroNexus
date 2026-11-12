@@ -26,6 +26,13 @@ ALLOWED_HOSTS = frozenset({
     "hirise-pds.lpl.arizona.edu",
 })
 
+# Hosts the assistant's search_web tool may query (search results only; result pages are never fetched).
+WEB_SEARCH_HOSTS = frozenset({
+    "en.wikipedia.org",
+    "images-api.nasa.gov",
+    "html.duckduckgo.com",
+})
+
 CONNECT_TIMEOUT_S = 10.0
 READ_TIMEOUT_S = 30.0
 STAC_CACHE_TTL_S = 24 * 3600
@@ -44,9 +51,9 @@ def demo_pack_mode() -> bool:
     return os.environ.get("DEMO_PACK", "").strip() in {"1", "true", "yes"}
 
 
-def check_url(url: str) -> str:
+def check_url(url: str, hosts: frozenset[str] | None = None) -> str:
     """Reject anything that is not HTTPS to an allowlisted host."""
     parsed = urlparse(url)
-    if parsed.scheme != "https" or (parsed.hostname or "").lower() not in ALLOWED_HOSTS:
+    if parsed.scheme != "https" or (parsed.hostname or "").lower() not in (hosts or ALLOWED_HOSTS):
         raise ValueError(f"outbound host not allowed: {parsed.hostname!r}")
     return url

@@ -1,7 +1,7 @@
 """AI provider selection.
 
 The API layer talks to this module only. A provider is any module exposing
-chat(messages, mission_state, *, enable_search), analyse_routes(payload) and
+chat(messages, mission_state, *, enable_search, thinking_mode), analyse_routes(payload) and
 service_status(). The default "auto" is the Qwen/Gemini router; to add another provider, implement
 those three functions in a new module and register it in PROVIDERS, then set
 AI_PROVIDER=<name>. Tools (science.ai.tools) and the knowledge base
@@ -25,8 +25,10 @@ def _module():
     return importlib.import_module(PROVIDERS.get(name, PROVIDERS[DEFAULT_PROVIDER]))
 
 
-def chat(messages: list[dict[str, str]], mission_state: dict[str, Any] | None = None, *, enable_search: bool = False):
-    return _module().chat(messages, mission_state, enable_search=enable_search)
+def chat(messages: list[dict[str, str]], mission_state: dict[str, Any] | None = None, *, enable_search: bool = False,
+         thinking_mode: bool = False):
+    extra = {"thinking_mode": True} if thinking_mode else {}  # a provider module may predate the flag
+    return _module().chat(messages, mission_state, enable_search=enable_search, **extra)
 
 
 def analyse_routes(payload: dict[str, Any]):

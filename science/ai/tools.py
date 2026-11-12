@@ -299,6 +299,7 @@ def call_tool(name: str, arguments: dict[str, Any], state: dict[str, Any]) -> An
 
 
 # Knowledge, reference and calculation tools (registered with @tool).
+from science.ai import web_search as _web_search  # noqa: E402,F401  (registers search_web)
 from science.ai.knowledge_tools import REGISTRY as _KNOWLEDGE_TOOLS  # noqa: E402
 
 for _name, _entry in _KNOWLEDGE_TOOLS.items():

@@ -213,12 +213,14 @@ def test_overloaded_and_retired_models_fail_over_to_a_working_one(monkeypatch):
     client = _ScriptedClient(
         ["gemini-2.5-flash", "gemini-3.6-flash", "gemini-3-flash-preview", "gemini-3.1-flash-lite"],
         {"gemini-3.6-flash": "503 UNAVAILABLE. This model is currently experiencing high demand.",
-         "gemini-3-flash-preview": "404 NOT_FOUND. This model is no longer available to new users."},
+         "gemini-3-flash-preview": "404 NOT_FOUND. This model is no longer available to new users.",
+         "gemini-2.5-flash": "404 NOT_FOUND. This model is no longer available to new users."},
     )
     monkeypatch.setattr("science.ai.gemini._client", lambda: client)
     reply = chat([{"role": "user", "content": "hello"}], STATE)
+    # Flash-Lite is the high-quota backup, so it is tried after every general Flash model.
     assert reply["status"] == "ok" and reply["model"] == "gemini-3.1-flash-lite"
-    assert client.calls[:3] == ["gemini-3.6-flash", "gemini-3-flash-preview", "gemini-3.1-flash-lite"]
+    assert client.calls[:4] == ["gemini-3.6-flash", "gemini-3-flash-preview", "gemini-2.5-flash", "gemini-3.1-flash-lite"]
     assert "503 overloaded" in reply["model_notice"] and "404 retired" in reply["model_notice"]
 
     # The working model is remembered: the next call goes straight to it.

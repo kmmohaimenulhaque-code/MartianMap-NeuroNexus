@@ -1168,6 +1168,52 @@ kbd {
   gap: 6px;
   margin-left: auto;
   margin-right: 8px;
+  min-width: 0;
+  overflow-x: auto; /* chrome never wraps: it scrolls sideways */
+  white-space: nowrap;
+  scrollbar-width: none;
+}
+
+.intel-controls > * {
+  flex: 0 0 auto;
+}
+
+/* Controls get their own row under the title so the model badge and both toggles are never clipped. */
+.intel > header {
+  flex-wrap: wrap;
+}
+
+.intel > header > div:first-child {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.intel > header > .ai-close {
+  order: 2;
+}
+
+.intel > header > .intel-controls {
+  order: 3;
+  flex: 1 1 100%;
+  margin: 0;
+}
+
+.intel-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 9px;
+  border: 1px solid var(--nn-cyan-faint);
+  color: var(--nn-cyan);
+  font-family: var(--nn-mono);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+}
+
+.intel-badge.fallback {
+  border-color: var(--nn-amber);
+  color: var(--nn-amber);
 }
 
 .intel-controls button,
@@ -1199,6 +1245,66 @@ kbd {
   border-color: var(--nn-cyan);
   color: var(--nn-cyan);
   box-shadow: var(--nn-glow);
+}
+
+.intel-trace {
+  margin: 6px 0;
+  border: 1px solid var(--nn-border);
+  background: var(--nn-surface);
+}
+
+.intel-trace summary {
+  padding: 4px 8px;
+  color: var(--nn-cyan);
+  font-family: var(--nn-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.intel-trace-body {
+  padding: 4px 10px 8px;
+  color: var(--nn-text-dim);
+  font-size: 13px;
+}
+
+.intel-web {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: none;
+}
+
+.intel-chip {
+  flex: 0 0 auto;
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 2px 8px;
+  border: 1px solid var(--nn-cyan-faint);
+  color: var(--nn-text);
+  font-size: 12px;
+  text-decoration: none;
+}
+
+a.intel-chip:hover,
+a.intel-chip:focus-visible {
+  border-color: var(--nn-cyan);
+  color: var(--nn-cyan);
+}
+
+.intel-chip small {
+  color: var(--nn-cyan);
+  font-family: var(--nn-mono);
+  letter-spacing: 0.06em;
+}
+
+.intel-notice {
+  margin-top: 6px;
+  color: var(--nn-text-dim);
+  font-size: 12px;
 }
 
 .intel-suggestion-group {

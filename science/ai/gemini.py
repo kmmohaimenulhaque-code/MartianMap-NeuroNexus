@@ -6,46 +6,74 @@ import json
 import time
 from typing import Any
 
+from science.ai import intent
 from science.ai.config import api_key, mark_model_failed, mark_model_ok, model_name, resolve_model, status
 from science.ai.tools import DECLARATIONS, call_tool
 
 MAX_TOOL_ROUNDS = 8
 MAX_HISTORY_MESSAGES = 24
+CHAT_TEMPERATURE = 0.6  # 0.2 made answers flat and repetitive; guardrails live in the prompt and the tools
 
-SYSTEM_INSTRUCTION = """You are MARS INTELLIGENCE, the mission assistant of NeuroNexus ·
-Interplanetary Survival Guide: Martian Map, built by Team NeuroNexus for the NASA Space Apps
-Challenge 2026. You answer three kinds of question expertly:
-  1. THIS MISSION · the selected site, routes, terrain, dust, thermal evidence, console state.
-  2. MARS · planetary science, missions, history, human exploration, ISRU, Mars time.
-  3. THIS APP AND PROJECT · how to use every UI feature, data sources, methods, setup,
-     deployment, architecture and the team.
+SYSTEM_INSTRUCTION = """You are MARS INTELLIGENCE, the Mission Scientist and Polymath Co-Pilot inside NeuroNexus ·
+Interplanetary Survival Guide: Martian Map, built by Team NeuroNexus for the NASA Space Apps Challenge 2026.
+Picture a warm, sharp planetary scientist sitting next to the user at the mission console: curious, plain-spoken,
+and glad to explain anything from why Mars is red to how a rover wheel is designed.
 
-TOOL USE (mandatory):
+WHAT YOU CAN TALK ABOUT
+Answer freely across planetary science, physics, orbital mechanics, spaceflight history, Earth analogs,
+engineering and general knowledge, and weave in what the console shows whenever it helps. Three areas get extra care:
+  1. THIS MISSION: the selected site, routes, terrain, dust, thermal evidence, console state.
+  2. MARS: planetary science, missions, history, human exploration, ISRU, Mars time.
+  3. THIS APP AND PROJECT: how every feature works, data sources, methods, setup, deployment, architecture, the team.
+
+USING TOOLS
+Tools hold the real numbers, so use them instead of guessing.
 - Mission questions: call the application tools. Never guess a number a tool can return.
 - Mars questions: call search_mars_knowledge first, then add established knowledge if needed.
-- UI / how-to questions: call get_ui_guide. Project, setup or team questions: search_project_docs.
+- UI or how-to questions: call get_ui_guide. Project, setup or team questions: search_project_docs.
 - Any named place: lookup_mars_place. Dates, seasons, Ls, conversions: mars_calculator.
 - Dust at any sol or place: get_dust_scenario. Terrain statistics: get_terrain_statistics.
+- Recent events or facts outside the knowledge base, when search_web is available: call it and name the source.
 - Call several tools when a question spans areas.
 
-EVIDENCE: label claims with their class · PROJECT DATA, NASA OBSERVED, NASA REFERENCE,
-MODELED, DERIVED, COMPUTED, SIMULATED, PROJECT DOCS, GENERAL KNOWLEDGE, WEB or UNAVAILABLE.
-Cite knowledge-base hits as [title › section]. Quote tool numbers exactly. Never invent values,
-citations, observations, telemetry or orbital events; say UNAVAILABLE when evidence is missing.
-Knowledge has an as_of date: for current mission status or recent news, say so and suggest
-enabling WEB SEARCH (when it is on, prefer it for recent facts and cite the web sources).
+GROUND RULES (firm, but say them naturally)
+- Never invent coordinates, telemetry, observations, citations or orbital events. If the console or a tool does not
+  have something, say plainly that it is unavailable.
+- Quote tool numbers exactly. Route numbers come from the deterministic engine: never recompute, round differently
+  or restate them another way.
+- Never call a route, site or Safe Haven safe, and never claim NASA certification. Safe Haven is the console's name
+  for a planned refuge site, not a safety claim. When you discuss EVA route thresholds, use the console's own words
+  where they fit: WITHIN PLANNING LIMITS, REVIEW REQUIRED or EXCEEDS PLANNING LIMIT. Planning limits are a planning
+  aid, not a safety limit.
+- Close approaches are not impact predictions. The dust scenario is a MODELED MY34 reconstruction, not a forecast.
+- Knowledge entries carry an as_of date. For current mission status or news, say it may have changed and suggest
+  turning on WEB SEARCH; when web search is on, prefer it for recent facts.
+- Mention what kind of evidence something is only when it matters, in plain words ("that is modeled, not measured").
 
-SAFETY: never call a route, site or Safe Haven safe and never claim NASA certification · the
-terrain risk proxy is a planning aid. Close approaches are not impact predictions. The dust
-scenario is a MODELED MY34 reconstruction, not a forecast.
+SCOPE
+For mission examples draw on NASA, the NASA Space Apps 2026 partner space agencies (ESA, ISRO, JAXA, MBRSC/UAE,
+CSA, ASI, UKSA, CONAE, AEB, KASA, AEE, TUA and others) and SpaceX. General science and general knowledge questions
+are welcome too.
 
-SCOPE: NeuroNexus covers NASA and the NASA Space Apps 2026 partner space agencies (ESA, ISRO,
-JAXA, MBRSC/UAE, CSA, ASI, UKSA, CONAE, AEB, KASA, AEE, TUA and others) and SpaceX. Keep
-answers within that scope.
+HOW TO SOUND
+- Talk like a colleague, not a report. Open with the answer in one to three plain sentences, then explain the why
+  in short paragraphs.
+- Use bullets or a table only to compare three or more things or to list steps. No headings unless asked. Bold sparingly.
+- Put numbers with units inside the sentence. Mention uncertainty the way a scientist would, in a clause, not as a
+  disclaimer block.
+- Do not put bracketed citations or evidence tags in your text: the console shows tool calls and sources under your
+  answer. Name a source in words when it builds trust ("Curiosity's RAD data shows...").
+- American spelling. No emoji. No em dashes. Ask a short follow-up question only when it would truly help.
 
-STYLE: mission-console brief. Lead with the answer, then tight bullets with numbers and units.
-State uncertainties and trade-offs rather than declaring winners. Use Markdown headings,
-bullets and tables where they help."""
+THE VOICE (illustrations only; never reuse any number from them)
+Q: Why is Mars red?
+A: Iron. The dust and surface rocks are rich in iron oxide, basically rust, and fine dust lofted into the air tints
+the whole planet butterscotch from orbit. Up close the daytime sky is tan, and at sunset the sky near the Sun turns
+blue, the reverse of Earth.
+Q: Is this route okay for a four hour EVA?
+A: By the console's numbers the selected route is <distance> km with about <hours> hours of EVA, so it sits <near or
+well inside> your limit. Its terrain risk proxy reads <status word>, which is a planning aid and not a safety
+verdict. If you can give up a little distance for gentler slopes, it is worth comparing another saved candidate."""
 
 ROUTE_ANALYSIS_INSTRUCTION = """Analyse the supplied NeuroNexus route candidates.
 The numbers are produced by a deterministic engine over NASA MOLA terrain: reproduce them
@@ -159,10 +187,14 @@ def _exhausted(last_exc: Exception | None, failures: list[dict[str, Any]], model
 
 
 def _substitution_notice(model: str, resolution: dict[str, Any], failures: list[dict[str, Any]]) -> str | None:
-    if model == resolution["requested"] and not failures:
+    explicit_miss = bool(resolution.get("explicit")) and model != resolution["requested"]
+    if not explicit_miss and not failures:
         return None
     tried = "; ".join(f"{f['model']}: {f['reason']}" for f in failures)
-    base = f"Configured model '{resolution['requested']}' was not used; answered with '{model}'."
+    if explicit_miss:
+        base = f"Configured model '{resolution['requested']}' was not used; answered with '{model}'."
+    else:
+        base = f"Answered with '{model}' after automatic fallback."
     return f"{base} ({tried})" if tried else base
 
 
@@ -194,8 +226,109 @@ def _resolved(client) -> tuple[str | None, dict[str, Any]]:
     return info["model"], info
 
 
+def _thought_text(parts) -> str:
+    return "\n".join(str(p.text).strip() for p in parts
+                     if getattr(p, "thought", False) is True and getattr(p, "text", None)).strip()
+
+
+def _web_sources(tool_log: list[dict[str, Any]], grounding) -> list[dict[str, Any]]:
+    """Distinct web pages behind the answer: native grounding chunks and search_web results."""
+    seen: dict[str, dict[str, Any]] = {}
+    for chunk in (getattr(grounding, "grounding_chunks", None) or []) if grounding else []:
+        web = getattr(chunk, "web", None)
+        uri = getattr(web, "uri", None)
+        if uri:
+            seen.setdefault(uri, {"title": getattr(web, "title", None) or uri, "uri": uri})
+    for entry in tool_log:
+        for item in entry.get("web_sources") or []:
+            seen.setdefault(item["uri"], item)
+    return list(seen.values())
+
+
+def _negotiate(exc: Exception, flags: dict[str, Any], model: str, notes: list[str]) -> bool:
+    """Feature negotiation on one model. Returns True when a feature was dropped and the call should be retried.
+
+    - 400 INVALID_ARGUMENT naming thinking: retry the same model without thinking_config.
+    - Native Google Search blocked (400, 403 or quota): retry the same model with the search_web tool instead.
+    Anything else is a model-level failure and the caller moves on to the next model in the chain."""
+    code = _error_code(exc)
+    text = str(exc).lower()
+    mentions_thinking = "think" in text or "reasoning" in text
+    mentions_web = any(token in text for token in ("search", "grounding", "tool", "function"))
+    if code == 400 or "invalid_argument" in text:
+        if flags["thinking"] and (mentions_thinking or not (flags["web"] == "native" and mentions_web)):
+            flags["thinking"] = False
+            notes.append(f"Thinking mode is not supported by '{model}'; answered without it.")
+            return True
+        if flags["web"] == "native":
+            flags["web"] = "tool"
+            notes.append(f"Native Google Search is not available on '{model}'; used the search_web tool.")
+            return True
+    if flags["web"] == "native" and (code in (403, 429) or "permission_denied" in text or "resource_exhausted" in text):
+        flags["web"] = "tool"
+        notes.append(f"Native Google Search is blocked on '{model}' ({_short_reason(exc)}); used the search_web tool.")
+        return True
+    return False
+
+
+def _converse(client, types, model: str, contents: list, state: dict[str, Any], flags: dict[str, Any]) -> dict[str, Any]:
+    """Run the tool-calling loop on one model with the given feature flags. Raises on API errors."""
+    web = flags["web"]  # None, "native" (Google Search only) or "tool" (console tools plus search_web)
+    if web == "native":
+        tools = [types.Tool(google_search=types.GoogleSearch())]
+    else:
+        tools = [types.Tool(function_declarations=[
+            types.FunctionDeclaration(**d) for d in DECLARATIONS if web == "tool" or d["name"] != "search_web"])]
+    settings: dict[str, Any] = {}
+    if flags["thinking"]:
+        settings["thinking_config"] = types.ThinkingConfig(include_thoughts=True)
+    config = types.GenerateContentConfig(
+        system_instruction=SYSTEM_INSTRUCTION, tools=tools, temperature=CHAT_TEMPERATURE,
+        automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True), **settings)
+
+    contents = list(contents)
+    tool_log: list[dict[str, Any]] = []
+    thoughts: list[str] = []
+    for _ in range(MAX_TOOL_ROUNDS):
+        response = client.models.generate_content(model=model, contents=contents, config=config)
+        candidate = (response.candidates or [None])[0]
+        parts = list(getattr(getattr(candidate, "content", None), "parts", None) or [])
+        if flags["thinking"] and (thought := _thought_text(parts)):
+            thoughts.append(thought)
+        calls = [p.function_call for p in parts if getattr(p, "function_call", None)]
+        if not calls:
+            grounding = getattr(candidate, "grounding_metadata", None)
+            web_sources = _web_sources(tool_log, grounding)
+            return {"status": "ok", "text": (response.text or "").strip() or "(no content returned)",
+                    "tool_calls": tool_log, "sources": _sources(tool_log), "web_sources": web_sources,
+                    "search_grounding": web_sources, "thoughts": "\n\n".join(thoughts),
+                    "web_search_mode": web, "thinking_applied": bool(flags["thinking"])}
+        # candidate.content is appended unchanged so Gemini 3 thought signatures round-trip.
+        contents.append(candidate.content)
+        responses = []
+        for call in calls:
+            arguments = dict(call.args or {})
+            tool_started = time.perf_counter()
+            result = call_tool(call.name, arguments, state)
+            entry = {"name": call.name, "arguments": arguments,
+                     "elapsed_ms": round((time.perf_counter() - tool_started) * 1000, 1),
+                     "citations": [{"title": r.get("title"), "section": r.get("section"),
+                                    "path": r.get("path"), "evidence_class": r.get("evidence_class")}
+                                   for r in (result.get("results") or [])
+                                   if call.name != "search_web"] if isinstance(result, dict) else [],
+                     "result_preview": json.dumps(result, default=str)[:400]}
+            if call.name == "search_web" and isinstance(result, dict):
+                entry["web_sources"] = [{"title": r.get("title") or r["url"], "uri": r["url"]}
+                                        for r in result.get("results") or [] if r.get("url")]
+            tool_log.append(entry)
+            responses.append(types.Part.from_function_response(name=call.name, response={"result": result}))
+        contents.append(types.Content(role="user", parts=responses))
+    return {"status": "error", "reason": f"Stopped after {MAX_TOOL_ROUNDS} tool rounds without a final answer.",
+            "tool_calls": tool_log, "web_sources": [], "thoughts": "\n\n".join(thoughts)}
+
+
 def chat(messages: list[dict[str, str]], mission_state: dict[str, Any] | None = None,
-         *, enable_search: bool = False) -> dict[str, Any]:
+         *, enable_search: bool = False, thinking_mode: bool = False) -> dict[str, Any]:
     started = time.perf_counter()
     state = mission_state or {}
     try:
@@ -213,90 +346,47 @@ def chat(messages: list[dict[str, str]], mission_state: dict[str, Any] | None = 
     if not contents:
         return {"status": "error", "reason": "No message content was supplied."}
 
-    def make_config(with_search: bool):
-        tools = [types.Tool(function_declarations=[types.FunctionDeclaration(**d) for d in DECLARATIONS])]
-        if with_search:
-            tools.append(types.Tool(google_search=types.GoogleSearch()))
-        return types.GenerateContentConfig(
-            system_instruction=SYSTEM_INSTRUCTION,
-            tools=tools,
-            temperature=0.2,
-            automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
-        )
-
-    config = make_config(enable_search)
-    search_notice: str | None = None
-
     model, resolution = _resolved(client)
     if model is None:
         return {"status": "unavailable", "reason": resolution["notice"], "model": resolution["requested"],
-                "available_models": resolution["available"]}
+                "available_models": resolution["available"], "fallback_chain_tried": []}
 
-    base_contents = list(contents)
+    # Path A (native Google Search) cannot be combined with the console tools, so it is only tried when the
+    # question does not need them; otherwise Path B: console tools plus the search_web function.
+    question = str(messages[-1].get("content", "")) if messages else ""
+    web_start = None
+    if enable_search:
+        web_start = "tool" if intent.needs_console_tools(question) else "native"
+
     failures: list[dict[str, Any]] = []
     last_exc: Exception | None = None
     tool_log: list[dict[str, Any]] = []
     attempts = list(resolution["attempt_order"])
-    index = 0
-    while index < len(attempts):
-        model = attempts[index]
-        contents = list(base_contents)
-        tool_log = []
-        try:
-            for _ in range(MAX_TOOL_ROUNDS):
-                response = client.models.generate_content(model=model, contents=contents, config=config)
-                candidate = (response.candidates or [None])[0]
-                parts = list(getattr(getattr(candidate, "content", None), "parts", None) or [])
-                calls = [p.function_call for p in parts if getattr(p, "function_call", None)]
-                if not calls:
-                    mark_model_ok(model)
-                    text = (response.text or "").strip()
-                    grounding = getattr(candidate, "grounding_metadata", None)
-                    return {
-                        "status": "ok", "model": model,
-                        "model_notice": search_notice or _substitution_notice(model, resolution, failures),
-                        "text": text or "(no content returned)",
-                        "tool_calls": tool_log,
-                        "sources": _sources(tool_log),
-                        "search_grounding": [
-                            {"title": getattr(getattr(c, "web", None), "title", None),
-                             "uri": getattr(getattr(c, "web", None), "uri", None)}
-                            for c in (getattr(grounding, "grounding_chunks", None) or [])
-                        ] if grounding else [],
-                        "elapsed_ms": round((time.perf_counter() - started) * 1000, 1),
-                        "evidence_note": "AI INTERPRETATION of NeuroNexus tool results. Not itself a NASA observation.",
-                    }
-                # candidate.content is appended unchanged so Gemini 3 thought signatures round-trip.
-                contents.append(candidate.content)
-                responses = []
-                for call in calls:
-                    arguments = dict(call.args or {})
-                    tool_started = time.perf_counter()
-                    result = call_tool(call.name, arguments, state)
-                    tool_log.append({"name": call.name, "arguments": arguments,
-                                     "elapsed_ms": round((time.perf_counter() - tool_started) * 1000, 1),
-                                     "citations": [{"title": r.get("title"), "section": r.get("section"),
-                                                    "path": r.get("path"), "evidence_class": r.get("evidence_class")}
-                                                   for r in (result.get("results") or [])] if isinstance(result, dict) else [],
-                                     "result_preview": json.dumps(result, default=str)[:400]})
-                    responses.append(types.Part.from_function_response(name=call.name, response={"result": result}))
-                contents.append(types.Content(role="user", parts=responses))
+    for model in attempts:
+        flags = {"thinking": bool(thinking_mode), "web": web_start}  # negotiated per model
+        notes: list[str] = []
+        while True:
+            try:
+                result = _converse(client, types, model, contents, state, flags)
+            except Exception as exc:
+                if _negotiate(exc, flags, model, notes):
+                    continue
+                last_exc = exc
+                if not _should_fail_over(exc):
+                    return {**_failure(exc, model), "tool_calls": tool_log, "model_used": model,
+                            "fallback_chain_tried": list(failures)}
+                mark_model_failed(model, _error_code(exc))
+                failures.append({"model": model, "reason": _short_reason(exc), "key_refused": _key_refused(exc)})
+                break
             mark_model_ok(model)
-            return {"status": "error", "reason": f"Stopped after {MAX_TOOL_ROUNDS} tool rounds without a final answer.",
-                    "tool_calls": tool_log, "model": model}
-        except Exception as exc:
-            last_exc = exc
-            if enable_search and search_notice is None and _error_code(exc) == 400:
-                # Some models reject Google Search combined with function tools: keep the tools.
-                config = make_config(False)
-                search_notice = f"Web search is not available together with application tools on '{model}'; answered without it."
-                continue
-            if not _should_fail_over(exc):
-                return {**_failure(exc, model), "tool_calls": tool_log}
-            mark_model_failed(model, _error_code(exc))
-            failures.append({"model": model, "reason": _short_reason(exc), "key_refused": _key_refused(exc)})
-            index += 1
-    return {**_exhausted(last_exc, failures, resolution["attempt_order"][-1]), "tool_calls": tool_log}
+            notice = "; ".join(n for n in (_substitution_notice(model, resolution, failures), *notes) if n) or None
+            return {**result, "model": model, "model_used": model, "model_notice": notice,
+                    "fallback_chain_tried": [{"model": f["model"], "reason": f["reason"]} for f in failures],
+                    "feature_notes": notes,
+                    "elapsed_ms": round((time.perf_counter() - started) * 1000, 1),
+                    "evidence_note": "AI INTERPRETATION of NeuroNexus tool results. Not itself a NASA observation."}
+    return {**_exhausted(last_exc, failures, attempts[-1]), "tool_calls": tool_log,
+            "fallback_chain_tried": [{"model": f["model"], "reason": f["reason"]} for f in failures]}
 
 
 def analyse_routes(payload: dict[str, Any]) -> dict[str, Any]:

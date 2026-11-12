@@ -20,6 +20,7 @@ class ChatRequest(BaseModel):
     messages: list[Message] = Field(min_length=1, max_length=40)
     mission_state: dict[str, Any] = Field(default_factory=dict)
     enable_search: bool = False
+    thinking_mode: bool = False
 
 
 class RouteAnalysisRequest(BaseModel):
@@ -43,7 +44,8 @@ def provenance() -> dict[str, Any]:
 
 @router.post("/chat")
 def ai_chat(request: ChatRequest) -> dict[str, Any]:
-    return chat([m.model_dump() for m in request.messages], request.mission_state, enable_search=request.enable_search)
+    return chat([m.model_dump() for m in request.messages], request.mission_state,
+                enable_search=request.enable_search, thinking_mode=request.thinking_mode)
 
 
 @router.post("/route-analysis")

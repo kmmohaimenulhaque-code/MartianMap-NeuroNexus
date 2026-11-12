@@ -1617,7 +1617,12 @@ export default function App() {
   }
 
   async function handleAskIntelligence(messages, options = {}) {
-    return askMarsIntelligence({ messages, missionState: buildAiMissionState(), enableSearch: Boolean(options.enableSearch) });
+    return askMarsIntelligence({
+      messages,
+      missionState: buildAiMissionState(),
+      enableSearch: Boolean(options.enableSearch),
+      thinkingMode: Boolean(options.thinkingMode),
+    });
   }
 
   /* ---------------------------------------------------------------- COMMAND INDEX */

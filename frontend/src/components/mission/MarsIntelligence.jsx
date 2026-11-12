@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { modelBadge, safeHttpUrl } from "./intelligenceUi.js";
 import { routeLabel } from "./routeLabel.js";
 
 /*
@@ -13,6 +14,7 @@ import { routeLabel } from "./routeLabel.js";
 
 const HISTORY_KEY = "neuronexus.intelligence.history.v1";
 const SEARCH_KEY = "neuronexus.intelligence.webSearch.v1";
+const THINKING_KEY = "neuronexus.intelligence.thinking.v1";
 
 function readJson(key, fallback) {
   try {
@@ -164,6 +166,7 @@ function transcriptMarkdown(messages) {
       m.content,
       ...(m.tools?.length ? ["", `_Tools: ${m.tools.map((t) => t.name).join(", ")}_`] : []),
       ...(m.sources?.length ? ["", `_Sources: ${m.sources.map((c) => `${c.title} › ${c.section}`).join("; ")}_`] : []),
+      ...(m.webSources?.length ? ["", `_Web sources: ${m.webSources.map((w) => `${w.title ?? w.uri} (${w.uri})`).join("; ")}_`] : []),
       "",
     ]),
   ].join("\n");
@@ -175,6 +178,7 @@ export default function MarsIntelligence({ open, onClose, status, onAsk, mission
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [webSearch, setWebSearch] = useState(() => Boolean(readJson(SEARCH_KEY, false)));
+  const [thinking, setThinking] = useState(() => Boolean(readJson(THINKING_KEY, false)));
   const [copied, setCopied] = useState(null);
   const endRef = useRef(null);
 
@@ -184,6 +188,7 @@ export default function MarsIntelligence({ open, onClose, status, onAsk, mission
 
   useEffect(() => writeJson(HISTORY_KEY, messages.slice(-40)), [messages]);
   useEffect(() => writeJson(SEARCH_KEY, webSearch), [webSearch]);
+  useEffect(() => writeJson(THINKING_KEY, thinking), [thinking]);
 
   function copy(text, index) {
     navigator.clipboard?.writeText(text).then(() => {
@@ -206,6 +211,8 @@ export default function MarsIntelligence({ open, onClose, status, onAsk, mission
     return null;
   }
 
+  const badge = modelBadge(messages, status);
+
   async function send(text) {
     const question = String(text ?? input).trim();
     if (!question || busy) {
@@ -218,7 +225,7 @@ export default function MarsIntelligence({ open, onClose, status, onAsk, mission
     try {
       const reply = await onAsk(
         history.filter((m) => !m.error).map(({ role, content }) => ({ role, content })),
-        { enableSearch: webSearch },
+        { enableSearch: webSearch, thinkingMode: thinking },
       );
       if (reply?.status === "ok") {
         setMessages([
@@ -227,10 +234,12 @@ export default function MarsIntelligence({ open, onClose, status, onAsk, mission
             role: "assistant",
             content: reply.text,
             tools: reply.tool_calls ?? [],
-            grounding: reply.search_grounding ?? [],
+            webSources: reply.web_sources ?? reply.search_grounding ?? [],
+            thoughts: reply.thoughts ?? "",
+            fallback: reply.fallback_chain_tried ?? [],
             sources: reply.sources ?? [],
             elapsed: reply.elapsed_ms ?? null,
-            model: reply.model,
+            model: reply.model_used ?? reply.model,
             notice: reply.model_notice ?? null,
             route: routeLabel(reply),
           },
@@ -266,9 +275,17 @@ export default function MarsIntelligence({ open, onClose, status, onAsk, mission
             </small>
           </div>
           <div className="intel-controls">
-            <label className={`intel-toggle${webSearch ? " on" : ""}`} title="Ground answers in Google Search for recent events and mission status">
+            <span className={`intel-badge${badge.fallback ? " fallback" : ""}`} title={badge.title}>
+              {badge.text}
+              {badge.fallback ? " · FALLBACK" : ""}
+            </span>
+            <label className={`intel-toggle${thinking ? " on" : ""}`} title="Show the model's reasoning trace above the answer (models without thinking support answer normally)">
+              <input type="checkbox" checked={thinking} onChange={(e) => setThinking(e.target.checked)} />
+              THINKING MODE: {thinking ? "ON" : "OFF"}
+            </label>
+            <label className={`intel-toggle${webSearch ? " on" : ""}`} title="Search the live web for recent events and mission status, with source links under the answer">
               <input type="checkbox" checked={webSearch} onChange={(e) => setWebSearch(e.target.checked)} />
-              WEB SEARCH
+              WEB SEARCH: {webSearch ? "ON" : "OFF"}
             </label>
             <button type="button" onClick={exportTranscript} disabled={!messages.length}>
               EXPORT
@@ -315,6 +332,14 @@ export default function MarsIntelligence({ open, onClose, status, onAsk, mission
           {messages.map((message, index) => (
             <article key={index} className={`intel-message ${message.role}${message.error ? " error" : ""}`}>
               <span className="intel-role">{message.role === "user" ? "YOU" : "MARS INTELLIGENCE"}</span>
+              {message.thoughts && (
+                <details className="intel-trace">
+                  <summary>REASONING TRACE</summary>
+                  <div className="intel-trace-body">
+                    <ModelText text={message.thoughts} />
+                  </div>
+                </details>
+              )}
               <div className="intel-text">
                 {message.role === "assistant" && !message.error ? <ModelText text={message.content} /> : message.content}
               </div>
@@ -344,15 +369,24 @@ export default function MarsIntelligence({ open, onClose, status, onAsk, mission
                   ))}
                 </div>
               )}
-              {message.grounding?.length > 0 && (
-                <div className="intel-grounding">
-                  {message.grounding.map((item, groundIndex) => (
-                    <a key={groundIndex} href={item.uri} target="_blank" rel="noreferrer">
-                      {item.title ?? item.uri}
-                    </a>
-                  ))}
+              {message.webSources?.length > 0 && (
+                <div className="intel-web">
+                  {message.webSources.map((item, webIndex) => {
+                    const href = safeHttpUrl(item.uri);
+                    const label = item.title ?? item.uri;
+                    return href ? (
+                      <a key={webIndex} className="intel-chip" href={href} target="_blank" rel="noreferrer noopener" title={href}>
+                        <small>WEB SOURCE</small> {label}
+                      </a>
+                    ) : (
+                      <span key={webIndex} className="intel-chip">
+                        <small>WEB SOURCE</small> {label}
+                      </span>
+                    );
+                  })}
                 </div>
               )}
+              {message.notice && <div className="intel-notice">{message.notice}</div>}
               {message.route && <div className="intel-route" title={message.route.title}>{message.route.text}</div>}
               {message.role === "assistant" && !message.error && (
                 <div className="intel-foot">

@@ -53,7 +53,7 @@ def _ask_qwen(messages, state, plan: intent.Intent, started: float) -> dict[str,
     if not verdict["ok"]:
         raise GuardFailure(verdict["violations"], out["text"])
     return {"status": "ok", "model": qwen.model_name(), "text": out["text"], "tool_calls": tool_log,
-            "sources": gemini._sources(tool_log), "search_grounding": [], "model_notice": None,
+            "sources": gemini._sources(tool_log), "search_grounding": [], "web_sources": [], "thoughts": "", "model_notice": None,
             "elapsed_ms": round((time.perf_counter() - started) * 1000, 1), "evidence_note": EVIDENCE_NOTE,
             "guard": {"ok": True, "violations": []}, "context_lines": ctx.count("\n") + 1,
             "expects_missing": _expects_missing(ctx)}
@@ -66,11 +66,13 @@ class GuardFailure(RuntimeError):
 
 
 def chat(messages: list[dict[str, str]], mission_state: dict[str, Any] | None = None, *,
-         enable_search: bool = False) -> dict[str, Any]:
+         enable_search: bool = False, thinking_mode: bool = False) -> dict[str, Any]:
     started = time.perf_counter()
     state = mission_state or {}
     question = str((messages[-1] if messages else {}).get("content", ""))
     plan = intent.classify(question, enable_search=enable_search)
+    if thinking_mode and plan.route == "qwen":  # reasoning traces exist only on Gemini
+        plan = intent.Intent("gemini", "thinking mode requires Gemini", plan.families, plan.tools)
     order = ["qwen", "gemini"] if plan.route == "qwen" else ["gemini", "qwen"]
     if qwen.base_url() is None:  # Qwen not deployed: plain Gemini, no fallback noise
         order = ["gemini"]
@@ -88,7 +90,8 @@ def chat(messages: list[dict[str, str]], mission_state: dict[str, Any] | None = 
             except Exception as exc:
                 fallback_from = f"qwen: {exc}"
             continue
-        result = gemini.chat(messages, state, enable_search=enable_search)
+        extra = {"thinking_mode": True} if thinking_mode else {}  # older provider modules do not take the flag
+        result = gemini.chat(messages, state, enable_search=enable_search, **extra)
         if result.get("status") == "ok":
             break
         last = result
@@ -104,6 +107,11 @@ def chat(messages: list[dict[str, str]], mission_state: dict[str, Any] | None = 
     if guard_info and provider != "qwen":
         result["guard"] = guard_info
     result.setdefault("elapsed_ms", round((time.perf_counter() - started) * 1000, 1))
+    if result.get("status") == "ok":  # stable response shape for the console, whichever provider answered
+        result.setdefault("model_used", result.get("model"))
+        result.setdefault("fallback_chain_tried", [])
+        result.setdefault("thoughts", "")
+        result.setdefault("web_sources", [])
     _record(question, result)
     return result
 

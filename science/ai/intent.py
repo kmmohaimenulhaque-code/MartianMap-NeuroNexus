@@ -70,3 +70,10 @@ def classify(question: str, *, enable_search: bool = False) -> Intent:
     # Unclear: Gemini picks its own tools; Qwen remains the fallback with the site overview.
     return Intent("gemini", "general question: Gemini chooses the tools", ["site", "environment"],
                   FAMILIES["site"] + FAMILIES["environment"])
+
+
+def needs_console_tools(question: str) -> bool:
+    """True when answering needs the console's own tools (site, terrain, dust, route, dose, UI guide), so
+    native Google Search grounding, which cannot be combined with function tools, is not the right path."""
+    q = question.strip()
+    return bool(APP_HELP.search(q) or any(re.search(pattern, q, re.I) for _, pattern in PATTERNS))

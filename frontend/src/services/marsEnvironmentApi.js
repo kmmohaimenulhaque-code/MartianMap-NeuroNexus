@@ -230,8 +230,13 @@ export async function fetchProvenanceLedger() {
   return fetchJson(`${API_BASE}/ai/provenance`);
 }
 
-export async function askMarsIntelligence({ messages, missionState, enableSearch = false }) {
-  return postJson("/ai/chat", { messages, mission_state: missionState ?? {}, enable_search: enableSearch });
+export async function askMarsIntelligence({ messages, missionState, enableSearch = false, thinkingMode = false }) {
+  return postJson("/ai/chat", {
+    messages,
+    mission_state: missionState ?? {},
+    enable_search: enableSearch,
+    thinking_mode: thinkingMode,
+  });
 }
 
 export async function requestRouteAnalysis(payload) {
