@@ -270,6 +270,7 @@ function MissionMenu({
   onExportJson,
   onExportCsv,
   onExportRouteCsv,
+  routeExportAvailable = true,
   onPrint,
 }) {
   if (!open) {
@@ -821,7 +822,12 @@ function MissionMenu({
                   EXPORT COMPLETE CSV
                 </button>
 
-                <button type="button" onClick={onExportRouteCsv} style={glassButtonStyle}>
+                <button
+                  type="button"
+                  onClick={onExportRouteCsv}
+                  style={{ ...glassButtonStyle, opacity: routeExportAvailable ? 1 : 0.55 }}
+                  title={routeExportAvailable ? "Per-waypoint route CSV" : "Plan, apply or save a route first"}
+                >
                   EXPORT ROUTE CSV
                 </button>
 
@@ -3034,15 +3040,42 @@ export default function App() {
     downloadTextFile(exportFilename("mission-complete", "csv"), missionToCsv(buildMissionExport()), "text/csv;charset=utf-8");
   }
 
+  /*
+   * ROUTE CSV
+   *
+   * Exports, in order of preference: the route in the route editor (with its
+   * per-waypoint MOLA analysis when analysed), otherwise the highlighted AI
+   * candidate (its full terrain-aware path), otherwise the most recently
+   * saved route. When there is nothing to export the user is told why,
+   * instead of the button silently doing nothing.
+   */
+  function routeForCsvExport() {
+    if (activeRoute?.coordinates?.length >= 2) {
+      return { ...activeRoute, waypoint_analysis: routePlan?.waypoint_analysis ?? [] };
+    }
+    const candidate = candidateRoutes.find((item) => item.id === selectedCandidateId);
+    if (candidate?.coordinates?.length >= 2) {
+      return { ...candidate, name: candidate.name ?? "AI candidate" };
+    }
+    const saved = savedRoutes[savedRoutes.length - 1];
+    if (saved?.points?.length >= 2) {
+      return { id: saved.id, name: saved.name, coordinates: saved.points, waypoint_analysis: saved.plan?.waypoint_analysis ?? [] };
+    }
+    return null;
+  }
+
   function handleExportRouteCsv() {
-    if (!activeRoute) {
+    const route = routeForCsvExport();
+    if (!route) {
+      setError("No route to export yet — plan a route, apply an AI candidate or save a route first.");
       return;
     }
-    downloadTextFile(
-      exportFilename("route-waypoints", "csv"),
-      routeToCsv({ ...activeRoute, waypoint_analysis: routePlan?.waypoint_analysis ?? [] }),
-      "text/csv;charset=utf-8",
-    );
+    const slug = String(route.name ?? "route")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "")
+      .slice(0, 40);
+    downloadTextFile(exportFilename(`route-${slug || "waypoints"}`, "csv"), routeToCsv(route), "text/csv;charset=utf-8");
   }
 
   function handlePrint() {
@@ -3201,6 +3234,7 @@ export default function App() {
         onExportJson={handleExportJson}
         onExportCsv={handleExportCsv}
         onExportRouteCsv={handleExportRouteCsv}
+        routeExportAvailable={routePoints.length >= 2 || Boolean(selectedCandidateId) || savedRoutes.length > 0}
         onPrint={handlePrint}
       />
 
@@ -3396,7 +3430,17 @@ export default function App() {
                 <small>USGS FEATURE + COORDINATE NAVIGATION</small>
               </div>
 
-              <div className="map-panel-body">
+              <div className="map-panel-body map-panel-body--with-actions">
+                {/* Opens the SAME AI Route Designer as the top-bar button. */}
+                <button
+                  type="button"
+                  className="mission-action map-ai-route-button"
+                  onClick={() => setDesignerOpen(true)}
+                  aria-label="Open AI Route Design"
+                >
+                  AI ROUTE DESIGN
+                </button>
+
                 <MarsMap
                   features={places}
 
