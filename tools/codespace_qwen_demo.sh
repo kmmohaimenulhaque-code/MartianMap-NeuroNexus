@@ -46,7 +46,7 @@ echo "ok"
 
 step "2/7 NASA MOLA terrain (Git LFS, about 520 MB, once)"
 cd "$REPO"
-git lfs install --local >/dev/null
+git lfs install --local --skip-repo >/dev/null 2>&1 || true   # filters only: no hooks (Codespaces may own them)
 if [ "$(stat -c %s data/raw/mola/meg128/topography/megt00n090hb.img 2>/dev/null || echo 0)" -lt 1000000 ]; then
   git lfs pull --include="data/raw/mola/**"
 fi
