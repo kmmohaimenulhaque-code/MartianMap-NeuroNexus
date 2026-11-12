@@ -78,7 +78,13 @@ LLAMA = WORK / "llama.cpp"
 if not shutil.which("cmake"):
     sh(f"{sys.executable} -m pip install -q cmake")
 if not LLAMA.exists():
-    sh(f"git clone --depth 1 https://github.com/ggml-org/llama.cpp {LLAMA}")
+    if shutil.which("git"):
+        sh(f"git clone --depth 1 https://github.com/ggml-org/llama.cpp {LLAMA}")
+    else:  # minimal containers have no git: fetch the source archive instead
+        import io, zipfile, urllib.request
+        data = urllib.request.urlopen("https://github.com/ggml-org/llama.cpp/archive/refs/heads/master.zip", timeout=300).read()
+        zipfile.ZipFile(io.BytesIO(data)).extractall(WORK)
+        (WORK / "llama.cpp-master").rename(LLAMA)
 build_log = open(WORK / "llama_build.log", "w")
 ncpu = os.cpu_count() or 4
 LLAMA_BUILD = subprocess.Popen(

@@ -93,7 +93,7 @@ if INSTALL == "mi300x":
     else:
         sh(f'{sys.executable} -m pip install -q "transformers==4.56.2" "peft==0.17.1" "accelerate>=1.10" datasets '
            '"huggingface_hub>=0.34"')
-        sh(f"{sys.executable} -m pip install -q --no-deps unsloth unsloth_zoo", check=False)
+        sh(f'{sys.executable} -m pip install -q --no-deps "trl==0.23.0" unsloth unsloth_zoo', check=False)
     try:
         import unsloth  # noqa: F401  (PEFT fallback below if it does not import on this ROCm stack)
         USE_UNSLOTH = True
@@ -115,7 +115,13 @@ LLAMA = WORK / "llama.cpp"
 if not shutil.which("cmake"):
     sh(f"{sys.executable} -m pip install -q cmake")
 if not LLAMA.exists():
-    sh(f"git clone --depth 1 https://github.com/ggml-org/llama.cpp {LLAMA}")
+    if shutil.which("git"):
+        sh(f"git clone --depth 1 https://github.com/ggml-org/llama.cpp {LLAMA}")
+    else:  # minimal containers have no git: fetch the source archive instead
+        import io, zipfile, urllib.request
+        data = urllib.request.urlopen("https://github.com/ggml-org/llama.cpp/archive/refs/heads/master.zip", timeout=300).read()
+        zipfile.ZipFile(io.BytesIO(data)).extractall(WORK)
+        (WORK / "llama.cpp-master").rename(LLAMA)
 build_log = open(WORK / "llama_build.log", "w")
 ncpu = os.cpu_count() or 4
 LLAMA_BUILD = subprocess.Popen(
