@@ -44,7 +44,14 @@ export default function MarsIntelligence({ open, onClose, status, onAsk, mission
       if (reply?.status === "ok") {
         setMessages([
           ...history,
-          { role: "assistant", content: reply.text, tools: reply.tool_calls ?? [], grounding: reply.search_grounding ?? [], model: reply.model },
+          {
+            role: "assistant",
+            content: reply.text,
+            tools: reply.tool_calls ?? [],
+            grounding: reply.search_grounding ?? [],
+            model: reply.model,
+            notice: reply.model_notice ?? null,
+          },
         ]);
       } else {
         setMessages([
