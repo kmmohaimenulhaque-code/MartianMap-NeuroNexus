@@ -92,9 +92,11 @@ export function initApolloStory(root = document) {
 
   /* The frosted pane: the scene's poster frame, cover-fitted like the video, blurred and lifted with a cool frost. */
   const buildFrost = () => {
-    const dpr = Math.min(1.5, devicePixelRatio || 1);
     w = bg.clientWidth;
     h = bg.clientHeight;
+    if (!w || !h) return;
+    // Cap the backing store at ~1600 px wide: soft glass needs no more, and 4K screens stay smooth.
+    const dpr = Math.min(1.5, devicePixelRatio || 1, 1600 / w);
     canvas.width = frost.width = Math.round(w * dpr);
     canvas.height = frost.height = Math.round(h * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -104,9 +106,19 @@ export function initApolloStory(root = document) {
       const s = Math.max(w / poster.naturalWidth, h / poster.naturalHeight) * 1.08;
       const iw = poster.naturalWidth * s;
       const ih = poster.naturalHeight * s;
-      f.filter = "blur(18px) brightness(0.62) saturate(1.1)";
-      f.drawImage(poster, (w - iw) * 0.3, (h - ih) / 2, iw, ih);
-      f.filter = "none";
+      // Blur by drawing through a tiny canvas (canvas filter is missing in Safari), then darken.
+      const tiny = document.createElement("canvas");
+      tiny.width = 48;
+      tiny.height = Math.max(1, Math.round((48 * h) / w));
+      const k = tiny.width / w;
+      const t = tiny.getContext("2d");
+      t.imageSmoothingQuality = "high";
+      t.drawImage(poster, (w - iw) * 0.3 * k, ((h - ih) / 2) * k, iw * k, ih * k);
+      f.imageSmoothingEnabled = true;
+      f.imageSmoothingQuality = "high";
+      f.drawImage(tiny, 0, 0, w, h);
+      f.fillStyle = "rgba(6,12,20,0.38)";
+      f.fillRect(0, 0, w, h);
     }
     const g = f.createLinearGradient(0, 0, w, h);
     g.addColorStop(0, "rgba(255,255,255,0.10)");
@@ -182,9 +194,13 @@ export function initApolloStory(root = document) {
   let gliding = 0;
   const glide = () => {
     if (gliding) return;
-    const step = () => {
-      burst += (target - burst) * 0.14;
-      copyNow += (copyTarget - copyNow) * 0.14;
+    let last = performance.now();
+    const step = (now) => {
+      // Time-based easing: the same feel at 30, 60 or 120 frames per second.
+      const k = 1 - Math.exp(-Math.min(100, now - last) / 110);
+      last = now;
+      burst += (target - burst) * k;
+      copyNow += (copyTarget - copyNow) * k;
       if (Math.abs(target - burst) < 0.0008) burst = target;
       if (Math.abs(copyTarget - copyNow) < 0.0008) copyNow = copyTarget;
       card.style.setProperty("--burst", burst.toFixed(4));

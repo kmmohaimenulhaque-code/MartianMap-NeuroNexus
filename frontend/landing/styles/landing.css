@@ -3586,3 +3586,32 @@ body.lp {
   -webkit-mask-image: linear-gradient(transparent, #000 10%, #000 70%, transparent 98%);
   mask-image: linear-gradient(transparent, #000 10%, #000 70%, transparent 98%);
 }
+
+/* Short pinned screens (small laptops): a tighter story panel that clears the header. */
+@media (min-width: 861px) and (max-height: 760px) {
+  .lp-moon__copy {
+    margin-top: var(--header-h);
+    padding: 18px 22px;
+  }
+
+  .lp-moon h2 {
+    margin: 8px 0 10px;
+    font-size: 1.6rem;
+  }
+
+  .lp-moon p[data-apollo-copy] {
+    margin-bottom: 10px;
+    font-size: 14.5px;
+    line-height: 1.5;
+  }
+
+  .lp-moon__bridge {
+    margin-bottom: 12px;
+    font-size: 13.5px;
+    line-height: 1.5;
+  }
+
+  .lp-moon__hud {
+    margin-bottom: 10px;
+  }
+}
