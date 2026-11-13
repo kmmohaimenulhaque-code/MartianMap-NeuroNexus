@@ -40,6 +40,7 @@ before entering the console.
 </div>
 
 Official judging cut: [30-second subtitled demo](https://www.youtube.com/watch?v=0MLtYKHewcA).
+Full demo: [about 240 seconds](https://youtu.be/IY4RskiM72s).
 
 ---
 
