@@ -24,10 +24,16 @@ NASA Space Apps Challenge 2026 · branch `main`
     <img src="https://img.youtube.com/vi/IY4RskiM72s/maxresdefault.jpg" alt="NeuroNexus: Interplanetary Survival Guide - Martian Map" width="100%" style="max-width: 900px; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);"/>
   </a>
   <br/>
-  <p><strong>Click the image to watch the demo on YouTube</strong></p>
+  <p><strong>Full demo, about 240 seconds: click the image to watch on YouTube</strong></p>
+  <br/>
+  <a href="https://youtu.be/gy23LZoXKwk" target="_blank">
+    <img src="https://img.youtube.com/vi/gy23LZoXKwk/maxresdefault.jpg" alt="NeuroNexus: 30-second official judging demo" width="100%" style="max-width: 900px; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);"/>
+  </a>
+  <br/>
+  <p><strong>Official judging cut, 30 seconds: click the image to watch on YouTube</strong></p>
 </div>
 
-Official judging cut: [30-second subtitled demo](https://www.youtube.com/watch?v=0MLtYKHewcA).
+Official judging cut: [30-second subtitled demo](https://youtu.be/gy23LZoXKwk).
 Full demo: [about 240 seconds](https://youtu.be/IY4RskiM72s).
 
 
