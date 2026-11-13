@@ -17,6 +17,20 @@ NASA Space Apps Challenge 2026 · branch `main`
   <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-5FD3B0?style=flat-square">
 </p>
 
+## Demo Videos
+
+<div align="center">
+  <a href="https://youtu.be/IY4RskiM72s" target="_blank">
+    <img src="https://img.youtube.com/vi/IY4RskiM72s/maxresdefault.jpg" alt="NeuroNexus: Interplanetary Survival Guide - Martian Map" width="100%" style="max-width: 900px; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);"/>
+  </a>
+  <br/>
+  <p><strong>Click the image to watch the demo on YouTube</strong></p>
+</div>
+
+Official judging cut: [30-second subtitled demo](https://www.youtube.com/watch?v=0MLtYKHewcA).
+Full demo: [about 240 seconds](https://youtu.be/IY4RskiM72s).
+
+
 ## Live links
 
 | | Link |
@@ -28,19 +42,6 @@ NASA Space Apps Challenge 2026 · branch `main`
 
 The live app runs on free servers that sleep when idle. Opening the landing page wakes them; give it about a minute
 before entering the console.
-
-## Demo Videos
-
-<div align="center">
-  <a href="https://www.youtube.com/watch?v=0MLtYKHewcA" target="_blank">
-    <img src="https://img.youtube.com/vi/0MLtYKHewcA/maxresdefault.jpg" alt="NeuroNexus: Interplanetary Survival Guide - Martian Map" width="100%" style="max-width: 900px; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);"/>
-  </a>
-  <br/>
-  <p><strong>Click the image to watch the demo on YouTube</strong></p>
-</div>
-
-Official judging cut: [30-second subtitled demo](https://www.youtube.com/watch?v=0MLtYKHewcA).
-Full demo: [about 240 seconds](https://youtu.be/IY4RskiM72s).
 
 ---
 
