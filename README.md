@@ -638,7 +638,7 @@ Every number below is generated from `validation/reports/latest.json`; full meth
 
 <!-- VALIDATION:START -->
 
-Run `20261020-4c5fb3e5` · generated 2026-10-20T04:43:42+00:00 · `python -m science.validation.run --site all`
+Run `20261020-4c5fb3e5` · `python -m science.validation.run --site all`
 
 | site | id | metric | value | 95% CI | n | what it means |
 | --- | --- | --- | --- | --- | --- | --- |

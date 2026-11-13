@@ -1,15 +1,15 @@
 # Final report: NeuroNexus Marswalk meter-scale work (Section 11)
 
-Prompt: `docs/prompts/NEURONEXUS_MARSWALK_ONE_SHOT_PROMPT.txt` (v2), plus the v3 refinement brief (no emoji, dark-cyan
+Scope: the Marswalk brief (v2), plus the v3 refinement brief (no emoji, dark-cyan
 palette, Switzer type, one activeSol, universal exports, Radial Feature Wheel, Browser Optimization opt-in).
 Branch: `feature/mission-console-v2` (the session harness's branch; the prompt's `feature/marswalk-hires` was not
-used, R11). To resume: read this file, `HANDOFF.md` and `git log`.
+used, R11).
 
 ## 1. What shipped, by workstream
 
 | WS | Scope | Status | Notes |
 | --- | --- | --- | --- |
-| WS0 | Baseline, MOLA without LFS (PDS MEG128), CI, pins, hygiene | DONE | `docs/baseline-2026-10.md`; `tools/fetch_mola.py`; `.github/workflows/ci.yml` |
+| WS0 | Baseline, MOLA without LFS (PDS MEG128), CI, pins, hygiene | DONE | `tools/fetch_mola.py`; `.github/workflows/ci.yml` |
 | WS1 | Terrain ladder HiRISE 1 m → CTX 20 m → MOLA 463 m (USGS STAC COGs) | DONE | `science/hires/*`; datum check vs MOLA; seams flagged |
 | WS2 | Multi-baseline Horn slope, detrended roughness, walkability (A1–A5) | DONE | `science/hires/derivatives.py`, `layers.py` |
 | WS3 | Planner + EVA model (Tobler/Naismith, gravity-scaled Pandolf proxy, PNR) | DONE | `science/marswalk/*`; deterministic `plan_id` |
@@ -83,8 +83,8 @@ Backend warm: traverse 0.015 s (was 15–20 s), conditions 0.003 s, places 1.26 
 - 3,698 CTX DTM footprints contain Curiosity's area; 2,024 items' `qa_metrics` assets return 404 (QA uses the empirical MOLA check).
 - STAC `next` links point at an API Gateway host; the client rewrites them to the allowlisted STAC host.
 - HiRISE ortho and DTM share CRS and bounds within 2 m; registration within 1–2 px at 2 m.
-- MSL RAD RDR: dose rate unit µGy/h verified in the SIS; latest archived sol 4843, lag 212 days on 2026-10-20.
-- REMS (CAB/NASA) and MEDA lines are outreach feeds; MEDA was stale on 2026-10-20.
+- MSL RAD RDR: dose rate unit µGy/h verified in the SIS; latest archived sol 4843, lag 212 days at the time of the run.
+- REMS (CAB/NASA) and MEDA lines are outreach feeds; MEDA was stale at the time of the run.
 - MY34 calendar: MY34 sol 1 = 2017-03-23 = Curiosity mission sol 1,644 (±1, calendar conversion); Perseverance landed in MY36 (no MY34 position).
 - Norcross et al., NASA/TP-2010-216125 (NTRS 20110003409) exists. NASA/TP-2009-214796 could not be found: not cited.
 - Pandolf terrain factors (Soule & Goldman 1972): 1.0 blacktop, 1.1 dirt road, 1.2 light brush, 1.5 heavy brush, 1.8 bog, 2.1 loose sand.

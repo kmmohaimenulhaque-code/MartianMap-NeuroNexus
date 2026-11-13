@@ -1,4 +1,4 @@
-# Performance (measured 2026-10-20)
+# Performance
 
 Headless Chromium with software WebGL in a cloud container, so absolute numbers are pessimistic; compare the two
 columns. Commands: `node frontend/e2e/perf.mjs` (browser) and `curl -w %{time_total}` against a warm server.

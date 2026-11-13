@@ -17,7 +17,7 @@ START, END = "<!-- VALIDATION:START -->", "<!-- VALIDATION:END -->"
 
 
 def table(latest: dict) -> str:
-    lines = [START, "", f"Run `{latest['run_id']}` · generated {latest['generated_at']} · `python -m science.validation.run --site all`", "",
+    lines = [START, "", f"Run `{latest['run_id']}` · `python -m science.validation.run --site all`", "",
              "| site | id | metric | value | 95% CI | n | what it means |", "| --- | --- | --- | --- | --- | --- | --- |"]
     for site in ("gale", "jezero"):
         entry = latest["sites"].get(site)

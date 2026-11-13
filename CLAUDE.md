@@ -34,7 +34,7 @@ node frontend/e2e/devices.mjs                               # needs the server o
   (fresh session per fire) that runs `python tools/warm_link.py <link>`: it loads the page, wakes every Render
   service behind it and precomputes the cores' rover lines. Point `LINK` in the script at the new link.
 - Current judging link: https://martianmap-neuronexus.vercel.app (Vercel project martianmap-neuronexus; Render workspace NeuroNexus NSAC26, 22 services in tools/render_hosts.json).
-- Current schedule: every hour on 2026-11-13 and 2026-11-14 (Asia/Dhaka); the Routine disables itself after that.
+- Current schedule: hourly during the judging window; the Routine disables itself after that.
 - Free Render services still sleep 15 min after each visit, and 22 services x 48 h of hourly wakes use about
   350 of the 750 free instance hours a month. Do not schedule visits more often than hourly without asking.
 

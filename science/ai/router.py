@@ -38,7 +38,7 @@ class ProviderResponse:
 
 
 # Policy: no Chinese or Russian models or vendors (frontend/src/__tests__/landing.test.js enforces the names).
-# NVIDIA and OpenRouter models were checked live on 2026-11-02; the others need their keys to verify.
+# NVIDIA and OpenRouter models were checked live; the others need their keys to verify.
 PROVIDERS = (
     Provider("Groq", "GROQ_API_KEY", "https://api.groq.com/openai/v1/chat/completions",
              ("llama-3.3-70b-versatile", "openai/gpt-oss-120b")),

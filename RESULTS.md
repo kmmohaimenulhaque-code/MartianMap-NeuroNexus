@@ -1,7 +1,6 @@
 # NeuroNexus — Martian Map
 ## Scientific & GPU Validation Results
 
-Date: 2026-09-19
 
 This document records verified experimental results from the NeuroNexus
 Martian Map terrain-processing pipeline.

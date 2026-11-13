@@ -2,7 +2,6 @@
 
 Branch: `feature/mission-console-v2` (from `Master-Ai-Backup-2`)
 Status: **Implemented** on `feature/mission-console-v2` (see §11 for what shipped and the deviations)
-Date: 2026-10-14
 
 ---
 
@@ -416,7 +415,7 @@ W3 comes last on purpose. The registry has to list the commands that W1, W2, W4 
 
 ---
 
-## 11. Implementation record (2026-10-14)
+## 11. Implementation record
 
 ### Shipped
 
