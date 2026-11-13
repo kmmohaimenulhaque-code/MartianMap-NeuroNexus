@@ -789,6 +789,13 @@ One screen holds the whole mission picture. The **left column** is the site evid
 
 **Field notes and checklist.** A persistent mission objective note and a ten-item checklist, with JSON, CSV, route CSV and print/PDF exports. **NEW:** it now lives in a tab of the Command Index.
 
+# Licenses and third-party data
+
+- This project's code is released under the [MIT License](LICENSE).
+- The Mars GCM submodule at `external/mars-gcm` is a copy of the NASA Ames Mars Global Climate Model. It is not covered by this project's MIT License; it is released by NASA under the NASA Open Source Agreement Version 1.3 (`NOSA.pdf` in the submodule).
+- The dust data file `DustScenario_MY34.nc` comes from NASA Ames Mars GCM work. Its author and creation date are kept in the file's own metadata.
+- All NASA, USGS and IAU data keeps its original terms. Every source is listed in [`data/manifests/source_ledger.json`](data/manifests/source_ledger.json).
+
 # Team
 
 **Team NeuroNexus** · NASA International Space Apps Challenge 2026 · [Meet the Team](https://www.spaceappschallenge.org/2026/find-a-team/neuronexus1/)
