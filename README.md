@@ -17,6 +17,18 @@ NASA Space Apps Challenge 2026 · branch `main`
   <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-5FD3B0?style=flat-square">
 </p>
 
+## Live links
+
+| | Link |
+|---|---|
+| Live app (landing page) | https://martianmap-neuronexus.vercel.app |
+| Mission console | https://martianmap-neuronexus.vercel.app/console/ |
+| Quick Guide (35 s tour) | https://martianmap-neuronexus.vercel.app/#play/quick-guide |
+| Offline demo (static, recorded responses) | https://mhaquehaque-martianmap-neuronexus.static.hf.space |
+
+The live app runs on free servers that sleep when idle. Opening the landing page wakes them; give it about a minute
+before entering the console.
+
 ## Demo Videos
 
 <div align="center">
