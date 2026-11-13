@@ -142,7 +142,7 @@ def mars_briefing(
     Latest Mars articles from NASA and partner organizations.
 
     Aggregates NASA (Mars, Perseverance, MRO, MAVEN, Photojournal, agency
-    news), ESA (Mars Express, ExoMars) and The Planetary Society feeds,
+    news), ESA (Top News, Human Spaceflight, Mars items only) and The Planetary Society feeds,
     newest first, from the last `days` days, each with its original link.
     """
     from science.briefing.news import latest_mars_news

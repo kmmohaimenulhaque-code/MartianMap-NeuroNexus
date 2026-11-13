@@ -34,8 +34,9 @@ FEEDS: list[dict[str, Any]] = [
     {"organisation": "NASA", "name": "NASA · MAVEN", "url": "https://www.nasa.gov/missions/maven/feed/", "mars_only": True},
     {"organisation": "NASA Science", "name": "NASA Science · Mars Photojournal", "url": "https://science.nasa.gov/feed/photojournal/gallery/mars/", "mars_only": True},
     {"organisation": "NASA", "name": "NASA · News", "url": "https://www.nasa.gov/feed/", "mars_only": False},
-    {"organisation": "ESA", "name": "ESA · Mars Express", "url": "https://www.esa.int/rssfeed/Science_Exploration/Space_Science/Mars_Express", "mars_only": True},
-    {"organisation": "ESA", "name": "ESA · ExoMars", "url": "https://www.esa.int/rssfeed/Science_Exploration/Human_and_Robotic_Exploration/Exploration/ExoMars", "mars_only": True},
+    # ESA retired its Mars Express and ExoMars feeds; its general feeds are filtered by Mars keywords instead.
+    {"organisation": "ESA", "name": "ESA · Top News", "url": "https://www.esa.int/rssfeed/TopNews", "mars_only": False},
+    {"organisation": "ESA", "name": "ESA · Human Spaceflight", "url": "https://www.esa.int/rssfeed/Our_Activities/Human_Spaceflight", "mars_only": False},
     {"organisation": "The Planetary Society", "name": "The Planetary Society · Articles", "url": "https://www.planetary.org/rss/articles", "mars_only": False},
 ]
 

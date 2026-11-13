@@ -40,8 +40,8 @@ Evidence classes: **OBSERVED**: A real instrument measurement from a mission arc
 | `CHEMIN` | NASA / Mars Science Laboratory / CheMin | MSL CheMin (Chemistry and Mineralogy X-ray diffraction) | CATALOGED NOT INGESTED |  |  |  |
 | `CRISM` | NASA / Mars Reconnaissance Orbiter / CRISM | MRO CRISM (Compact Reconnaissance Imaging Spectrometer for Mars) | CATALOGED NOT INGESTED |  |  | [link](https://science.nasa.gov/mission/mars-reconnaissance-orbiter/) |
 | `CTX` | NASA / Mars Reconnaissance Orbiter / CTX | MRO Context Camera (CTX) controlled stereo DTMs, about 20 m | INGESTED |  | validation run 4c5fb3e5 |  |
-| `ESA_EXOMARS` | European Space Agency | ESA ExoMars news feed (RSS) | QUERIED LIVE |  |  | [link](https://www.esa.int/Science_Exploration/Human_and_Robotic_Exploration/Exploration/ExoMars) |
-| `ESA_MARS_EXPRESS` | European Space Agency | ESA Mars Express news feed (RSS) | QUERIED LIVE |  |  | [link](https://www.esa.int/Science_Exploration/Space_Science/Mars_Express) |
+| `ESA_EXOMARS` | European Space Agency | ESA ExoMars mission page | REFERENCE ONLY |  |  | [link](https://www.esa.int/Science_Exploration/Human_and_Robotic_Exploration/Exploration/ExoMars) |
+| `ESA_MARS_EXPRESS` | European Space Agency | ESA Mars news (Top News and Human Spaceflight feeds, Mars items only); Mars Express mission page | QUERIED LIVE |  |  | [link](https://www.esa.int/Science_Exploration/Space_Science/Mars_Express) |
 | `ESRI_MARS` | Esri / ArcGIS | Esri OnMars map services: Viking MDIM 2.1 mosaic, MOLA/HRSC color DEM, 200 m DEM | QUERIED LIVE |  |  | [link](https://astro.arcgis.com/arcgis/rest/services/OnMars/MDIM/MapServer?f=json) |
 | `GRS` | NASA / Mars Odyssey / GRS | Mars Odyssey GRS (Gamma Ray Spectrometer) | CATALOGED NOT INGESTED |  |  |  |
 | `HIRISE` | NASA / Mars Reconnaissance Orbiter / HiRISE | MRO HiRISE 1 m DTMs and orthoimages | INGESTED |  | validation run 4c5fb3e5 |  |

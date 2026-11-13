@@ -9,8 +9,7 @@ Sources whose data NeuroNexus actually reads (ingested or queried live), from th
 | `CTX` | Mars Reconnaissance Orbiter / CTX | MRO Context Camera (CTX) controlled stereo DTMs, about 20 m | /terrain/hires/*; /marswalk/* (CTX rung of the terrain ladder, through CTX_STAC_DTM); validation (science/validation) | INGESTED |
 | `CTX_MOLA_SHOTS` | Mars Global Surveyor / MOLA | mola_csv assets of 2023 CTX DTM items (latitude, longitude, radius in m) | validation V2 | INGESTED |
 | `CTX_STAC_DTM` | Mars Reconnaissance Orbiter / CTX | MRO CTX controlled USGS DTMs (collection mro_ctx_controlled_usgs_dtms, Ames Stereo Pipeline, pc_align to MOLA) | /terrain/hires/*; /marswalk/* | INGESTED |
-| `ESA_EXOMARS` | European Space Agency | ESA ExoMars news feed (RSS) | GET /briefing/mars (Mars news briefing) | QUERIED LIVE |
-| `ESA_MARS_EXPRESS` | European Space Agency | ESA Mars Express news feed (RSS) | GET /briefing/mars (Mars news briefing) | QUERIED LIVE |
+| `ESA_MARS_EXPRESS` | European Space Agency | ESA Mars news (Top News and Human Spaceflight feeds, Mars items only); Mars Express mission page | GET /briefing/mars (Mars news briefing) | QUERIED LIVE |
 | `ESRI_MARS` | Esri / ArcGIS | Esri OnMars map services: Viking MDIM 2.1 mosaic, MOLA/HRSC color DEM, 200 m DEM | ArcGIS layered map and 3D globe basemaps and 3D terrain relief (browser display only, not used in analysis) | QUERIED LIVE |
 | `HIRISE` | Mars Reconnaissance Orbiter / HiRISE | MRO HiRISE 1 m DTMs and orthoimages | /terrain/hires/*; /marswalk/* (HiRISE rung of the terrain ladder, through HIRISE_STAC_DTM and HIRISE_STAC_ORTHO); HiRISE DTM footprints layer; validation (science/validation) | INGESTED |
 | `HIRISE_STAC_DTM` | Mars Reconnaissance Orbiter / HiRISE | MRO HiRISE SOCET DTMs (collection mro_hirise_socet_dtms) | /terrain/hires/*; /marswalk/*; validation V1-V6 | INGESTED |

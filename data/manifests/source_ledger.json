@@ -1000,7 +1000,7 @@
       "organization": "European Space Agency",
       "mission": null,
       "instrument": null,
-      "product_title": "ESA Mars Express news feed (RSS)",
+      "product_title": "ESA Mars news (Top News and Human Spaceflight feeds, Mars items only); Mars Express mission page",
       "product_id_pattern": null,
       "doi": null,
       "url": "https://www.esa.int/Science_Exploration/Space_Science/Mars_Express",
@@ -1016,7 +1016,9 @@
       "retrieved_at": null,
       "version": null,
       "archive_lag_days": null,
-      "caveats": [],
+      "caveats": [
+        "ESA retired its Mars Express and ExoMars feeds; its general feeds are filtered by Mars keywords."
+      ],
       "verified_on": null,
       "verification_note": "Carried over from the v2 ledgers; not re-verified.",
       "legacy": {
@@ -1035,7 +1037,7 @@
       "organization": "European Space Agency",
       "mission": null,
       "instrument": null,
-      "product_title": "ESA ExoMars news feed (RSS)",
+      "product_title": "ESA ExoMars mission page",
       "product_id_pattern": null,
       "doi": null,
       "url": "https://www.esa.int/Science_Exploration/Human_and_Robotic_Exploration/Exploration/ExoMars",
@@ -1043,11 +1045,9 @@
       "license": null,
       "citation": null,
       "evidence_class": "NASA REFERENCE",
-      "ingestion_status": "QUERIED LIVE",
+      "ingestion_status": "REFERENCE ONLY",
       "access_method": null,
-      "used_by": [
-        "GET /briefing/mars (Mars news briefing)"
-      ],
+      "used_by": [],
       "retrieved_at": null,
       "version": null,
       "archive_lag_days": null,
