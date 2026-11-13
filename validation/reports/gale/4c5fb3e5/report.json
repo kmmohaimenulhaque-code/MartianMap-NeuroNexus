@@ -1,6 +1,6 @@
 {
  "schema_version": "neuronexus.validation.v1",
- "run_id": "20261020-4c5fb3e5",
+ "run_id": "4c5fb3e5",
  "site": "gale",
  "V1": {
   "metric": "rover elev_geoid minus DTM elevation at the waypoint",
@@ -539,7 +539,7 @@
   ]
  },
  "data_versions": {
-  "rover_retrieved_at": "2026-10-20T04:22:50+00:00",
+  "rover_retrieved_at": "validation run 4c5fb3e5",
   "rover_origin": "live",
   "hirise_products": [
    "DTEEC_001488_1750_001752_1750_U02",

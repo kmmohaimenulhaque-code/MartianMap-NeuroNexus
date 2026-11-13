@@ -172,7 +172,7 @@ def main(argv: list[str] | None = None) -> int:
     log(f"V5: {v5['identical']}/{v5['ran']} identical")
     stamp = datetime.now(UTC)
     digest = hashlib.sha256(json.dumps(results, sort_keys=True, default=str).encode()).hexdigest()[:8]
-    run_id = f"{stamp:%Y%m%d}-{digest}"
+    run_id = digest
     for site, report in results.items():
         report["V5"] = v5
         out = REPORTS / site / run_id

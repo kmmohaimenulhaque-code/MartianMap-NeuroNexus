@@ -56,8 +56,8 @@ def test_validation_figures_are_downloadable_and_path_safe():
     client = TestClient(app)
     r = client.get("/api/" + fig.replace("validation/reports/", "validation/figure/"))
     assert r.status_code == 200 and r.headers["content-type"] == "image/png"
-    assert client.get("/api/validation/figure/gale/20261020-4c5fb3e5/figures/..%2Fsecret.png").status_code in (400, 404)
-    assert client.get("/api/validation/figure/mars/20261020-4c5fb3e5/figures/a.png").status_code == 400
+    assert client.get("/api/validation/figure/gale/4c5fb3e5/figures/..%2Fsecret.png").status_code in (400, 404)
+    assert client.get("/api/validation/figure/mars/4c5fb3e5/figures/a.png").status_code == 400
 
 
 def test_seasonal_series_are_sorted_by_ls_and_name_their_sources():

@@ -638,7 +638,7 @@ Every number below is generated from `validation/reports/latest.json`; full meth
 
 <!-- VALIDATION:START -->
 
-Run `20261020-4c5fb3e5` · `python -m science.validation.run --site all`
+Run `4c5fb3e5` · `python -m science.validation.run --site all`
 
 | site | id | metric | value | 95% CI | n | what it means |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -662,7 +662,7 @@ Run `20261020-4c5fb3e5` · `python -m science.validation.run --site all`
 
 > **Why 92% (Gale) and 96% (Jezero) of windows exceed the 2 m seam flag.** The HiRISE, CTX and MOLA products
 > are each registered on their own, and their absolute vertical offsets do not agree: the mean HiRISE - CTX step
-> is 7.3 m at Gale and -18.4 m at Jezero, and CTX - MOLA is -12.3 m and +21.5 m (run `20261020-4c5fb3e5`).
+> is 7.3 m at Gale and -18.4 m at Jezero, and CTX - MOLA is -12.3 m and +21.5 m (run `4c5fb3e5`).
 > Stitching them naively would put artificial step "cliffs" at every strip boundary. NeuroNexus does not hide
 > this: it marks every seam pixel (`TerrainWindow.seams`, drawn on the map), reports the step across each product
 > pair (`seam_steps`, flagged when the median step exceeds 2 m), and gives each pixel the slope of its own rung

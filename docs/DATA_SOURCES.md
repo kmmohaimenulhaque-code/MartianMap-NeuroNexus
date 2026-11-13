@@ -10,21 +10,21 @@ Evidence classes: **OBSERVED**: A real instrument measurement from a mission arc
 
 | id | organization | product | ingestion | license | verified | link |
 | --- | --- | --- | --- | --- | --- | --- |
-| `CTX_MOLA_SHOTS` | NASA MGS MOLA via USGS Astrogeology | mola_csv assets of 2023 CTX DTM items (latitude, longitude, radius in m) | INGESTED | CC0-1.0 | 2026-10-20 | [link](https://stac.astrogeology.usgs.gov/api/collections/mro_ctx_controlled_usgs_dtms) |
-| `CTX_STAC_DTM` | NASA / MRO / CTX (MSSS); USGS Astrogeology | MRO CTX controlled USGS DTMs (collection mro_ctx_controlled_usgs_dtms, Ames Stereo Pipeline, pc_align to MOLA) | INGESTED | CC0-1.0 | 2026-10-20 | [link](https://stac.astrogeology.usgs.gov/docs/data/mars/ctxdtms/) |
-| `HIRISE_STAC_DTM` | NASA / MRO / HiRISE (University of Arizona); USGS Astrogeology | MRO HiRISE SOCET DTMs (collection mro_hirise_socet_dtms) | INGESTED | CC0-1.0 | 2026-10-20 | [link](https://www.uahirise.org/dtm/) |
-| `HIRISE_STAC_ORTHO` | NASA / MRO / HiRISE; USGS Astrogeology | HiRISE orthoimages paired with the SOCET DTMs | INGESTED | CC0-1.0 | 2026-10-20 | [link](https://stac.astrogeology.usgs.gov/api/collections/mro_hirise_socet_dtms) |
-| `M2020_MEDA_OUTREACH` | NASA / JPL | MEDA weather outreach feed | QUERIED LIVE (STALE) |  | 2026-10-20 | [link](https://mars.nasa.gov/rss/api/?feed=weather&category=mars2020&feedtype=json) |
+| `CTX_MOLA_SHOTS` | NASA MGS MOLA via USGS Astrogeology | mola_csv assets of 2023 CTX DTM items (latitude, longitude, radius in m) | INGESTED | CC0-1.0 | validation run 4c5fb3e5 | [link](https://stac.astrogeology.usgs.gov/api/collections/mro_ctx_controlled_usgs_dtms) |
+| `CTX_STAC_DTM` | NASA / MRO / CTX (MSSS); USGS Astrogeology | MRO CTX controlled USGS DTMs (collection mro_ctx_controlled_usgs_dtms, Ames Stereo Pipeline, pc_align to MOLA) | INGESTED | CC0-1.0 | validation run 4c5fb3e5 | [link](https://stac.astrogeology.usgs.gov/docs/data/mars/ctxdtms/) |
+| `HIRISE_STAC_DTM` | NASA / MRO / HiRISE (University of Arizona); USGS Astrogeology | MRO HiRISE SOCET DTMs (collection mro_hirise_socet_dtms) | INGESTED | CC0-1.0 | validation run 4c5fb3e5 | [link](https://www.uahirise.org/dtm/) |
+| `HIRISE_STAC_ORTHO` | NASA / MRO / HiRISE; USGS Astrogeology | HiRISE orthoimages paired with the SOCET DTMs | INGESTED | CC0-1.0 | validation run 4c5fb3e5 | [link](https://stac.astrogeology.usgs.gov/api/collections/mro_hirise_socet_dtms) |
+| `M2020_MEDA_OUTREACH` | NASA / JPL | MEDA weather outreach feed | QUERIED LIVE (STALE) |  | validation run 4c5fb3e5 | [link](https://mars.nasa.gov/rss/api/?feed=weather&category=mars2020&feedtype=json) |
 | `M2020_TRN_DTM_MOSAIC` | USGS Astrogeology | Mars 2020 TRN HiRISE DTM Mosaic (Fergason et al., 2020) | CATALOGED NOT INGESTED | CC0-1.0 |  | [link](https://astrogeology.usgs.gov/search/map/mars_2020_terrain_relative_navigation_hirise_dtm_mosaic) |
 | `M2020_TRN_ORTHO_MOSAIC` | USGS Astrogeology | Mars 2020 TRN HiRISE orthomosaic | CATALOGED NOT INGESTED | CC0-1.0 |  | [link](https://astrogeology.usgs.gov/search/map/mars_2020_terrain_relative_navigation_hirise_dtm_mosaic) |
-| `MMGIS_M2020_TRAVERSE` | NASA / JPL MMGIS | Perseverance traverse (M20_traverse.json) | QUERIED LIVE |  | 2026-10-20 | [link](https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_traverse.json) |
-| `MMGIS_M2020_WAYPOINTS` | NASA / JPL MMGIS | Perseverance waypoints (M20_waypoints.json) with rover attitude | QUERIED LIVE |  | 2026-10-20 | [link](https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json) |
-| `MMGIS_MSL_TRAVERSE` | NASA / JPL MMGIS | Curiosity traverse (MSL_traverse.json) | QUERIED LIVE |  | 2026-10-20 | [link](https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_traverse.json) |
-| `MMGIS_MSL_WAYPOINTS` | NASA / JPL MMGIS | Curiosity end-of-drive waypoints (MSL_waypoints.json) with rover attitude | QUERIED LIVE |  | 2026-10-20 | [link](https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json) |
-| `MOLA_MEGDR` | NASA / Mars Global Surveyor / MOLA | MOLA MEGDR 128 pixels/degree topography (MGS-M-MOLA-5-MEGDR-L3-V1.0) | INGESTED | public domain (NASA PDS) | 2026-10-20 | [link](https://pds-geosciences.wustl.edu/missions/mgs/megdr.html) |
+| `MMGIS_M2020_TRAVERSE` | NASA / JPL MMGIS | Perseverance traverse (M20_traverse.json) | QUERIED LIVE |  | validation run 4c5fb3e5 | [link](https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_traverse.json) |
+| `MMGIS_M2020_WAYPOINTS` | NASA / JPL MMGIS | Perseverance waypoints (M20_waypoints.json) with rover attitude | QUERIED LIVE |  | validation run 4c5fb3e5 | [link](https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints.json) |
+| `MMGIS_MSL_TRAVERSE` | NASA / JPL MMGIS | Curiosity traverse (MSL_traverse.json) | QUERIED LIVE |  | validation run 4c5fb3e5 | [link](https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_traverse.json) |
+| `MMGIS_MSL_WAYPOINTS` | NASA / JPL MMGIS | Curiosity end-of-drive waypoints (MSL_waypoints.json) with rover attitude | QUERIED LIVE |  | validation run 4c5fb3e5 | [link](https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json) |
+| `MOLA_MEGDR` | NASA / Mars Global Surveyor / MOLA | MOLA MEGDR 128 pixels/degree topography (MGS-M-MOLA-5-MEGDR-L3-V1.0) | INGESTED | public domain (NASA PDS) | validation run 4c5fb3e5 | [link](https://pds-geosciences.wustl.edu/missions/mgs/megdr.html) |
 | `MSL_GALE_DEM_1M` | USGS Astrogeology | MSL Gale Merged DEM 1m (Parker & Calef, 2016) | CATALOGED NOT INGESTED | public domain (USGS) |  | [link](https://astrogeology.usgs.gov/search/map/mars_msl_gale_merged_dem_1m) |
-| `MSL_RAD_RDR` | NASA / Mars Science Laboratory / Radiation Assessment Detector | Radiation Assessment Detector surface measurements (Gale crater) | INGESTED (ARCHIVED, LAG) |  | 2026-10-20 | [link](https://pds-ppi.igpp.ucla.edu/) |
-| `MSL_REMS_OUTREACH` | NASA / JPL / CAB (Centro de Astrobiologia) | REMS weather outreach feed | QUERIED LIVE (OUTREACH) | outreach use only (feed disclaimer) | 2026-10-20 | [link](https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json) |
+| `MSL_RAD_RDR` | NASA / Mars Science Laboratory / Radiation Assessment Detector | Radiation Assessment Detector surface measurements (Gale crater) | INGESTED (ARCHIVED, LAG) |  | validation run 4c5fb3e5 | [link](https://pds-ppi.igpp.ucla.edu/) |
+| `MSL_REMS_OUTREACH` | NASA / JPL / CAB (Centro de Astrobiologia) | REMS weather outreach feed | QUERIED LIVE (OUTREACH) | outreach use only (feed disclaimer) | validation run 4c5fb3e5 | [link](https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json) |
 | `NASA_JPL_CAD` | NASA / JPL Solar System Dynamics | Small-Body Database Close-Approach Data API | QUERIED LIVE |  |  | [link](https://ssd-api.jpl.nasa.gov/doc/cad.html) |
 | `NASA_MMGIS` | NASA | NASA Multi-Mission Geographic Information System (MMGIS) rover layers | QUERIED LIVE |  |  | [link](https://mars.nasa.gov/mmgis/) |
 | `PDS_PLACES_M2020` | NASA PDS Geosciences Node | Mars 2020 rover PLACES bundle | CATALOGED NOT INGESTED |  |  | [link](https://pds-geosciences.wustl.edu/missions/mars2020/places.htm) |
@@ -39,18 +39,18 @@ Evidence classes: **OBSERVED**: A real instrument measurement from a mission arc
 | `CHEMCAM` | NASA / Mars Science Laboratory / ChemCam | MSL ChemCam (Chemistry and Camera) | CATALOGED NOT INGESTED |  |  |  |
 | `CHEMIN` | NASA / Mars Science Laboratory / CheMin | MSL CheMin (Chemistry and Mineralogy X-ray diffraction) | CATALOGED NOT INGESTED |  |  |  |
 | `CRISM` | NASA / Mars Reconnaissance Orbiter / CRISM | MRO CRISM (Compact Reconnaissance Imaging Spectrometer for Mars) | CATALOGED NOT INGESTED |  |  | [link](https://science.nasa.gov/mission/mars-reconnaissance-orbiter/crism/) |
-| `CTX` | NASA / Mars Reconnaissance Orbiter / CTX | MRO Context Camera (CTX) controlled stereo DTMs, about 20 m | INGESTED |  | 2026-10-20 |  |
+| `CTX` | NASA / Mars Reconnaissance Orbiter / CTX | MRO Context Camera (CTX) controlled stereo DTMs, about 20 m | INGESTED |  | validation run 4c5fb3e5 |  |
 | `ESA_EXOMARS` | European Space Agency | ESA ExoMars news feed (RSS) | QUERIED LIVE |  |  | [link](https://www.esa.int/rssfeed/Science_Exploration/Human_and_Robotic_Exploration/Exploration/ExoMars) |
 | `ESA_MARS_EXPRESS` | European Space Agency | ESA Mars Express news feed (RSS) | QUERIED LIVE |  |  | [link](https://www.esa.int/rssfeed/Science_Exploration/Space_Science/Mars_Express) |
 | `ESRI_MARS` | Esri / ArcGIS | Esri OnMars map services: Viking MDIM 2.1 mosaic, MOLA/HRSC color DEM, 200 m DEM | QUERIED LIVE |  |  |  |
 | `GRS` | NASA / Mars Odyssey / GRS | Mars Odyssey GRS (Gamma Ray Spectrometer) | CATALOGED NOT INGESTED |  |  |  |
-| `HIRISE` | NASA / Mars Reconnaissance Orbiter / HiRISE | MRO HiRISE 1 m DTMs and orthoimages | INGESTED |  | 2026-10-20 |  |
+| `HIRISE` | NASA / Mars Reconnaissance Orbiter / HiRISE | MRO HiRISE 1 m DTMs and orthoimages | INGESTED |  | validation run 4c5fb3e5 |  |
 | `MARCI` | NASA / Mars Reconnaissance Orbiter / MARCI | MRO MARCI (Mars Color Imager) | CATALOGED NOT INGESTED |  |  |  |
 | `MARS2020_MEDA` | NASA / Mars 2020 / MEDA | Mars 2020 MEDA (Mars Environmental Dynamics Analyzer) | CATALOGED NOT INGESTED |  |  |  |
 | `MAVEN` | NASA / MAVEN | MAVEN (Mars Atmosphere and Volatile EvolutioN) mission | CATALOGED NOT INGESTED |  |  |  |
 | `MCS` | NASA / Mars Reconnaissance Orbiter / MCS | MRO MCS (Mars Climate Sounder) atmospheric profiles | CATALOGED NOT INGESTED |  |  |  |
-| `MSL_REMS` | NASA / Mars Science Laboratory / REMS | Rover Environmental Monitoring Station (REMS) measurements | QUERIED LIVE (OUTREACH) |  | 2026-10-20 |  |
-| `MSL_SAM_GALE_VMR` | NASA | MSL SAM QMS atmospheric volume mixing ratios at Gale crater (Franz et al. 2017) | REFERENCE ONLY |  | 2026-10-20 | [link](https://doi.org/10.1016/j.pss.2017.01.014) |
+| `MSL_REMS` | NASA / Mars Science Laboratory / REMS | Rover Environmental Monitoring Station (REMS) measurements | QUERIED LIVE (OUTREACH) |  | validation run 4c5fb3e5 |  |
+| `MSL_SAM_GALE_VMR` | NASA | MSL SAM QMS atmospheric volume mixing ratios at Gale crater (Franz et al. 2017) | REFERENCE ONLY |  | validation run 4c5fb3e5 | [link](https://doi.org/10.1016/j.pss.2017.01.014) |
 | `NASA_CURIOSITY` | NASA / Mars Science Laboratory | Mars Science Laboratory (Curiosity) mission page | REFERENCE ONLY |  |  | [link](https://science.nasa.gov/mission/msl-curiosity/) |
 | `NASA_EVA` | NASA | NASA spacesuits and rovers (EVA) overview | REFERENCE ONLY |  |  | [link](https://www.nasa.gov/suits-and-rovers/) |
 | `NASA_HUMANS_TO_MARS` | NASA | NASA Humans to Mars program overview | REFERENCE ONLY |  |  | [link](https://www.nasa.gov/humans-in-space/humans-to-mars/) |
@@ -66,7 +66,7 @@ Evidence classes: **OBSERVED**: A real instrument measurement from a mission arc
 | `PLANETARY_SOCIETY` | The Planetary Society | The Planetary Society articles feed (RSS) | QUERIED LIVE |  |  | [link](https://www.planetary.org/rss/articles) |
 | `SHARAD` | NASA / Mars Reconnaissance Orbiter / SHARAD | MRO SHARAD (Shallow Radar) | CATALOGED NOT INGESTED |  |  |  |
 | `SPICE` | NASA / NAIF | NAIF SPICE ephemeris and geometry kernels | CATALOGED NOT INGESTED |  |  |  |
-| `USGS_ASTROGEOLOGY_STAC` | USGS Astrogeology Science Center | Astrogeology STAC API (analysis-ready planetary data) | QUERIED LIVE | public domain (USGS) | 2026-10-20 | [link](https://stac.astrogeology.usgs.gov/docs/) |
+| `USGS_ASTROGEOLOGY_STAC` | USGS Astrogeology Science Center | Astrogeology STAC API (analysis-ready planetary data) | QUERIED LIVE | public domain (USGS) | validation run 4c5fb3e5 | [link](https://stac.astrogeology.usgs.gov/docs/) |
 | `USGS_IAU_GAZETTEER` | USGS Astrogeology / International Astronomical Union | Gazetteer of Planetary Nomenclature (Mars, 2,052 features) | INGESTED |  |  | [link](https://planetarynames.wr.usgs.gov/) |
 | `USGS_SIM_3292` | USGS Astrogeology | SIM 3292 Geologic Map of Mars, 1:20M (Tanaka et al., 2014) | QUERIED LIVE |  |  | [link](https://pubs.usgs.gov/sim/3292/) |
 | `USGS_SIM_3292_ARCGIS` | USGS / ArcGIS | SIM 3292 FeatureServer (geologic units, contacts, structures, landing sites) | QUERIED LIVE |  |  | [link](https://services.arcgis.com/v01gqwM5QqNysAAi/arcgis/rest/services/Tanaka_et_al_2014_Mars_Global_Map_Features/FeatureServer) |
@@ -81,38 +81,38 @@ Evidence classes: **OBSERVED**: A real instrument measurement from a mission arc
 
 | id | organization | product | ingestion | license | verified | link |
 | --- | --- | --- | --- | --- | --- | --- |
-| `NEURONEXUS_MARSWALK_PARAMETERS` | NeuroNexus | Marswalk planning limits and parameters (science/marswalk/config.py) | INGESTED |  | 2026-10-20 |  |
-| `NEURONEXUS_MARSWALK_PLANNER` | NeuroNexus | Multi-resolution corridor planner on the terrain ladder | INGESTED |  | 2026-10-20 |  |
-| `NEURONEXUS_TERRAIN_LADDER` | NeuroNexus | Terrain resolution ladder (HiRISE -> CTX -> MOLA per-pixel priority mosaic) | INGESTED |  | 2026-10-20 |  |
-| `NEURONEXUS_WALKABILITY` | NeuroNexus | Meter-scale walkability index and planning classes (Appendix A5) | INGESTED |  | 2026-10-20 |  |
-| `NN_EXPLORATION_ZONES` | NeuroNexus | Potential Exploration Zone | INGESTED |  | 2026-10-20 |  |
-| `NN_TERRAIN_RISK_PROXY` | NeuroNexus | NeuroNexus terrain-risk proxy | INGESTED |  | 2026-10-20 |  |
-| `NN_WALKABILITY` | NeuroNexus | NeuroNexus derived walkability score | INGESTED |  | 2026-10-20 |  |
+| `NEURONEXUS_MARSWALK_PARAMETERS` | NeuroNexus | Marswalk planning limits and parameters (science/marswalk/config.py) | INGESTED |  | validation run 4c5fb3e5 |  |
+| `NEURONEXUS_MARSWALK_PLANNER` | NeuroNexus | Multi-resolution corridor planner on the terrain ladder | INGESTED |  | validation run 4c5fb3e5 |  |
+| `NEURONEXUS_TERRAIN_LADDER` | NeuroNexus | Terrain resolution ladder (HiRISE -> CTX -> MOLA per-pixel priority mosaic) | INGESTED |  | validation run 4c5fb3e5 |  |
+| `NEURONEXUS_WALKABILITY` | NeuroNexus | Meter-scale walkability index and planning classes (Appendix A5) | INGESTED |  | validation run 4c5fb3e5 |  |
+| `NN_EXPLORATION_ZONES` | NeuroNexus | Potential Exploration Zone | INGESTED |  | validation run 4c5fb3e5 |  |
+| `NN_TERRAIN_RISK_PROXY` | NeuroNexus | NeuroNexus terrain-risk proxy | INGESTED |  | validation run 4c5fb3e5 |  |
+| `NN_WALKABILITY` | NeuroNexus | NeuroNexus derived walkability score | INGESTED |  | validation run 4c5fb3e5 |  |
 
 ## COMPUTED
 
 | id | organization | product | ingestion | license | verified | link |
 | --- | --- | --- | --- | --- | --- | --- |
-| `NEURONEXUS_CLIENT_MATH` | NeuroNexus | Browser Optimization client math (worker parity with the backend formulas) | INGESTED |  | 2026-10-20 |  |
-| `NEURONEXUS_DOSE_SCREENING` | NeuroNexus | EVA dose screening from archived RAD dose rates (Appendix A8) | INGESTED |  | 2026-10-20 |  |
-| `NEURONEXUS_METABOLIC_PROXY` | NeuroNexus | Gravity-scaled Pandolf-type metabolic and consumables screening proxy (Appendix A6b) | INGESTED |  | 2026-10-20 |  |
-| `NEURONEXUS_PACE_MODEL` | NeuroNexus | Tobler pace normalized to the flat pace; Naismith option (Appendix A6) | INGESTED |  | 2026-10-20 |  |
-| `NEURONEXUS_PNR_MODEL` | NeuroNexus | Turnaround point (Point of No Return, Appendix A7) | INGESTED |  | 2026-10-20 |  |
-| `NEURONEXUS_SLOPE_MULTI_BASELINE` | NeuroNexus | Multi-baseline Horn slope and detrended roughness | INGESTED |  | 2026-10-20 |  |
-| `NEURONEXUS_SOLAR_GEOMETRY` | NeuroNexus | Solar geometry at the selected site (local solar time, solar elevation) | INGESTED |  | 2026-10-20 |  |
-| `NEURONEXUS_VALIDATION_SUITE` | NeuroNexus | Rover ground-truth validation suite V1-V6 | INGESTED |  | 2026-10-20 |  |
-| `NN_EVA_MODEL` | NeuroNexus | Estimated EVA time model | INGESTED |  | 2026-10-20 |  |
-| `NN_ROUTE_ENGINE` | NeuroNexus | Deterministic multi-objective Mars route engine | INGESTED |  | 2026-10-20 |  |
-| `NN_SOURCE_PROVENANCE` | NeuroNexus | Evidence/provenance classification system | INGESTED |  | 2026-10-20 |  |
+| `NEURONEXUS_CLIENT_MATH` | NeuroNexus | Browser Optimization client math (worker parity with the backend formulas) | INGESTED |  | validation run 4c5fb3e5 |  |
+| `NEURONEXUS_DOSE_SCREENING` | NeuroNexus | EVA dose screening from archived RAD dose rates (Appendix A8) | INGESTED |  | validation run 4c5fb3e5 |  |
+| `NEURONEXUS_METABOLIC_PROXY` | NeuroNexus | Gravity-scaled Pandolf-type metabolic and consumables screening proxy (Appendix A6b) | INGESTED |  | validation run 4c5fb3e5 |  |
+| `NEURONEXUS_PACE_MODEL` | NeuroNexus | Tobler pace normalized to the flat pace; Naismith option (Appendix A6) | INGESTED |  | validation run 4c5fb3e5 |  |
+| `NEURONEXUS_PNR_MODEL` | NeuroNexus | Turnaround point (Point of No Return, Appendix A7) | INGESTED |  | validation run 4c5fb3e5 |  |
+| `NEURONEXUS_SLOPE_MULTI_BASELINE` | NeuroNexus | Multi-baseline Horn slope and detrended roughness | INGESTED |  | validation run 4c5fb3e5 |  |
+| `NEURONEXUS_SOLAR_GEOMETRY` | NeuroNexus | Solar geometry at the selected site (local solar time, solar elevation) | INGESTED |  | validation run 4c5fb3e5 |  |
+| `NEURONEXUS_VALIDATION_SUITE` | NeuroNexus | Rover ground-truth validation suite V1-V6 | INGESTED |  | validation run 4c5fb3e5 |  |
+| `NN_EVA_MODEL` | NeuroNexus | Estimated EVA time model | INGESTED |  | validation run 4c5fb3e5 |  |
+| `NN_ROUTE_ENGINE` | NeuroNexus | Deterministic multi-objective Mars route engine | INGESTED |  | validation run 4c5fb3e5 |  |
+| `NN_SOURCE_PROVENANCE` | NeuroNexus | Evidence/provenance classification system | INGESTED |  | validation run 4c5fb3e5 |  |
 
 ## SIMULATED
 
 | id | organization | product | ingestion | license | verified | link |
 | --- | --- | --- | --- | --- | --- | --- |
-| `NN_MISSION_SIM` | NeuroNexus | Crewed Mars mission-console simulation profile | INGESTED |  | 2026-10-20 |  |
+| `NN_MISSION_SIM` | NeuroNexus | Crewed Mars mission-console simulation profile | INGESTED |  | validation run 4c5fb3e5 |  |
 
 ## AI INTERPRETATION
 
 | id | organization | product | ingestion | license | verified | link |
 | --- | --- | --- | --- | --- | --- | --- |
-| `GEMINI` | Google | Google Gemini interpretation layer | INGESTED |  | 2026-10-20 | [link](https://ai.google.dev/gemini-api/docs) |
+| `GEMINI` | Google | Google Gemini interpretation layer | INGESTED |  | validation run 4c5fb3e5 | [link](https://ai.google.dev/gemini-api/docs) |

@@ -43,7 +43,8 @@ export function curiosityAtSolRecord(waypoint, missionSol, my34Sol) {
 export function perseveranceLatestRecord(latest, retrievedAt = null) {
   if (!latest || latest.lat == null || latest.lon == null) return null;
   const sol = latest.sol ?? null;
-  const when = retrievedAt ? `, retrieved ${String(retrievedAt).slice(0, 10)}` : "";
+  const r = retrievedAt ? String(retrievedAt) : "";
+  const when = r ? `, retrieved ${/^\d{4}-\d\d-\d\d/.test(r) ? r.slice(0, 10) : `at ${r}`}` : "";
   return {
     ...latest,
     rover: "m2020",

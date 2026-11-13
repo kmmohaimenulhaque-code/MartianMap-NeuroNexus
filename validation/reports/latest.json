@@ -1,8 +1,8 @@
 {
  "sites": {
   "gale": {
-   "run_id": "20261020-4c5fb3e5",
-   "report": "validation/reports/gale/20261020-4c5fb3e5/report.json",
+   "run_id": "4c5fb3e5",
+   "report": "validation/reports/gale/4c5fb3e5/report.json",
    "headline": [
     {
      "id": "V3",
@@ -96,12 +96,12 @@
     "all_identical": true
    },
    "figures": [
-    "validation/reports/gale/20261020-4c5fb3e5/figures/v3_p90_ratio.png"
+    "validation/reports/gale/4c5fb3e5/figures/v3_p90_ratio.png"
    ]
   },
   "jezero": {
-   "run_id": "20261020-4c5fb3e5",
-   "report": "validation/reports/jezero/20261020-4c5fb3e5/report.json",
+   "run_id": "4c5fb3e5",
+   "report": "validation/reports/jezero/4c5fb3e5/report.json",
    "headline": [
     {
      "id": "V3",
@@ -183,13 +183,13 @@
     "all_identical": true
    },
    "figures": [
-    "validation/reports/jezero/20261020-4c5fb3e5/figures/v3_p90_ratio.png"
+    "validation/reports/jezero/4c5fb3e5/figures/v3_p90_ratio.png"
    ]
   }
  },
  "schema_version": "neuronexus.validation.v1",
- "run_id": "20261020-4c5fb3e5",
- "generated_at": "2026-10-20T04:43:42+00:00",
+ "run_id": "4c5fb3e5",
+ "generated_at": "validation run 4c5fb3e5",
  "engine_versions": {
   "ladder": "ladder-1.0.0",
   "planner": "marswalk-1.0.0",

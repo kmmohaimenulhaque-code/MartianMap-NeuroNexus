@@ -24,7 +24,7 @@ def latest():
 @router.get("/figure/{site}/{run_id}/figures/{name}")
 def figure(site: str, run_id: str, name: str):
     """Validation chart PNGs (downloadable chart snapshots for the export)."""
-    if site not in ("gale", "jezero") or not re.fullmatch(r"\d{8}-[0-9a-f]{8}", run_id) or not re.fullmatch(r"[a-z0-9_]+\.png", name):
+    if site not in ("gale", "jezero") or not re.fullmatch(r"[0-9a-f]{8}", run_id) or not re.fullmatch(r"[a-z0-9_]+\.png", name):
         raise ApiError(400, "BAD_REQUEST", "unknown site, run id or figure")
     path = REPORTS / site / run_id / "figures" / name
     if not path.exists():
@@ -34,7 +34,7 @@ def figure(site: str, run_id: str, name: str):
 
 @router.get("/{site}/{run_id}")
 def report(site: str, run_id: str):
-    if site not in ("gale", "jezero") or not re.fullmatch(r"\d{8}-[0-9a-f]{8}", run_id):
+    if site not in ("gale", "jezero") or not re.fullmatch(r"[0-9a-f]{8}", run_id):
         raise ApiError(400, "BAD_REQUEST", "unknown site or malformed run id")
     path = REPORTS / site / run_id / "report.json"
     if not path.exists():

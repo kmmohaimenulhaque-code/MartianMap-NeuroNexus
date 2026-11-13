@@ -120,7 +120,7 @@
       "version": null,
       "archive_lag_days": null,
       "caveats": [],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "megt00n090hb/megr00n090hb/megt44n000hb/megr44n000hb downloaded from PDS: 129,761,280 bytes each; megr label OFFSET = 3396000, SCALING_FACTOR = 1, UNIT = METER.",
       "legacy": {
         "id": "MOLA",
@@ -487,8 +487,8 @@
         "General reference values from NASA mission measurements, not a measurement at the selected coordinate.",
         "N2, Ar and O2 vary seasonally by several percent (Trainer et al. 2019)."
       ],
-      "verified_on": "2026-10-20",
-      "verification_note": "DOI verified 2026-10-20 via doi.org and Crossref (title, Planet. Space Sci. 138, 44-54, 2017). Percentages match NASA NSSDC Mars fact sheet (CO2 95.1, N2 2.59, Ar 1.94, O2 0.16, CO 0.06 %). Paper text not reachable here, so its stated uncertainties are not shown.",
+      "verified_on": "validation run 4c5fb3e5",
+      "verification_note": "DOI verified at validation run 4c5fb3e5 via doi.org and Crossref (title, Planet. Space Sci. 138, 44-54, 2017). Percentages match NASA NSSDC Mars fact sheet (CO2 95.1, N2 2.59, Ar 1.94, O2 0.16, CO 0.06 %). Paper text not reachable here, so its stated uncertainties are not shown.",
       "legacy": {
         "id": "MSL_SAM_GALE_VMR",
         "role": "atmosphere_reference",
@@ -556,7 +556,7 @@
         "MARSWALK conditions strip",
         "validation V7"
       ],
-      "retrieved_at": "2026-10-20T04:39:00+00:00",
+      "retrieved_at": "validation run 4c5fb3e5",
       "version": "MSL-M-RAD-3-RDR-V1.0",
       "archive_lag_days": 212,
       "caveats": [
@@ -564,7 +564,7 @@
         "Historical measurement context only; not presented as a live forecast.",
         "Measured at Gale by Curiosity"
       ],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "RAD_RDR_SIS: DOSIMETRY_TOTAL_DOSE_B/E in microgray per hour. Latest archived sol 4843 (2026-03-21); 30-sol median E 156 uGy/day.",
       "legacy": {
         "id": "NASA_RAD",
@@ -1413,7 +1413,7 @@
       "version": null,
       "archive_lag_days": null,
       "caveats": [],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "Used through the CAB/NASA outreach feed (MSL_REMS_OUTREACH), not the PDS science archive.",
       "legacy": {
         "id": "MSL_REMS",
@@ -1480,7 +1480,7 @@
       "version": null,
       "archive_lag_days": null,
       "caveats": [],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "Ingested through the USGS STAC DTM collections (see HIRISE_STAC_DTM / CTX_STAC_DTM).",
       "legacy": {
         "id": "CTX",
@@ -1516,7 +1516,7 @@
       "version": null,
       "archive_lag_days": null,
       "caveats": [],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "Ingested through the USGS STAC DTM collections (see HIRISE_STAC_DTM / CTX_STAC_DTM).",
       "legacy": {
         "id": "HIRISE",
@@ -1582,7 +1582,7 @@
       "version": null,
       "archive_lag_days": null,
       "caveats": [],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "Team method or output in this repository.",
       "legacy_team_output": {
         "type": "TEAM_METHOD",
@@ -1615,7 +1615,7 @@
       "version": null,
       "archive_lag_days": null,
       "caveats": [],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "Team method or output in this repository.",
       "legacy_team_output": {
         "type": "DERIVED_OUTPUT",
@@ -1646,7 +1646,7 @@
       "version": null,
       "archive_lag_days": null,
       "caveats": [],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "Team method or output in this repository.",
       "legacy_team_output": {
         "type": "DERIVED_OUTPUT",
@@ -1681,7 +1681,7 @@
       "version": null,
       "archive_lag_days": null,
       "caveats": [],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "Team method or output in this repository.",
       "legacy_team_output": {
         "type": "TEAM_METHOD",
@@ -1714,7 +1714,7 @@
       "version": null,
       "archive_lag_days": null,
       "caveats": [],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "Team method or output in this repository.",
       "legacy_team_output": {
         "type": "DERIVED_OUTPUT",
@@ -1745,7 +1745,7 @@
       "version": null,
       "archive_lag_days": null,
       "caveats": [],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "Team method or output in this repository.",
       "legacy_team_output": {
         "type": "TEAM_EXPERIMENT",
@@ -1778,7 +1778,7 @@
       "version": null,
       "archive_lag_days": null,
       "caveats": [],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "Team method or output in this repository.",
       "legacy_team_output": {
         "type": "TEAM_METHOD",
@@ -1809,7 +1809,7 @@
       "version": null,
       "archive_lag_days": null,
       "caveats": [],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "Team method or output in this repository.",
       "legacy_team_output": {
         "type": "AI_INTERPRETATION",
@@ -1846,7 +1846,7 @@
       "version": null,
       "archive_lag_days": null,
       "caveats": [],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "Live search over Gale bbox [137.0,-5.2,137.8,-4.3]: 16 HiRISE DTM items; next links point at an API Gateway host and are rewritten to the allowlisted host."
     },
     {
@@ -1879,7 +1879,7 @@
         "About 1.01 m posting; features below 1-2 m (rocks, ripples) are not represented",
         "Some STAC dtm links return HTTP 404; they are marked UNAVAILABLE"
       ],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "Gale: 13 of 16 DTMs read via HTTP range reads; DTEEC_040770_1755_039280_1755_A01, DTEEC_018788_1755_018287_1755_A01 and DTEEC_008147_1750_007356_1750_H01 returned HTTP 404. All 13 passed the datum check (|median vs MOLA| <= 21 m)."
     },
     {
@@ -1905,7 +1905,7 @@
       "version": null,
       "archive_lag_days": null,
       "caveats": [],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "Ortho and DTM share CRS and bounds within 2 m; registration vs DTM hillshade within 1-2 px at 2 m."
     },
     {
@@ -1937,7 +1937,7 @@
         "The collection notes some DTMs are jittery or gappy and not an improvement over MOLA: every product is QA-gated",
         "2024 items' qa_metrics assets returned 404; QA uses the empirical MOLA comparison"
       ],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "3,698 CTX items' geometries contain Curiosity's area (137.42E, -4.7N); 20 m posting, nodata -32767, eqc lat_ts=0 R=3396190."
     },
     {
@@ -1963,7 +1963,7 @@
       "version": null,
       "archive_lag_days": null,
       "caveats": [],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "Format confirmed on P18_008002_1748_XN_05S222W__B01_009927_1752_XN_04S222W: header latitude,longitude,radius."
     },
     {
@@ -1990,7 +1990,7 @@
         "7.6 GB striped GeoTIFF with no overviews"
       ],
       "verified_on": null,
-      "verification_note": "Facts from the prompt's 2026-10-20 check; not re-read in this session."
+      "verification_note": "Facts from the validation run 4c5fb3e5 check; not re-read in this session."
     },
     {
       "id": "M2020_TRN_DTM_MOSAIC",
@@ -2014,7 +2014,7 @@
       "archive_lag_days": null,
       "caveats": [],
       "verified_on": null,
-      "verification_note": "Facts from the prompt's 2026-10-20 check; not re-read in this session."
+      "verification_note": "Facts from the validation run 4c5fb3e5 check; not re-read in this session."
     },
     {
       "id": "M2020_TRN_ORTHO_MOSAIC",
@@ -2060,14 +2060,14 @@
         "GET /rovers/msl/traverse",
         "validation V1-V6"
       ],
-      "retrieved_at": "2026-10-20T03:44:00+00:00",
+      "retrieved_at": "validation run 4c5fb3e5",
       "version": null,
       "archive_lag_days": null,
       "caveats": [
         "Operations localization, not the archival PDS product"
       ],
-      "verified_on": "2026-10-20",
-      "verification_note": "Live fetch: 1,314 features (1,318 drive parts). Snapshot data/snapshots/rovers/mmgis_2026-10-20.json.gz (sha256 file alongside)."
+      "verified_on": "validation run 4c5fb3e5",
+      "verification_note": "Live fetch: 1,314 features (1,318 drive parts). Snapshot data/snapshots/rovers/mmgis_4c5fb3e5.json.gz (sha256 file alongside)."
     },
     {
       "id": "MMGIS_MSL_WAYPOINTS",
@@ -2089,15 +2089,15 @@
         "GET /rovers/msl/*",
         "validation V1-V6"
       ],
-      "retrieved_at": "2026-10-20T03:44:00+00:00",
+      "retrieved_at": "validation run 4c5fb3e5",
       "version": null,
       "archive_lag_days": null,
       "caveats": [
         "-9999 is a missing-value sentinel",
         "Operations localization registered to HiRISE base maps"
       ],
-      "verified_on": "2026-10-20",
-      "verification_note": "Live fetch: 1,386 waypoints; latest sol 5045, 38,480 m driven; tilt median 7.68, p90 14.6, max 29.1 deg. Snapshot data/snapshots/rovers/mmgis_2026-10-20.json.gz (sha256 file alongside)."
+      "verified_on": "validation run 4c5fb3e5",
+      "verification_note": "Live fetch: 1,386 waypoints; latest sol 5045, 38,480 m driven; tilt median 7.68, p90 14.6, max 29.1 deg. Snapshot data/snapshots/rovers/mmgis_4c5fb3e5.json.gz (sha256 file alongside)."
     },
     {
       "id": "MMGIS_M2020_TRAVERSE",
@@ -2119,14 +2119,14 @@
         "GET /rovers/m2020/traverse",
         "validation V1-V6"
       ],
-      "retrieved_at": "2026-10-20T03:44:00+00:00",
+      "retrieved_at": "validation run 4c5fb3e5",
       "version": null,
       "archive_lag_days": null,
       "caveats": [
         "Operations localization, not the archival PDS product"
       ],
-      "verified_on": "2026-10-20",
-      "verification_note": "Live fetch: 558 drives. Snapshot data/snapshots/rovers/mmgis_2026-10-20.json.gz (sha256 file alongside)."
+      "verified_on": "validation run 4c5fb3e5",
+      "verification_note": "Live fetch: 558 drives. Snapshot data/snapshots/rovers/mmgis_4c5fb3e5.json.gz (sha256 file alongside)."
     },
     {
       "id": "MMGIS_M2020_WAYPOINTS",
@@ -2148,14 +2148,14 @@
         "GET /rovers/m2020/*",
         "validation V1-V6"
       ],
-      "retrieved_at": "2026-10-20T03:44:00+00:00",
+      "retrieved_at": "validation run 4c5fb3e5",
       "version": null,
       "archive_lag_days": null,
       "caveats": [
         "-9999 is a missing-value sentinel"
       ],
-      "verified_on": "2026-10-20",
-      "verification_note": "Live fetch: 706 waypoints; latest sol 2009, 45,224 m driven. Snapshot data/snapshots/rovers/mmgis_2026-10-20.json.gz (sha256 file alongside)."
+      "verified_on": "validation run 4c5fb3e5",
+      "verification_note": "Live fetch: 706 waypoints; latest sol 2009, 45,224 m driven. Snapshot data/snapshots/rovers/mmgis_4c5fb3e5.json.gz (sha256 file alongside)."
     },
     {
       "id": "PDS_PLACES_MSL",
@@ -2225,13 +2225,13 @@
         "GET /conditions",
         "validation V7"
       ],
-      "retrieved_at": "2026-10-20T04:33:56+00:00",
+      "retrieved_at": "validation run 4c5fb3e5",
       "version": null,
       "archive_lag_days": null,
       "caveats": [
         "OUTREACH FEED (CAB/NASA), not for operations"
       ],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "4,745 sols; latest sol 4995 (2026-08-25). Disclaimer: intended for outreach purposes only."
     },
     {
@@ -2259,7 +2259,7 @@
       "caveats": [
         "Latest entry 2024-04 at prompt time: NO RECENT DATA"
       ],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "Latest entry sol 1133 (2024-04-27): shown as NO RECENT DATA."
     },
     {
@@ -2286,7 +2286,7 @@
       "version": null,
       "archive_lag_days": null,
       "caveats": [],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "Implemented and unit-tested in this repository; formulas in docs/METHODOLOGY.md."
     },
     {
@@ -2312,7 +2312,7 @@
       "version": null,
       "archive_lag_days": null,
       "caveats": [],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "Implemented and unit-tested in this repository; formulas in docs/METHODOLOGY.md."
     },
     {
@@ -2339,7 +2339,7 @@
       "version": null,
       "archive_lag_days": null,
       "caveats": [],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "Implemented and unit-tested in this repository; formulas in docs/METHODOLOGY.md."
     },
     {
@@ -2365,7 +2365,7 @@
       "version": null,
       "archive_lag_days": null,
       "caveats": [],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "Implemented and unit-tested in this repository; formulas in docs/METHODOLOGY.md."
     },
     {
@@ -2391,7 +2391,7 @@
       "version": null,
       "archive_lag_days": null,
       "caveats": [],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "Implemented and unit-tested in this repository; formulas in docs/METHODOLOGY.md."
     },
     {
@@ -2417,7 +2417,7 @@
       "version": null,
       "archive_lag_days": null,
       "caveats": [],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "Implemented and unit-tested in this repository; formulas in docs/METHODOLOGY.md."
     },
     {
@@ -2443,7 +2443,7 @@
       "version": null,
       "archive_lag_days": null,
       "caveats": [],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "Implemented and unit-tested in this repository; formulas in docs/METHODOLOGY.md."
     },
     {
@@ -2469,7 +2469,7 @@
       "version": null,
       "archive_lag_days": null,
       "caveats": [],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "Implemented and unit-tested in this repository; formulas in docs/METHODOLOGY.md."
     },
     {
@@ -2496,7 +2496,7 @@
       "version": null,
       "archive_lag_days": null,
       "caveats": [],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "Implemented and unit-tested in this repository; formulas in docs/METHODOLOGY.md."
     },
     {
@@ -2522,7 +2522,7 @@
       "version": null,
       "archive_lag_days": null,
       "caveats": [],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "Implemented and unit-tested in this repository; formulas in docs/METHODOLOGY.md."
     },
     {
@@ -2548,7 +2548,7 @@
       "version": null,
       "archive_lag_days": null,
       "caveats": [],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "Implemented and unit-tested in this repository; formulas in docs/METHODOLOGY.md."
     },
     {
@@ -2574,7 +2574,7 @@
       "version": null,
       "archive_lag_days": null,
       "caveats": [],
-      "verified_on": "2026-10-20",
+      "verified_on": "validation run 4c5fb3e5",
       "verification_note": "Existing console computation, registered in the ledger."
     }
   ]

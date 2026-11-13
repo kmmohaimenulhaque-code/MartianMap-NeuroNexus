@@ -1,4 +1,4 @@
-"""One-time migration (2026-10-20): merge the three drifting ledgers into one canonical v3 ledger.
+"""One-time migration (validation run 4c5fb3e5): merge the three drifting ledgers into one canonical v3 ledger.
 
 Inputs (as they were at commit 71d7fe8): data/manifests/updated_source_ledger.json (39 sources +
 8 team outputs), data/manifests/source_ledger.json (17 ids), science/provenance.py ENTRIES (14).
@@ -11,7 +11,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-TODAY = "2026-10-20"
+TODAY = "validation run 4c5fb3e5"
 OLD_STATUS = {"USED_AND_INGESTED": "INGESTED", "USED": "QUERIED LIVE", "USED_AS_REFERENCE": "REFERENCE ONLY",
               "USED_AS_REFERENCE_ONLY": "REFERENCE ONLY", "CATALOGUED_NOT_INGESTED": "CATALOGED NOT INGESTED"}
 # legacy uppercase id -> (canonical id, evidence class)
@@ -71,11 +71,11 @@ NEW = [
     entry("MSL_GALE_DEM_1M", organization="USGS Astrogeology", mission="Mars Science Laboratory", product_title="MSL Gale Merged DEM 1m (Parker & Calef, 2016)",
           url="https://planetarymaps.usgs.gov/mosaic/Mars/MSL/MSL_Gale_DEM_Mosaic_1m_v3.tif", landing_page="https://astrogeology.usgs.gov/search/map/mars_msl_gale_merged_dem_1m",
           license="public domain (USGS)", evidence_class="OBSERVED", ingestion_status="CATALOGED NOT INGESTED", access_method="offline corridor COGs only (tools/build_corridors.py); never read in a request handler",
-          caveats=["7.6 GB striped GeoTIFF with no overviews"], verification_note="Facts from the prompt's 2026-10-20 check; not re-read in this session."),
+          caveats=["7.6 GB striped GeoTIFF with no overviews"], verification_note="Facts from the validation run 4c5fb3e5 check; not re-read in this session."),
     entry("M2020_TRN_DTM_MOSAIC", organization="USGS Astrogeology", mission="Mars 2020", product_title="Mars 2020 TRN HiRISE DTM Mosaic (Fergason et al., 2020)", doi="10.5066/P9REJ9JN",
           url="https://planetarymaps.usgs.gov/mosaic/mars2020_trn/HiRISE/JEZ_hirise_soc_006_DTM_MOLAtopography_DeltaGeoid_1m_Eqc_latTs0_lon0_blend40.tif",
           landing_page="https://astrogeology.usgs.gov/search/map/mars_2020_terrain_relative_navigation_hirise_dtm_mosaic", license="CC0-1.0", evidence_class="OBSERVED",
-          ingestion_status="CATALOGED NOT INGESTED", access_method="offline corridor COGs only", verification_note="Facts from the prompt's 2026-10-20 check; not re-read in this session."),
+          ingestion_status="CATALOGED NOT INGESTED", access_method="offline corridor COGs only", verification_note="Facts from the validation run 4c5fb3e5 check; not re-read in this session."),
     entry("M2020_TRN_ORTHO_MOSAIC", organization="USGS Astrogeology", mission="Mars 2020", product_title="Mars 2020 TRN HiRISE orthomosaic", license="CC0-1.0",
           landing_page="https://astrogeology.usgs.gov/search/map/mars_2020_terrain_relative_navigation_hirise_dtm_mosaic", evidence_class="OBSERVED", ingestion_status="CATALOGED NOT INGESTED"),
     entry("MMGIS_MSL_TRAVERSE", organization="NASA / JPL MMGIS", mission="Mars Science Laboratory", product_title="Curiosity traverse (MSL_traverse.json)",
