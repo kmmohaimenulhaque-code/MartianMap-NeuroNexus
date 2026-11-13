@@ -34,7 +34,7 @@ export const NASA_LINKS = {
   perseverance: "https://science.nasa.gov/mission/mars-2020-perseverance/",
   mro: "https://science.nasa.gov/mission/mars-reconnaissance-orbiter/",
   dustStorms: "https://www.nasa.gov/general/dust-cycle/",
-  water: "https://ammos.nasa.gov/marswatermaps/?mission=MWR",
+  water: "https://ammos.nasa.gov/",
   usgsNomenclature: "https://planetarynames.wr.usgs.gov/",
   usgsGeology: "https://pubs.usgs.gov/sim/3292/",
   jplCad: "https://ssd-api.jpl.nasa.gov/doc/cad.html",

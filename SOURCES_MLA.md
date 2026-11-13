@@ -36,7 +36,7 @@ Tanaka, K. L., et al. *Geologic Map of Mars*. Scientific Investigations Map 3292
 
 "Mars Rover Traverse Layers: Perseverance (Mars 2020)." *Multi-Mission Geographic Information System (MMGIS)*, NASA, https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_traverse.json.
 
-"Multi-Mission Geographic Information System (MMGIS)." *NASA Jet Propulsion Laboratory*, NASA, https://mars.nasa.gov/mmgis/.
+"Multi-Mission Geographic Information System (MMGIS)." *NASA Jet Propulsion Laboratory*, NASA, https://nasa-ammos.github.io/MMGIS/.
 
 "NASA Image and Video Library." *NASA*, https://images.nasa.gov/.
 
@@ -86,7 +86,7 @@ Tanaka, K. L., et al. *Geologic Map of Mars*. Scientific Investigations Map 3292
 
 "Mars Science Laboratory: Curiosity Rover." *NASA Science*, NASA, https://science.nasa.gov/mission/msl-curiosity/.
 
-"Mars Water Maps." *NASA Advanced Multi-Mission Operations System (AMMOS)*, NASA, https://ammos.nasa.gov/marswatermaps/?mission=MWR.
+"Mars Water Maps." *NASA Advanced Multi-Mission Operations System (AMMOS)*, NASA, https://ammos.nasa.gov/.
 
 "Radiation Measurements on Mars." *NASA Science*, NASA, https://science.nasa.gov/resource/radiation-measurements-on-mars/.
 
@@ -120,21 +120,21 @@ Tanaka, K. L., et al. *Geologic Map of Mars*. Scientific Investigations Map 3292
 
 "Explore Mars." *Esri*, https://explore-mars.esri.com/.
 
-"OnMars MColorDEM: Colourised Mars Elevation." *ArcGIS REST Services Directory*, Esri, https://astro.arcgis.com/arcgis/rest/services/OnMars/MColorDEM/MapServer.
+"OnMars MColorDEM: Colourised Mars Elevation." *ArcGIS REST Services Directory*, Esri, https://astro.arcgis.com/arcgis/rest/services/OnMars/MColorDEM/MapServer?f=json.
 
-"OnMars MDEM200M: Mars MOLA/HRSC Blended Digital Elevation Model (200 m)." *ArcGIS REST Services Directory*, Esri, https://astro.arcgis.com/arcgis/rest/services/OnMars/MDEM200M/ImageServer.
+"OnMars MDEM200M: Mars MOLA/HRSC Blended Digital Elevation Model (200 m)." *ArcGIS REST Services Directory*, Esri, https://astro.arcgis.com/arcgis/rest/services/OnMars/MDEM200M/ImageServer?f=json.
 
-"OnMars MDIM: Viking Mars Digital Image Mosaic 2.1." *ArcGIS REST Services Directory*, Esri, https://astro.arcgis.com/arcgis/rest/services/OnMars/MDIM/MapServer.
+"OnMars MDIM: Viking Mars Digital Image Mosaic 2.1." *ArcGIS REST Services Directory*, Esri, https://astro.arcgis.com/arcgis/rest/services/OnMars/MDIM/MapServer?f=json.
 
 ## 8. ESA, The Planetary Society and Google
 
 "Articles." *The Planetary Society*, https://www.planetary.org/rss/articles.
 
-"ExoMars." *European Space Agency*, https://www.esa.int/rssfeed/Science_Exploration/Human_and_Robotic_Exploration/Exploration/ExoMars.
+"ExoMars." *European Space Agency*, https://www.esa.int/Science_Exploration/Human_and_Robotic_Exploration/Exploration/ExoMars.
 
 "Gemini API Documentation." *Google AI for Developers*, Google, https://ai.google.dev/gemini-api/docs.
 
-"Mars Express." *European Space Agency*, https://www.esa.int/rssfeed/Science_Exploration/Space_Science/Mars_Express.
+"Mars Express." *European Space Agency*, https://www.esa.int/Science_Exploration/Space_Science/Mars_Express.
 
 ## 9. Software and standards
 
@@ -154,4 +154,4 @@ Tanaka, K. L., et al. *Geologic Map of Mars*. Scientific Investigations Map 3292
 
 "ENSO Cycle." *Climate Prediction Center*, National Oceanic and Atmospheric Administration, https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/ensocycle/ensocycle.shtml. (Earth climate analogue held in the hazard-source registry; not shown as Mars data.)
 
-"CRISM: Compact Reconnaissance Imaging Spectrometer for Mars." *NASA Science*, NASA, https://science.nasa.gov/mission/mars-reconnaissance-orbiter/crism/. (Catalogued; spectral data not ingested.)
+"CRISM: Compact Reconnaissance Imaging Spectrometer for Mars." *NASA Science*, NASA, https://science.nasa.gov/mission/mars-reconnaissance-orbiter/. (Catalogued; spectral data not ingested.)

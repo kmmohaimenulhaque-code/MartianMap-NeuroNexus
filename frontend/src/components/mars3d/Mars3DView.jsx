@@ -1645,7 +1645,7 @@ export default function Mars3DView({
                     <a href="https://swim.psi.edu/SWIM4MIMProducts.php" target="_blank" rel="noreferrer">
                       SWIM ↗
                     </a>{" "}
-                    <a href="https://ammos.nasa.gov/marswatermaps/?mission=MWR" target="_blank" rel="noreferrer">
+                    <a href="https://ammos.nasa.gov/" target="_blank" rel="noreferrer">
                       NASA Mars Water Maps ↗
                     </a>
                     {visible.walkability && grid.data?.layers?.walkability?.method ? ` ${grid.data.layers.walkability.method}` : ""}

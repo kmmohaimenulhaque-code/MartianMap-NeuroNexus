@@ -123,7 +123,7 @@
       "organization": "NASA",
       "role": "rover_traverses",
       "status": "USED",
-      "url": "https://mars.nasa.gov/mmgis/",
+      "url": "https://nasa-ammos.github.io/MMGIS/",
       "used_for": [
         "Curiosity traverse path",
         "Perseverance traverse path",
@@ -277,7 +277,7 @@
       "organization": "NASA / Mars Water Maps",
       "role": "water_ice_reference",
       "status": "USED_AS_REFERENCE_ONLY",
-      "url": "https://ammos.nasa.gov/marswatermaps/?mission=MWR",
+      "url": "https://ammos.nasa.gov/",
       "used_for": [
         "water-ice exploration context"
       ],
@@ -301,6 +301,7 @@
       "organization": "Esri / ArcGIS",
       "role": "3d_planetary_visualisation",
       "status": "USED",
+      "url": "https://astro.arcgis.com/arcgis/rest/services/OnMars/MDIM/MapServer?f=json",
       "used_for": [
         "on-demand interactive 3D Mars SceneView",
         "public Mars elevation service",
@@ -324,7 +325,7 @@
       "organization": "European Space Agency",
       "role": "mars_news",
       "status": "USED",
-      "url": "https://www.esa.int/rssfeed/Science_Exploration/Space_Science/Mars_Express",
+      "url": "https://www.esa.int/Science_Exploration/Space_Science/Mars_Express",
       "used_for": [
         "recent Mars briefing/news feed",
         "Mars Express updates"
@@ -335,7 +336,7 @@
       "organization": "European Space Agency",
       "role": "mars_news",
       "status": "USED",
-      "url": "https://www.esa.int/rssfeed/Science_Exploration/Human_and_Robotic_Exploration/Exploration/ExoMars",
+      "url": "https://www.esa.int/Science_Exploration/Human_and_Robotic_Exploration/Exploration/ExoMars",
       "used_for": [
         "recent Mars briefing/news feed",
         "ExoMars updates"
@@ -356,7 +357,7 @@
       "organization": "NASA / Mars Reconnaissance Orbiter / CRISM",
       "role": "mineralogy",
       "status": "CATALOGUED_NOT_INGESTED",
-      "url": "https://science.nasa.gov/mission/mars-reconnaissance-orbiter/crism/",
+      "url": "https://science.nasa.gov/mission/mars-reconnaissance-orbiter/",
       "used_for": [
         "science catalogue/provenance roadmap",
         "future mineralogy ingestion context"

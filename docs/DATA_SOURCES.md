@@ -26,7 +26,7 @@ Evidence classes: **OBSERVED**: A real instrument measurement from a mission arc
 | `MSL_RAD_RDR` | NASA / Mars Science Laboratory / Radiation Assessment Detector | Radiation Assessment Detector surface measurements (Gale crater) | INGESTED (ARCHIVED, LAG) |  | validation run 4c5fb3e5 | [link](https://pds-ppi.igpp.ucla.edu/) |
 | `MSL_REMS_OUTREACH` | NASA / JPL / CAB (Centro de Astrobiologia) | REMS weather outreach feed | QUERIED LIVE (OUTREACH) | outreach use only (feed disclaimer) | validation run 4c5fb3e5 | [link](https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json) |
 | `NASA_JPL_CAD` | NASA / JPL Solar System Dynamics | Small-Body Database Close-Approach Data API | QUERIED LIVE |  |  | [link](https://ssd-api.jpl.nasa.gov/doc/cad.html) |
-| `NASA_MMGIS` | NASA | NASA Multi-Mission Geographic Information System (MMGIS) rover layers | QUERIED LIVE |  |  | [link](https://mars.nasa.gov/mmgis/) |
+| `NASA_MMGIS` | NASA | NASA Multi-Mission Geographic Information System (MMGIS) rover layers | QUERIED LIVE |  |  | [link](https://nasa-ammos.github.io/MMGIS/) |
 | `PDS_PLACES_M2020` | NASA PDS Geosciences Node | Mars 2020 rover PLACES bundle | CATALOGED NOT INGESTED |  |  | [link](https://pds-geosciences.wustl.edu/missions/mars2020/places.htm) |
 | `PDS_PLACES_MSL` | NASA PDS Imaging Node | MSL PLACES localization bundle | CATALOGED NOT INGESTED |  |  | [link](https://pds.nasa.gov/data/pds4/releases/img/msl_places-20260317/) |
 | `THEMIS` | NASA / Mars Odyssey / THEMIS / Arizona State University | THEMIS IR predicted brightness temperature observations | INGESTED |  |  | [link](https://themis.asu.edu/) |
@@ -38,11 +38,11 @@ Evidence classes: **OBSERVED**: A real instrument measurement from a mission arc
 | `APXS` | NASA / Mars Science Laboratory / APXS | MSL APXS (Alpha Particle X-ray Spectrometer) | CATALOGED NOT INGESTED |  |  |  |
 | `CHEMCAM` | NASA / Mars Science Laboratory / ChemCam | MSL ChemCam (Chemistry and Camera) | CATALOGED NOT INGESTED |  |  |  |
 | `CHEMIN` | NASA / Mars Science Laboratory / CheMin | MSL CheMin (Chemistry and Mineralogy X-ray diffraction) | CATALOGED NOT INGESTED |  |  |  |
-| `CRISM` | NASA / Mars Reconnaissance Orbiter / CRISM | MRO CRISM (Compact Reconnaissance Imaging Spectrometer for Mars) | CATALOGED NOT INGESTED |  |  | [link](https://science.nasa.gov/mission/mars-reconnaissance-orbiter/crism/) |
+| `CRISM` | NASA / Mars Reconnaissance Orbiter / CRISM | MRO CRISM (Compact Reconnaissance Imaging Spectrometer for Mars) | CATALOGED NOT INGESTED |  |  | [link](https://science.nasa.gov/mission/mars-reconnaissance-orbiter/) |
 | `CTX` | NASA / Mars Reconnaissance Orbiter / CTX | MRO Context Camera (CTX) controlled stereo DTMs, about 20 m | INGESTED |  | validation run 4c5fb3e5 |  |
-| `ESA_EXOMARS` | European Space Agency | ESA ExoMars news feed (RSS) | QUERIED LIVE |  |  | [link](https://www.esa.int/rssfeed/Science_Exploration/Human_and_Robotic_Exploration/Exploration/ExoMars) |
-| `ESA_MARS_EXPRESS` | European Space Agency | ESA Mars Express news feed (RSS) | QUERIED LIVE |  |  | [link](https://www.esa.int/rssfeed/Science_Exploration/Space_Science/Mars_Express) |
-| `ESRI_MARS` | Esri / ArcGIS | Esri OnMars map services: Viking MDIM 2.1 mosaic, MOLA/HRSC color DEM, 200 m DEM | QUERIED LIVE |  |  |  |
+| `ESA_EXOMARS` | European Space Agency | ESA ExoMars news feed (RSS) | QUERIED LIVE |  |  | [link](https://www.esa.int/Science_Exploration/Human_and_Robotic_Exploration/Exploration/ExoMars) |
+| `ESA_MARS_EXPRESS` | European Space Agency | ESA Mars Express news feed (RSS) | QUERIED LIVE |  |  | [link](https://www.esa.int/Science_Exploration/Space_Science/Mars_Express) |
+| `ESRI_MARS` | Esri / ArcGIS | Esri OnMars map services: Viking MDIM 2.1 mosaic, MOLA/HRSC color DEM, 200 m DEM | QUERIED LIVE |  |  | [link](https://astro.arcgis.com/arcgis/rest/services/OnMars/MDIM/MapServer?f=json) |
 | `GRS` | NASA / Mars Odyssey / GRS | Mars Odyssey GRS (Gamma Ray Spectrometer) | CATALOGED NOT INGESTED |  |  |  |
 | `HIRISE` | NASA / Mars Reconnaissance Orbiter / HiRISE | MRO HiRISE 1 m DTMs and orthoimages | INGESTED |  | validation run 4c5fb3e5 |  |
 | `MARCI` | NASA / Mars Reconnaissance Orbiter / MARCI | MRO MARCI (Mars Color Imager) | CATALOGED NOT INGESTED |  |  |  |
@@ -57,7 +57,7 @@ Evidence classes: **OBSERVED**: A real instrument measurement from a mission arc
 | `NASA_IMAGE_LIBRARY` | NASA | NASA Image and Video Library | REFERENCE ONLY |  |  | [link](https://images.nasa.gov/) |
 | `NASA_MARS` | NASA | Mars photojournal feed | REFERENCE ONLY |  |  | [link](https://science.nasa.gov/mars/) |
 | `NASA_MARS_EVA_TECHNOLOGY` | NASA Technical Reports Server | NASA technical report on Mars EVA technology (NTRS 20260001086) | REFERENCE ONLY |  |  | [link](https://ntrs.nasa.gov/api/citations/20260001086/downloads/20260001086.pdf?attachment=true) |
-| `NASA_MARS_WATER_MAPS` | NASA / Mars Water Maps | Mars Water Maps (AMMOS) | REFERENCE ONLY |  |  | [link](https://ammos.nasa.gov/marswatermaps/?mission=MWR) |
+| `NASA_MARS_WATER_MAPS` | NASA / Mars Water Maps | Mars Water Maps (AMMOS) | REFERENCE ONLY |  |  | [link](https://ammos.nasa.gov/) |
 | `NASA_MARTIAN_DUST` | NASA | Establishing crew exposure limits for Martian dust | REFERENCE ONLY |  |  | [link](https://www.nasa.gov/general/establishing-crew-exposure-limits-of-martian-dust/) |
 | `NASA_PDS` | NASA Planetary Data System | NASA Planetary Data System archives (MOLA MEGDR, Viking MDIM 2.1) | QUERIED LIVE |  |  | [link](https://pds.nasa.gov/) |
 | `NASA_PERSEVERANCE` | NASA / Mars 2020 | Mars 2020 (Perseverance) mission page | REFERENCE ONLY |  |  | [link](https://science.nasa.gov/mission/mars-2020-perseverance/) |

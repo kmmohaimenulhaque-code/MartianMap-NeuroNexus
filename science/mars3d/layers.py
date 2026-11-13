@@ -225,7 +225,7 @@ SWIM_STUDY_REGIONS = [
 
 SWIM_SOURCES = {
     "swim_products": "https://swim.psi.edu/SWIM4MIMProducts.php",
-    "nasa_mars_water_maps": "https://ammos.nasa.gov/marswatermaps/?mission=MWR",
+    "nasa_mars_water_maps": "https://ammos.nasa.gov/",
     "jpl_feature": "https://www.jpl.nasa.gov/news/where-should-future-astronauts-land-on-mars-follow-the-water",
 }
 
